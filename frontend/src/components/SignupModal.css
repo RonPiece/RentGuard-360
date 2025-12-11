@@ -1,0 +1,211 @@
+/* Signup Modal Styles */
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+}
+
+.signup-modal {
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.modal-close:hover {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+.modal-close:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.modal-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 8px 0;
+    text-align: center;
+}
+
+.modal-subtitle {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin: 0 0 24px 0;
+    text-align: center;
+    line-height: 1.5;
+}
+
+.signup-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.password-requirements {
+    background: var(--bg-tertiary);
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 12px;
+}
+
+.password-requirements p {
+    margin: 0 0 8px 0;
+    color: var(--text-secondary);
+}
+
+.password-requirements ul {
+    margin: 0;
+    padding-left: 16px;
+}
+
+.password-requirements li {
+    color: var(--text-tertiary);
+    margin: 4px 0;
+    transition: color 0.2s ease;
+}
+
+.password-requirements li.met {
+    color: #10b981;
+}
+
+.password-requirements li.met::marker {
+    content: '✓ ';
+}
+
+.modal-footer {
+    font-size: 14px;
+    color: var(--text-secondary);
+    text-align: center;
+    margin: 20px 0 0 0;
+}
+
+.link-button {
+    background: none;
+    border: none;
+    color: var(--accent-primary);
+    cursor: pointer;
+    font-size: inherit;
+    text-decoration: underline;
+    padding: 0;
+}
+
+.link-button:hover {
+    color: var(--accent-secondary);
+}
+
+/* Success State */
+.signup-modal .success-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 40px 20px;
+    gap: 0;
+}
+
+.signup-modal .success-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    font-size: 40px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+    flex-shrink: 0;
+}
+
+.signup-modal .success-content .modal-title {
+    margin-bottom: 12px;
+}
+
+.signup-modal .success-content .modal-subtitle {
+    margin-bottom: 8px;
+}
+
+.signup-modal .redirect-text {
+    font-size: 14px;
+    color: var(--text-tertiary);
+    margin-top: 16px;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.signup-modal .success-hint {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-top: 8px;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 0.5;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+/* Scale In Animation */
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.animate-scaleIn {
+    animation: scaleIn 0.2s ease;
+}
+
+/* Error Message */
+.signup-form .error-message {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #ef4444;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    text-align: center;
+}

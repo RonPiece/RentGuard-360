@@ -1,0 +1,268 @@
+/* Upload Page Styles */
+.upload-page {
+    padding: 32px;
+    min-height: calc(100vh - 60px);
+}
+
+.upload-container {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+/* Header */
+.upload-header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.upload-header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 8px 0;
+}
+
+.upload-header p {
+    font-size: 16px;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+/* Upload Content */
+.upload-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Drop Zone */
+.drop-zone {
+    border: 2px dashed var(--border-color);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.drop-zone.dragging {
+    border-color: var(--accent-primary);
+    background: var(--accent-primary-10);
+}
+
+.drop-zone.has-file {
+    border-style: solid;
+}
+
+.drop-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.drop-icon {
+    font-size: 64px;
+    opacity: 0.5;
+}
+
+.drop-content h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.drop-content p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.drop-hint {
+    font-size: 12px !important;
+    color: var(--text-tertiary) !important;
+    margin-top: 8px !important;
+}
+
+/* File Preview */
+.file-preview {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+}
+
+.file-icon {
+    font-size: 48px;
+    flex-shrink: 0;
+}
+
+.file-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.file-info h4 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 4px 0;
+    word-break: break-all;
+}
+
+.file-info p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+/* Upload Progress */
+.upload-progress {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.progress-bar {
+    height: 8px;
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 12px;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(135deg, var(--accent-primary) 0%, #8b5cf6 100%);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.upload-progress p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+/* Metadata Card */
+.metadata-card h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 4px 0;
+}
+
+.metadata-hint {
+    font-size: 14px;
+    color: var(--text-tertiary);
+    margin: 0 0 20px 0;
+}
+
+.metadata-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+/* Success Card */
+.success-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.success-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.success-icon {
+    font-size: 40px;
+}
+
+.success-content h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 4px 0;
+}
+
+.success-content p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+/* Error Message */
+.error-message {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #ef4444;
+    padding: 16px;
+    border-radius: 12px;
+    font-size: 14px;
+    text-align: center;
+}
+
+/* Upload Button */
+.upload-button {
+    margin-top: 8px;
+}
+
+/* Animations */
+.animate-fadeIn {
+    animation: fadeIn 0.5s ease forwards;
+    opacity: 0;
+}
+
+.animate-slideUp {
+    animation: slideUp 0.5s ease forwards;
+    opacity: 0;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .upload-page {
+        padding: 20px 16px;
+    }
+
+    .upload-header h1 {
+        font-size: 24px;
+    }
+
+    .metadata-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .success-card {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .success-content {
+        flex-direction: column;
+    }
+}
