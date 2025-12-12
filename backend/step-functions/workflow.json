@@ -1,0 +1,75 @@
+{
+  "Comment": "RentGuard 360 - Contract Analysis Workflow",
+  "StartAt": "ExtractPDFText",
+  "States": {
+    "ExtractPDFText": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-east-1:459347924875:function:pdf-processor",
+      "Next": "SanitizeText",
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "Next": "HandleError"
+        }
+      ]
+    },
+    "SanitizeText": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-east-1:459347924875:function:privacy-shield",
+      "Next": "AnalyzeContract",
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "Next": "HandleError"
+        }
+      ]
+    },
+    "AnalyzeContract": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-east-1:459347924875:function:ai-analyzer",
+      "Next": "SaveResults",
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "Next": "HandleError"
+        }
+      ]
+    },
+    "SaveResults": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-east-1:459347924875:function:save-results",
+      "Next": "SendNotification",
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "Next": "HandleError"
+        }
+      ]
+    },
+    "SendNotification": {
+      "Type": "Task",
+      "Resource": "arn:aws:sns:us-east-1:459347924875:RentGuardAlerts:7947c62f-ffd1-4603-b0a6-84f1476a00f8",
+      "Parameters": {
+        "TopicArn": "הדבק_כאן_את_ה_ARN_של_ה_SNS",
+        "Message": {
+          "default": "Contract analysis completed successfully!",
+          "contractId.$": "$.contractId"
+        }
+      },
+      "End": true
+    },
+    "HandleError": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-east-1:459347924875:function:error-handler",
+      "End": true
+    }
+  }
+}
