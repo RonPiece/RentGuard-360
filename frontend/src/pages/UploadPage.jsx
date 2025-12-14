@@ -27,12 +27,12 @@ const UploadPage = () => {
     });
 
     const validateFile = (file) => {
-        const maxSize = 10 * 1024 * 1024; // 10MB
+        const maxSize = 25 * 1024 * 1024; // 25MB
         if (!file.type.includes('pdf')) {
             return 'Only PDF files are allowed';
         }
         if (file.size > maxSize) {
-            return 'File size must be less than 10MB';
+            return 'File size must be less than 25MB';
         }
         return null;
     };
@@ -72,13 +72,12 @@ const UploadPage = () => {
         setError('');
 
         try {
-            // Progress simulation
-            setUploadProgress(10);
+            // Real upload to S3 with metadata (progress tracked via XMLHttpRequest)
+            const result = await uploadFile(file, setUploadProgress, {
+                propertyAddress: metadata.propertyAddress,
+                landlordName: metadata.landlordName,
+            });
 
-            // Real upload to S3
-            const result = await uploadFile(file, setUploadProgress);
-
-            setUploadProgress(100);
             setUploadedKey(result.key);
             setUploadSuccess(true);
             setFile(null);
@@ -119,13 +118,17 @@ const UploadPage = () => {
                             <span className="success-icon">✅</span>
                             <div>
                                 <h3>Upload Successful!</h3>
-                                <p>Your contract is being analyzed. This takes 30-60 seconds.</p>
-                                <p className="contract-id">Contract ID: {uploadedKey}</p>
+                                <p className="analyzing-status">
+                                    <span className="mini-spinner"></span>
+                                    AI is analyzing your contract (30-60 seconds)...
+                                </p>
+                                <p className="upload-confirm">✓ Contract uploaded to server</p>
+                                <p className="upload-confirm">✓ Analysis started</p>
                             </div>
                         </div>
                         <div className="success-actions">
                             <Button variant="primary" onClick={() => navigate('/contracts')}>
-                                View My Contracts
+                                View My Contracts →
                             </Button>
                             <Button variant="secondary" onClick={() => setUploadSuccess(false)}>
                                 Upload Another

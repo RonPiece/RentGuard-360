@@ -70,10 +70,21 @@
 /* ========== DARK MODE SPECIFIC ========== */
 [data-theme="dark"] .card-elevated {
     background: var(--bg-secondary);
-    box-shadow: var(--shadow-lg);
+    border-color: rgba(240, 246, 252, 0.1);
+    box-shadow: var(--shadow-md);
+}
+
+[data-theme="dark"] .card-elevated:hover {
+    border-color: var(--accent-primary);
+    box-shadow: var(--glow-primary), var(--shadow-lg);
 }
 
 [data-theme="dark"] .card-outlined {
     background: var(--bg-secondary);
-    border-color: rgba(255, 255, 255, 0.15);
+    border-color: rgba(240, 246, 252, 0.15);
+}
+
+[data-theme="dark"] .card-glass {
+    background: var(--bg-secondary);
+    border-color: rgba(240, 246, 252, 0.08);
 }

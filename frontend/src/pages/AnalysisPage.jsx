@@ -84,7 +84,9 @@ const AnalysisPage = () => {
             <div className="analysis-header animate-fadeIn">
                 <Link to="/contracts" className="back-link">← Back to Contracts</Link>
                 <h1>Contract Analysis</h1>
-                <p className="contract-id">{decodeURIComponent(contractId)}</p>
+                <p className="contract-name">
+                    {analysis?.fileName || 'Contract Document'}
+                </p>
             </div>
 
             {/* Risk Score Card */}

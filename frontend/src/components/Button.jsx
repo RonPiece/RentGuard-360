@@ -25,6 +25,7 @@ const Button = ({
     rightIcon = null,
     onClick,
     children,
+    className = '',
     ...props
 }) => {
     const classes = [
@@ -33,7 +34,8 @@ const Button = ({
         `btn-${size}`,
         fullWidth && 'btn-full',
         loading && 'btn-loading',
-        disabled && 'btn-disabled'
+        disabled && 'btn-disabled',
+        className
     ].filter(Boolean).join(' ');
 
     return (
