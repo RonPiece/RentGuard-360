@@ -13,12 +13,17 @@ def lambda_handler(event, context):
         bucket = event.get('bucket')
         key = event.get('key')
         
+        # --- תוספת חשובה 1: קליטת רשימת הסעיפים מהשלב הקודם ---
+        clauses_list = event.get('clauses', [])
+        
         if not sanitized_text:
             return {
                 'contractId': contract_id, 
                 'analysis_result': {'error': 'No text found'},
                 'bucket': bucket,
-                'key': key
+                'key': key,
+                'sanitizedText': '',
+                'clauses': []
             }
 
         # --- הגנת תקציב ---
@@ -27,7 +32,7 @@ def lambda_handler(event, context):
 
         model_id = "us.meta.llama3-1-8b-instruct-v1:0"
 
-        # --- התיקון הגדול בפרומפט: הוראות סיווג ברורות ---
+        # --- התיקון הגדול בפרומפט (נשאר בדיוק כמו שביקשת) ---
         system_prompts = [{
             "text": """
             You are an expert Israeli real estate lawyer.
@@ -83,6 +88,9 @@ def lambda_handler(event, context):
 
         ai_output_text = response['output']['message']['content'][0]['text']
         
+        # --- תוספת חשובה 2: ניקוי Markdown לפני החילוץ (מונע קריסות) ---
+        ai_output_text = ai_output_text.replace("```json", "").replace("```", "").strip()
+        
         # --- מנגנון חילוץ (Regex) ---
         try:
             match = re.search(r'\{.*\}', ai_output_text, re.DOTALL)
@@ -94,19 +102,21 @@ def lambda_handler(event, context):
         except Exception as e:
             print(f"JSON Parse Error: {str(e)}")
             analysis_json = {
-                "is_contract": True, # במקרה שגיאה נניח שזה חוזה כדי לא לאבד מידע
+                "is_contract": True,
                 "overall_risk_score": 0,
                 "summary": "הניתוח הושלם אך יש שגיאת פורמט טכנית.",
                 "issues": [],
                 "raw_ai_response": ai_output_text
             }
 
-        # 3. החזרה (כולל סגירת הסוגריים שהייתה חסרה לך קודם!)
+        # --- תוספת חשובה 3: החזרה מלאה כולל הטקסט והרשימה ---
         return {
             'contractId': contract_id,
             'analysis_result': analysis_json,
             'bucket': bucket,
-            'key': key
+            'key': key,
+            'sanitizedText': sanitized_text,  # העברת הטקסט המלא
+            'clauses': clauses_list           # העברת רשימת הסעיפים
         }
 
     except Exception as e:
