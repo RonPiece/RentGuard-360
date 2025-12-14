@@ -9,50 +9,66 @@ BUCKET_NAME = 'rentguard-contracts-moty-101225'
 
 def lambda_handler(event, context):
     try:
-        # 1. Get filename from query parameters
+        # 1. Get parameters from query string
         query_params = event.get('queryStringParameters') or {}
         original_name = query_params.get('fileName', 'unknown.pdf')
+        original_file_name = query_params.get('originalFileName', original_name)
+        property_address = query_params.get('propertyAddress', '')
+        landlord_name = query_params.get('landlordName', '')
+        
+        print(f"Received: fileName={original_name}, address={property_address}, landlord={landlord_name}")
         
         # 2. Extract userId from Cognito authorizer claims
-        # API Gateway with Cognito authorizer passes user info in requestContext
         user_id = 'anonymous'
         try:
             claims = event.get('requestContext', {}).get('authorizer', {}).get('claims', {})
-            # Try to get user identifier (prefer 'sub' which is the unique Cognito user ID)
             user_id = claims.get('sub') or claims.get('cognito:username') or claims.get('email', 'anonymous')
             print(f"Extracted userId: {user_id}")
         except Exception as e:
             print(f"Warning: Could not extract userId from claims: {e}")
         
         # 3. Create unique file key with userId in path
-        # Format: uploads/{userId}/contract-{uuid}.pdf
         unique_id = str(uuid.uuid4())
         file_key = f"uploads/{user_id}/contract-{unique_id}.pdf"
 
-        # 4. Generate presigned URL for direct S3 upload (expires in 5 minutes)
+        # 4. Build S3 params with metadata
+        s3_params = {
+            'Bucket': BUCKET_NAME,
+            'Key': file_key,
+            'ContentType': 'application/pdf',
+            'Metadata': {
+                'original-filename': original_file_name[:255],  # S3 metadata limit
+                'property-address': property_address[:255] if property_address else '',
+                'landlord-name': landlord_name[:255] if landlord_name else '',
+                'user-id': user_id[:255]
+            }
+        }
+
+        # 5. Generate presigned URL (expires in 5 minutes)
         presigned_url = s3.generate_presigned_url(
             'put_object',
-            Params={
-                'Bucket': BUCKET_NAME,
-                'Key': file_key,
-                'ContentType': 'application/pdf'
-            },
+            Params=s3_params,
             ExpiresIn=300
         )
 
-        # 5. Return response to frontend
+        # 6. Return response to frontend
         return {
             'statusCode': 200,
             'headers': {
                 "Access-Control-Allow-Origin": "*",
                 "Access-Control-Allow-Headers": "Content-Type,Authorization",
-                "Access-Control-Allow-Methods": "OPTIONS,GET"
+                "Access-Control-Allow-Methods": "OPTIONS,GET,PUT"
             },
             'body': json.dumps({
                 'uploadUrl': presigned_url,
                 'key': file_key,
                 'fileName': original_name,
-                'userId': user_id  # Return userId so frontend knows it's captured
+                'userId': user_id,
+                'metadata': {
+                    'originalFileName': original_file_name,
+                    'propertyAddress': property_address,
+                    'landlordName': landlord_name
+                }
             })
         }
 

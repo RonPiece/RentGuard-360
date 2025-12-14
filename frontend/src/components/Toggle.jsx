@@ -1,14 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './Toggle.css';
+import { useTheme } from '../contexts/ThemeContext';
 
 /**
  * Toggle Component - iOS Style with Dark/Light Mode Support
- * 
- * @param {Object} props
- * @param {boolean} props.checked - Toggle state
- * @param {function} props.onChange - Change handler
- * @param {string} props.label - Toggle label
- * @param {boolean} props.disabled - Disabled state
  */
 const Toggle = ({
     checked = false,
@@ -57,32 +52,16 @@ const Toggle = ({
 };
 
 /**
- * ThemeToggle Component - Specifically for Dark/Light mode switching
+ * ThemeToggle Component - Uses ThemeContext for synced state
  */
-export const ThemeToggle = () => {
-    const [isDark, setIsDark] = useState(() => {
-        // Check localStorage for saved theme preference
-        const saved = localStorage.getItem('theme');
-        return saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches);
-    });
-
-    const toggleTheme = () => {
-        const newTheme = !isDark;
-        setIsDark(newTheme);
-        document.documentElement.setAttribute('data-theme', newTheme ? 'dark' : 'light');
-        localStorage.setItem('theme', newTheme ? 'dark' : 'light');
-    };
-
-    // Set initial theme
-    React.useEffect(() => {
-        document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
-    }, []);
+export const ThemeToggle = ({ showLabel = true }) => {
+    const { isDark, toggleTheme } = useTheme();
 
     return (
         <Toggle
             checked={isDark}
             onChange={toggleTheme}
-            label={isDark ? '🌙 Dark Mode' : '☀️ Light Mode'}
+            label={showLabel ? (isDark ? '🌙 Dark' : '☀️ Light') : undefined}
         />
     );
 };

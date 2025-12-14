@@ -1,43 +1,50 @@
-/* RentGuard 360 - iOS 26 Liqueed Design System */
+/* RentGuard 360 - Premium Design System */
 
 /* ============================================
-   ROOT VARIABLES - LIGHT MODE
+   ROOT VARIABLES - LIGHT MODE (Premium)
    ============================================ */
 :root {
-    /* Background Colors - Neutral grayscale */
+    /* Background Colors - Soft premium whites */
     --bg-primary: #FFFFFF;
-    --bg-secondary: #F5F5F7;
-    --bg-tertiary: #E8E8ED;
-    --bg-elevated: #FAFAFA;
+    --bg-secondary: #F8FAFC;
+    --bg-tertiary: #F1F5F9;
+    --bg-elevated: #FFFFFF;
 
-    /* Text Colors */
-    --text-primary: #1D1D1F;
-    --text-secondary: #6E6E73;
-    --text-tertiary: #86868B;
-    --text-quaternary: #C7C7CC;
+    /* Text Colors - Refined contrast */
+    --text-primary: #0F172A;
+    --text-secondary: #475569;
+    --text-tertiary: #64748B;
+    --text-quaternary: #94A3B8;
 
-    /* Accent Colors - Subtle, neutral tones for legal app */
-    --accent-primary: #007AFF;
-    --accent-primary-hover: #0051D5;
-    --accent-secondary: #5856D6;
-    --accent-success: #34C759;
-    --accent-warning: #FF9500;
-    --accent-danger: #FF3B30;
-    --accent-info: #5AC8FA;
+    /* Accent Colors - Emerald/Teal (matches dark mode) */
+    --accent-primary: #059669;
+    --accent-primary-hover: #047857;
+    --accent-secondary: #0891B2;
+    --accent-success: #10B981;
+    --accent-warning: #F59E0B;
+    --accent-danger: #EF4444;
+    --accent-info: #3B82F6;
+
+    /* Gradient Accents */
+    --gradient-primary: linear-gradient(135deg, #059669 0%, #0891B2 100%);
+    --gradient-subtle: linear-gradient(135deg, #F0FDF4 0%, #ECFEFF 100%);
 
     /* Glassmorphism Effects */
-    --glass-bg: rgba(255, 255, 255, 0.7);
-    --glass-border: rgba(0, 0, 0, 0.1);
+    --glass-bg: rgba(255, 255, 255, 0.8);
+    --glass-border: rgba(15, 23, 42, 0.08);
     --glass-blur: 20px;
 
-    /* Shadows - Subtle elevation */
-    --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
-    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
-    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
-    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
-    --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.16);
+    /* Shadows - Refined and soft */
+    --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.04);
+    --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+    --shadow-md: 0 4px 6px rgba(15, 23, 42, 0.05), 0 2px 4px rgba(15, 23, 42, 0.03);
+    --shadow-lg: 0 10px 15px rgba(15, 23, 42, 0.08), 0 4px 6px rgba(15, 23, 42, 0.04);
+    --shadow-xl: 0 20px 25px rgba(15, 23, 42, 0.1), 0 10px 10px rgba(15, 23, 42, 0.04);
 
-    /* Border Radius - iOS style */
+    /* Glow effect for accent elements (light mode) */
+    --glow-primary: 0 0 20px rgba(5, 150, 105, 0.12);
+
+    /* Border Radius - Premium rounded */
     --radius-xs: 8px;
     --radius-sm: 12px;
     --radius-md: 16px;
@@ -76,54 +83,61 @@
     --line-height-normal: 1.5;
     --line-height-relaxed: 1.75;
 
-    /* Transitions - Smooth iOS-like animations */
+    /* Transitions - Smooth premium animations */
     --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
     --transition-normal: 300ms cubic-bezier(0.4, 0, 0.2, 1);
     --transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
     --transition-spring: 400ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
 
     /* Contract Risk Colors */
-    --risk-high: #FF3B30;
-    --risk-medium: #FF9500;
-    --risk-low: #34C759;
-    --risk-neutral: #8E8E93;
+    --risk-high: #EF4444;
+    --risk-medium: #F59E0B;
+    --risk-low: #10B981;
+    --risk-neutral: #64748B;
 }
 
 /* ============================================
-   DARK MODE VARIABLES
+   DARK MODE VARIABLES - Premium Charcoal Theme
    ============================================ */
 [data-theme="dark"] {
-    /* Background Colors - Deep blacks and grays */
-    --bg-primary: #000000;
-    --bg-secondary: #1C1C1E;
-    --bg-tertiary: #2C2C2E;
-    --bg-elevated: #141414;
+    /* Background Colors - Premium charcoal (NOT pure black) */
+    --bg-primary: #0D1117;
+    --bg-secondary: #161B22;
+    --bg-tertiary: #21262D;
+    --bg-elevated: #30363D;
 
     /* Text Colors */
-    --text-primary: #FFFFFF;
-    --text-secondary: #AEAEB2;
-    --text-tertiary: #8E8E93;
-    --text-quaternary: #636366;
+    --text-primary: #F0F6FC;
+    --text-secondary: #8B949E;
+    --text-tertiary: #6E7681;
+    --text-quaternary: #484F58;
 
-    /* Accent Colors - Adjusted for dark mode */
-    --accent-primary: #0A84FF;
-    --accent-primary-hover: #409CFF;
-    --accent-secondary: #5E5CE6;
-    --accent-success: #30D158;
-    --accent-warning: #FF9F0A;
-    --accent-danger: #FF453A;
-    --accent-info: #64D2FF;
+    /* Accent Colors - Emerald Green (modern & vibrant) */
+    --accent-primary: #10B981;
+    --accent-primary-hover: #34D399;
+    --accent-secondary: #06B6D4;
+    --accent-success: #22C55E;
+    --accent-warning: #F59E0B;
+    --accent-danger: #EF4444;
+    --accent-info: #3B82F6;
 
-    /* Glassmorphism Effects */
-    --glass-bg: rgba(28, 28, 30, 0.7);
-    --glass-border: rgba(255, 255, 255, 0.1);
+    /* Gradient Accents */
+    --gradient-primary: linear-gradient(135deg, #10B981 0%, #06B6D4 100%);
+    --gradient-subtle: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(6, 182, 212, 0.1) 100%);
 
-    /* Shadows - Stronger for dark mode */
-    --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.4);
-    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
-    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
-    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
-    --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.6);
+    /* Glassmorphism Effects - Subtle for dark mode */
+    --glass-bg: rgba(22, 27, 34, 0.8);
+    --glass-border: rgba(240, 246, 252, 0.1);
+
+    /* Shadows - Glow effect for dark mode */
+    --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.5);
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.6);
+    --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.7);
+
+    /* Glow effect for accent elements */
+    --glow-primary: 0 0 20px rgba(16, 185, 129, 0.15);
 }
 
 /* ============================================
