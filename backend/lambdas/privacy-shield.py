@@ -5,37 +5,42 @@ def clean_and_split(text):
     if not text:
         return [], ""
 
-    # 1. הסרת "רעשי סורק" ספציפיים ידועים
-    text = re.sub(r'(?i)scanned with camscanner', '', text)
+    # 1. הסרת "רעשי סורק" ספציפיים (CamScanner וכו')
+    # הסרה אגרסיבית יותר שכוללת גם תווים אחרי המילה
+    text = re.sub(r'(?i)scanned with camscanner.*', '', text)
     text = re.sub(r'www\.camscanner\.com', '', text)
     
-    # 2. הסרת תווים נסתרים (RTL Marks) ששוברים תצוגה
-    text = re.sub(r'[\u2000-\u200f]', '', text)
+    # 2. ניקוי תווים לא רצויים ששוברים פורמט
+    text = re.sub(r'[\u2000-\u200f]', '', text) # RTL Marks
+    text = re.sub(r'[|~^]', '', text) # תווים נפוצים ב-OCR גרוע
 
-    # 3. החלפת רצפים של תווים לא הגיוניים (ג'יבריש כמו §Qa§uw) ברווח
-    # משאירים רק: עברית, אנגלית, מספרים, וסימני פיסוק בסיסיים
-    text = re.sub(r'[^א-תa-zA-Z0-9\s\.\,\-\:\(\)\"\'\%\₪\/]+', ' ', text)
-
-    # 4. פיצול לפסקאות לפי ירידות שורה כפולות (הדרך הכי בטוחה ב-OCR)
-    raw_blocks = text.split('\n\n')
+    # 3. פיצול לפסקאות - שינינו ל-split לפי שורה בודדת כדי לסנן זבל טוב יותר
+    raw_blocks = text.split('\n')
     
     clean_clauses = []
     for block in raw_blocks:
-        # ניקוי רווחים מיותרים בתוך הבלוק
-        block = re.sub(r'\s+', ' ', block).strip()
+        block = block.strip()
         
-        # 5. מסננים שורות קצרות מדי (פחות מ-15 תווים זה כנראה זבל או מספר עמוד)
-        if len(block) > 15:
-            clean_clauses.append(block)
+        # ניקוי רווחים כפולים
+        block = re.sub(r'\s+', ' ', block)
+        
+        # --- השיפור: סינון זבל ---
+        # אם השורה קצרה מ-20 תווים או מכילה רק מספרים/סימנים - דלג עליה
+        if len(block) < 20: 
+            continue
+        
+        # מסנן שורות שהן רק מספרים (כמו מספרי עמודים)
+        if re.match(r'^[\d\W]+$', block):
+            continue
 
-    # מחזירים גם את הרשימה וגם את הטקסט המלא (מחובר) לטובת ה-AI הכללי
+        clean_clauses.append(block)
+
+    # מחזירים גם את הרשימה וגם את הטקסט המלא
     full_clean_text = "\n".join(clean_clauses)
-    
     return clean_clauses, full_clean_text
 
 def lambda_handler(event, context):
     try:
-        # קריאה
         text = event.get('extractedText', '')
         contract_id = event.get('contractId', 'unknown')
         bucket = event.get('bucket')
@@ -51,8 +56,8 @@ def lambda_handler(event, context):
         
         return {
             'contractId': contract_id,
-            'sanitizedText': clean_full_text, # טקסט מלא לניתוח הכללי
-            'clauses': clauses_list,          # <--- הרשימה הנקייה לרון!
+            'sanitizedText': clean_full_text,
+            'clauses': clauses_list,          # הרשימה הנקייה (ללא camscanner)
             'bucket': bucket,
             'key': key
         }
