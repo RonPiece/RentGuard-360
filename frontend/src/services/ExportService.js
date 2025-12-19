@@ -360,8 +360,9 @@ export const exportToPDF = async (analysis, fileName = 'Contract_Analysis_Report
  * @param {object} editedClauses - Object with clauseId -> { text, action }
  * @param {array} issues - Issues with suggested fixes
  * @param {string} fileName - Output file name
+ * @param {array} backendClauses - Optional: clauses array from backend (preferred)
  */
-export const exportEditedContract = async (originalText, editedClauses, issues = [], fileName = 'Edited_Contract') => {
+export const exportEditedContract = async (originalText, editedClauses, issues = [], fileName = 'Edited_Contract', backendClauses = []) => {
     const sections = [];
 
     // Title
@@ -387,22 +388,30 @@ export const exportEditedContract = async (originalText, editedClauses, issues =
             new Paragraph({
                 text: `סיכום שינויים: ${changesCount} סעיפים נערכו`,
                 bidirectional: true,
-                spacing: { after: 200 },
+                spacing: { after: 300 },
             })
         );
     }
 
-    // Parse and rebuild contract with edits applied
-    const clauses = originalText
-        .split(/\n\n+|\n(?=\d+\.\s)/)
-        .filter(p => p.trim().length > 0);
+    // Use backend clauses if available, otherwise fall back to client-side parsing
+    let clauses = [];
+    if (backendClauses && backendClauses.length > 0) {
+        console.log('Export: Using backend clauses:', backendClauses.length);
+        clauses = backendClauses.map(text => typeof text === 'string' ? text.trim() : text);
+    } else if (originalText) {
+        console.log('Export: Falling back to client-side parsing');
+        clauses = originalText
+            .split(/\n\n+|\n(?=\d+\.\s)/)
+            .filter(p => p.trim().length > 0)
+            .map(p => p.trim());
+    }
 
     clauses.forEach((clauseText, index) => {
         const clauseId = `clause-${index}`;
         const edit = editedClauses[clauseId];
 
         // Determine final text
-        let finalText = clauseText.trim();
+        let finalText = clauseText;
         let wasEdited = false;
 
         if (edit) {
@@ -412,7 +421,7 @@ export const exportEditedContract = async (originalText, editedClauses, issues =
             }
         }
 
-        // Add clause to document (no § prefix since text already has numbering)
+        // Add clause to document with proper paragraph spacing
         sections.push(
             new Paragraph({
                 children: [
@@ -423,7 +432,10 @@ export const exportEditedContract = async (originalText, editedClauses, issues =
                     }),
                 ],
                 bidirectional: true,
-                spacing: { after: 200 },
+                spacing: {
+                    after: 300,  // Space after each paragraph
+                    line: 360,   // 1.5 line spacing for readability
+                },
             })
         );
 
@@ -441,7 +453,7 @@ export const exportEditedContract = async (originalText, editedClauses, issues =
                         }),
                     ],
                     bidirectional: true,
-                    spacing: { after: 100 },
+                    spacing: { after: 200 },
                 })
             );
         }

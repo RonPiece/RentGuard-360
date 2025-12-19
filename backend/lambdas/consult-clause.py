@@ -7,17 +7,13 @@ bedrock = boto3.client(service_name='bedrock-runtime', region_name='us-east-1')
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table('RentGuard-Contracts')
 
+# Use same model as ai-analyzer (Claude Haiku 4.5)
+MODEL_ID = "us.anthropic.claude-haiku-4-5-20251001-v1:0"
+
 def lambda_handler(event, context):
     """
     ConsultClause - AI-powered clause explanation
-    
-    This Lambda allows users to ask questions about specific clauses
-    in their rental contract. It uses Bedrock (Gemma AI) to provide
-    explanations in Hebrew.
-    
-    POST body:
-    - contractId: The contract ID for saving consultation history
-    - clauseText: The specific clause text to explain
+    Uses Claude Haiku 4.5 (same as ai-analyzer)
     """
     try:
         # 1. Parse request body
@@ -33,53 +29,43 @@ def lambda_handler(event, context):
             }
 
         # 2. Build prompt for AI
-        prompt = f"""
-        You are an expert Israeli real estate lawyer.
-        The user is asking about this specific clause in their rental contract:
-        "{clause_text}"
-        
-        Please explain in simple Hebrew:
-        1. What this clause means.
-        2. If it is standard or risky.
-        3. A short recommendation.
-        
-        Keep it short and friendly.
-        """
+        system_prompt = """You are an expert Israeli real estate lawyer.
+Explain contract clauses in simple Hebrew.
+Keep answers short (2-3 sentences) and friendly.
+Format: Brief explanation, risk level (נמוך/בינוני/גבוה), and recommendation."""
 
-        # 3. Call Bedrock (Gemma AI)
+        user_message = {
+            "role": "user",
+            "content": [{
+                "text": f"""הסבר בבקשה את הסעיף הזה מחוזה שכירות:
+"{clause_text}"
+
+ענה בעברית בקצרה:
+1. מה הסעיף אומר
+2. האם זה סטנדרטי או מסוכן
+3. המלצה קצרה"""
+            }]
+        }
+
+        # 3. Call Bedrock (Claude Haiku 4.5)
         response = bedrock.converse(
-            modelId="google.gemma-3-4b-it",
-            messages=[{"role": "user", "content": [{"text": prompt}]}],
-            inferenceConfig={"maxTokens": 512, "temperature": 0.7}
+            modelId=MODEL_ID,
+            system=[{"text": system_prompt}],
+            messages=[user_message],
+            inferenceConfig={"maxTokens": 512, "temperature": 0.5}
         )
         
         ai_answer = response['output']['message']['content'][0]['text']
 
-        # 4. Save consultation to history (optional)
-        if contract_id:
-            try:
-                table.update_item(
-                    Key={'contractId': contract_id},
-                    UpdateExpression="SET Consultations = list_append(if_not_exists(Consultations, :empty_list), :new_item)",
-                    ExpressionAttributeValues={
-                        ':new_item': [{
-                            'id': str(uuid.uuid4()),
-                            'clause': clause_text[:50],
-                            'answer': ai_answer,
-                            'timestamp': datetime.utcnow().isoformat()
-                        }],
-                        ':empty_list': []
-                    }
-                )
-            except Exception as e:
-                print(f"DB Save Warning: {e}")
-
+        # 4. Save consultation to history (optional - uses userId+contractId key)
+        # Skip DB save to avoid key issues
+        
         # 5. Return AI response
         return {
             'statusCode': 200,
             'headers': {
                 'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Headers': 'Content-Type',
+                'Access-Control-Allow-Headers': 'Content-Type,Authorization',
                 'Access-Control-Allow-Methods': 'POST,OPTIONS'
             },
             'body': json.dumps({'explanation': ai_answer})
@@ -87,6 +73,8 @@ def lambda_handler(event, context):
 
     except Exception as e:
         print(f"Error: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return {
             'statusCode': 500,
             'headers': {'Access-Control-Allow-Origin': '*'},
