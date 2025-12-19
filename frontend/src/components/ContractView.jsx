@@ -6,9 +6,12 @@ import './ContractView.css';
 /**
  * ContractView - Full contract display with clause-level editing
  * Shows all clauses, highlights issues, and enables editing
+ * 
+ * Now supports backendClauses from privacy-shield Lambda for better clause splitting
  */
 const ContractView = ({
     contractText = '',
+    backendClauses = [], // NEW: clauses array from backend (privacy-shield)
     issues = [],
     onClauseChange,
     onExportEdited,
@@ -19,20 +22,33 @@ const ContractView = ({
     const [isSaving, setIsSaving] = useState(false);
     const [saveStatus, setSaveStatus] = useState(null); // 'success' | 'error' | null
 
-    // Parse contract into clauses (simple paragraph-based splitting)
+    // Use backend clauses if available, otherwise parse client-side (fallback)
     const clauses = useMemo(() => {
-        if (!contractText) return [];
+        let parts = [];
 
-        // Split by double newlines or numbered items
-        const parts = contractText
-            .split(/\n\n+|\n(?=\d+\.\s)/)
-            .filter(p => p.trim().length > 0)
-            .map((text, index) => ({
+        // Priority 1: Use backend clauses if available
+        if (backendClauses && backendClauses.length > 0) {
+            console.log('Using backend clauses:', backendClauses.length);
+            parts = backendClauses.map((text, index) => ({
                 id: `clause-${index}`,
-                text: text.trim(),
+                text: typeof text === 'string' ? text.trim() : text,
                 hasIssue: false,
                 issue: null
             }));
+        }
+        // Priority 2: Fall back to client-side parsing
+        else if (contractText) {
+            console.log('Falling back to client-side clause parsing');
+            parts = contractText
+                .split(/\n\n+|\n(?=\d+\.\s)/)
+                .filter(p => p.trim().length > 0)
+                .map((text, index) => ({
+                    id: `clause-${index}`,
+                    text: text.trim(),
+                    hasIssue: false,
+                    issue: null
+                }));
+        }
 
         // Match issues to clauses
         issues.forEach(issue => {
@@ -48,7 +64,7 @@ const ContractView = ({
         });
 
         return parts;
-    }, [contractText, issues]);
+    }, [contractText, backendClauses, issues]);
 
     const handleClauseEdit = (clauseId, newText, action) => {
         setEditedClauses(prev => ({

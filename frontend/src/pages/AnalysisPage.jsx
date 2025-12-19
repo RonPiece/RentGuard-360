@@ -510,6 +510,7 @@ _________________    _________________
                     {activeTab === 'contract' && (
                         <ContractView
                             contractText={analysis?.sanitizedText || analysis?.full_text || analysis?.contractText || analysis?.extracted_text || ''}
+                            backendClauses={analysis?.clauses_list || analysis?.clauses || []}
                             issues={issues}
                             onClauseChange={(clauseId, text, action) => {
                                 setEditedClauses(prev => ({
@@ -517,10 +518,11 @@ _________________    _________________
                                     [clauseId]: { text, action }
                                 }));
                             }}
-                            onExportEdited={async (clauses) => {
+                            onExportEdited={async (editedClausesMap) => {
                                 // Export edited contract to Word with Hebrew
                                 const contractText = analysis?.sanitizedText || analysis?.full_text || analysis?.contractText || '';
-                                await exportEditedContract(contractText, clauses, issues, 'Edited_Contract');
+                                const backendClauses = analysis?.clauses_list || analysis?.clauses || [];
+                                await exportEditedContract(contractText, editedClausesMap, issues, 'Edited_Contract', backendClauses);
                             }}
                             onSaveToCloud={async (clauses, fullEditedText) => {
                                 // Save to AWS (S3 + DynamoDB)

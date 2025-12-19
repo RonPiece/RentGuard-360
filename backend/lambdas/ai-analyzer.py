@@ -215,7 +215,7 @@ TASK: Analyze the contract and return ONLY valid JSON with this EXACT structure:
       "penalty_points": <number>,
       "legal_basis": "<which law/rule this violates>",
       "explanation": "<Hebrew explanation why this is risky>",
-      "suggested_fix": "<THE ACTUAL CORRECTED CLAUSE TEXT IN HEBREW - write the new clause directly, NOT instructions like 'יש לשנות ל' or 'יש להסיר'>"
+      "suggested_fix": "<Hebrew suggestion for better wording>"
     }}
   ]
 }}
