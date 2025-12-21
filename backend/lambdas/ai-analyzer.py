@@ -6,39 +6,122 @@ import re
 # Initialize Bedrock client
 bedrock = boto3.client(service_name='bedrock-runtime', region_name='us-east-1')
 
-# Israeli Rental Law Knowledge Base (Fair Rental Law 2017 / חוק שכירות הוגנת)
+# =============================================================================
+# COMPREHENSIVE ISRAELI RENTAL LAW KNOWLEDGE BASE
+# Based on Fair Rental Law Amendment 2017 (תיקון תשע"ז) - Sections 25א-25טו
+# =============================================================================
+
+SOURCE_HIERARCHY = """
+MANDATORY SOURCE HIERARCHY - YOU MUST FOLLOW THIS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. PRIMARY (COGENT): Fair Rental Law Amendment 2017 (סימן ו' לחוק השכירות והשאילה - סעיפים 25א-25טו)
+   - These provisions CANNOT be waived by contract (except 25ז(א) and 25יב(א))
+   - If contract contradicts these sections → VOID
+
+2. SECONDARY (DISPOSITIVE): Rental and Loan Law 1971 (חוק השכירות והשאילה התשל"א)
+   - Applies when 2017 amendment doesn't cover the topic
+   - Sections 1-25 of the original law
+
+3. ⛔ EXCLUDED - DO NOT USE: Tenant Protection Law 1972 (חוק הגנת הדייר)
+   - This law deals with "Key Money" (דמי מפתח) and protected tenants
+   - IRRELEVANT to modern rental contracts
+   - NEVER cite this law or its concepts
+"""
+
+MATH_VERIFICATION = """
+MANDATORY CALCULATION PROTOCOL - DO THESE BEFORE FLAGGING VIOLATIONS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+FOR DEPOSIT VALIDATION (Rule F1):
+1. Extract from contract:
+   - MonthlyRent = X (in NIS)
+   - LeaseDuration = T (in months)
+   - RequestedDeposit = D (in NIS)
+2. Calculate limits:
+   - Limit1 = X × 3
+   - Limit2 = (X × T) ÷ 3
+3. MaxAllowed = MIN(Limit1, Limit2)
+4. Decision:
+   - If D ≤ MaxAllowed → LEGAL, do NOT flag as violation
+   - If D > MaxAllowed → ILLEGAL, flag as F1 violation
+
+EXAMPLE: Rent=5,000, Lease=12 months, Deposit=15,000
+- Limit1 = 5,000 × 3 = 15,000
+- Limit2 = (5,000 × 12) ÷ 3 = 20,000
+- MaxAllowed = MIN(15,000, 20,000) = 15,000
+- 15,000 ≤ 15,000 → LEGAL ✓
+
+FOR NOTICE PERIODS:
+- Tenant extension notice (E1): Must give ≥ 60 days → LEGAL
+- Landlord option notice (E2): Must give ≥ 90 days → LEGAL
+- Only flag if contract requires LESS notice than law mandates
+
+FOR REPAIR DEADLINES:
+- Regular repairs (L2): Must complete within ≤ 30 days → LEGAL
+- Urgent repairs (L3): Must complete within ≤ 3 days → LEGAL
+"""
+
 KNOWLEDGE_BASE = """
-ISRAELI RENTAL LAW - KEY RULES (Fair Rental Law 2017 / חוק שכירות הוגנת)
+COMPREHENSIVE ISRAELI RENTAL LAW RULES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-FINANCIAL RULES:
-- F1: Maximum security deposit is 3 months rent OR 1/3 of total lease (whichever is lower) [Section 25]
-- F2: Deposit must be returned within 60 days after lease ends
-- F3: Rent cannot increase during lease without explicit clause
-- F4: Late penalties should be reasonable (max ~2% per week)
+FINANCIAL RULES (F1-F7):
+- F1: [סעיף 25ט(ב)] Maximum security deposit is the LOWER of: (a) 3 months' rent, OR (b) 1/3 of total lease rent.
+      Example: Rent=4,000, 12-month lease → Max = MIN(12,000, 16,000) = 12,000 NIS
+- F2: [סעיף 25ט(ז)] Deposit must be returned within 60 days after lease ends.
+- F3: [סעיף 25ח(א)] Rent amount must be clearly specified. Cannot increase arbitrarily during lease.
+- F4: [נוהג מקובל] Late payment penalties must be reasonable (typically max ~2% per week, not daily compounding).
+- F5: [סעיף 25ח(ב)(3)] Tenant NOT liable for broker fees if broker was hired by landlord (דמי תיווך).
+- F6: [סעיף 25ט(ד)] Deposit can ONLY be used for: unpaid rent, tenant-caused repairs, unpaid utilities, or non-vacating.
+      Landlord must notify tenant before using deposit [סעיף 25ט(ה)].
+- F7: [סעיף 25ט(ג)] Deposit cannot be transferred to landlord BEFORE key handover date.
 
-TENANT RIGHTS:
-- T1: Landlord must give 24-48h notice before entering property
-- T2: Complete subletting prohibition without exception may be unfair
-- T3: Landlord cannot cut off utilities (electricity, water, gas) [Illegal]
-- T4: Tenant can make minor modifications (hanging pictures, etc.)
+TENANT RIGHTS (T1-T7):
+- T1: [נוהג מקובל] Landlord must give reasonable notice (24-48 hours) before entering the property.
+- T2: [סעיף 25יב] Complete prohibition on subletting without reasonable grounds may be unfair.
+      Landlord must provide written consent for subletting [סעיף 25יב(א)].
+- T3: [אסור בחוק] Landlord CANNOT cut off essential utilities (electricity, water, gas) to force eviction.
+- T4: [נוהג מקובל] Tenant has right to make minor, non-damaging modifications (hanging pictures, shelves).
+- T5: [סעיף 25ה] Tenant has remedies for property defects (אי-התאמה). Sale Law remedies apply.
+- T6: [סעיף 25ח(ב)] Tenant is NOT liable for: (1) Building insurance, (2) Fixed installations, (3) Landlord's broker fees.
+- T7: [סעיף 25ו(ה)] Landlord must provide maintenance and usage instructions for property, fixtures, and appliances.
 
-TERMINATION RULES:
-- E1: Tenant early termination notice: typically 60 days
-- E2: Landlord must give 90 days notice for early termination
-- E3: Early termination conditions must be clear and mutual
-- E4: Tenant shouldn't pay full remaining rent if finding replacement
+TERMINATION RULES (E1-E5):
+- E1: [סעיף 25י(ג)] Tenant must give at least 60 days notice if they want to use extension option.
+- E2: [סעיף 25י(ב)] Landlord must give at least 90 days notice if they want to use extension option.
+      Extension terms must be pre-agreed in original contract.
+- E3: [סעיף 25יא] Landlord CANNOT cancel contract early except for material breach (הפרה יסודית).
+      Exception: Renewal contracts up to 5 years total may include early termination clause.
+- E4: [נוהג מקובל] Tenant should not pay full remaining rent if valid replacement tenant is found and approved.
+- E5: [סעיף 25י(א)] Landlord must notify tenant reasonable time before lease end about renewal intentions and terms.
 
-LIABILITY RULES:
-- L1: Landlord responsible for structural/essential repairs [Section 6]
-- L2: Normal wear and tear is NOT tenant's responsibility
-- L3: Insurance requirements must be reasonable
-- L4: Damage claims must be proportional and documented
+LIABILITY & REPAIRS (L1-L6):
+- L1: [סעיף 25ז(א)+(ב)] Landlord is MANDATORILY responsible for all defects and repairs in the property.
+      Tenant only responsible for repairs if caused by unreasonable use.
+- L2: [סעיף 25ז(ג)] Regular repairs must be completed within 30 days of tenant's request.
+- L3: [סעיף 25ז(ד)] URGENT repairs (preventing reasonable habitation) must be completed within 3 days.
+- L4: [נוהג מקובל] Normal wear and tear (בלאי סביר) is NOT the tenant's responsibility.
+- L5: [סעיף 25ח(ב)(1)] Building/structure insurance is landlord's responsibility, NOT tenant's.
+- L6: [סעיף 25ז(ה)] If landlord fails to repair in time, tenant may repair and deduct costs (סעיף 9 לחוק).
 
-LEGAL COMPLIANCE:
-- C1: Contract must comply with Fair Rental Law 2017
-- C2: Property must meet habitability standards [Section 3]
-- C3: Contract cannot waive statutory tenant protections [Section 30]
-- C4: Both parties must receive signed contract copies
+LEGAL COMPLIANCE (C1-C8):
+- C1: [סעיף 25יד] ANTI-WAIVER: Clauses waiving sections 25ה-25יד are VOID (except 25ז(א) and 25יב(א)).
+      Even if tenant signed, these rights cannot be waived.
+- C2: [סעיף 25ו(ג)] Property must be HABITABLE per First Schedule (תוספת ראשונה):
+      Running water, electricity, ventilation, natural light, working toilet, lockable entrance.
+- C3: [סעיף 25ב] Contract must be in writing and signed. Both parties must receive signed copy.
+- C4: [סעיף 25ג] Contract must include details per Second Schedule (תוספת שנייה).
+- C5: [סעיף 25ו(ד)] Delivering an uninhabitable property = CONTRACT BREACH (הפרת חוזה).
+- C6: [סעיף 25יג] Law DOES NOT APPLY to: <3 months, >10 years, rent >20,000 NIS/month, dorms, hotels, retirement homes.
+- C7: [סעיף 25ט(ה)] Before using deposit, landlord must notify tenant and give reasonable time to fix issue.
+- C99: [כלל כללי] Any clause that explicitly contradicts the Fair Rental Law 2017 or violates Contract Law principles.
+
+WHAT LAW SAYS IS VOID (Key Anti-Waiver Provisions):
+- Any clause waiving tenant's right to habitable property [סעיף 25ו]
+- Any clause waiving landlord's repair obligations [סעיף 25ז(ב)-(ה)]
+- Any clause exceeding deposit limits [סעיף 25ט]
+- Any clause adding prohibited payments to tenant [סעיף 25ח(ב)]
+- Any clause allowing early landlord cancellation without breach [סעיף 25יא]
 """
 
 SCORING_RUBRIC = """
@@ -260,6 +343,10 @@ def lambda_handler(event, context):
 
         system_prompt = f"""You are an expert Israeli real estate lawyer analyzing rental contracts.
 
+{SOURCE_HIERARCHY}
+
+{MATH_VERIFICATION}
+
 {KNOWLEDGE_BASE}
 
 {SCORING_RUBRIC}
@@ -279,14 +366,14 @@ TASK: Analyze the contract and return ONLY valid JSON with this EXACT structure:
   "summary": "<Hebrew summary of 2-3 sentences>",
   "issues": [
     {{
-      "rule_id": "<F1/T1/E1/L1/C1 etc>",
+      "rule_id": "<F1-F7/T1-T7/E1-E5/L1-L6/C1-C99>",
       "clause_topic": "<Hebrew topic>",
       "original_text": "<exact quote from contract>",
       "risk_level": "High/Medium/Low",
       "penalty_points": <number - this is the amount deducted from the category score>,
-      "legal_basis": "<Hebrew - which law/rule this violates>",
+      "legal_basis": "<Hebrew - which section of 2017 law this violates, e.g. סעיף 25ט(ב)>",
       "explanation": "<Hebrew explanation why this is risky>",
-      "suggested_fix": "<Hebrew suggestion for better wording>"
+      "suggested_fix": "<Hebrew - actual corrected clause text>"
     }}
   ]
 }}
@@ -294,11 +381,11 @@ TASK: Analyze the contract and return ONLY valid JSON with this EXACT structure:
 SCORING RULES (CRITICAL - YOU MUST FOLLOW THESE EXACTLY):
 1. Each category starts at 20 points (perfect score)
 2. For each issue, deduct penalty_points from the relevant category based on rule_id prefix:
-   - F-rules (F1, F2, F3, F4) -> deduct from financial_terms
-   - T-rules (T1, T2, T3, T4) -> deduct from tenant_rights
-   - E-rules (E1, E2, E3, E4) -> deduct from termination_clauses
-   - L-rules (L1, L2, L3, L4) -> deduct from liability_repairs
-   - C-rules (C1, C2, C3, C4) -> deduct from legal_compliance
+   - F-rules (F1-F7) -> deduct from financial_terms
+   - T-rules (T1-T7) -> deduct from tenant_rights
+   - E-rules (E1-E5) -> deduct from termination_clauses
+   - L-rules (L1-L6) -> deduct from liability_repairs
+   - C-rules (C1-C99) -> deduct from legal_compliance
 
 3. MATH VERIFICATION (YOU MUST DO THIS):
    - Sum all penalty_points from F-rules -> deduct from financial_terms (20 - sum = category score)
@@ -310,20 +397,24 @@ SCORING RULES (CRITICAL - YOU MUST FOLLOW THESE EXACTLY):
 
 4. overall_risk_score = financial_terms.score + tenant_rights.score + termination_clauses.score + liability_repairs.score + legal_compliance.score
 
-5. EXAMPLE: If you have issues F1 (8 pts) and F4 (8 pts), then financial_terms.score = 20 - 8 - 8 = 4 (not 12!)
-   If you have issues C1 (7 pts) and C3 (7 pts), then legal_compliance.score = 20 - 7 - 7 = 6 (not 15!)
+5. EXAMPLE: If you have issues F1 (8 pts) and F4 (5 pts), then financial_terms.score = 20 - 8 - 5 = 7
 
-6. The sum of all penalty_points in issues MUST equal (100 - overall_risk_score)
+ANTI-HALLUCINATION RULES (CRITICAL):
+1. ONLY cite rule IDs from the knowledge base: F1-F7, T1-T7, E1-E5, L1-L6, C1-C8, C99
+2. ONLY cite law sections from the 2017 amendment (25א-25טו) or 1971 law (1-25)
+3. NEVER cite "1972", "חוק הגנת הדייר", "דמי מפתח", or any Key Money provisions
+4. If a clause doesn't fit a specific rule, use C99 with "הפרה כללית של חוק השכירות 2017"
+5. For legal_basis: ALWAYS include the Hebrew section reference (e.g., "סעיף 25ט(ב)")
 
 RULES FOR ANALYSIS:
 1. ONLY cite rules from the knowledge base above
-2. If something is not covered, mark as "Standard Practice" 
+2. If a violation doesn't match a specific rule, use C99
 3. Each issue MUST include rule_id and legal_basis in HEBREW
 4. If document is NOT a rental contract, return is_contract: false with score 0
-5. For suggested_fix: Write the CORRECTED text directly. Do NOT write "יש לשנות ל" or "יש להסיר" - just write the actual replacement clause text.
-6. CRITICAL: Only include ACTUAL PROBLEMS in the issues array. Do NOT include clauses that are compliant/fair/legal.
-7. Issues array should ONLY contain clauses with penalty_points > 0.
-8. ALL TEXT in the JSON (summary, clause_topic, legal_basis, explanation, suggested_fix) MUST BE IN HEBREW. Only rule_id and risk_level can be in English.
+5. For suggested_fix: Write the CORRECTED clause text directly. Do NOT write "יש לשנות" or "יש להסיר"
+6. CRITICAL: Only include ACTUAL PROBLEMS in the issues array. Do NOT include compliant clauses.
+7. Issues array should ONLY contain clauses with penalty_points > 0
+8. ALL TEXT in JSON (except rule_id/risk_level) MUST BE IN HEBREW
 
 IMPORTANT: Return ONLY the JSON, no markdown, no explanation outside JSON."""
 
