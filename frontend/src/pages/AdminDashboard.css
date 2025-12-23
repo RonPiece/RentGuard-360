@@ -1,0 +1,709 @@
+/* Admin Dashboard Styles - Dark/Light Mode Compatible */
+
+.admin-dashboard {
+    min-height: calc(100vh - 80px);
+    padding: 30px 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Theme-specific colors */
+.admin-dashboard.dark {
+    --admin-bg: var(--bg-primary, #0f0f23);
+    --admin-card-bg: var(--bg-card, #1a1a2e);
+    --admin-text: var(--text-primary, #ffffff);
+    --admin-text-secondary: var(--text-secondary, rgba(255, 255, 255, 0.7));
+    --admin-border: rgba(255, 255, 255, 0.1);
+    --admin-hover: rgba(255, 255, 255, 0.05);
+}
+
+.admin-dashboard.light {
+    --admin-bg: var(--bg-primary, #f8fafc);
+    --admin-card-bg: var(--bg-card, #ffffff);
+    --admin-text: var(--text-primary, #1a1a2e);
+    --admin-text-secondary: var(--text-secondary, rgba(0, 0, 0, 0.6));
+    --admin-border: rgba(0, 0, 0, 0.1);
+    --admin-hover: rgba(0, 0, 0, 0.03);
+}
+
+/* Access Denied */
+.access-denied {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    text-align: center;
+}
+
+.access-denied h1 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    color: var(--admin-text);
+}
+
+.access-denied p {
+    color: var(--admin-text-secondary);
+}
+
+/* Header */
+.admin-header {
+    margin-bottom: 30px;
+}
+
+.admin-header h1 {
+    font-size: 2rem;
+    margin-bottom: 8px;
+    color: var(--admin-text);
+}
+
+.admin-header p {
+    color: var(--admin-text-secondary);
+    font-size: 1rem;
+}
+
+/* Tabs */
+.admin-tabs {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--admin-border);
+}
+
+/* Content */
+.admin-content {
+    min-height: 400px;
+}
+
+/* Error Banner */
+.error-banner {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #ef4444;
+    padding: 15px 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+}
+
+/* Loading State */
+.loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px;
+    color: var(--admin-text-secondary);
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--admin-border);
+    border-top-color: var(--primary, #3b82f6);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 15px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Stats Dashboard */
+.stats-dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+/* Summary Cards Row */
+.summary-cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.summary-card {
+    background: var(--admin-card-bg);
+    border: 1px solid var(--admin-border);
+    border-radius: 16px;
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: all 0.3s ease;
+}
+
+.summary-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+.summary-card .card-icon {
+    font-size: 2.5rem;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: rgba(59, 130, 246, 0.1);
+}
+
+.summary-card.contracts .card-icon {
+    background: rgba(59, 130, 246, 0.15);
+}
+
+.summary-card.analyzed .card-icon {
+    background: rgba(34, 197, 94, 0.15);
+}
+
+.summary-card.users .card-icon {
+    background: rgba(168, 85, 247, 0.15);
+}
+
+.summary-card.time .card-icon {
+    background: rgba(245, 158, 11, 0.15);
+}
+
+.summary-card .card-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.summary-card .card-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--admin-text);
+}
+
+.summary-card .card-label {
+    font-size: 0.875rem;
+    color: var(--admin-text-secondary);
+}
+
+/* Charts Grid */
+.charts-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr;
+    gap: 24px;
+}
+
+.chart-card {
+    background: var(--admin-card-bg);
+    border: 1px solid var(--admin-border);
+    border-radius: 16px;
+    padding: 24px;
+    transition: all 0.3s ease;
+}
+
+.chart-card-wide {
+    min-width: 400px;
+}
+
+.chart-card:hover {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+}
+
+.line-chart-container {
+    overflow-x: auto;
+}
+
+.chart-card h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--admin-text);
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--admin-border);
+}
+
+.chart-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px;
+}
+
+.gauge-container {
+    flex-direction: column;
+}
+
+.gauge-label {
+    text-align: center;
+    font-weight: 600;
+    color: var(--admin-text-secondary);
+    margin-top: 10px;
+}
+
+.no-data {
+    color: var(--admin-text-secondary);
+    font-style: italic;
+}
+
+.stats-footer {
+    text-align: center;
+    font-size: 0.875rem;
+    color: var(--admin-text-secondary);
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--admin-border);
+}
+
+/* Chart Header with Date Range Selector */
+.chart-header {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--admin-border);
+}
+
+.chart-header h3 {
+    margin: 0;
+    padding: 0;
+    border: none;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--admin-text);
+}
+
+.date-range-selector {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+}
+
+.date-range-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.range-btn {
+    padding: 6px 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    border: 1px solid var(--admin-border);
+    border-radius: 6px;
+    background: var(--admin-card-bg);
+    color: var(--admin-text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.range-btn:hover {
+    background: var(--admin-hover);
+    color: var(--admin-text);
+    border-color: rgba(34, 197, 94, 0.3);
+}
+
+.range-btn.active {
+    background: #22c55e;
+    color: #ffffff;
+    border-color: #22c55e;
+}
+
+/* Year Picker Dropdown */
+.year-picker {
+    padding: 6px 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    border: 1px solid var(--admin-border);
+    border-radius: 6px;
+    background: var(--admin-card-bg);
+    color: var(--admin-text);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 14px;
+    padding-right: 28px;
+    min-width: 80px;
+}
+
+.year-picker:hover {
+    background-color: var(--admin-hover);
+    border-color: rgba(34, 197, 94, 0.3);
+}
+
+.year-picker:focus {
+    outline: none;
+    border-color: #22c55e;
+    box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
+}
+
+.year-picker option {
+    background: var(--admin-card-bg);
+    color: var(--admin-text);
+}
+
+.custom-date-range {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.date-input {
+    padding: 6px 10px;
+    font-size: 0.75rem;
+    border: 1px solid var(--admin-border);
+    border-radius: 6px;
+    background: var(--admin-card-bg);
+    color: var(--admin-text);
+    cursor: pointer;
+}
+
+.date-input:focus {
+    outline: none;
+    border-color: #22c55e;
+    box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
+}
+
+.date-separator {
+    color: var(--admin-text-secondary);
+    font-size: 0.875rem;
+}
+
+/* Dark mode specific for date inputs */
+.admin-dashboard.dark .date-input {
+    color-scheme: dark;
+}
+
+.admin-dashboard.light .date-input {
+    color-scheme: light;
+}
+
+/* Users Tab */
+.users-tab {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.search-form {
+    display: flex;
+    gap: 12px;
+}
+
+.search-input {
+    flex: 1;
+    padding: 12px 16px;
+    border: 1px solid var(--admin-border);
+    border-radius: 10px;
+    font-size: 1rem;
+    background: var(--admin-card-bg);
+    color: var(--admin-text);
+    transition: all 0.2s;
+}
+
+.search-input::placeholder {
+    color: var(--admin-text-secondary);
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--primary, #3b82f6);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+/* Users Table */
+.users-table-wrapper {
+    overflow-x: auto;
+    border-radius: 12px;
+    border: 1px solid var(--admin-border);
+}
+
+.users-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--admin-card-bg);
+}
+
+.users-table th,
+.users-table td {
+    padding: 16px 20px;
+    text-align: right;
+    border-bottom: 1px solid var(--admin-border);
+    color: var(--admin-text);
+}
+
+[dir="ltr"] .users-table th,
+[dir="ltr"] .users-table td {
+    text-align: left;
+}
+
+.users-table th {
+    background: var(--admin-hover);
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--admin-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.users-table tbody tr {
+    transition: background 0.2s;
+}
+
+.users-table tbody tr:hover {
+    background: var(--admin-hover);
+}
+
+.users-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.users-table .disabled-user {
+    opacity: 0.6;
+}
+
+.users-table .no-data {
+    text-align: center !important;
+    color: var(--admin-text-secondary);
+    padding: 40px !important;
+}
+
+/* Status Badge */
+.status-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.status-badge.active {
+    background: rgba(34, 197, 94, 0.15);
+    color: #22c55e;
+}
+
+.status-badge.disabled {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+}
+
+.users-count {
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--admin-text-secondary);
+}
+
+/* Users Controls - Search and Filters */
+.users-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: center;
+}
+
+.search-container {
+    flex: 1;
+    min-width: 250px;
+    position: relative;
+}
+
+.search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1rem;
+    pointer-events: none;
+}
+
+[dir="rtl"] .search-icon {
+    left: auto;
+    right: 14px;
+}
+
+.search-container .search-input {
+    width: 100%;
+    padding-left: 42px;
+}
+
+[dir="rtl"] .search-container .search-input {
+    padding-left: 16px;
+    padding-right: 42px;
+}
+
+/* Status Filter Buttons */
+.status-filter-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    padding: 8px 16px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border: 1px solid var(--admin-border);
+    border-radius: 8px;
+    background: var(--admin-card-bg);
+    color: var(--admin-text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+    background: var(--admin-hover);
+    color: var(--admin-text);
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+.filter-btn.active {
+    background: #3b82f6;
+    color: #ffffff;
+    border-color: #3b82f6;
+}
+
+/* Action Buttons Container */
+.actions-cell {
+    min-width: 180px;
+}
+
+[dir="rtl"] .actions-cell {
+    padding-right: 24px !important;
+    /* Move buttons away from the line (right edge) */
+    text-align: right;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+[dir="rtl"] .action-buttons {
+    justify-content: flex-start;
+}
+
+/* Risk Score Legend */
+.risk-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 14px 18px;
+    background: var(--admin-hover);
+    border-radius: 10px;
+    margin-top: 16px;
+}
+
+.risk-legend .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--admin-text);
+}
+
+.risk-legend .legend-item .dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.risk-legend .legend-item.excellent .dot {
+    background: #22c55e;
+    /* Green - Low Risk */
+}
+
+.risk-legend .legend-item.good .dot {
+    background: #14b8a6;
+    /* Teal - Low-Medium Risk */
+}
+
+.risk-legend .legend-item.warning .dot {
+    background: #f59e0b;
+    /* Orange - Medium Risk */
+}
+
+.risk-legend .legend-item.danger .dot {
+    background: #ef4444;
+    /* Red - High Risk */
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .charts-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 900px) {
+    .summary-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .charts-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .admin-dashboard {
+        padding: 20px 15px;
+    }
+
+    .admin-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .admin-tabs {
+        flex-wrap: wrap;
+    }
+
+    .summary-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .search-form {
+        flex-direction: column;
+    }
+
+    .users-table th,
+    .users-table td {
+        padding: 12px 14px;
+        font-size: 0.875rem;
+    }
+}
+
+/* MUI Charts Dark Mode Override */
+.admin-dashboard.dark .MuiChartsLegend-label {
+    fill: #ffffff !important;
+}
+
+.admin-dashboard.dark .MuiChartsAxis-tickLabel {
+    fill: rgba(255, 255, 255, 0.7) !important;
+}
+
+.admin-dashboard.dark .MuiChartsAxis-line {
+    stroke: rgba(255, 255, 255, 0.2) !important;
+}
+
+.admin-dashboard.light .MuiChartsLegend-label {
+    fill: #1a1a2e !important;
+}
+
+.admin-dashboard.light .MuiChartsAxis-tickLabel {
+    fill: rgba(0, 0, 0, 0.6) !important;
+}
+
+.admin-dashboard.light .MuiChartsAxis-line {
+    stroke: rgba(0, 0, 0, 0.2) !important;
+}

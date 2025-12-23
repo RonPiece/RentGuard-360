@@ -1,6 +1,7 @@
 import React from 'react';
 import './Toggle.css';
 import { useTheme } from '../contexts/ThemeContext';
+import { useLanguage } from '../contexts/LanguageContext';
 
 /**
  * Toggle Component - iOS Style with Dark/Light Mode Support
@@ -56,14 +57,16 @@ const Toggle = ({
  */
 export const ThemeToggle = ({ showLabel = true }) => {
     const { isDark, toggleTheme } = useTheme();
+    const { t } = useLanguage();
 
     return (
         <Toggle
             checked={isDark}
             onChange={toggleTheme}
-            label={showLabel ? (isDark ? '🌙 Dark' : '☀️ Light') : undefined}
+            label={showLabel ? (isDark ? `🌙 ${t('nav.dark')}` : `☀️ ${t('nav.light')}`) : undefined}
         />
     );
 };
 
 export default Toggle;
+
