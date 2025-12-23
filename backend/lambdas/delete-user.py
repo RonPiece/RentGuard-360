@@ -6,15 +6,38 @@ cognito = boto3.client('cognito-idp')
 
 USER_POOL_ID = os.environ.get('USER_POOL_ID', 'us-east-1_rwsncOnh1')
 
-def handler(event, context):
+def lambda_handler(event, context):
     """
     Delete a user from Cognito (admin only).
     This action is PERMANENT and cannot be undone.
     """
+    # DEBUG: Log the entire incoming event
+    print("=" * 50)
+    print("DELETE USER LAMBDA INVOKED")
+    print("=" * 50)
+    print(f"Full event: {json.dumps(event, default=str)}")
+    print(f"HTTP Method: {event.get('httpMethod', 'UNKNOWN')}")
+    print(f"Path: {event.get('path', 'UNKNOWN')}")
+    print(f"Query params: {event.get('queryStringParameters')}")
+    print(f"Body: {event.get('body')}")
+    print("=" * 50)
+    
     try:
-        # Parse request body
-        body = json.loads(event.get('body', '{}'))
-        username = body.get('username')
+        # Get username from query parameters first (for DELETE requests)
+        query_params = event.get('queryStringParameters') or {}
+        print(f"Parsed query_params: {query_params}")
+        username = query_params.get('username')
+        print(f"Username from query params: {username}")
+        
+        # Fall back to body if not in query params
+        if not username:
+            print("Username not in query params, checking body...")
+            raw_body = event.get('body', '{}') or '{}'
+            print(f"Raw body: {raw_body}")
+            body = json.loads(raw_body)
+            print(f"Parsed body: {body}")
+            username = body.get('username')
+            print(f"Username from body: {username}")
         
         if not username:
             return {
@@ -28,12 +51,15 @@ def handler(event, context):
             }
         
         # Delete user from Cognito
+        print(f"Attempting to delete user: {username}")
+        print(f"Using USER_POOL_ID: {USER_POOL_ID}")
+        
         cognito.admin_delete_user(
             UserPoolId=USER_POOL_ID,
             Username=username
         )
         
-        print(f"User {username} deleted successfully")
+        print(f"SUCCESS: User {username} deleted successfully")
         
         return {
             'statusCode': 200,
@@ -49,6 +75,7 @@ def handler(event, context):
         }
         
     except cognito.exceptions.UserNotFoundException:
+        print(f"ERROR: User {username} not found in Cognito")
         return {
             'statusCode': 404,
             'headers': {
@@ -59,7 +86,9 @@ def handler(event, context):
             'body': json.dumps({'error': 'User not found'})
         }
     except Exception as e:
-        print(f"Error deleting user: {str(e)}")
+        import traceback
+        print(f"ERROR deleting user: {str(e)}")
+        print(f"Traceback: {traceback.format_exc()}")
         return {
             'statusCode': 500,
             'headers': {

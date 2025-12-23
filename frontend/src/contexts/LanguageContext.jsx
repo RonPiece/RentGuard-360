@@ -45,8 +45,8 @@ const translations = {
             benefitAIDesc: 'מופעל על ידי Amazon Bedrock - אחת ממערכות ה-AI החכמות ביותר הקיימות היום.',
             benefitSecurity: 'אבטחה ברמת בנק',
             benefitSecurityDesc: 'הצפנה מקצה לקצה. המידע האישי שלך מוסתר אוטומטית לפני ניתוח ה-AI. אפס שמירת מידע.',
-            benefitFast: 'ניתוח מיידי',
-            benefitFastDesc: 'קבל סקירה מקיפה של החוזה תוך פחות מ-60 שניות. ללא המתנה, ללא תורים.',
+            benefitFast: 'ניתוח AI מהיר',
+            benefitFastDesc: 'חוזים פשוטים? תוך פחות מדקה. חוזים מורכבים? מספר דקות. הבינה המלאכותית שלנו סורקת כל סעיף לעומק.',
             // Demo steps
             demoTitle: 'איך זה עובד?',
             demoStep1: 'העלאת PDF',
@@ -63,8 +63,11 @@ const translations = {
             featureTips: '💡 טיפים חכמים',
             featureTipsDesc: 'קבלו עצות ספציפיות למשא ומתן על כל סעיף בעייתי',
             // Footer
-            builtBy: 'נבנה עם ❤️ על ידי',
-            projectName: 'פרויקט גמר מחשוב ענן',
+            footerTagline: 'הגנה על החוזה שלך עם בינה מלאכותית מתקדמת',
+            footerSupport: 'צריכים עזרה? שלחו לנו מייל:',
+            footerEmail: 'projForruppin@gmail.com',
+            footerResponse: 'תגובה תוך 24 שעות | הצוות שלנו מוכנים להגן עליכם כמו שאנחנו מגנים על החוזה שלכם',
+            projectName: '💻 פרויקט סיום מחשוב ענן',
         },
         // Dashboard
         dashboard: {
@@ -87,7 +90,7 @@ const translations = {
             step1Title: 'העלאת חוזה',
             step1Desc: 'גררו ושחררו את חוזה השכירות בפורמט PDF',
             step2Title: 'ניתוח AI',
-            step2Desc: 'ה-AI שלנו ינתח את תנאי החוזה (30-60 שניות)',
+            step2Desc: 'חוזים פשוטים? תוך פחות מדקה. חוזים מורכבים? מספר דקות. הבינה המלאכותית שלנו סורקת כל סעיף לעומק.',
             step3Title: 'קבלת תובנות',
             step3Desc: 'צפו בסיכונים והצעות למשא ומתן',
             whyUs: 'למה דווקא RentGuard 360?',
@@ -217,9 +220,10 @@ const translations = {
         },
         // Footer
         footer: {
-            tagline: 'פלטפורמת ניתוח חוזי שכירות בבינה מלאכותית',
-            builtWith: 'נבנה עם ❤️ על ידי',
-            copyright: '© {year} RentGuard 360. פרויקט גמר מחשוב ענן.',
+            tagline: 'פלטפורמת ניתוח חוזי שכירות מבוססת AI',
+            benefits: 'פרטיות מלאה | ניתוח מהיר ומאובטח | טיפים למשא ומתן | תשתית ענן מאובטחת',
+            project: 'פרויקט סיום מחשוב ענן',
+            copyright: '© RentGuard 360 {year} . כל הזכויות שמורות.',
         },
         // Common
         common: {
@@ -227,6 +231,9 @@ const translations = {
             error: 'שגיאה',
             success: 'הצלחה',
             user: 'משתמש',
+            cancel: 'ביטול',
+            confirm: 'אישור',
+            ok: 'אישור',
         },
         // Admin Dashboard
         admin: {
@@ -275,8 +282,12 @@ const translations = {
             disabledOnly: 'מושעים בלבד',
             showingUsers: 'מציג {count} משתמשים',
             confirmDisable: 'האם אתה בטוח שברצונך להשעות משתמש זה?',
+            confirmDisableTitle: 'השעיית משתמש',
             confirmDelete: 'האם אתה בטוח שברצונך למחוק משתמש זה?',
-            confirmDeleteFinal: '⚠️ פעולה זו אינה ניתנת לביטול! המשתמש יימחק לצמיתות. האם להמשיך?',
+            confirmDeleteTitle: 'מחיקת משתמש',
+            confirmDeleteFinal: 'פעולה זו אינה ניתנת לביטול! המשתמש יימחק לצמיתות. האם להמשיך?',
+            confirmDeleteFinalTitle: '⚠️ אישור סופי',
+            confirmDeleteBtn: 'כן, מחק לצמיתות',
             selectYear: 'בחר שנה',
             userDeleted: 'המשתמש נמחק בהצלחה',
         },
@@ -324,8 +335,8 @@ const translations = {
             benefitAIDesc: 'Powered by Amazon Bedrock - one of the most intelligent AI systems available today.',
             benefitSecurity: 'Bank-Level Security',
             benefitSecurityDesc: 'End-to-end encryption. Your personal data is automatically masked before AI analysis. Zero data retention.',
-            benefitFast: 'Instant Analysis',
-            benefitFastDesc: 'Get a comprehensive contract review in less than 60 seconds. No waiting, no queues.',
+            benefitFast: 'Lightning-Fast AI Analysis',
+            benefitFastDesc: 'Simple contracts? Under 60 seconds. Complex ones? Just a few minutes. Our advanced AI scans every clause for your protection.',
             // Demo steps
             demoTitle: 'How it Works',
             demoStep1: 'Upload PDF',
@@ -342,8 +353,11 @@ const translations = {
             featureTips: '💡 Smart Tips',
             featureTipsDesc: 'Get specific negotiation advice for each problematic clause',
             // Footer
-            builtBy: 'Built with ❤️ by',
-            projectName: 'Cloud Computing Final Project',
+            footerTagline: 'Protecting your lease with cutting-edge AI',
+            footerSupport: 'Need help? Drop us a line:',
+            footerEmail: 'projForruppin@gmail.com',
+            footerResponse: 'Response within 24 hours | Our team is as dedicated to helping you as we are to analyzing your contracts',
+            projectName: '💻 Cloud Computing Final Project',
         },
         // Dashboard
         dashboard: {
@@ -366,7 +380,7 @@ const translations = {
             step1Title: 'Upload Contract',
             step1Desc: 'Drag and drop your rental contract in PDF format',
             step2Title: 'AI Analysis',
-            step2Desc: 'Our AI will analyze the contract terms (30-60 seconds)',
+            step2Desc: 'Simple contracts? Under 60 seconds. Complex ones? Just a few minutes. Our advanced AI scans every clause for your protection.',
             step3Title: 'Get Insights',
             step3Desc: 'View risks and negotiation suggestions',
             whyUs: 'Why RentGuard 360?',
@@ -497,8 +511,9 @@ const translations = {
         // Footer
         footer: {
             tagline: 'AI-Powered Rental Contract Analysis Platform',
-            builtWith: 'Built with ❤️ by',
-            copyright: '© {year} RentGuard 360. Cloud Computing Final Project.',
+            benefits: 'Full Privacy | Fast & Secure Analysis | Negotiation Tips | Secure Cloud Infrastructure',
+            project: 'Cloud Computing Final Project',
+            copyright: '© {year} RentGuard 360. All rights reserved.',
         },
         // Common
         common: {
@@ -506,6 +521,9 @@ const translations = {
             error: 'Error',
             success: 'Success',
             user: 'User',
+            cancel: 'Cancel',
+            confirm: 'Confirm',
+            ok: 'OK',
         },
         // Admin Dashboard
         admin: {
@@ -554,8 +572,12 @@ const translations = {
             disabledOnly: 'Disabled Only',
             showingUsers: 'Showing {count} users',
             confirmDisable: 'Are you sure you want to disable this user?',
+            confirmDisableTitle: 'Disable User',
             confirmDelete: 'Are you sure you want to delete this user?',
-            confirmDeleteFinal: '⚠️ This action cannot be undone! The user will be permanently deleted. Continue?',
+            confirmDeleteTitle: 'Delete User',
+            confirmDeleteFinal: 'This action cannot be undone! The user will be permanently deleted. Continue?',
+            confirmDeleteFinalTitle: '⚠️ Final Confirmation',
+            confirmDeleteBtn: 'Yes, Delete Permanently',
             selectYear: 'Select Year',
             userDeleted: 'User deleted successfully',
         },
