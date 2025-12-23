@@ -182,6 +182,7 @@ const DashboardPage = () => {
                                 <p>{t('dashboard.step1Desc')}</p>
                             </div>
                         </div>
+                        <span className="step-arrow">{isRTL ? '←' : '→'}</span>
                         <div className="guide-step">
                             <div className="guide-number">2</div>
                             <div className="guide-content">
@@ -189,6 +190,7 @@ const DashboardPage = () => {
                                 <p>{t('dashboard.step2Desc')}</p>
                             </div>
                         </div>
+                        <span className="step-arrow">{isRTL ? '←' : '→'}</span>
                         <div className="guide-step">
                             <div className="guide-number">3</div>
                             <div className="guide-content">

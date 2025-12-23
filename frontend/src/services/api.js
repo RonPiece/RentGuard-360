@@ -358,9 +358,8 @@ export const enableUser = async (username) => {
  * @param {string} username - User's Cognito username/sub
  */
 export const deleteUser = async (username) => {
-    const data = await apiCall('/admin/users/delete', {
-        method: 'POST',
-        body: JSON.stringify({ username }),
+    const data = await apiCall(`/admin/users/delete?username=${encodeURIComponent(username)}`, {
+        method: 'DELETE',
     });
     return data;
 };
