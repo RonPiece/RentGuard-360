@@ -7,6 +7,8 @@ import {
     getCurrentUser,
     fetchUserAttributes,
     confirmSignUp,
+    fetchAuthSession,
+    resendSignUpCode,
 } from 'aws-amplify/auth';
 
 // Configure Amplify
@@ -36,6 +38,7 @@ export const AuthProvider = ({ children }) => {
     const [userAttributes, setUserAttributes] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isAdmin, setIsAdmin] = useState(false);
 
     useEffect(() => {
         checkAuthState();
@@ -49,10 +52,24 @@ export const AuthProvider = ({ children }) => {
             setUser(currentUser);
             setUserAttributes(attributes);
             setIsAuthenticated(true);
+
+            // Check if user is in Admins group
+            try {
+                const session = await fetchAuthSession();
+                const idToken = session.tokens?.idToken;
+                if (idToken) {
+                    const groups = idToken.payload['cognito:groups'] || [];
+                    setIsAdmin(groups.includes('Admins'));
+                }
+            } catch (e) {
+                console.log('Could not fetch groups:', e);
+                setIsAdmin(false);
+            }
         } catch (error) {
             setUser(null);
             setUserAttributes(null);
             setIsAuthenticated(false);
+            setIsAdmin(false);
         } finally {
             setIsLoading(false);
         }
@@ -111,9 +128,20 @@ export const AuthProvider = ({ children }) => {
             setUser(null);
             setUserAttributes(null);
             setIsAuthenticated(false);
+            setIsAdmin(false);
             return { success: true };
         } catch (error) {
             return { success: false, error: error.message };
+        }
+    };
+
+    const resendCode = async (email) => {
+        try {
+            await resendSignUpCode({ username: email });
+            return { success: true };
+        } catch (error) {
+            console.error('Resend code error:', error);
+            throw error;
         }
     };
 
@@ -123,10 +151,12 @@ export const AuthProvider = ({ children }) => {
             userAttributes,
             isLoading,
             isAuthenticated,
+            isAdmin,
             login,
             register,
             confirmRegistration,
             logout,
+            resendCode,
             checkAuthState,
         }}>
             {children}

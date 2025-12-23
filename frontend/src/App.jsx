@@ -14,6 +14,8 @@ import ContractsPage from './pages/ContractsPage';
 import AnalysisPage from './pages/AnalysisPage';
 import SettingsPage from './pages/SettingsPage';
 import ContactPage from './pages/ContactPage';
+import AdminDashboard from './pages/AdminDashboard';
+import LandingPage from './pages/LandingPage';
 import Footer from './components/Footer';
 import './styles/design-system.css';
 import './App.css';
@@ -36,7 +38,7 @@ const ProtectedRoute = ({ children }) => {
 
 // Modern Navigation Component
 const Navigation = () => {
-  const { logout, userAttributes } = useAuth();
+  const { logout, userAttributes, isAdmin } = useAuth();
   const { t, isRTL } = useLanguage();
   const navigate = useNavigate();
   const location = useLocation();
@@ -66,6 +68,7 @@ const Navigation = () => {
     { path: '/dashboard', label: t('nav.dashboard') },
     { path: '/upload', label: t('nav.upload') },
     { path: '/contracts', label: t('nav.contracts') },
+    ...(isAdmin ? [{ path: '/admin', label: t('nav.admin') }] : []),
   ];
 
   const getUserInitials = () => {
@@ -171,302 +174,7 @@ const Navigation = () => {
 };
 
 // SettingsPage is now imported from ./pages/SettingsPage
-
-// Landing/Login Page
-const LandingPage = () => {
-  const { login, register, confirmRegistration, isAuthenticated } = useAuth();
-  const { t, isRTL } = useLanguage();
-  const [mode, setMode] = useState('login');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
-  const [code, setCode] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [tempEmail, setTempEmail] = useState('');
-
-  if (isAuthenticated) {
-    return <Navigate to="/dashboard" replace />;
-  }
-
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
-
-    const result = await login(email, password);
-    if (!result.success) {
-      setError(result.error || 'Login failed');
-    }
-    setLoading(false);
-  };
-
-  const handleRegister = async (e) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
-
-    const result = await register(email, password, name);
-    if (result.success) {
-      setTempEmail(email);
-      setMode('confirm');
-    } else {
-      setError(result.error || 'Registration failed');
-    }
-    setLoading(false);
-  };
-
-  const handleConfirm = async (e) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
-
-    const result = await confirmRegistration(tempEmail, code);
-    if (result.success) {
-      setMode('login');
-      setEmail(tempEmail);
-      setError('');
-    } else {
-      setError(result.error || 'Confirmation failed');
-    }
-    setLoading(false);
-  };
-  // Carousel state for rotating benefits
-  const [carouselIndex, setCarouselIndex] = React.useState(0);
-  const benefits = [
-    {
-      title: t('auth.benefitCloud'),
-      description: t('auth.benefitCloudDesc')
-    },
-    {
-      title: t('auth.benefitAI'),
-      description: t('auth.benefitAIDesc')
-    },
-    {
-      title: t('auth.benefitSecurity'),
-      description: t('auth.benefitSecurityDesc')
-    },
-    {
-      title: t('auth.benefitFast'),
-      description: t('auth.benefitFastDesc')
-    }
-  ];
-
-  // Carousel paused state for hover
-  const [isPaused, setIsPaused] = React.useState(false);
-
-  React.useEffect(() => {
-    if (isPaused) return;
-    const timer = setInterval(() => {
-      setCarouselIndex((prev) => (prev + 1) % benefits.length);
-    }, 4000);
-    return () => clearInterval(timer);
-  }, [isPaused, benefits.length]);
-
-  const goToNext = () => setCarouselIndex((prev) => (prev + 1) % benefits.length);
-  const goToPrev = () => setCarouselIndex((prev) => (prev - 1 + benefits.length) % benefits.length);
-
-  return (
-    <div className="landing-page" dir={isRTL ? 'rtl' : 'ltr'}>
-      <div className="landing-header">
-        <a href="/" className="landing-logo">🛡️ RentGuard 360</a>
-        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-          <LanguageToggle />
-          <ThemeToggle />
-        </div>
-      </div>
-
-      <div className="landing-content">
-        {/* Hero Section with Card Background */}
-        <div className="hero-card">
-          <div className="hero-section">
-            <div className="hero-text">
-              <h2>{t('auth.heroTitle')}</h2>
-              <p className="hero-subtitle">
-                {t('auth.heroSubtitle')}
-              </p>
-
-              {/* Benefits Carousel with Controls */}
-              <div
-                className="benefits-carousel"
-                onMouseEnter={() => setIsPaused(true)}
-                onMouseLeave={() => setIsPaused(false)}
-              >
-                {isPaused && <span className="carousel-paused">|| {isRTL ? 'מושהה' : 'Paused'}</span>}
-                <button className="carousel-arrow carousel-prev" onClick={goToPrev}>{isRTL ? '→' : '←'}</button>
-                <div className="carousel-content" key={carouselIndex}>
-                  <span className="carousel-number">{carouselIndex + 1}/{benefits.length}</span>
-                  <h4>{benefits[carouselIndex].title}</h4>
-                  <p>{benefits[carouselIndex].description}</p>
-                </div>
-                <button className="carousel-arrow carousel-next" onClick={goToNext}>{isRTL ? '←' : '→'}</button>
-                <div className="carousel-controls">
-                  <div className="carousel-dots">
-                    {benefits.map((_, idx) => (
-                      <button
-                        key={idx}
-                        className={`carousel-dot ${idx === carouselIndex ? 'active' : ''}`}
-                        onClick={() => setCarouselIndex(idx)}
-                      />
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <div className="hero-stats">
-                <div className="stat">
-                  <span className="stat-number">70+</span>
-                  <span className="stat-label">גורמי סיכון מנותחים</span>
-                </div>
-                <div className="stat">
-                  <span className="stat-number">&lt;60s</span>
-                  <span className="stat-label">זמן ניתוח</span>
-                </div>
-                <div className="stat">
-                  <span className="stat-number">100%</span>
-                  <span className="stat-label">הגנה על הפרטיות</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* How It Works - Demo Section */}
-        <div className="demo-section">
-          <h3>איך זה עובד</h3>
-          <div className="demo-steps">
-            <div className="demo-step">
-              <div className="step-number">1</div>
-              <div className="step-icon">📄</div>
-              <h4>העלאת חוזה</h4>
-              <p>העלו את חוזה השכירות שלכם בפורמט PDF. אנחנו תומכים בעברית ואנגלית.</p>
-            </div>
-            <div className="demo-step">
-              <div className="step-number">2</div>
-              <div className="step-icon">🤖</div>
-              <h4>ניתוח AI</h4>
-              <p>ה-AI שלנו סורק סיכונים, תנאים לא הוגנים ובעיות משפטיות.</p>
-            </div>
-            <div className="demo-step">
-              <div className="step-number">3</div>
-              <div className="step-icon">📊</div>
-              <h4>קבלת תוצאות</h4>
-              <p>צפו בציון הסיכון, הסברים לבעיות וטיפים למשא ומתן.</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Auth Card */}
-        <Card variant="glass" padding="lg" className="auth-card">
-          {mode === 'login' && (
-            <form onSubmit={handleLogin}>
-              <h3>{t('auth.login')}</h3>
-              <Input
-                type="email"
-                label={t('auth.email')}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-              <Input
-                type="password"
-                label={t('auth.password')}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-              {error && <p className="auth-error">{error}</p>}
-              <Button variant="primary" fullWidth loading={loading} type="submit">{t('auth.loginButton')}</Button>
-              <p className="auth-switch">
-                {t('auth.noAccount')}{' '}
-                <button type="button" onClick={() => { setMode('register'); setError(''); }}>
-                  {t('auth.register')}
-                </button>
-              </p>
-            </form>
-          )}
-
-          {mode === 'register' && (
-            <form onSubmit={handleRegister}>
-              <h3>{t('auth.registerButton')}</h3>
-              <Input
-                label={t('auth.fullName')}
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-              />
-              <Input
-                type="email"
-                label={t('auth.email')}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-              <Input
-                type="password"
-                label={t('auth.password')}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                helperText={t('auth.passwordHint')}
-              />
-              {error && <p className="auth-error">{error}</p>}
-              <Button variant="primary" fullWidth loading={loading} type="submit">{t('auth.registerButton')}</Button>
-              <p className="auth-switch">
-                {t('auth.hasAccount')}{' '}
-                <button type="button" onClick={() => { setMode('login'); setError(''); }}>
-                  {t('auth.login')}
-                </button>
-              </p>
-            </form>
-          )}
-
-          {mode === 'confirm' && (
-            <form onSubmit={handleConfirm}>
-              <h3>{t('auth.confirmTitle')}</h3>
-              <p className="confirm-message">{t('auth.confirmMessage')} {tempEmail}</p>
-              <Input
-                label={t('auth.confirmCode')}
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
-                required
-              />
-              {error && <p className="auth-error">{error}</p>}
-              <Button variant="primary" fullWidth loading={loading} type="submit">{t('auth.confirmButton')}</Button>
-            </form>
-          )}
-        </Card>
-
-        {/* Features Grid */}
-        <div className="features-section">
-          <Card variant="elevated" padding="md">
-            <h4>{t('auth.featureAI')}</h4>
-            <p>{t('auth.featureAIDesc')}</p>
-          </Card>
-          <Card variant="elevated" padding="md">
-            <h4>{t('auth.featurePrivacy')}</h4>
-            <p>{t('auth.featurePrivacyDesc')}</p>
-          </Card>
-          <Card variant="elevated" padding="md">
-            <h4>{t('auth.featureTips')}</h4>
-            <p>{t('auth.featureTipsDesc')}</p>
-          </Card>
-        </div>
-
-        {/* Footer */}
-        <div className="landing-footer">
-          <p>
-            {t('auth.builtBy')}{' '}
-            <a href="https://github.com/RonPiece" target="_blank" rel="noopener noreferrer">Ron</a>
-            {' & '}
-            <a href="https://github.com/MoTy" target="_blank" rel="noopener noreferrer">Moty</a>
-            {' | '}{t('auth.projectName')}
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-};
+// LandingPage is now imported from ./pages/LandingPage
 
 function App() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -494,6 +202,7 @@ function App() {
           <Route path="/analysis/:contractId" element={<ProtectedRoute><AnalysisPage /></ProtectedRoute>} />
           <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
           <Route path="/contact" element={<ProtectedRoute><ContactPage /></ProtectedRoute>} />
+          <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
           <Route path="*" element={<Navigate to={isAuthenticated ? "/dashboard" : "/"} replace />} />
         </Routes>
       </main>

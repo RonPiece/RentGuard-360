@@ -303,6 +303,68 @@ export const saveEditedContract = async (contractId, userId, editedClauses, full
     return data;
 };
 
+// ============ ADMIN API FUNCTIONS ============
+
+/**
+ * Get system statistics (admin only)
+ */
+export const getSystemStats = async () => {
+    const data = await apiCall('/admin/stats', {
+        method: 'GET',
+    });
+    return data;
+};
+
+/**
+ * Get all users (admin only)
+ * @param {string} searchQuery - Optional search filter
+ */
+export const getUsers = async (searchQuery = '') => {
+    const params = searchQuery ? `?search=${encodeURIComponent(searchQuery)}` : '';
+    const data = await apiCall(`/admin/users${params}`, {
+        method: 'GET',
+    });
+    return data;
+};
+
+/**
+ * Disable a user (admin only)
+ * @param {string} username - User's Cognito username/sub
+ * @param {string} reason - Reason for disabling
+ */
+export const disableUser = async (username, reason = 'Policy violation') => {
+    const data = await apiCall('/admin/users/disable', {
+        method: 'POST',
+        body: JSON.stringify({ username, reason }),
+    });
+    return data;
+};
+
+/**
+ * Enable a user (admin only)
+ * @param {string} username - User's Cognito username/sub
+ */
+export const enableUser = async (username) => {
+    const data = await apiCall('/admin/users/enable', {
+        method: 'POST',
+        body: JSON.stringify({ username }),
+    });
+    return data;
+};
+
+/**
+ * Delete a user permanently (admin only)
+ * WARNING: This action cannot be undone!
+ * @param {string} username - User's Cognito username/sub
+ */
+export const deleteUser = async (username) => {
+    const data = await apiCall('/admin/users/delete', {
+        method: 'POST',
+        body: JSON.stringify({ username }),
+    });
+    return data;
+};
+
 export default {
     uploadFile,
     getContracts,
@@ -312,4 +374,9 @@ export default {
     consultClause,
     sendContactMessage,
     saveEditedContract,
+    getSystemStats,
+    getUsers,
+    disableUser,
+    enableUser,
+    deleteUser,
 };
