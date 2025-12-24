@@ -4,11 +4,14 @@
     gap: var(--space-md);
 }
 
-/* Overall Score Circle */
+/* Overall Score Circle - Centered */
 .overall-score {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: var(--space-lg);
+    justify-content: center;
+    gap: var(--space-md);
+    text-align: center;
 }
 
 .score-circle {
@@ -124,47 +127,48 @@
 .category-item {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
     padding: 10px 0;
+    flex-wrap: nowrap;
 }
 
 .category-icon {
-    font-size: 20px;
-    width: 28px;
+    font-size: 18px;
+    width: 24px;
     text-align: center;
     flex-shrink: 0;
 }
 
 .category-name {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     color: var(--text-primary);
-    white-space: nowrap;
-    min-width: 120px;
-    max-width: 160px;
-    flex-shrink: 0;
+    flex: 1;
+    min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .category-bar {
-    flex: 1;
-    min-width: 80px;
-    max-width: 150px;
-    height: 10px;
+    flex: 0 0 60px;
+    height: 8px;
     background: var(--bg-page);
     border-radius: var(--radius-full);
     overflow: hidden;
-    flex-shrink: 0;
 }
 
 .category-score {
     font-weight: 700;
-    font-size: 15px;
-    min-width: 55px;
-    text-align: right;
+    font-size: 13px;
+    min-width: 42px;
+    text-align: left;
     flex-shrink: 0;
     color: var(--text-primary);
+}
+
+[dir="rtl"] .category-score {
+    text-align: right;
 }
 
 .category-progress {

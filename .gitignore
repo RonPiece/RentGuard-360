@@ -57,3 +57,4 @@ function.zip
 # Logs
 logs/
 *.log
+/frontend/node_modules

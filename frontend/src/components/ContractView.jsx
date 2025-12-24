@@ -422,17 +422,6 @@ const ContractView = ({
                     <button className="export-btn-main" onClick={handleExport}>
                         📝 ייצוא ל-Word
                     </button>
-                    {onSaveToCloud && (
-                        <button
-                            className="save-btn-main"
-                            onClick={handleSaveToCloud}
-                            disabled={isSaving}
-                        >
-                            {isSaving ? '⏳ שומר...' : '☁️ שמור בענן'}
-                        </button>
-                    )}
-                    {saveStatus === 'success' && <span className="save-status success">✅ נשמר!</span>}
-                    {saveStatus === 'error' && <span className="save-status error">❌ שגיאה</span>}
                 </div>
 
                 {/* Bottom anchor for scroll */}

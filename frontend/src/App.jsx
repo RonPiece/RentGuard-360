@@ -15,7 +15,7 @@ import AnalysisPage from './pages/AnalysisPage';
 import SettingsPage from './pages/SettingsPage';
 import ContactPage from './pages/ContactPage';
 import AdminDashboard from './pages/AdminDashboard';
-import LandingPage from './pages/LandingPage';
+import LandingPage from './pages/LandingPageNew';
 import Footer from './components/Footer';
 import './styles/design-system.css';
 import './App.css';
@@ -28,7 +28,7 @@ const ProtectedRoute = ({ children }) => {
     return (
       <div className="app-loading">
         <div className="loading-spinner"></div>
-        <p>{t ? t('common.loading') : 'Loading...'}</p>
+        <p>Loading...</p>
       </div>
     );
   }

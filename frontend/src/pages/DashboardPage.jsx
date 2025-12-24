@@ -34,11 +34,20 @@ const DashboardPage = () => {
             const contracts = await getContracts(userId);
             const contractsList = Array.isArray(contracts) ? contracts : [];
 
+            // Count analyzed contracts with riskScore
+            const analyzedContracts = contractsList.filter(c => c.status === 'analyzed');
+
+            // High risk = score <= 50 (lower score means higher risk)
+            const highRiskContracts = analyzedContracts.filter(c => {
+                const score = c.riskScore ?? c.risk_score ?? 100;
+                return score <= 50;
+            });
+
             setStats({
                 total: contractsList.length,
-                analyzed: contractsList.filter(c => c.status === 'analyzed').length,
-                pending: contractsList.filter(c => c.status !== 'analyzed').length,
-                highRisk: contractsList.filter(c => c.riskScore >= 70).length,
+                analyzed: analyzedContracts.length,
+                pending: contractsList.filter(c => c.status !== 'analyzed' && c.status !== 'failed' && c.status !== 'error').length,
+                highRisk: highRiskContracts.length,
             });
         } catch (err) {
             console.error('Failed to fetch stats:', err);
@@ -61,7 +70,7 @@ const DashboardPage = () => {
     };
 
     const statCards = [
-        { label: t('dashboard.totalContracts'), value: stats.total, icon: 'contracts', color: '#3b82f6' },
+        { label: t('dashboard.totalContracts'), value: stats.total, icon: 'contracts', color: '#10b981' },
         { label: t('dashboard.analyzed'), value: stats.analyzed, icon: 'check', color: '#10b981' },
         { label: t('dashboard.pending'), value: stats.pending, icon: 'clock', color: '#f59e0b' },
         { label: t('dashboard.highRisk'), value: stats.highRisk, icon: 'alert', color: '#ef4444' },

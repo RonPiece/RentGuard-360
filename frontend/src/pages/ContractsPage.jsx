@@ -9,6 +9,25 @@ import RiskGauge from '../components/RiskGauge';
 import { Trash2, Pencil, Download, Plus, RefreshCw, FileText, X, Check, ChevronDown, ArrowUpDown, Calendar, AlertTriangle } from 'lucide-react';
 import './ContractsPage.css';
 
+// Timeout constant - 7 minutes in milliseconds
+const ANALYSIS_TIMEOUT_MS = 7 * 60 * 1000;
+
+// Check if a contract has timed out (pending for more than 7 minutes)
+const isContractTimedOut = (contract) => {
+    if (contract.status === 'analyzed' || contract.status === 'failed' || contract.status === 'error') {
+        return false; // Already has final status
+    }
+
+    const uploadDate = contract.uploadDate;
+    if (!uploadDate) return false;
+
+    const uploadTime = new Date(uploadDate.endsWith('Z') ? uploadDate : uploadDate + 'Z').getTime();
+    const now = Date.now();
+    const elapsed = now - uploadTime;
+
+    return elapsed > ANALYSIS_TIMEOUT_MS;
+};
+
 // Contract Card Component
 const ContractCard = ({ contract, onDelete, onEdit, onExport, formatDate, t, isRTL }) => {
     const [showExportMenu, setShowExportMenu] = useState(false);
@@ -28,9 +47,11 @@ const ContractCard = ({ contract, onDelete, onEdit, onExport, formatDate, t, isR
         return t('contracts.highRisk');
     };
 
+    // Check for timeout - treat as failed if pending > 7 minutes
+    const isTimedOut = isContractTimedOut(contract);
 
     const isAnalyzed = contract.status === 'analyzed';
-    const isFailed = contract.status === 'failed' || contract.status === 'error';
+    const isFailed = contract.status === 'failed' || contract.status === 'error' || isTimedOut;
     const score = contract.riskScore ?? contract.risk_score ?? null;
     const hasScore = isAnalyzed && score !== null && score !== undefined;
 
@@ -68,7 +89,11 @@ const ContractCard = ({ contract, onDelete, onEdit, onExport, formatDate, t, isR
                             {getScoreLabel(score)}
                         </span>
                     ) : isFailed ? (
-                        <span className="status-chip error">{isRTL ? 'שגיאה בניתוח' : 'Analysis Failed'}</span>
+                        <span className="status-chip error">
+                            {isTimedOut
+                                ? (isRTL ? 'תם הזמן - נסה שוב' : 'Timed Out - Retry')
+                                : (isRTL ? 'שגיאה בניתוח' : 'Analysis Failed')}
+                        </span>
                     ) : (
                         <span className="status-chip pending">{t('contracts.pendingAnalysis')}...</span>
                     )}
@@ -161,12 +186,25 @@ const ContractsPage = () => {
 
     const fetchContracts = async (showLoader = true) => {
         const userId = user?.userId || user?.username || userAttributes?.sub;
-        if (!userId) { setIsLoading(false); return; }
+        if (!userId) {
+            setIsLoading(false);
+            return;
+        }
 
         try {
             if (showLoader) setIsLoading(true);
             else setIsRefreshing(true);
+
+            // Start timing for minimum display
+            const startTime = Date.now();
             const data = await getContracts(userId);
+
+            // Ensure toast shows for at least 1.5 seconds
+            const elapsed = Date.now() - startTime;
+            if (!showLoader && elapsed < 1500) {
+                await new Promise(resolve => setTimeout(resolve, 1500 - elapsed));
+            }
+
             setContracts(Array.isArray(data) ? data : []);
         } catch (err) {
             console.error('Failed to fetch contracts:', err);
@@ -286,6 +324,14 @@ const ContractsPage = () => {
 
     return (
         <div className="contracts-page" dir={isRTL ? 'rtl' : 'ltr'}>
+            {/* Refresh Toast */}
+            {isRefreshing && (
+                <div className="refresh-toast">
+                    <RefreshCw size={18} className="spinning" />
+                    <span>{isRTL ? 'מרענן...' : 'Refreshing...'}</span>
+                </div>
+            )}
+
             {/* Delete Confirmation Modal */}
             {deleteConfirm && (
                 <div className="modal-backdrop" onClick={() => setDeleteConfirm(null)}>
