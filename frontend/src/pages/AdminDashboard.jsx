@@ -25,6 +25,15 @@ const AdminDashboard = () => {
     const [error, setError] = useState(null);
     const [actionLoading, setActionLoading] = useState(null);
 
+    // Modal state for confirmations
+    const [modal, setModal] = useState({
+        isOpen: false,
+        type: null, // 'disable' | 'delete' | 'deleteConfirm'
+        username: null,
+        title: '',
+        message: '',
+    });
+
     // Fetch data on mount
     useEffect(() => {
         if (activeTab === 'stats') {
@@ -96,17 +105,13 @@ const AdminDashboard = () => {
     };
 
     const handleDisableUser = async (username) => {
-        if (!window.confirm(t('admin.confirmDisable'))) return;
-
-        setActionLoading(username);
-        try {
-            await disableUser(username, 'Admin action');
-            fetchAllUsers();
-        } catch (err) {
-            alert(err.message);
-        } finally {
-            setActionLoading(null);
-        }
+        setModal({
+            isOpen: true,
+            type: 'disable',
+            username,
+            title: t('admin.confirmDisableTitle') || 'Disable User',
+            message: t('admin.confirmDisable'),
+        });
     };
 
     const handleEnableUser = async (username) => {
@@ -115,38 +120,86 @@ const AdminDashboard = () => {
             await enableUser(username);
             fetchAllUsers();
         } catch (err) {
-            alert(err.message);
+            setModal({
+                isOpen: true,
+                type: 'error',
+                username: null,
+                title: t('common.error') || 'Error',
+                message: err.message,
+            });
         } finally {
             setActionLoading(null);
         }
     };
 
     const handleDeleteUser = async (username) => {
-        console.log('Delete button clicked for:', username);
-        if (!window.confirm(t('admin.confirmDelete'))) {
-            console.log('First confirmation cancelled');
-            return;
-        }
+        setModal({
+            isOpen: true,
+            type: 'delete',
+            username,
+            title: t('admin.confirmDeleteTitle') || 'Delete User',
+            message: t('admin.confirmDelete'),
+        });
+    };
 
-        // Double confirmation for permanent deletion
-        if (!window.confirm(t('admin.confirmDeleteFinal'))) {
-            console.log('Second confirmation cancelled');
-            return;
-        }
+    const handleModalConfirm = async () => {
+        const { type, username } = modal;
+        setModal({ ...modal, isOpen: false });
 
-        console.log('Starting delete for:', username);
-        setActionLoading(username);
-        try {
-            const result = await deleteUser(username);
-            console.log('Delete result:', result);
-            alert(t('admin.userDeleted') || 'User deleted successfully');
-            fetchAllUsers();
-        } catch (err) {
-            console.error('Delete error:', err);
-            alert(err.message || 'Failed to delete user');
-        } finally {
-            setActionLoading(null);
+        if (type === 'disable') {
+            setActionLoading(username);
+            try {
+                await disableUser(username, 'Admin action');
+                fetchAllUsers();
+            } catch (err) {
+                setModal({
+                    isOpen: true,
+                    type: 'error',
+                    username: null,
+                    title: t('common.error') || 'Error',
+                    message: err.message,
+                });
+            } finally {
+                setActionLoading(null);
+            }
+        } else if (type === 'delete') {
+            // Show second confirmation
+            setModal({
+                isOpen: true,
+                type: 'deleteConfirm',
+                username,
+                title: t('admin.confirmDeleteFinalTitle') || '⚠️ Final Confirmation',
+                message: t('admin.confirmDeleteFinal'),
+            });
+        } else if (type === 'deleteConfirm') {
+            setActionLoading(username);
+            try {
+                await deleteUser(username);
+                setModal({
+                    isOpen: true,
+                    type: 'success',
+                    username: null,
+                    title: t('common.success') || 'Success',
+                    message: t('admin.userDeleted') || 'User deleted successfully',
+                });
+                fetchAllUsers();
+            } catch (err) {
+                console.error('Delete error:', err);
+                setModal({
+                    isOpen: true,
+                    type: 'error',
+                    username: null,
+                    title: t('common.error') || 'Error',
+                    message: err.message || 'Failed to delete user',
+                });
+            } finally {
+                setActionLoading(null);
+            }
         }
+    };
+
+    const closeModal = () => {
+        setModal({ ...modal, isOpen: false });
     };
 
     // Access denied
@@ -223,6 +276,38 @@ const AdminDashboard = () => {
                     />
                 )}
             </div>
+
+            {/* Confirmation Modal */}
+            {modal.isOpen && (
+                <div className="admin-modal-overlay" onClick={closeModal}>
+                    <div className={`admin-modal ${modal.type === 'error' ? 'modal-error' : modal.type === 'success' ? 'modal-success' : 'modal-warning'}`} onClick={e => e.stopPropagation()}>
+                        <h3>{modal.title}</h3>
+                        <p>{modal.message}</p>
+                        <div className="modal-actions">
+                            {modal.type === 'error' || modal.type === 'success' ? (
+                                <Button variant="primary" onClick={closeModal}>
+                                    {t('common.ok') || 'OK'}
+                                </Button>
+                            ) : (
+                                <>
+                                    <Button variant="secondary" onClick={closeModal}>
+                                        {t('common.cancel') || 'Cancel'}
+                                    </Button>
+                                    <Button
+                                        variant={modal.type === 'deleteConfirm' ? 'danger' : 'primary'}
+                                        onClick={handleModalConfirm}
+                                    >
+                                        {modal.type === 'deleteConfirm'
+                                            ? (t('admin.confirmDeleteBtn') || 'Yes, Delete Permanently')
+                                            : (t('common.confirm') || 'Confirm')
+                                        }
+                                    </Button>
+                                </>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
@@ -506,10 +591,11 @@ const StatsTab = ({ stats, t, isRTL, isDark }) => {
                                 text={({ value }) => `${Math.round(value)}/100`}
                             />
                             <p className="gauge-label" style={{ color: riskColor }}>
-                                {avgRiskScore >= 86 ? '🟢 ' + t('score.lowRisk') :
-                                    avgRiskScore >= 71 ? '🔵 ' + t('score.lowMediumRisk') :
-                                        avgRiskScore >= 51 ? '🟠 ' + t('score.mediumRisk') :
-                                            '🔴 ' + t('score.highRisk')}
+                                <span className="risk-dot" style={{ backgroundColor: riskColor }}></span>
+                                {avgRiskScore >= 86 ? t('score.lowRisk') :
+                                    avgRiskScore >= 71 ? t('score.lowMediumRisk') :
+                                        avgRiskScore >= 51 ? t('score.mediumRisk') :
+                                            t('score.highRisk')}
                             </p>
                         </div>
                         {/* Risk Score Legend */}
