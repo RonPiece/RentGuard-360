@@ -354,7 +354,7 @@ const LandingPage = () => {
                     >
                         {isPaused && <span className="carousel-paused">⏸</span>}
                         <button className="carousel-arrow" onClick={prevSlide} aria-label="Previous">
-                            {isRTL ? '›' : '‹'}
+                            ‹
                         </button>
                         <div className="carousel-content" key={currentSlide}>
                             <div className="carousel-icon">{benefits[currentSlide].icon}</div>
@@ -362,7 +362,7 @@ const LandingPage = () => {
                             <p>{t(`auth.${benefits[currentSlide].key}Desc`)}</p>
                         </div>
                         <button className="carousel-arrow" onClick={nextSlide} aria-label="Next">
-                            {isRTL ? '‹' : '›'}
+                            ›
                         </button>
                     </div>
                     <div className="carousel-dots">
@@ -386,12 +386,14 @@ const LandingPage = () => {
                                 <h4>{t('auth.demoStep1')}</h4>
                                 <p>{t('auth.demoStep1Desc')}</p>
                             </div>
+                            <span className="step-arrow">{isRTL ? '←' : '→'}</span>
                             <div className="demo-step">
                                 <span className="step-number">2</span>
                                 <div className="step-icon">◇</div>
                                 <h4>{t('auth.demoStep2')}</h4>
                                 <p>{t('auth.demoStep2Desc')}</p>
                             </div>
+                            <span className="step-arrow">{isRTL ? '←' : '→'}</span>
                             <div className="demo-step">
                                 <span className="step-number">3</span>
                                 <div className="step-icon">✓</div>
@@ -419,11 +421,16 @@ const LandingPage = () => {
 
                     {/* Footer */}
                     <footer className="landing-footer">
-                        <p>
-                            {t('auth.builtBy')}{' '}
+                        <p className="footer-tagline">{t('auth.footerTagline')}</p>
+                        <p className="footer-support">
+                            {t('auth.footerSupport')}{' '}
+                            <a href="mailto:projForruppin@gmail.com">{t('auth.footerEmail')}</a>
+                        </p>
+                        <p className="footer-response">{t('auth.footerResponse')}</p>
+                        <p className="footer-credits">
                             <a href="https://github.com/RonPiece" target="_blank" rel="noopener noreferrer">Ron</a>
                             {' & '}
-                            <a href="https://github.com/MoTy" target="_blank" rel="noopener noreferrer">Moty</a>
+                            <a href="https://github.com/fakesociety" target="_blank" rel="noopener noreferrer">Moty</a>
                             {' | '}{t('auth.projectName')}
                         </p>
                     </footer>

@@ -15,18 +15,15 @@ const Footer = () => {
                 </div>
                 <div className="footer-info">
                     <p>{t('footer.tagline')}</p>
-                    <p className="footer-credits">
-                        {t('footer.builtWith')}{' '}
-                        <a href="https://github.com/RonPiece" target="_blank" rel="noopener noreferrer" className="footer-link">
-                            Ron
-                        </a>
-                        {' & '}
-                        <a href="https://github.com/MoTy" target="_blank" rel="noopener noreferrer" className="footer-link">
-                            Moty
-                        </a>
-                    </p>
+                    <p className="footer-tech">{t('footer.benefits')}</p>
                 </div>
                 <div className="footer-meta">
+                    <p className="footer-credits">
+                        <a href="https://github.com/RonPiece" target="_blank" rel="noopener noreferrer" className="footer-link">Ron</a>
+                        {' & '}
+                        <a href="https://github.com/fakesociety" target="_blank" rel="noopener noreferrer" className="footer-link">Moty</a>
+                        {' | '}{t('footer.project')}
+                    </p>
                     <p>{t('footer.copyright').replace('{year}', currentYear)}</p>
                 </div>
             </div>
