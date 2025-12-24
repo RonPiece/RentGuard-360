@@ -6,6 +6,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import Card from '../components/Card';
 import Button from '../components/Button';
 import ScoreBreakdown from '../components/ScoreBreakdown';
+import ScoreMethodology from '../components/ScoreMethodology';
 import ContractView from '../components/ContractView';
 import { FileText, Scale, AlertTriangle, Lightbulb, CheckCircle, Copy, Check, MessageCircle } from 'lucide-react';
 import './AnalysisPage.css';
@@ -338,6 +339,9 @@ _________________    _________________
                             breakdown={scoreBreakdown}
                             issues={issues}
                         />
+
+                        {/* Score Methodology Explanation */}
+                        <ScoreMethodology />
 
                         <div className="sidebar-divider"></div>
 

@@ -640,22 +640,29 @@
 .scroll-nav-btn {
     position: fixed;
     bottom: 32px;
-    left: 32px;
+    right: 32px;
+    left: auto;
     display: flex;
     align-items: center;
     gap: 8px;
     padding: 12px 20px;
-    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
     color: white;
     border: none;
     border-radius: 50px;
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
-    box-shadow: 0 4px 20px rgba(37, 99, 235, 0.35);
+    box-shadow: 0 4px 20px rgba(16, 185, 129, 0.35);
     z-index: 100;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     animation: slideUp 0.3s ease;
+}
+
+/* LTR mode - button on left */
+[dir="ltr"] .scroll-nav-btn {
+    left: 32px;
+    right: auto;
 }
 
 @keyframes slideUp {
