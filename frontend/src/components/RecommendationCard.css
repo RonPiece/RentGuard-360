@@ -153,64 +153,63 @@
    ========================================== */
 
 /* Dark mode with data-theme attribute */
+/* Dark mode with data-theme attribute */
 [data-theme="dark"] .recommendation-card,
 .dark .recommendation-card,
 :root.dark .recommendation-card {
-    /* Richer "Neon Brown" background (Amber-300) */
-    background-color: hsl(46, 97%, 66%) !important;
+    /* Clean Dark Mode Background */
+    background-color: rgba(30, 41, 59, 0.6) !important;
+    /* DarkSlate / Glass */
 
-    /* Glowing left accent bar (Darker Amber) */
-    border-left: 4px solid #ee6700 !important;
+    /* Yellow border for visibility */
+    border-left: 4px solid #fbbf24 !important;
+    border-top: 1px solid rgba(251, 191, 36, 0.2) !important;
+    border-right: 1px solid rgba(251, 191, 36, 0.2) !important;
+    border-bottom: 1px solid rgba(251, 191, 36, 0.2) !important;
 
-    /* Glowing border all around */
-    border-top: 1px solid #fbbf24 !important;
-    border-right: 1px solid #fbbf24 !important;
-    border-bottom: 1px solid #fbbf24 !important;
-
-    /* Strong glow effect */
-    box-shadow: 0 0 20px rgba(251, 191, 36, 0.4);
-
-    /* No blur needed for solid background */
-    backdrop-filter: none;
+    /* Subtle glow */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
+    backdrop-filter: blur(8px);
 }
 
 
 [data-theme="dark"] .recommendation-title,
 .dark .recommendation-title,
 :root.dark .recommendation-title {
-    color: #000000 !important;
-    /* Black */
+    color: #fbbf24 !important;
+    /* Amber Text */
 }
 
 [data-theme="dark"] .recommendation-card-text,
 .dark .recommendation-card-text,
 :root.dark .recommendation-card-text {
-    color: #000000 !important;
-    /* Black */
+    color: #e2e8f0 !important;
+    /* Light Grey Text */
 }
 
 [data-theme="dark"] .recommendation-apply-btn,
 .dark .recommendation-apply-btn,
 :root.dark .recommendation-apply-btn {
-    background: rgba(255, 255, 255, 0.4) !important;
-    border: 1px solid #78350f !important;
-    color: #451a03 !important;
+    background: rgba(251, 191, 36, 0.1) !important;
+    border: 1px solid rgba(251, 191, 36, 0.3) !important;
+    color: #fbbf24 !important;
 }
 
 [data-theme="dark"] .recommendation-apply-btn:hover:not(:disabled),
 .dark .recommendation-apply-btn:hover:not(:disabled),
 :root.dark .recommendation-apply-btn:hover:not(:disabled) {
-    background: rgba(255, 255, 255, 0.6) !important;
-    border-color: #451a03 !important;
+    background: rgba(251, 191, 36, 0.2) !important;
+    border-color: #fbbf24 !important;
 }
 
 [data-theme="dark"] .recommendation-apply-btn.applied,
 .dark .recommendation-apply-btn.applied,
 :root.dark .recommendation-apply-btn.applied {
-    background: rgba(255, 255, 255, 0.3) !important;
-    border-color: #92400e !important;
-    color: #78350f !important;
+    background: rgba(16, 185, 129, 0.1) !important;
+    border-color: #059669 !important;
+    color: #10b981 !important;
 }
+
 
 /* Also support prefers-color-scheme */
 @media (prefers-color-scheme: dark) {

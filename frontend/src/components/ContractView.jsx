@@ -409,6 +409,11 @@ const ContractView = ({
                                             )}
                                         </div>
                                     </div>
+
+                                    {/* Edit Hint Overlay */}
+                                    <div className="clause-hover-hint no-print">
+                                        ✎ עריכה
+                                    </div>
                                 </div>
 
                                 {/* AI Explanation Box - Collapsible */}

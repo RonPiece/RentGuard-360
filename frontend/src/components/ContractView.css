@@ -198,6 +198,65 @@
     align-items: center;
     gap: 8px;
     flex-shrink: 0;
+    /* Ensure actions stay on top of the hint */
+    position: relative;
+    z-index: 5;
+}
+
+/* Edit Hint Overlay - Subtle / Minimal */
+/* Edit Hint Overlay - Floating in Right Margin */
+.clause-hover-hint {
+    position: absolute;
+    top: 50%;
+    right: -60px;
+    /* Centers it nicely in the 80px padding */
+    left: auto;
+    bottom: auto;
+    transform: translateY(-50%);
+    background: transparent;
+    color: #94a3b8;
+    padding: 4px 8px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    pointer-events: none;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    z-index: 10;
+    white-space: nowrap;
+}
+
+/* Ensure hint fits on smaller screens - move inside if needed */
+@media (max-width: 900px) {
+    .clause-hover-hint {
+        right: 8px;
+        top: 8px;
+        transform: none;
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+}
+
+/* Show Hint on Hover */
+.clause-item:hover .clause-hover-hint {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Hover state for the hint itself (if it was interactive, but it's pointer-events: none) 
+   We just want it to look integrated. */
+
+/* Dark Mode Support for Hint */
+@media (prefers-color-scheme: dark) {
+    .clause-hover-hint {
+        background: rgba(255, 255, 255, 0.1);
+        color: #aaa;
+        border-color: rgba(255, 255, 255, 0.1);
+    }
 }
 
 /* Generalized Action Button */

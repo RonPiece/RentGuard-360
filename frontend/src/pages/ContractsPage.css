@@ -455,103 +455,183 @@
     color: #ef4444;
 }
 
-/* Card Body */
-.card-body {
-    padding: 0 20px 16px;
-    flex: 1;
+/* Contract Grid */
+.contracts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 24px;
+    padding-bottom: 40px;
 }
 
-.status-row {
+/* Premium Contract Card */
+.contract-card {
+    background: linear-gradient(145deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.6) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.contract-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(800px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 255, 255, 0.06), transparent 40%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+}
+
+.contract-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(59, 130, 246, 0.3);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+}
+
+.contract-card:hover::before {
+    opacity: 1;
+}
+
+/* Card Header - Title & Icon */
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.card-icon {
+    width: 42px;
+    height: 42px;
+    background: rgba(59, 130, 246, 0.1);
+    border-radius: 12px;
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin-bottom: 12px;
+    justify-content: center;
+    color: var(--primary);
+    flex-shrink: 0;
+}
+
+.card-header-content {
+    flex: 1;
+    margin: 0 16px;
+}
+
+.card-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 4px 0;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.card-date {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+/* Status & Risk Badge */
+.status-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .status-chip {
-    display: inline-block;
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-size: 11px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
     font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
+    text-transform: capitalize;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
 }
 
-/* excellent = 86-100: Low Risk (bright green) */
+/* Risk Colors - Prominent */
 .status-chip.excellent {
-    background: rgba(16, 185, 129, 0.12);
-    color: #059669;
+    background: rgba(16, 185, 129, 0.15);
+    color: #34D399;
+    border: 1px solid rgba(16, 185, 129, 0.2);
 }
 
-/* good = 71-85: Low-Medium Risk (teal/light green) */
 .status-chip.good {
-    background: rgba(20, 184, 166, 0.12);
-    color: #0d9488;
+    background: rgba(16, 185, 129, 0.1);
+    color: #34D399;
+    border: 1px solid rgba(16, 185, 129, 0.1);
 }
 
-/* medium = 51-70: Medium Risk (orange) */
 .status-chip.medium {
-    background: rgba(245, 158, 11, 0.12);
-    color: #d97706;
+    background: rgba(245, 158, 11, 0.15);
+    color: #FBBF24;
+    border: 1px solid rgba(245, 158, 11, 0.2);
 }
 
-/* low = 0-50: High Risk (red) */
 .status-chip.low {
-    background: rgba(239, 68, 68, 0.12);
-    color: #dc2626;
-}
-
-/* Legacy high class - maps to low score = high risk */
-.status-chip.high {
-    background: rgba(239, 68, 68, 0.12);
-    color: #dc2626;
-}
-
-.status-chip.pending {
-    background: rgba(100, 116, 139, 0.12);
-    color: #64748b;
+    background: rgba(239, 68, 68, 0.15);
+    color: #F87171;
+    border: 1px solid rgba(239, 68, 68, 0.2);
 }
 
 .status-chip.error {
-    background: rgba(239, 68, 68, 0.15);
-    color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+    color: #EF4444;
 }
 
-.score-gauge.error {
-    background: rgba(239, 68, 68, 0.15);
-    color: #ef4444;
+.status-chip.pending {
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--primary);
 }
 
 .analyzed-date {
-    font-size: 11px;
-    color: #94a3b8;
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+/* Card Body Information - Bigger & Clearer */
+.card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
 .card-meta {
-    min-height: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.02);
+    padding: 12px;
+    border-radius: 8px;
 }
 
 .meta-item {
     font-size: 14px;
-    color: #94a3b8;
-    margin: 0 0 6px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    color: var(--text-secondary);
+    margin: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .meta-label {
-    font-weight: 600;
-    color: #64748b;
-}
-
-[data-theme="dark"] .meta-label {
-    color: #e2e8f0;
-}
-
-[data-theme="dark"] .meta-item {
-    color: #cbd5e1;
+    font-weight: 500;
+    color: var(--text-muted);
 }
 
 /* Card Footer */
@@ -559,75 +639,82 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 20px;
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
-    background: transparent;
-}
-
-[data-theme="dark"] .card-footer {
-    border-color: rgba(255, 255, 255, 0.1);
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    margin-top: auto;
 }
 
 .view-btn {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 500;
-    color: #10b981;
+    color: var(--primary);
     text-decoration: none;
-    transition: color 0.15s ease;
+    padding: 8px 16px;
+    background: rgba(59, 130, 246, 0.1);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
 }
 
 .view-btn:hover {
-    color: #059669;
+    background: rgba(59, 130, 246, 0.2);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
 }
 
 .view-btn.disabled {
-    color: #94a3b8;
+    color: var(--text-muted);
+    background: rgba(255, 255, 255, 0.03);
     cursor: not-allowed;
-    opacity: 0.6;
-}
-
-.view-btn.disabled:hover {
-    color: #94a3b8;
+    transform: none;
+    box-shadow: none;
 }
 
 .action-buttons {
     display: flex;
-    gap: 4px;
+    gap: 8px;
 }
 
 .icon-btn {
-    width: 36px;
-    height: 36px;
+    width: 38px;
+    height: 38px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(0, 0, 0, 0.05);
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 8px;
-    color: #475569;
+    color: var(--text-secondary);
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: all 0.2s ease;
 }
 
 .icon-btn:hover {
-    background: rgba(0, 0, 0, 0.1);
-    color: #0f172a;
-}
-
-[data-theme="dark"] .icon-btn {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.15);
-    color: #94a3b8;
-}
-
-[data-theme="dark"] .icon-btn:hover {
-    background: rgba(255, 255, 255, 0.15);
-    color: #f1f5f9;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+    transform: translateY(-1px);
 }
 
 .icon-btn.danger:hover {
-    background: rgba(239, 68, 68, 0.1);
+    background: rgba(239, 68, 68, 0.15);
     color: #ef4444;
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+/* Dropdown styling updates to match glass theme */
+.dropdown-menu {
+    background: var(--bg-card);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+.dropdown-menu button {
+    color: var(--text-primary);
+}
+
+.dropdown-menu button:hover {
+    background: rgba(255, 255, 255, 0.05);
 }
 
 /* Dropdown */
