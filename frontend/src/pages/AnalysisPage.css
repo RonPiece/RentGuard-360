@@ -447,6 +447,61 @@
     }
 }
 
+/* Premium Back Button */
+/* Professional Back Link */
+.back-button-premium {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 0;
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    width: fit-content;
+}
+
+[data-theme="dark"] .back-button-premium {
+    color: var(--text-tertiary);
+}
+
+.back-button-premium:hover {
+    color: var(--primary);
+    transform: translateX(-4px);
+    background: transparent;
+    box-shadow: none;
+    border-color: transparent;
+}
+
+[dir="rtl"] .back-button-premium:hover {
+    transform: translateX(4px);
+}
+
+/* Ensure dark mode hover doesn't re-add background */
+[data-theme="dark"] .back-button-premium:hover {
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+}
+
+.back-button-premium .arrow {
+    font-size: 16px;
+    font-family: monospace;
+    transition: none;
+}
+
+/* Clear old arrow transform */
+.back-button-premium:hover .arrow {
+    transform: none;
+}
+
+[dir="rtl"] .back-button-premium:hover .arrow {
+    --arrow-dir: 0;
+}
+
 .back-link {
     display: inline-flex;
     align-items: center;
