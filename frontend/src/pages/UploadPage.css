@@ -94,6 +94,11 @@
     opacity: 1;
 }
 
+/* Hide spotlight when a file is selected */
+.drop-zone.has-file::before {
+    display: none;
+}
+
 /* Hover State */
 .drop-zone:hover {
     border-color: #14b8a6 !important;

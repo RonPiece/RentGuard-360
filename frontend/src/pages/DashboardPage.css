@@ -20,7 +20,8 @@
 .dashboard-page {
     min-height: 100vh;
     padding: var(--space-xl) var(--space-md);
-    padding-bottom: 50px;
+    padding-bottom: 0;
+    /* Remove bottom padding - let sections extend to footer */
     background: var(--bg-page);
 }
 
@@ -29,6 +30,12 @@
     max-width: 1200px;
     margin-left: auto;
     margin-right: auto;
+}
+
+/* First section-band extends up to cover gap behind navbar */
+.dashboard-page .section-band:first-child {
+    margin-top: calc(-1 * var(--space-xl));
+    padding-top: calc(var(--space-2xl) + var(--space-xl));
 }
 
 /* ============================================
@@ -224,6 +231,8 @@
 
 .differentiators-section {
     margin-top: var(--space-2xl);
+    padding-bottom: var(--space-2xl);
+    /* Extend to meet footer seamlessly */
 }
 
 .differentiators-container {

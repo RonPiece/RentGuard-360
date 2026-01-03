@@ -110,7 +110,7 @@
    ============================================ */
 [data-theme="dark"] {
     /* Background Colors - 3-Level Hierarchy (Dark) */
-    --bg-page: #0B0E13;
+    --bg-page: #151a23;
     /* Level 1: Deep dark page (darkest) */
     --bg-card: #151A23;
     /* Level 2: Card surfaces (slate-blue) */
@@ -236,6 +236,11 @@ body {
     padding: var(--space-2xl) var(--space-md);
     background: var(--bg-page);
     box-sizing: border-box;
+}
+
+/* Dark mode: use deeper black for section bands */
+[data-theme="dark"] .section-band {
+    background: #0B0E13;
 }
 
 /* Full-width section with CARD background (white) */
