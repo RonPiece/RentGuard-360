@@ -76,10 +76,16 @@
   display: flex;
   align-items: center;
   gap: var(--space-xs);
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.1);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--glass-border);
   padding: 6px;
   border-radius: var(--radius-lg);
+}
+
+/* Dark mode: subtle transparency for nav container */
+[data-theme="dark"] .nav-links-desktop {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .nav-link {
@@ -97,7 +103,12 @@
 
 .nav-link:hover {
   color: var(--text-primary);
-  background: var(--bg-secondary);
+  background: var(--bg-card);
+}
+
+/* Dark mode: deeper black for visible hover contrast */
+[data-theme="dark"] .nav-link:hover {
+  background: #0B0E13;
 }
 
 .nav-link.active {
@@ -243,7 +254,7 @@
 }
 
 .profile-menu-item:hover {
-  background: var(--bg-secondary);
+  background: var(--bg-tertiary);
 }
 
 .profile-menu-item.logout {
