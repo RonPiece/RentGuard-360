@@ -1,0 +1,263 @@
+/*
+ * Admin Layout - Complete Responsive Sidebar System
+ * 
+ * STRUCTURE:
+ * 1. Layout Container (flexbox)
+ * 2. Top Bar (always visible, hamburger + logo)
+ * 3. Sidebar Wrapper (slide in/out)
+ * 4. Main Content (adjusts based on sidebar state)
+ * 5. Mobile Overlay (backdrop on small screens)
+ */
+
+/* ============================================
+   CSS VARIABLES
+   ============================================ */
+
+:root {
+    --admin-sidebar-width: 260px;
+    --admin-topbar-height: 56px;
+    --admin-transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================
+   1. LAYOUT CONTAINER
+   ============================================ */
+
+.admin-layout {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.admin-layout.dark {
+    background: #0B0E13;
+}
+
+.admin-layout.light {
+    background: var(--bg-page, #f8fafc);
+}
+
+/* ============================================
+   2. TOP BAR - Always Visible
+   ============================================ */
+
+.admin-top-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: var(--admin-topbar-height);
+    z-index: 300;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    background: var(--bg-secondary, #0D1117);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(12px);
+}
+
+.admin-layout.light .admin-top-bar {
+    background: rgba(255, 255, 255, 0.95);
+    border-bottom-color: rgba(0, 0, 0, 0.08);
+}
+
+.top-bar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Hamburger Button */
+.hamburger-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--text-primary, #f8fafc);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.admin-layout.light .hamburger-btn {
+    color: var(--text-primary, #0f172a);
+}
+
+.hamburger-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.admin-layout.light .hamburger-btn:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+/* Logo */
+.top-bar-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.top-bar-logo svg {
+    color: var(--accent-primary, #10B981);
+}
+
+.top-bar-logo span {
+    font-size: 1rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--accent-primary, #10B981), var(--accent-secondary, #3B82F6));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* ============================================
+   3. SIDEBAR WRAPPER
+   ============================================ */
+
+.admin-sidebar-wrapper {
+    position: fixed;
+    top: var(--admin-topbar-height);
+    left: 0;
+    width: var(--admin-sidebar-width);
+    height: calc(100vh - var(--admin-topbar-height));
+    z-index: 200;
+    transform: translateX(-100%);
+    transition: transform var(--admin-transition);
+    overflow-y: auto;
+}
+
+[dir="rtl"] .admin-sidebar-wrapper {
+    left: auto;
+    right: 0;
+    transform: translateX(100%);
+}
+
+/* Sidebar Open State */
+.admin-sidebar-wrapper.open {
+    transform: translateX(0);
+}
+
+/* Hide the default sidebar header on mobile since we have top bar */
+.admin-sidebar-wrapper .sidebar-header {
+    display: none;
+}
+
+/* ============================================
+   4. MAIN CONTENT
+   ============================================ */
+
+.admin-main-content {
+    flex: 1;
+    margin-top: var(--admin-topbar-height);
+    margin-left: 0;
+    transition: margin var(--admin-transition);
+    min-height: calc(100vh - var(--admin-topbar-height));
+}
+
+[dir="rtl"] .admin-main-content {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+/* When sidebar is open on larger screens, push content */
+@media (min-width: 1025px) {
+    .admin-layout.sidebar-open .admin-main-content {
+        margin-left: var(--admin-sidebar-width);
+    }
+
+    [dir="rtl"] .admin-layout.sidebar-open .admin-main-content {
+        margin-left: 0;
+        margin-right: var(--admin-sidebar-width);
+    }
+
+    /* Add shadow to sidebar on desktop */
+    .admin-sidebar-wrapper.open {
+        box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+    }
+
+    [dir="rtl"] .admin-sidebar-wrapper.open {
+        box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
+    }
+}
+
+/* ============================================
+   5. MOBILE OVERLAY
+   ============================================ */
+
+.sidebar-overlay {
+    display: none;
+}
+
+@media (max-width: 1024px) {
+    .sidebar-overlay {
+        display: block;
+        position: fixed;
+        top: var(--admin-topbar-height);
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(4px);
+        z-index: 150;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .sidebar-overlay.visible {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    /* Sidebar shadow on mobile */
+    .admin-sidebar-wrapper.open {
+        box-shadow: 4px 0 30px rgba(0, 0, 0, 0.4);
+    }
+
+    [dir="rtl"] .admin-sidebar-wrapper.open {
+        box-shadow: -4px 0 30px rgba(0, 0, 0, 0.4);
+    }
+}
+
+/* ============================================
+   6. SMALL MOBILE ADJUSTMENTS
+   ============================================ */
+
+@media (max-width: 600px) {
+    :root {
+        --admin-topbar-height: 52px;
+    }
+
+    .top-bar-logo span {
+        font-size: 0.9375rem;
+    }
+
+    .hamburger-btn {
+        width: 38px;
+        height: 38px;
+    }
+}
+
+@media (max-width: 480px) {
+    :root {
+        --admin-topbar-height: 48px;
+    }
+
+    .admin-top-bar {
+        padding: 0 12px;
+    }
+
+    .top-bar-logo span {
+        font-size: 0.875rem;
+    }
+
+    .hamburger-btn {
+        width: 36px;
+        height: 36px;
+    }
+}

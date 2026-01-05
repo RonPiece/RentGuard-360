@@ -424,9 +424,134 @@
   }
 }
 
-/* Small mobile */
+/* Small mobile (iPhone 8, SE 2/3 - 375px) */
 @media (max-width: 480px) {
+  .nav-inner {
+    padding: 8px 12px;
+  }
+
   .logo-text {
-    font-size: var(--font-size-lg);
+    font-size: 0.9375rem;
+  }
+
+  .logo-icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .nav-logo {
+    gap: 6px;
+  }
+
+  .nav-right {
+    gap: 8px;
+  }
+
+  /* Compact language toggle */
+  .language-toggle {
+    font-size: 0.75rem;
+    padding: 4px 8px;
+  }
+
+  /* Compact theme toggle */
+  .theme-toggle .toggle-track {
+    width: 42px;
+    height: 22px;
+  }
+
+  .theme-toggle .toggle-thumb {
+    width: 18px;
+    height: 18px;
+  }
+
+  .theme-toggle .toggle-label {
+    display: none;
+  }
+
+  /* Smaller profile button */
+  .profile-button {
+    padding: 4px 8px;
+    gap: 4px;
+  }
+
+  .profile-avatar {
+    width: 28px;
+    height: 28px;
+    font-size: 0.75rem;
+  }
+
+  .profile-chevron {
+    font-size: 8px;
+  }
+}
+
+/* Very small mobile (iPhone SE 1st gen - 320px, extra compact) */
+@media (max-width: 375px) {
+  .nav-inner {
+    padding: 6px 10px;
+  }
+
+  .logo-text {
+    font-size: 0.8125rem;
+  }
+
+  .logo-icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .nav-logo {
+    gap: 4px;
+  }
+
+  .nav-right {
+    gap: 6px;
+  }
+
+  /* Even more compact language toggle */
+  .language-toggle {
+    font-size: 0.6875rem;
+    padding: 3px 6px;
+  }
+
+  /* Smaller theme toggle */
+  .theme-toggle .toggle-track {
+    width: 38px;
+    height: 20px;
+  }
+
+  .theme-toggle .toggle-thumb {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* Minimal profile button */
+  .profile-button {
+    padding: 3px 6px;
+  }
+
+  .profile-avatar {
+    width: 26px;
+    height: 26px;
+    font-size: 0.6875rem;
+  }
+
+  .profile-chevron {
+    display: none;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 320px) {
+  .nav-inner {
+    padding: 6px 8px;
+  }
+
+  .logo-text {
+    font-size: 0.75rem;
+  }
+
+  .nav-right {
+    gap: 4px;
   }
 }
