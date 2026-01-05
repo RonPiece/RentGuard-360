@@ -38,11 +38,6 @@ const AdminSidebar = ({ onNavigate }) => {
             path: '/admin/analytics',
             icon: BarChart3,
             label: t('admin.analytics') || 'Analytics'
-        },
-        {
-            path: '/admin/settings',
-            icon: Settings,
-            label: t('admin.settings') || 'Settings'
         }
     ];
 
