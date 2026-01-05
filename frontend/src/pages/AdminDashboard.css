@@ -221,15 +221,25 @@
     box-shadow: var(--admin-card-highlight);
 
     border-radius: 16px;
-    padding: 20px 22px;
+    padding: 24px 20px;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 14px;
+    justify-content: center;
+    gap: 16px;
+    text-align: center;
 
     /* Smooth hover transition */
     transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
+}
+
+.summary-card .card-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
 }
 
 /* Hover - green border glow */
@@ -379,11 +389,56 @@
     filter: drop-shadow(0 0 8px var(--admin-glow-blue));
 }
 
+/* ==========================================
+   DASHBOARD CHARTS ROW - Two Charts Side by Side
+   ========================================== */
+
+.dashboard-charts-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-top: 24px;
+}
+
+.dashboard-chart-card {
+    background: var(--admin-card-bg);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--admin-card-border);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: var(--admin-card-highlight), var(--admin-card-glow);
+    overflow: hidden;
+    min-width: 0;
+    /* Important for flex/grid children to shrink */
+}
+
+.dashboard-chart-card:hover {
+    border-color: var(--admin-card-border-hover);
+}
+
+.dashboard-chart-card .chart-header h3 {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--admin-text);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.dashboard-chart-card .chart-header h3 svg {
+    width: 16px;
+    height: 16px;
+}
+
 .chart-container {
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 180px;
+    width: 100%;
+    overflow: hidden;
+    /* Prevent chart overflow */
 }
 
 .gauge-container {
@@ -1087,12 +1142,6 @@
     -webkit-text-fill-color: #0f172a;
     background-clip: unset;
     color: #0f172a;
-}
-
-/* Contracts card - blue value also in light mode */
-.admin-dashboard.light .summary-card.contracts .card-value {
-    -webkit-text-fill-color: #2563eb;
-    color: #2563eb;
 }
 
 /* Light mode hover - subtle blue instead of green glow */

@@ -254,9 +254,10 @@ const AdminDashboard = () => {
                             </div>
 
                             {/* Charts Grid - Two Charts Side by Side */}
-                            <div className="dashboard-charts-row" ref={chartContainerRef}>
+                            {/* Charts Grid - Two Charts Side by Side */}
+                            <div className="dashboard-charts-row">
                                 {/* Contracts Over Time */}
-                                <div className="dashboard-chart-card">
+                                <div className="dashboard-chart-card" ref={chartContainerRef}>
                                     <div className="chart-header">
                                         <h3>
                                             <TrendingUp size={16} />
@@ -345,6 +346,16 @@ const AdminDashboard = () => {
                                                                     t('admin.thisYear')}
                                                     </button>
                                                 ))}
+                                                <select
+                                                    className="year-picker"
+                                                    value={userDateRange.match(/^\d{4}$/) ? userDateRange : ''}
+                                                    onChange={(e) => e.target.value && setUserDateRange(e.target.value)}
+                                                >
+                                                    <option value="" disabled>{t('admin.selectYear') || 'Year'}</option>
+                                                    {Array.from({ length: 10 }, (_, i) => currentYear - i).map(year => (
+                                                        <option key={year} value={String(year)}>{year}</option>
+                                                    ))}
+                                                </select>
                                             </div>
                                         </div>
                                     </div>
