@@ -33,16 +33,18 @@
    ============================================ */
 
 .admin-sidebar {
-    position: fixed;
+    /* Position is handled by .admin-sidebar-wrapper in AdminLayout.css */
+    position: relative;
     top: 0;
     left: 0;
-    height: 100vh;
+    height: 100%;
     width: var(--sidebar-width);
     display: flex;
     flex-direction: column;
     z-index: 200;
     transition: var(--sidebar-transition);
-    overflow: hidden;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 [dir="rtl"] .admin-sidebar {

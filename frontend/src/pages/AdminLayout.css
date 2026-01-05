@@ -1,26 +1,29 @@
 /*
- * Admin Layout - Container for Sidebar + Content
- * Responsive grid layout with mobile overlay support
+ * Admin Layout - Complete Responsive Sidebar System
  * 
  * STRUCTURE:
- * 1. Layout Container
- * 2. Main Content Area
- * 3. Sidebar Container
- * 4. Mobile Top Bar
- * 5. Mobile Overlay
- * 6. Media Queries
- *    - 1024px: Collapsed sidebar
- *    - 768px: Mobile overlay
- *    - 600px: Mobile adjustments
- *    - 480px: Small mobile
+ * 1. Layout Container (flexbox)
+ * 2. Top Bar (always visible, hamburger + logo)
+ * 3. Sidebar Wrapper (slide in/out)
+ * 4. Main Content (adjusts based on sidebar state)
+ * 5. Mobile Overlay (backdrop on small screens)
  */
+
+/* ============================================
+   CSS VARIABLES
+   ============================================ */
+
+:root {
+    --admin-sidebar-width: 260px;
+    --admin-topbar-height: 56px;
+    --admin-transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
 
 /* ============================================
    1. LAYOUT CONTAINER
    ============================================ */
 
 .admin-layout {
-    display: flex;
     min-height: 100vh;
     overflow-x: hidden;
     /* Prevent sidebar from peeking */
@@ -31,11 +34,11 @@
 }
 
 .admin-layout.light {
-    background: var(--bg-page);
+    background: var(--bg-page, #f8fafc);
 }
 
 /* ============================================
-   2. MAIN CONTENT AREA
+   2. TOP BAR - Always Visible
    ============================================ */
 
 .admin-main {
@@ -80,87 +83,109 @@
     top: 0;
     left: 0;
     right: 0;
-    height: 56px;
-    z-index: 250;
-    padding: 0 16px;
+    height: var(--admin-topbar-height);
+    z-index: 300;
+    display: flex;
     align-items: center;
     justify-content: space-between;
-    background: var(--bg-secondary);
-    border-bottom: 1px solid var(--glass-border);
+    padding: 0 16px;
+    background: var(--bg-secondary, #0D1117);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(12px);
 }
 
-.admin-layout.dark .mobile-top-bar {
-    background: #0D1117;
-    border-bottom-color: rgba(255, 255, 255, 0.06);
+.admin-layout.light .admin-top-bar {
+    background: rgba(255, 255, 255, 0.95);
+    border-bottom-color: rgba(0, 0, 0, 0.08);
 }
 
-.mobile-logo {
+.top-bar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Hamburger Button */
+.hamburger-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--text-primary, #f8fafc);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.admin-layout.light .hamburger-btn {
+    color: var(--text-primary, #0f172a);
+}
+
+.hamburger-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.admin-layout.light .hamburger-btn:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+/* Logo */
+.top-bar-logo {
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
-.mobile-logo svg {
-    color: var(--accent-primary);
+.top-bar-logo svg {
+    color: var(--accent-primary, #10B981);
 }
 
-.mobile-logo span {
-    font-size: 1.125rem;
+.top-bar-logo span {
+    font-size: 1rem;
     font-weight: 700;
-    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    background: linear-gradient(135deg, var(--accent-primary, #10B981), var(--accent-secondary, #3B82F6));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
 }
 
-.mobile-menu-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 44px;
-    height: 44px;
-    border: none;
-    border-radius: var(--radius-md);
-    background: transparent;
-    color: var(--text-primary);
-    cursor: pointer;
-    transition: all var(--transition-fast);
-}
-
-.mobile-menu-btn:hover {
-    background: var(--bg-tertiary);
-}
-
-.admin-layout.dark .mobile-menu-btn:hover {
-    background: rgba(255, 255, 255, 0.08);
-}
-
 /* ============================================
-   5. MOBILE OVERLAY
+   3. SIDEBAR WRAPPER
    ============================================ */
 
-.mobile-overlay {
-    display: none;
+.admin-sidebar-wrapper {
     position: fixed;
-    top: 0;
+    top: var(--admin-topbar-height);
     left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.6);
-    z-index: 180;
-    backdrop-filter: blur(4px);
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
+    width: var(--admin-sidebar-width);
+    height: calc(100vh - var(--admin-topbar-height));
+    z-index: 200;
+    transform: translateX(-100%);
+    transition: transform var(--admin-transition);
+    overflow-y: auto;
 }
 
-.mobile-overlay.visible {
-    opacity: 1;
-    visibility: visible;
+[dir="rtl"] .admin-sidebar-wrapper {
+    left: auto;
+    right: 0;
+    transform: translateX(100%);
+}
+
+/* Sidebar Open State */
+.admin-sidebar-wrapper.open {
+    transform: translateX(0);
+}
+
+/* Hide the default sidebar header on mobile since we have top bar */
+.admin-sidebar-wrapper .sidebar-header {
+    display: none;
 }
 
 /* ============================================
-   6. MEDIA QUERIES
+   4. MAIN CONTENT
    ============================================ */
 
 /* --- Tablet/Mobile (1024px and below) - Mobile Overlay Mode --- */
@@ -198,8 +223,9 @@
         transition: transform 0.3s ease, visibility 0.3s ease;
     }
 
-    [dir="rtl"] .sidebar-container {
-        transform: translateX(100%);
+    .sidebar-overlay.visible {
+        opacity: 1;
+        visibility: visible;
     }
 
     /* Sidebar visible when menu is open */
@@ -209,40 +235,45 @@
         /* Show when open */
     }
 
-    /* Sidebar shadow when open */
-    .sidebar-container.open .admin-sidebar {
-        box-shadow: var(--shadow-xl);
+    [dir="rtl"] .admin-sidebar-wrapper.open {
+        box-shadow: -4px 0 30px rgba(0, 0, 0, 0.4);
     }
 }
 
-/* --- Mobile (600px) --- */
+/* ============================================
+   6. SMALL MOBILE ADJUSTMENTS
+   ============================================ */
+
 @media (max-width: 600px) {
-    .mobile-top-bar {
-        height: 52px;
+    :root {
+        --admin-topbar-height: 52px;
+    }
+
+    .top-bar-logo span {
+        font-size: 0.9375rem;
+    }
+
+    .hamburger-btn {
+        width: 38px;
+        height: 38px;
+    }
+}
+
+@media (max-width: 480px) {
+    :root {
+        --admin-topbar-height: 48px;
+    }
+
+    .admin-top-bar {
         padding: 0 12px;
     }
 
-    .admin-main {
-        padding-top: 52px;
+    .top-bar-logo span {
+        font-size: 0.875rem;
     }
 
-    .mobile-logo span {
-        font-size: 1rem;
-    }
-}
-
-/* --- Small Mobile (480px) --- */
-@media (max-width: 480px) {
-    .mobile-top-bar {
-        height: 48px;
-    }
-
-    .admin-main {
-        padding-top: 48px;
-    }
-
-    .mobile-menu-btn {
-        width: 40px;
-        height: 40px;
+    .hamburger-btn {
+        width: 36px;
+        height: 36px;
     }
 }

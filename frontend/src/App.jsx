@@ -32,7 +32,6 @@ import AdminLayout from './pages/AdminLayout';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminUsers from './pages/AdminUsers';
 import AdminAnalytics from './pages/AdminAnalytics';
-import AdminSettings from './pages/AdminSettings';
 import LandingPage from './pages/LandingPageNew';
 import Footer from './components/Footer';
 import './styles/design-system.css';
@@ -227,7 +226,6 @@ function App() {
             <Route index element={<AdminDashboard />} />
             <Route path="users" element={<AdminUsers />} />
             <Route path="analytics" element={<AdminAnalytics />} />
-            <Route path="settings" element={<AdminSettings />} />
           </Route>
 
           <Route path="*" element={<Navigate to={isAuthenticated ? "/dashboard" : "/"} replace />} />
