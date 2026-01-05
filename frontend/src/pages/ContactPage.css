@@ -21,13 +21,6 @@
    1. PAGE LAYOUT
    ============================================ */
 
-/* 
- * Contact Page Layout Fix:
- * Same approach as Settings page - use flexbox to fill remaining space
- * so the --bg-page background extends to the footer with no gap.
- */
-
-
 /* All direct children get centered with max-width */
 .contact-page>* {
     max-width: 1000px;
