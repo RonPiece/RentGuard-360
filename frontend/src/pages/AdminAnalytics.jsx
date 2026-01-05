@@ -32,12 +32,16 @@ const AdminAnalytics = () => {
         fetchStats();
     }, []);
 
-    // Responsive chart width
+    // Simplified responsive chart width based on window width
     useEffect(() => {
         const updateWidth = () => {
-            if (chartContainerRef.current) {
-                const containerWidth = chartContainerRef.current.offsetWidth;
-                setChartWidth(Math.max(300, containerWidth - 40));
+            const screenWidth = window.innerWidth;
+            if (screenWidth <= 480) {
+                setChartWidth(screenWidth - 80);
+            } else if (screenWidth <= 768) {
+                setChartWidth(screenWidth - 100);
+            } else {
+                setChartWidth(Math.min(screenWidth - 400, 600));
             }
         };
         updateWidth();

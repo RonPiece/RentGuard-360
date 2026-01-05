@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { getUsers, disableUser, enableUser, deleteUser } from '../services/api';
@@ -10,9 +10,15 @@ import {
     Trash2,
     Users,
     AlertTriangle,
-    RefreshCw
+    RefreshCw,
+    Mail,
+    Calendar,
+    ChevronLeft,
+    ChevronRight
 } from 'lucide-react';
 import './AdminDashboard.css';
+
+const USERS_PER_PAGE = 10;
 
 const AdminUsers = () => {
     const { t, isRTL } = useLanguage();
@@ -24,6 +30,7 @@ const AdminUsers = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [actionLoading, setActionLoading] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
 
     // Modal state
     const [modal, setModal] = useState({
@@ -43,6 +50,11 @@ const AdminUsers = () => {
             filterUsers();
         }
     }, [searchQuery, statusFilter, allUsers]);
+
+    // Reset to page 1 when filters change
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchQuery, statusFilter]);
 
     const fetchAllUsers = async () => {
         setLoading(true);
@@ -73,6 +85,21 @@ const AdminUsers = () => {
             );
         }
         setUsers(filtered);
+    };
+
+    // Pagination logic
+    const totalPages = Math.ceil(users.length / USERS_PER_PAGE);
+    const paginatedUsers = useMemo(() => {
+        const start = (currentPage - 1) * USERS_PER_PAGE;
+        return users.slice(start, start + USERS_PER_PAGE);
+    }, [users, currentPage]);
+
+    const handlePrevPage = () => {
+        if (currentPage > 1) setCurrentPage(currentPage - 1);
+    };
+
+    const handleNextPage = () => {
+        if (currentPage < totalPages) setCurrentPage(currentPage + 1);
     };
 
     const handleDisableUser = async (username) => {
@@ -162,6 +189,95 @@ const AdminUsers = () => {
 
     const closeModal = () => setModal({ ...modal, isOpen: false });
 
+    // Render a single user card for mobile view
+    const renderUserCard = (user) => (
+        <div
+            key={user.username}
+            className={`user-card ${!user.enabled ? 'disabled-user' : ''}`}
+        >
+            <div className="user-card-header">
+                <div className="user-card-avatar">
+                    {user.name?.charAt(0)?.toUpperCase() || user.email?.charAt(0)?.toUpperCase() || '?'}
+                </div>
+                <div className="user-card-identity">
+                    <span className="user-card-name">{user.name || '—'}</span>
+                    <span className={`status-badge ${user.enabled ? 'active' : 'disabled'}`}>
+                        <span className="status-dot"></span>
+                        {user.enabled ? t('admin.active') : t('admin.suspended')}
+                    </span>
+                </div>
+            </div>
+
+            <div className="user-card-details">
+                <div className="user-card-row">
+                    <Mail size={14} />
+                    <span className="user-card-email">{user.email || '—'}</span>
+                </div>
+                <div className="user-card-row">
+                    <Calendar size={14} />
+                    <span>
+                        {user.createdAt
+                            ? new Date(user.createdAt).toLocaleDateString(isRTL ? 'he-IL' : 'en-US')
+                            : '—'}
+                    </span>
+                </div>
+            </div>
+
+            <div className="user-card-actions">
+                {user.enabled ? (
+                    <button
+                        className="action-btn danger"
+                        onClick={() => handleDisableUser(user.username)}
+                        disabled={actionLoading === user.username}
+                    >
+                        {actionLoading === user.username ? '...' : <Ban size={16} />}
+                        <span>{t('admin.disable') || 'Disable'}</span>
+                    </button>
+                ) : (
+                    <button
+                        className="action-btn success"
+                        onClick={() => handleEnableUser(user.username)}
+                        disabled={actionLoading === user.username}
+                    >
+                        {actionLoading === user.username ? '...' : <Check size={16} />}
+                        <span>{t('admin.enable') || 'Enable'}</span>
+                    </button>
+                )}
+                <button
+                    className="action-btn danger"
+                    onClick={() => handleDeleteUser(user.username)}
+                    disabled={actionLoading === user.username}
+                >
+                    {actionLoading === user.username ? '...' : <Trash2 size={16} />}
+                    <span>{t('admin.delete') || 'Delete'}</span>
+                </button>
+            </div>
+        </div>
+    );
+
+    // Pagination controls component
+    const PaginationControls = () => (
+        <div className="pagination-controls">
+            <button
+                className="pagination-btn"
+                onClick={handlePrevPage}
+                disabled={currentPage === 1}
+            >
+                <ChevronLeft size={18} />
+            </button>
+            <span className="pagination-info">
+                {currentPage} / {totalPages || 1}
+            </span>
+            <button
+                className="pagination-btn"
+                onClick={handleNextPage}
+                disabled={currentPage >= totalPages}
+            >
+                <ChevronRight size={18} />
+            </button>
+        </div>
+    );
+
     return (
         <div className={`admin-dashboard page-container ${isDark ? 'dark' : 'light'}`} dir={isRTL ? 'rtl' : 'ltr'}>
             <header className="admin-header">
@@ -227,8 +343,8 @@ const AdminUsers = () => {
                             </div>
                         </div>
 
-                        {/* Users Table */}
-                        <div className="users-table-wrapper">
+                        {/* DESKTOP: Users Table */}
+                        <div className="users-table-wrapper desktop-only">
                             <table className="users-table">
                                 <thead>
                                     <tr>
@@ -240,12 +356,12 @@ const AdminUsers = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {users.length === 0 ? (
+                                    {paginatedUsers.length === 0 ? (
                                         <tr>
                                             <td colSpan="5" className="no-data">{t('admin.noUsers')}</td>
                                         </tr>
                                     ) : (
-                                        users.map(user => (
+                                        paginatedUsers.map(user => (
                                             <tr key={user.username} className={`user-row ${!user.enabled ? 'disabled-user' : ''}`}>
                                                 <td>{user.email || '—'}</td>
                                                 <td>{user.name || '—'}</td>
@@ -299,9 +415,22 @@ const AdminUsers = () => {
                             </table>
                         </div>
 
-                        <p className="users-count">
-                            {t('admin.showingUsers')?.replace('{count}', users.length) || `Showing ${users.length} users`}
-                        </p>
+                        {/* MOBILE: User Cards */}
+                        <div className="users-cards-list mobile-only">
+                            {paginatedUsers.length === 0 ? (
+                                <div className="no-data-card">{t('admin.noUsers')}</div>
+                            ) : (
+                                paginatedUsers.map(user => renderUserCard(user))
+                            )}
+                        </div>
+
+                        {/* Pagination + Count */}
+                        <div className="users-footer">
+                            <p className="users-count">
+                                {t('admin.showingUsers')?.replace('{count}', users.length) || `Total: ${users.length} users`}
+                            </p>
+                            {totalPages > 1 && <PaginationControls />}
+                        </div>
                     </div>
                 )}
             </div>

@@ -32,27 +32,31 @@ const AdminDashboard = () => {
     const [dateRange, setDateRange] = useState('30d');
     const [userDateRange, setUserDateRange] = useState('30d');
     const chartContainerRef = useRef(null);
-    const [chartWidth, setChartWidth] = useState(450);
+    const [chartWidth, setChartWidth] = useState(350);
 
     useEffect(() => {
         fetchStats();
     }, []);
 
-    // Responsive chart width
+    // Simplified responsive chart width based on window width
     useEffect(() => {
         const updateWidth = () => {
-            if (chartContainerRef.current) {
-                const containerWidth = chartContainerRef.current.offsetWidth;
-                // Use container width minus padding (20px each side = 40px total)
-                const availableWidth = containerWidth - 40;
-                // Minimum 280, use full available width
-                setChartWidth(Math.max(280, availableWidth));
+            const screenWidth = window.innerWidth;
+            // Mobile: full width minus padding (32px total)
+            // Desktop: roughly half the content area
+            if (screenWidth <= 480) {
+                setChartWidth(screenWidth - 80); // Small mobile
+            } else if (screenWidth <= 768) {
+                setChartWidth(screenWidth - 100); // Mobile
+            } else if (screenWidth <= 1024) {
+                setChartWidth(Math.min(screenWidth - 180, 500)); // Tablet
+            } else {
+                setChartWidth(Math.min((screenWidth - 400) / 2, 500)); // Desktop
             }
         };
         updateWidth();
         window.addEventListener('resize', updateWidth);
-        // Also update after a short delay to catch layout shifts
-        const timer = setTimeout(updateWidth, 100);
+        const timer = setTimeout(updateWidth, 200);
         return () => {
             window.removeEventListener('resize', updateWidth);
             clearTimeout(timer);
@@ -72,7 +76,7 @@ const AdminDashboard = () => {
         }
     };
 
-    // Create MUI theme for charts
+    // Create MUI theme for charts with enhanced tooltip styling
     const chartTheme = useMemo(() => createTheme({
         palette: {
             mode: isDark ? 'dark' : 'light',
@@ -83,6 +87,22 @@ const AdminDashboard = () => {
             background: {
                 default: isDark ? '#0f0f23' : '#f8fafc',
                 paper: isDark ? '#1a1a2e' : '#ffffff',
+            },
+        },
+        components: {
+            MuiTooltip: {
+                styleOverrides: {
+                    tooltip: {
+                        backgroundColor: isDark ? '#1a1a2e' : '#ffffff',
+                        color: isDark ? '#f8fafc' : '#1a1a2e',
+                        border: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`,
+                        boxShadow: '0 4px 20px rgba(0,0,0,0.25)',
+                        borderRadius: '8px',
+                        padding: '8px 12px',
+                        fontSize: '0.8125rem',
+                        fontWeight: 500,
+                    },
+                },
             },
         },
     }), [isDark]);
@@ -306,7 +326,9 @@ const AdminDashboard = () => {
                                                     data: lineChartValues,
                                                     area: true,
                                                     color: '#10B981',
-                                                    showMark: false,
+                                                    showMark: true,
+                                                    label: isRTL ? 'חוזים' : 'Contracts',
+                                                    valueFormatter: (value) => `${value}`,
                                                 }]}
                                                 width={chartWidth}
                                                 height={220}
@@ -315,8 +337,36 @@ const AdminDashboard = () => {
                                                     '& .MuiChartsAxis-tickLabel': { fill: labelColor },
                                                     '& .MuiChartsAxis-line': { stroke: labelColor },
                                                     '& .MuiChartsGrid-line': { stroke: gridColor },
+                                                    '& .MuiMarkElement-root': {
+                                                        fill: '#10B981',
+                                                        stroke: isDark ? '#0B0E13' : '#ffffff',
+                                                        strokeWidth: 2,
+                                                    },
                                                 }}
                                                 grid={{ horizontal: true }}
+                                                tooltip={{ trigger: 'axis' }}
+                                                slotProps={{
+                                                    popper: {
+                                                        sx: {
+                                                            '& .MuiChartsTooltip-root': {
+                                                                backgroundColor: isDark ? '#1a1a2e' : '#ffffff',
+                                                                color: isDark ? '#f8fafc' : '#1a1a2e',
+                                                                border: `1px solid ${isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)'}`,
+                                                                borderRadius: '10px',
+                                                                boxShadow: '0 8px 32px rgba(0,0,0,0.35)',
+                                                                backdropFilter: 'blur(12px)',
+                                                            },
+                                                            '& .MuiChartsTooltip-cell': {
+                                                                color: isDark ? '#f8fafc' : '#1a1a2e',
+                                                                fontWeight: 600,
+                                                                fontSize: '0.875rem',
+                                                            },
+                                                            '& .MuiChartsTooltip-labelCell': {
+                                                                color: isDark ? '#94a3b8' : '#64748b',
+                                                            },
+                                                        },
+                                                    },
+                                                }}
                                             />
                                         ) : (
                                             <div className="no-data">{t('admin.noData')}</div>
@@ -361,6 +411,8 @@ const AdminDashboard = () => {
                                             series={[{
                                                 data: userRegValues,
                                                 color: '#3B82F6',
+                                                label: isRTL ? 'משתמשים' : 'Users',
+                                                valueFormatter: (value) => `${value}`,
                                             }]}
                                             width={chartWidth}
                                             height={220}
@@ -368,8 +420,37 @@ const AdminDashboard = () => {
                                                 '& .MuiChartsAxis-tickLabel': { fill: labelColor },
                                                 '& .MuiChartsAxis-line': { stroke: labelColor },
                                                 '& .MuiChartsGrid-line': { stroke: gridColor },
+                                                '& .MuiBarElement-root:hover': {
+                                                    filter: 'brightness(1.15)',
+                                                },
                                             }}
                                             grid={{ horizontal: true }}
+                                            tooltip={{ trigger: 'item' }}
+                                            slotProps={{
+                                                popper: {
+                                                    sx: {
+                                                        '& .MuiChartsTooltip-root': {
+                                                            backgroundColor: isDark ? '#1a1a2e' : '#ffffff',
+                                                            color: isDark ? '#f8fafc' : '#1a1a2e',
+                                                            border: `1px solid ${isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)'}`,
+                                                            borderRadius: '10px',
+                                                            boxShadow: '0 8px 32px rgba(0,0,0,0.35)',
+                                                            backdropFilter: 'blur(12px)',
+                                                        },
+                                                        '& .MuiChartsTooltip-cell': {
+                                                            color: isDark ? '#f8fafc' : '#1a1a2e',
+                                                            fontWeight: 600,
+                                                            fontSize: '0.875rem',
+                                                        },
+                                                        '& .MuiChartsTooltip-labelCell': {
+                                                            color: isDark ? '#94a3b8' : '#64748b',
+                                                        },
+                                                        '& .MuiChartsTooltip-markCell': {
+                                                            paddingLeft: '8px',
+                                                        },
+                                                    },
+                                                },
+                                            }}
                                         />
                                     </div>
                                 </div>
@@ -382,7 +463,7 @@ const AdminDashboard = () => {
                     </ThemeProvider>
                 )}
             </div>
-        </div>
+        </div >
     );
 };
 

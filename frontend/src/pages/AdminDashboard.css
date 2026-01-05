@@ -490,6 +490,65 @@
     background-repeat: no-repeat;
     background-position: right 4px center;
     background-size: 10px;
+    transition: all 0.2s ease;
+}
+
+.year-picker:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.year-picker:focus {
+    outline: none;
+    border-color: #10b981;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+}
+
+/* Dark mode specific - dropdown options */
+.admin-dashboard.dark .year-picker {
+    color-scheme: dark;
+}
+
+.admin-dashboard.dark .year-picker option {
+    background: #1a1a2e;
+    color: #f9fafb;
+}
+
+/* Light Mode - Year Picker */
+.admin-dashboard.light .year-picker {
+    background: rgba(0, 0, 0, 0.03);
+    border-color: rgba(0, 0, 0, 0.1);
+    color: var(--admin-text);
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+}
+
+.admin-dashboard.light .year-picker:hover {
+    background-color: rgba(0, 0, 0, 0.06);
+    border-color: rgba(0, 0, 0, 0.15);
+}
+
+.admin-dashboard.light .year-picker option {
+    background: #ffffff;
+    color: #0f172a;
+}
+
+/* Light Mode - Range Buttons */
+.admin-dashboard.light .range-btn {
+    background: rgba(0, 0, 0, 0.03);
+    border-color: rgba(0, 0, 0, 0.1);
+    color: var(--admin-text-muted);
+}
+
+.admin-dashboard.light .range-btn:hover {
+    background: rgba(0, 0, 0, 0.06);
+    border-color: rgba(0, 0, 0, 0.15);
+    color: var(--admin-text);
+}
+
+.admin-dashboard.light .range-btn.active {
+    background: rgba(16, 185, 129, 0.1);
+    color: #059669;
+    border-color: rgba(16, 185, 129, 0.3);
 }
 
 .custom-date-range {
@@ -1951,6 +2010,62 @@
     .analytics-card h3 {
         font-size: 0.875rem;
     }
+
+    /* Mobile pie chart centering */
+    .pie-chart-wrapper {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+    }
+
+    /* Mobile gauge centering */
+    .gauge-content {
+        align-items: center;
+    }
+
+    /* Mobile pie legend - horizontal on small screens */
+    .pie-legend {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
+        padding: 10px;
+    }
+
+    .pie-legend .legend-item {
+        font-size: 0.6875rem;
+        gap: 6px;
+    }
+
+    .pie-legend .legend-item .dot {
+        width: 8px;
+        height: 8px;
+    }
+
+    /* Bar chart legend table - smaller on mobile */
+    .bar-chart-legend {
+        overflow-x: auto;
+    }
+
+    .bar-chart-legend table {
+        font-size: 0.6875rem;
+        min-width: 280px;
+    }
+
+    .bar-chart-legend th,
+    .bar-chart-legend td {
+        padding: 6px 8px;
+    }
+
+    /* Charts scroll container */
+    .bar-chart-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .bar-chart-wrapper svg {
+        min-width: 300px;
+    }
 }
 
 /* ============================================
@@ -2057,5 +2172,510 @@
 
     .dashboard-chart-card .chart-container {
         min-height: 160px;
+    }
+
+    /* Mobile: Date range buttons - smaller and wrap */
+    .date-range-buttons {
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .range-btn {
+        padding: 6px 10px;
+        font-size: 0.6875rem;
+    }
+
+    .year-picker {
+        padding: 6px 22px 6px 8px;
+        font-size: 0.6875rem;
+        min-width: 70px;
+    }
+
+    /* Mobile: Chart header stacked layout */
+    .dashboard-chart-card .chart-header {
+        gap: 10px;
+        margin-bottom: 12px;
+        padding-bottom: 10px;
+    }
+
+    .dashboard-chart-card .chart-header h3 {
+        font-size: 0.8125rem;
+    }
+
+    /* Mobile: Summary cards compact */
+    .summary-card {
+        padding: 12px 14px;
+        gap: 10px;
+    }
+
+    .summary-card .card-icon {
+        width: 38px;
+        height: 38px;
+    }
+
+    .summary-card .card-value {
+        font-size: 1.375rem;
+    }
+
+    .summary-card .card-label {
+        font-size: 9px;
+    }
+}
+
+/* Extra small mobile (iPhone SE) */
+@media (max-width: 360px) {
+    .admin-dashboard {
+        padding: 12px 8px;
+    }
+
+    .dashboard-chart-card {
+        padding: 10px;
+    }
+
+    .range-btn {
+        padding: 5px 8px;
+        font-size: 0.625rem;
+    }
+
+    .year-picker {
+        font-size: 0.625rem;
+        padding: 5px 20px 5px 6px;
+    }
+
+    .summary-card .card-value {
+        font-size: 1.25rem;
+    }
+
+    .dashboard-chart-card .chart-header h3 {
+        font-size: 0.75rem;
+    }
+
+    /* Hide chart header icons on very small screens */
+    .dashboard-chart-card .chart-header h3 svg {
+        display: none;
+    }
+}
+
+/* ============================================
+   RESPONSIVE VISIBILITY UTILITIES
+   ============================================ */
+
+/* Desktop view: table visible, cards hidden */
+.users-table-wrapper.desktop-only {
+    display: block;
+}
+
+.users-cards-list.mobile-only {
+    display: none;
+}
+
+/* Mobile view: table hidden, cards visible */
+@media (max-width: 900px) {
+    .users-table-wrapper.desktop-only {
+        display: none !important;
+    }
+
+    .users-cards-list.mobile-only {
+        display: flex !important;
+        flex-direction: column;
+        gap: 12px;
+    }
+}
+
+/* Generic visibility utilities */
+.desktop-only:not(.users-table-wrapper):not(.users-cards-list) {
+    display: block;
+}
+
+.mobile-only:not(.users-table-wrapper):not(.users-cards-list) {
+    display: none;
+}
+
+@media (max-width: 900px) {
+    .desktop-only:not(.users-table-wrapper):not(.users-cards-list) {
+        display: none !important;
+    }
+
+    .mobile-only:not(.users-table-wrapper):not(.users-cards-list) {
+        display: block !important;
+    }
+}
+
+/* ============================================
+   MOBILE USER CARDS
+   Premium card design for mobile user list
+   ============================================ */
+
+/* Note: display is handled by visibility utilities above */
+
+.user-card {
+    background: var(--admin-card-bg);
+    border: 1px solid var(--admin-card-border);
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: var(--admin-card-glow);
+    backdrop-filter: blur(24px);
+    transition: all 0.3s ease;
+}
+
+.user-card:hover {
+    border-color: var(--admin-card-border-hover);
+}
+
+.user-card.disabled-user {
+    opacity: 0.65;
+}
+
+/* Card Header - Avatar + Name + Status */
+.user-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--admin-border);
+}
+
+.user-card-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.user-card-identity {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
+}
+
+.user-card-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--admin-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Card Details - Email, Date */
+.user-card-details {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.user-card-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.8125rem;
+    color: var(--admin-text-secondary);
+}
+
+.user-card-row svg {
+    color: var(--admin-text-muted);
+    flex-shrink: 0;
+}
+
+.user-card-email {
+    word-break: break-all;
+}
+
+/* Card Actions - Full width buttons */
+.user-card-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.user-card-actions .action-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    border: 1px solid;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.user-card-actions .action-btn.success {
+    background: rgba(16, 185, 129, 0.1);
+    border-color: rgba(16, 185, 129, 0.3);
+    color: #10b981;
+}
+
+.user-card-actions .action-btn.success:hover {
+    background: rgba(16, 185, 129, 0.2);
+}
+
+.user-card-actions .action-btn.danger {
+    background: rgba(239, 68, 68, 0.08);
+    border-color: rgba(239, 68, 68, 0.25);
+    color: #ef4444;
+}
+
+.user-card-actions .action-btn.danger:hover {
+    background: rgba(239, 68, 68, 0.15);
+}
+
+.user-card-actions .action-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Light mode adjustments */
+.admin-dashboard.light .user-card-actions .action-btn.success {
+    background: rgba(16, 185, 129, 0.08);
+    color: #059669;
+}
+
+.admin-dashboard.light .user-card-actions .action-btn.danger {
+    background: rgba(239, 68, 68, 0.06);
+    color: #dc2626;
+}
+
+/* No data card state */
+.no-data-card {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--admin-text-muted);
+    font-size: 0.9375rem;
+    background: var(--admin-card-bg);
+    border: 1px solid var(--admin-card-border);
+    border-radius: 16px;
+}
+
+/* ============================================
+   CHART CONTAINER FIX
+   Ensure charts respect container width
+   ============================================ */
+
+.dashboard-chart-card .chart-container {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Force MUI charts to not overflow */
+.dashboard-chart-card .chart-container svg {
+    max-width: 100%;
+}
+
+/* Mobile chart scroll hint */
+@media (max-width: 480px) {
+    .dashboard-chart-card .chart-container::after {
+        content: '';
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: 20px;
+        background: linear-gradient(to left, var(--admin-card-bg), transparent);
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .dashboard-chart-card .chart-container::-webkit-scrollbar {
+        height: 4px;
+    }
+
+    .dashboard-chart-card .chart-container::-webkit-scrollbar-track {
+        background: var(--admin-border);
+        border-radius: 2px;
+    }
+
+    .dashboard-chart-card .chart-container::-webkit-scrollbar-thumb {
+        background: var(--admin-text-muted);
+        border-radius: 2px;
+    }
+}
+
+/* ============================================
+   PAGINATION CONTROLS
+   ============================================ */
+
+.users-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--admin-border);
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.users-count {
+    color: var(--admin-text-muted);
+    font-size: 0.875rem;
+    margin: 0;
+}
+
+.pagination-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.pagination-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    border: 1px solid var(--admin-border);
+    background: var(--admin-card-bg);
+    color: var(--admin-text);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.pagination-btn:hover:not(:disabled) {
+    background: rgba(59, 130, 246, 0.1);
+    border-color: rgba(59, 130, 246, 0.3);
+    color: #3B82F6;
+}
+
+.pagination-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.pagination-info {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--admin-text);
+    min-width: 50px;
+    text-align: center;
+}
+
+/* Mobile pagination */
+@media (max-width: 480px) {
+    .users-footer {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .pagination-btn {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+/* ============================================
+   MOBILE FULL WIDTH FIX
+   Ensure all content uses maximum width on mobile
+   ============================================ */
+
+@media (max-width: 600px) {
+
+    /* Main dashboard container - minimal padding */
+    .admin-dashboard {
+        padding: 16px 12px;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    .admin-content {
+        width: 100%;
+    }
+
+    /* Cards use full width */
+    .analytics-card,
+    .analytics-card-full,
+    .dashboard-chart-card,
+    .summary-card {
+        width: 100%;
+        min-width: 0;
+        margin: 0;
+    }
+
+    /* Bar chart legend table - full width, scroll if needed */
+    .bar-chart-legend {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .bar-chart-legend table {
+        width: 100%;
+        table-layout: auto;
+    }
+
+    /* Chart containers */
+    .bar-chart-wrapper,
+    .chart-container,
+    .line-chart-container {
+        width: 100%;
+        min-width: 0;
+        overflow-x: auto;
+    }
+
+    /* Summary cards grid */
+    .dashboard-summary-cards {
+        width: 100%;
+    }
+
+    /* Header */
+    .admin-header {
+        padding: 0;
+        margin-bottom: 16px;
+    }
+
+    .admin-header h1 {
+        font-size: 1.125rem;
+    }
+}
+
+/* Extra small screens (iPhone SE) */
+@media (max-width: 375px) {
+    .admin-dashboard {
+        padding: 12px 8px;
+    }
+
+    .analytics-card,
+    .dashboard-chart-card {
+        padding: 12px;
+    }
+
+    .admin-header h1 {
+        font-size: 1rem;
+    }
+
+    /* Smaller chart header controls */
+    .chart-header {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+    }
+
+    .date-range-buttons {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .range-btn {
+        flex: 1;
+        min-width: 0;
+        text-align: center;
     }
 }
