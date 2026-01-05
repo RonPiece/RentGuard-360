@@ -39,10 +39,7 @@ const getAuthToken = async () => {
  * Includes 30-second timeout and offline detection
  */
 const apiCall = async (endpoint, options = {}) => {
-    // Check if offline
-    if (!navigator.onLine) {
-        throw new Error('אין חיבור לאינטרנט. אנא בדוק את החיבור ונסה שוב.');
-    }
+    // NOTE: Removed navigator.onLine check - it's unreliable and causes false positives
 
     const token = await getAuthToken();
 
@@ -311,6 +308,8 @@ export const sendContactMessage = async (formData) => {
  * @param {string} fullEditedText - Full contract text with edits applied
  */
 export const saveEditedContract = async (contractId, userId, editedClauses, fullEditedText) => {
+    console.log('DEBUG saveEditedContract called with:', { contractId, userId, editedClausesCount: Object.keys(editedClauses || {}).length });
+
     const data = await apiCall('/contracts/save-edited', {
         method: 'POST',
         body: JSON.stringify({
@@ -321,6 +320,7 @@ export const saveEditedContract = async (contractId, userId, editedClauses, full
         }),
     });
 
+    console.log('DEBUG saveEditedContract response:', data);
     return data;
 };
 
@@ -383,12 +383,12 @@ export const deleteAllUserContracts = async (userId) => {
     try {
         // Get all user's contracts first
         const contracts = await getContracts(userId);
-        
+
         // Delete each contract
-        const deletePromises = contracts.map(contract => 
+        const deletePromises = contracts.map(contract =>
             deleteContract(contract.contractId, userId)
         );
-        
+
         await Promise.all(deletePromises);
         return { success: true, count: contracts.length };
     } catch (error) {

@@ -3,6 +3,7 @@ import { useParams, Link, useLocation } from 'react-router-dom';
 import { getAnalysis, consultClause, saveEditedContract } from '../services/api';
 import { exportToWord, exportToPDF, exportEditedContract } from '../services/ExportService';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useAuth } from '../contexts/AuthContext';
 import Card from '../components/Card';
 import Button from '../components/Button';
 import ScoreBreakdown from '../components/ScoreBreakdown';
@@ -16,6 +17,7 @@ const AnalysisPage = () => {
     const { contractId } = useParams();
     const { state } = useLocation(); // Get passed state from navigation
     const { t, isRTL } = useLanguage();
+    const { userAttributes } = useAuth();
 
     // Initialize with passed contract data if available (instant load)
     const [analysis, setAnalysis] = useState(state?.contract || null);
@@ -541,7 +543,8 @@ const AnalysisPage = () => {
                             }}
                             onSaveToCloud={async (clauses, fullEditedText) => {
                                 // Save to AWS (S3 + DynamoDB)
-                                const userId = 'user-' + Date.now(); // TODO: Get from AuthContext
+                                // Use real user ID if available, otherwise fallback (should be auth'd though)
+                                const userId = userAttributes?.sub || 'unknown-user';
                                 const contractIdClean = analysis?.contractId || contractId;
                                 await saveEditedContract(contractIdClean, userId, clauses, fullEditedText);
                             }}
