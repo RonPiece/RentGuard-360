@@ -25,8 +25,8 @@
 
 .admin-layout {
     min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+    overflow-x: hidden;
+    /* Prevent sidebar from peeking */
 }
 
 .admin-layout.dark {
@@ -41,7 +41,44 @@
    2. TOP BAR - Always Visible
    ============================================ */
 
-.admin-top-bar {
+.admin-main {
+    flex: 1;
+    margin-left: 260px;
+    min-height: 100vh;
+    transition: margin 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[dir="rtl"] .admin-main {
+    margin-left: 0;
+    margin-right: 260px;
+}
+
+/* ============================================
+   3. SIDEBAR CONTAINER
+   ============================================ */
+
+.sidebar-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 260px;
+    /* Match sidebar width for transform to work */
+    height: 100vh;
+    z-index: 200;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[dir="rtl"] .sidebar-container {
+    left: auto;
+    right: 0;
+}
+
+/* ============================================
+   4. MOBILE TOP BAR
+   ============================================ */
+
+.mobile-top-bar {
+    display: none;
     position: fixed;
     top: 0;
     left: 0;
@@ -151,62 +188,39 @@
    4. MAIN CONTENT
    ============================================ */
 
-.admin-main-content {
-    flex: 1;
-    margin-top: var(--admin-topbar-height);
-    margin-left: 0;
-    transition: margin var(--admin-transition);
-    min-height: calc(100vh - var(--admin-topbar-height));
-}
-
-[dir="rtl"] .admin-main-content {
-    margin-left: 0;
-    margin-right: 0;
-}
-
-/* When sidebar is open on larger screens, push content */
-@media (min-width: 1025px) {
-    .admin-layout.sidebar-open .admin-main-content {
-        margin-left: var(--admin-sidebar-width);
-    }
-
-    [dir="rtl"] .admin-layout.sidebar-open .admin-main-content {
-        margin-left: 0;
-        margin-right: var(--admin-sidebar-width);
-    }
-
-    /* Add shadow to sidebar on desktop */
-    .admin-sidebar-wrapper.open {
-        box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
-    }
-
-    [dir="rtl"] .admin-sidebar-wrapper.open {
-        box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
-    }
-}
-
-/* ============================================
-   5. MOBILE OVERLAY
-   ============================================ */
-
-.sidebar-overlay {
-    display: none;
-}
-
+/* --- Tablet/Mobile (1024px and below) - Mobile Overlay Mode --- */
+/* Simplified: sidebar hidden by default, hamburger menu shows, overlay on toggle */
 @media (max-width: 1024px) {
-    .sidebar-overlay {
+
+    /* Show mobile top bar with hamburger */
+    .mobile-top-bar {
+        display: flex;
+    }
+
+    /* Main content takes full width, no margin for sidebar */
+    .admin-main {
+        margin-left: 0;
+        margin-right: 0;
+        padding-top: 56px;
+    }
+
+    /* RTL override - must also remove margin */
+    [dir="rtl"] .admin-main {
+        margin-right: 0;
+        margin-left: 0;
+    }
+
+    /* Enable overlay display */
+    .mobile-overlay {
         display: block;
-        position: fixed;
-        top: var(--admin-topbar-height);
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.6);
-        backdrop-filter: blur(4px);
-        z-index: 150;
-        opacity: 0;
+    }
+
+    /* Sidebar hidden by default - slides off screen + hidden */
+    .sidebar-container {
+        transform: translateX(-100%);
         visibility: hidden;
-        transition: opacity 0.3s ease, visibility 0.3s ease;
+        /* Completely hide when closed */
+        transition: transform 0.3s ease, visibility 0.3s ease;
     }
 
     .sidebar-overlay.visible {
@@ -214,9 +228,11 @@
         visibility: visible;
     }
 
-    /* Sidebar shadow on mobile */
-    .admin-sidebar-wrapper.open {
-        box-shadow: 4px 0 30px rgba(0, 0, 0, 0.4);
+    /* Sidebar visible when menu is open */
+    .sidebar-container.open {
+        transform: translateX(0);
+        visibility: visible;
+        /* Show when open */
     }
 
     [dir="rtl"] .admin-sidebar-wrapper.open {
