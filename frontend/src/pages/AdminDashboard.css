@@ -922,7 +922,7 @@
     border-bottom: none;
 }
 
-.users-table .disabled-user {
+.users-table .disabled-user td:not(.actions-cell) {
     opacity: 0.35;
 }
 
