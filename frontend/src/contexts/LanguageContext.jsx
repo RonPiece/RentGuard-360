@@ -81,7 +81,7 @@ const translations = {
             // Footer
             footerTagline: 'הגנה על החוזה שלך עם בינה מלאכותית מתקדמת',
             footerSupport: 'צריכים עזרה? שלחו לנו מייל:',
-            footerEmail: 'projForruppin@gmail.com',
+            footerEmail: 'rentguard360@gmail.com',
             footerResponse: 'תגובה תוך 24 שעות | הצוות שלנו מוכנים להגן עליכם כמו שאנחנו מגנים על החוזה שלכם',
             projectName: '💻 פרויקט סיום מחשוב ענן',
         },
@@ -443,7 +443,7 @@ const translations = {
             // Footer
             footerTagline: 'Protecting your lease with cutting-edge AI',
             footerSupport: 'Need help? Drop us a line:',
-            footerEmail: 'projForruppin@gmail.com',
+            footerEmail: 'rentguard360@gmail.com',
             footerResponse: 'Response within 24 hours | Our team is as dedicated to helping you as we are to analyzing your contracts',
             projectName: '💻 Cloud Computing Final Project',
         },
