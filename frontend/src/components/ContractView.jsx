@@ -34,72 +34,6 @@ const ContractView = ({
     const [expandedExplanations, setExpandedExplanations] = useState({});
     const [consultError, setConsultError] = useState(null);
 
-    // Scroll navigation state
-    const containerRef = useRef(null);
-    const bottomRef = useRef(null);
-    const [showScrollButton, setShowScrollButton] = useState(true); // Always show initially
-    const [isAtBottom, setIsAtBottom] = useState(false);
-
-    // Load saved edits from localStorage on mount
-    useEffect(() => {
-        if (!contractId) return;
-        const storageKey = `rentguard_edits_${contractId}`;
-        try {
-            const saved = localStorage.getItem(storageKey);
-            if (saved) {
-                const parsed = JSON.parse(saved);
-                setEditedClauses(parsed);
-                console.log(`Loaded ${Object.keys(parsed).length} saved edits for contract`);
-            }
-        } catch (e) {
-            console.warn('Failed to load saved edits:', e);
-        }
-    }, [contractId]);
-
-    // Auto-save edits to localStorage when changed
-    useEffect(() => {
-        if (!contractId || Object.keys(editedClauses).length === 0) return;
-        const storageKey = `rentguard_edits_${contractId}`;
-        try {
-            localStorage.setItem(storageKey, JSON.stringify(editedClauses));
-            console.log(`Auto-saved ${Object.keys(editedClauses).length} edits to localStorage`);
-        } catch (e) {
-            console.warn('Failed to save edits:', e);
-        }
-    }, [contractId, editedClauses]);
-
-    // Track scroll position - check both container and window
-    useEffect(() => {
-        const checkScroll = () => {
-            const container = containerRef.current;
-            if (!container) return;
-
-            // Check if bottomRef is in viewport
-            if (bottomRef.current) {
-                const rect = bottomRef.current.getBoundingClientRect();
-                const isVisible = rect.top <= window.innerHeight;
-                setIsAtBottom(isVisible);
-            }
-        };
-
-        // Listen to both window and container scroll
-        window.addEventListener('scroll', checkScroll, true);
-
-        // Initial check
-        checkScroll();
-
-        return () => window.removeEventListener('scroll', checkScroll, true);
-    }, []);
-
-    // Scroll functions
-    const scrollToBottom = () => {
-        bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
-    };
-
-    const scrollToTop = () => {
-        containerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    };
-
     // Process clauses
     const clauses = useMemo(() => {
         let rawClauses = [];
@@ -140,6 +74,119 @@ const ContractView = ({
             return clauseObj;
         });
     }, [contractText, backendClauses, issues, editedClauses]);
+
+    // Scroll navigation state
+    const containerRef = useRef(null);
+    const bottomRef = useRef(null);
+    const [showScrollButton, setShowScrollButton] = useState(true); // Always show initially
+    const [isAtBottom, setIsAtBottom] = useState(false);
+
+    // Auto-save refs
+    const isFirstRender = useRef(true);
+    const saveTimeoutRef = useRef(null);
+
+    // Load saved edits from localStorage on mount
+    useEffect(() => {
+        if (!contractId) return;
+        const storageKey = `rentguard_edits_${contractId}`;
+        try {
+            const saved = localStorage.getItem(storageKey);
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                setEditedClauses(parsed);
+                console.log(`Loaded ${Object.keys(parsed).length} saved edits for contract`);
+            }
+        } catch (e) {
+            console.warn('Failed to load saved edits:', e);
+        }
+    }, [contractId]);
+
+    // Auto-save edits to localStorage when changed
+    useEffect(() => {
+        if (!contractId || Object.keys(editedClauses).length === 0) return;
+        const storageKey = `rentguard_edits_${contractId}`;
+        try {
+            localStorage.setItem(storageKey, JSON.stringify(editedClauses));
+            console.log(`Auto-saved ${Object.keys(editedClauses).length} edits to localStorage`);
+        } catch (e) {
+            console.warn('Failed to save edits:', e);
+        }
+    }, [contractId, editedClauses]);
+
+    // Auto-save to Cloud (Debounced)
+    useEffect(() => {
+        if (!onSaveToCloud || !contractId) return;
+
+        // Skip initial render to avoid saving on load
+        if (isFirstRender.current) {
+            isFirstRender.current = false;
+            return;
+        }
+
+        // Clear existing timeout
+        if (saveTimeoutRef.current) {
+            clearTimeout(saveTimeoutRef.current);
+        }
+
+        setSaveStatus('saving');
+
+        // Set new timeout (2 seconds debounce)
+        saveTimeoutRef.current = setTimeout(async () => {
+            try {
+                // Construct full text
+                const fullEditedText = clauses.map(c => getClauseText(c)).join('\n\n');
+
+                await onSaveToCloud(editedClauses, fullEditedText);
+                setSaveStatus('success');
+
+                // Clear success message after 3 seconds
+                setTimeout(() => setSaveStatus(null), 3000);
+            } catch (error) {
+                console.error('Auto-save failed:', error);
+                setSaveStatus('error');
+            }
+        }, 2000);
+
+        return () => {
+            if (saveTimeoutRef.current) {
+                clearTimeout(saveTimeoutRef.current);
+            }
+        };
+    }, [editedClauses, contractId, onSaveToCloud, clauses]); // Dependencies include content
+
+    // Track scroll position - check both container and window
+    useEffect(() => {
+        const checkScroll = () => {
+            const container = containerRef.current;
+            if (!container) return;
+
+            // Check if bottomRef is in viewport
+            if (bottomRef.current) {
+                const rect = bottomRef.current.getBoundingClientRect();
+                const isVisible = rect.top <= window.innerHeight;
+                setIsAtBottom(isVisible);
+            }
+        };
+
+        // Listen to both window and container scroll
+        window.addEventListener('scroll', checkScroll, true);
+
+        // Initial check
+        checkScroll();
+
+        return () => window.removeEventListener('scroll', checkScroll, true);
+    }, []);
+
+    // Scroll functions
+    const scrollToBottom = () => {
+        bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    };
+
+    const scrollToTop = () => {
+        containerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+
+
 
     // Detect document language
     const documentLanguage = useMemo(() => {
@@ -494,24 +541,18 @@ const ContractView = ({
                         </button>
                     )}
 
-                    {/* Save to Cloud Button */}
-                    {onSaveToCloud && Object.keys(editedClauses).length > 0 && (
-                        <button
-                            className="export-btn-cloud"
-                            onClick={handleSaveToCloud}
-                            disabled={isSaving}
-                        >
-                            {isSaving ? '⏳ שומר...' : '☁️ שמור לענן'}
-                        </button>
-                    )}
-
-                    {/* Save Status */}
-                    {saveStatus === 'success' && (
-                        <span className="save-status success">✅ נשמר בהצלחה!</span>
-                    )}
-                    {saveStatus === 'error' && (
-                        <span className="save-status error">❌ שגיאה בשמירה</span>
-                    )}
+                    {/* Save to Cloud Status Indicator (Auto-Save) */}
+                    <div className="save-status-indicator">
+                        {saveStatus === 'saving' && (
+                            <span className="save-status saving">💾 שומר שינויים...</span>
+                        )}
+                        {saveStatus === 'success' && (
+                            <span className="save-status success">✅ נשמר בהצלחה</span>
+                        )}
+                        {saveStatus === 'error' && (
+                            <span className="save-status error">⚠️ שגיאה בשמירה</span>
+                        )}
+                    </div>
                 </div>
 
                 {/* Bottom anchor for scroll */}
@@ -598,7 +639,7 @@ const ContractView = ({
 
                         <div className="popup-footer">
                             <button className="popup-save-btn" onClick={saveEdit}>
-                                ✓ שמור שינויים
+                                ✓ סיום עריכה
                             </button>
 
                             {/* Revert Button in Popup */}

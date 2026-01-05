@@ -1,28 +1,16 @@
 import json
 import boto3
 from datetime import datetime
-from decimal import Decimal
 
 s3 = boto3.client('s3')
 dynamodb = boto3.resource('dynamodb')
 
-# Configuration
-BUCKET_NAME = 'rentguard-contracts'  # Same bucket as uploads
-TABLE_NAME = 'RentGuardContracts'    # Same table as contracts
+BUCKET_NAME = 'rentguard-contracts-moty-101225'
+TABLE_NAME = 'RentGuard-Contracts'
 
 def lambda_handler(event, context):
-    """
-    Save edited contract to S3 and update DynamoDB with edit history
+    print(f"FULL EVENT: {json.dumps(event, default=str)}")
     
-    Expected body:
-    {
-        "contractId": "original contract ID",
-        "userId": "user ID",
-        "editedClauses": { "clause-0": { "text": "...", "action": "accepted" }, ... },
-        "fullEditedText": "full contract text with edits applied"
-    }
-    """
-    # CORS headers
     headers = {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*',
@@ -30,112 +18,57 @@ def lambda_handler(event, context):
         'Access-Control-Allow-Methods': 'POST,OPTIONS'
     }
     
-    # Handle preflight
     if event.get('httpMethod') == 'OPTIONS':
         return {'statusCode': 200, 'headers': headers, 'body': ''}
     
     try:
-        # Parse request body
-        body = json.loads(event.get('body', '{}'))
+        # Read directly from event (Lambda Integration, not Proxy)
+        contract_id = event.get('contractId', '')
+        user_id = event.get('userId', '')
+        edited_clauses = event.get('editedClauses', {})
+        full_edited_text = event.get('fullEditedText', '')
         
-        # SECURITY FIX: Extract userId from JWT token claims (not body!)
-        claims = event.get('requestContext', {}).get('authorizer', {}).get('claims', {})
-        user_id = claims.get('sub')  # 'sub' is the Cognito user ID
+        print(f"DATA: contractId={contract_id}, userId={user_id}")
         
-        # Fallback for transition period (TODO: remove after full deployment)
-        if not user_id:
-            user_id = body.get('userId', '').strip()
-            print(f"WARNING: Using userId from body - this is deprecated!")
-        
-        contract_id = body.get('contractId', '').strip()
-        edited_clauses = body.get('editedClauses', {})
-        full_edited_text = body.get('fullEditedText', '')
-        
-        # Validate required fields
         if not contract_id:
-            return {
-                'statusCode': 400,
-                'headers': headers,
-                'body': json.dumps({
-                    'success': False,
-                    'error': 'contractId is required'
-                })
-            }
-        
+            return {'statusCode': 400, 'headers': headers, 'body': json.dumps({'error': 'contractId required'})}
         if not user_id:
-            return {
-                'statusCode': 401,
-                'headers': headers,
-                'body': json.dumps({
-                    'success': False,
-                    'error': 'Unauthorized - no valid user identity'
-                })
-            }
-        
-        if not edited_clauses:
-            return {
-                'statusCode': 400,
-                'headers': headers,
-                'body': json.dumps({
-                    'success': False,
-                    'error': 'No edits to save'
-                })
-            }
+            return {'statusCode': 401, 'headers': headers, 'body': json.dumps({'error': 'userId required'})}
         
         timestamp = datetime.utcnow().isoformat()
+        table = dynamodb.Table(TABLE_NAME)
         
-        # 1. Save edited contract text to S3
-        # OPTIMIZATION: Use a fixed key for the edited version to avoid spamming S3 with multiple versions
-        # This will overwrite the previous edited version
-        edited_key = contract_id.replace('.pdf', '') + '_edited.txt'
+        # Get original S3 key
+        try:
+            resp = table.get_item(Key={'userId': user_id, 'contractId': contract_id})
+            s3_key = resp.get('Item', {}).get('s3Key')
+            print(f"FOUND s3Key: {s3_key}")
+        except:
+            s3_key = None
+
+        if not s3_key:
+            s3_key = f"uploads/{user_id}/contract-{contract_id}.pdf"
+            print(f"FALLBACK s3Key: {s3_key}")
+            
+        edited_key = s3_key.replace('.pdf', '_edited.txt')
+        print(f"SAVING TO: {edited_key}")
         
         s3.put_object(
             Bucket=BUCKET_NAME,
             Key=edited_key,
             Body=full_edited_text.encode('utf-8'),
-            ContentType='text/plain; charset=utf-8',
-            Metadata={
-                'original_contract_id': contract_id,
-                'user_id': user_id,
-                'edit_timestamp': timestamp,
-                'edits_count': str(len(edited_clauses))
-            }
+            ContentType='text/plain; charset=utf-8'
         )
         
-        # 2. Update DynamoDB
-        table = dynamodb.Table(TABLE_NAME)
-        
-        # Update the contract record with the latest edit info
-        # We perform an UPSERT on the specific edit fields rather than appending to a history list
         table.update_item(
-            Key={'contractId': contract_id},
-            UpdateExpression='SET lastEditedAt = :timestamp, editedVersion = :version, editsCount = :count',
-            ExpressionAttributeValues={
-                ':timestamp': timestamp,
-                ':version': edited_key,
-                ':count': len(edited_clauses)
-            }
+            Key={'userId': user_id, 'contractId': contract_id},
+            UpdateExpression='SET lastEditedAt = :ts, editedVersion = :v, editsCount = :c',
+            ExpressionAttributeValues={':ts': timestamp, ':v': edited_key, ':c': len(edited_clauses or {})}
         )
         
-        return {
-            'statusCode': 200,
-            'headers': headers,
-            'body': json.dumps({
-                'success': True,
-                'message': 'Contract edits saved successfully!',
-                'editedKey': edited_key,
-                'timestamp': timestamp,
-                'editsCount': len(edited_clauses)
-            })
-        }
+        print(f"SUCCESS: Saved to {edited_key}")
+        return {'statusCode': 200, 'headers': headers, 'body': json.dumps({'success': True, 'editedKey': edited_key})}
         
     except Exception as e:
-        print(f"Error: {str(e)}")
-        return {
-            'statusCode': 500,
-            'headers': headers,
-            'body': json.dumps({
-                'success': False,
-                'error': 'Failed to save contract edits. Please try again later.'
-            })
-        }
+        print(f"ERROR: {str(e)}")
+        return {'statusCode': 500, 'headers': headers, 'body': json.dumps({'error': str(e)})}

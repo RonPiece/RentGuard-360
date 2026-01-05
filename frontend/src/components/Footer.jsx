@@ -47,7 +47,7 @@ const Footer = () => {
                         <div className="contact-inner">
                             <div className="contact-row">
                                 <Mail size={14} />
-                                <a href="mailto:projForruppin@gmail.com">projForruppin@gmail.com</a>
+                                <a href="mailto:rentguard360@gmail.com">projForruppin@gmail.com</a>
                             </div>
                             <div className="contact-row">
                                 <Clock size={14} />
