@@ -1,19 +1,73 @@
+"""
+=============================================================================
+LAMBDA: get-upload-url
+Generates a presigned S3 URL for contract upload
+=============================================================================
+
+Trigger: API Gateway (GET /upload-url)
+Input: Query parameters - fileName, originalFileName, propertyAddress, 
+       landlordName, termsAccepted
+Output: Presigned S3 PUT URL and contract metadata
+
+DynamoDB Tables:
+  - RentGuard-Contracts: Creates initial record with status='uploaded'
+  - RentGuard-UserConsent: Records user consent for contract upload
+
+S3:
+  - Bucket: rentguard-contracts-moty-101225
+  - Operations: Generate presigned PUT URL
+
+Security:
+  - Extracts userId from JWT claims (Cognito authorizer)
+  - S3 key includes userId for data isolation
+
+=============================================================================
+"""
+
+# =============================================================================
+# IMPORTS
+# =============================================================================
+
 import json
 import boto3
 import uuid
 from urllib.parse import quote
 from datetime import datetime
 
+# =============================================================================
+# CONFIGURATION
+# =============================================================================
+
+BUCKET_NAME = 'rentguard-contracts-moty-101225'
+PRESIGNED_URL_EXPIRY = 300  # 5 minutes
+
 s3 = boto3.client('s3')
 dynamodb = boto3.resource('dynamodb')
-
-# S3 bucket for contract storage
-BUCKET_NAME = 'rentguard-contracts-moty-101225'
-# DynamoDB tables
 contracts_table = dynamodb.Table('RentGuard-Contracts')
 consent_table = dynamodb.Table('RentGuard-UserConsent')
 
+# Standard CORS headers for API Gateway responses
+CORS_HEADERS = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type,Authorization",
+    "Access-Control-Allow-Methods": "OPTIONS,GET,PUT"
+}
+
+# =============================================================================
+# MAIN HANDLER
+# =============================================================================
+
 def lambda_handler(event, context):
+    """
+    Main Lambda entry point - generates presigned URL for contract upload.
+    
+    Args:
+        event: API Gateway event with query parameters
+        context: AWS Lambda context object
+    
+    Returns:
+        dict: API Gateway response with presigned URL and contract metadata
+    """
     try:
         # 1. Get parameters from query string
         query_params = event.get('queryStringParameters') or {}
@@ -38,7 +92,7 @@ def lambda_handler(event, context):
         contract_id = str(uuid.uuid4())
         file_key = f"uploads/{user_id}/contract-{contract_id}.pdf"
 
-        # 4. Build S3 params with metadata (URL-encode non-ASCII characters)
+        # 4. Build S3 params with metadata
         # S3 metadata only allows ASCII, so we URL-encode Hebrew/Unicode values
         s3_params = {
             'Bucket': BUCKET_NAME,
@@ -52,11 +106,11 @@ def lambda_handler(event, context):
             }
         }
 
-        # 5. Generate presigned URL (expires in 5 minutes)
+        # 5. Generate presigned URL
         presigned_url = s3.generate_presigned_url(
             'put_object',
             Params=s3_params,
-            ExpiresIn=300
+            ExpiresIn=PRESIGNED_URL_EXPIRY
         )
 
         # 6. Record user consent in DynamoDB
@@ -74,23 +128,23 @@ def lambda_handler(event, context):
                 consent_table.put_item(Item=consent_item)
                 print(f"Consent recorded for user {user_id}")
             except Exception as e:
-                print(f"Warning: Could not record consent: {e}")
                 # Continue anyway - consent recording failure shouldn't block upload
+                print(f"Warning: Could not record consent: {e}")
 
         # 7. Create initial contract record with status='uploaded' for auto-polling
+        # Will be updated to 'analyzed' after analysis completes (by save-results.py)
         try:
             contract_item = {
                 'userId': user_id,
                 'contractId': contract_id,
                 'fileName': original_file_name,
                 'uploadDate': datetime.utcnow().isoformat(),
-                'status': 'uploaded',  # Will be updated to 'analyzed' after analysis completes
+                'status': 'uploaded',
                 's3Key': file_key,
                 'termsAccepted': terms_accepted,
                 'termsAcceptedAt': datetime.utcnow().isoformat() if terms_accepted else None
             }
             
-            # Add optional metadata if available
             if property_address:
                 contract_item['propertyAddress'] = property_address
             if landlord_name:
@@ -100,17 +154,13 @@ def lambda_handler(event, context):
             contracts_table.put_item(Item=contract_item)
             print("Initial contract record created successfully")
         except Exception as e:
-            print(f"Warning: Could not create initial contract record: {e}")
             # Continue anyway - save-results.py will create the record after analysis
+            print(f"Warning: Could not create initial contract record: {e}")
 
-        # 7. Return response to frontend
+        # 8. Return response to frontend
         return {
             'statusCode': 200,
-            'headers': {
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Headers": "Content-Type,Authorization",
-                "Access-Control-Allow-Methods": "OPTIONS,GET,PUT"
-            },
+            'headers': CORS_HEADERS,
             'body': json.dumps({
                 'uploadUrl': presigned_url,
                 'key': file_key,
@@ -129,8 +179,6 @@ def lambda_handler(event, context):
         print(f"Error generating URL: {str(e)}")
         return {
             'statusCode': 500,
-            'headers': {
-                "Access-Control-Allow-Origin": "*",
-            },
+            'headers': {"Access-Control-Allow-Origin": "*"},
             'body': json.dumps(f"Server Error: {str(e)}")
         }

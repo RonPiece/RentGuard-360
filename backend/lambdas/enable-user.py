@@ -1,22 +1,69 @@
+"""
+=============================================================================
+LAMBDA: enable-user
+Re-enables a disabled user in Cognito (admin only)
+=============================================================================
+
+Trigger: API Gateway (POST /admin/users/enable)
+Input: JSON body with username
+Output: Success/failure message
+
+External Services:
+  - Cognito: Enable user
+
+Security:
+  - Requires 'Admins' group membership in Cognito
+  - Returns 403 if user is not an admin
+
+=============================================================================
+"""
+
+# =============================================================================
+# IMPORTS
+# =============================================================================
+
 import json
 import boto3
+import traceback
+
+# =============================================================================
+# CONFIGURATION
+# =============================================================================
+
+USER_POOL_ID = 'us-east-1_rwsncOnh1'
 
 cognito = boto3.client('cognito-idp')
 
-# Your Cognito User Pool ID - UPDATE THIS
-USER_POOL_ID = 'us-east-1_rwsncOnh1'
+# =============================================================================
+# HELPER FUNCTIONS
+# =============================================================================
+
+def cors_headers():
+    """Returns standard CORS headers for API Gateway responses."""
+    return {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+        'Access-Control-Allow-Methods': 'POST,OPTIONS'
+    }
+
+# =============================================================================
+# MAIN HANDLER
+# =============================================================================
 
 def lambda_handler(event, context):
     """
-    Enable User - Admin Only
+    Main Lambda entry point - re-enables a disabled user in Cognito.
     
-    Re-enables a disabled user in Cognito.
+    Args:
+        event: API Gateway event with JSON body containing:
+               - username (required): Cognito username
+        context: AWS Lambda context object
     
-    POST body:
-    - username: The user's Cognito username (sub or email)
+    Returns:
+        dict: API Gateway response with success/failure message
     """
     try:
-        # --- SECURITY: Verify Admin Group ---
+        # 1. Verify admin group membership
         claims = event.get('requestContext', {}).get('authorizer', {}).get('claims', {})
         groups = claims.get('cognito:groups', '')
         
@@ -27,7 +74,7 @@ def lambda_handler(event, context):
                 'body': json.dumps({'error': 'Admin access required'})
             }
         
-        # --- Parse request ---
+        # 2. Parse request body
         body = json.loads(event.get('body', '{}'))
         username = body.get('username')
         
@@ -38,7 +85,7 @@ def lambda_handler(event, context):
                 'body': json.dumps({'error': 'Username is required'})
             }
         
-        # --- Enable the user ---
+        # 3. Enable the user in Cognito
         try:
             cognito.admin_enable_user(
                 UserPoolId=USER_POOL_ID,
@@ -51,6 +98,7 @@ def lambda_handler(event, context):
                 'body': json.dumps({'error': 'User not found'})
             }
         
+        # 4. Return success response
         return {
             'statusCode': 200,
             'headers': cors_headers(),
@@ -62,18 +110,9 @@ def lambda_handler(event, context):
         
     except Exception as e:
         print(f"Error: {str(e)}")
-        import traceback
         traceback.print_exc()
         return {
             'statusCode': 500,
             'headers': cors_headers(),
             'body': json.dumps({'error': str(e)})
         }
-
-
-def cors_headers():
-    return {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
-        'Access-Control-Allow-Methods': 'POST,OPTIONS'
-    }

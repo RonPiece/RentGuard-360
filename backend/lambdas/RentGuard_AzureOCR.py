@@ -1,3 +1,35 @@
+"""
+=============================================================================
+LAMBDA: RentGuard_AzureOCR
+PDF text extraction using Azure Document Intelligence
+=============================================================================
+
+Trigger: Step Functions or EventBridge S3 event
+Input: S3 bucket and key of PDF
+Output: Extracted text and page count
+
+External Services:
+  - Azure Document Intelligence (prebuilt-read model)
+
+S3:
+  - Operations: Download PDF for processing
+
+Environment Variables:
+  - AZURE_DOC_KEY: Azure Document Intelligence API key
+  - AZURE_DOC_ENDPOINT: Azure endpoint URL
+
+Notes:
+  - Uses Azure's free tier with optimal batching (2 pages per request)
+  - Supports Hebrew text extraction with high accuracy
+  - Maximum 20 pages by default (can increase to 500)
+
+=============================================================================
+"""
+
+# =============================================================================
+# IMPORTS
+# =============================================================================
+
 import json
 import boto3
 import time
@@ -5,59 +37,60 @@ import os
 import urllib3
 import uuid
 
+# =============================================================================
+# CONFIGURATION
+# =============================================================================
+
+MAX_PAGES_TOTAL = 20
+PAGES_PER_REQUEST = 2
+
 s3 = boto3.client('s3')
 http = urllib3.PoolManager()
 
-MAX_PAGES_TOTAL = 20  # Can increase to 500 depending on quota
-PAGES_PER_REQUEST = 2
+# =============================================================================
+# MAIN HANDLER
+# =============================================================================
 
 def lambda_handler(event, context):
     """
-    RentGuard Azure OCR - PDF Text Extraction using Azure Document Intelligence
+    Main Lambda entry point - extracts text from PDF using Azure OCR.
     
-    Uses Azure's free tier with optimal batching (2 pages per request).
-    Supports Hebrew text extraction with high accuracy.
+    Processes PDF in batches of 2 pages (optimal for free tier).
+    Supports both direct input and EventBridge S3 event formats.
     
-    Input event:
-    {
-        "bucket": "rentguard-contracts-xxx",
-        "key": "uploads/userId/contract-uuid.pdf"
-    }
+    Args:
+        event: S3 event or direct input with bucket and key
+        context: AWS Lambda context object
     
-    Environment variables required:
-    - AZURE_DOC_KEY: Azure Document Intelligence API key
-    - AZURE_DOC_ENDPOINT: Azure endpoint URL
+    Returns:
+        dict: Extracted text, page count, and S3 metadata
     """
     print("Starting Azure Document Intelligence OCR (Free Tier, optimal batching)...")
     
-    # Handle both direct input and EventBridge S3 event format
+    # 1. Handle both direct input and EventBridge S3 event format
     if 'detail' in event:
-        # EventBridge S3 event format
         bucket_name = event['detail']['bucket']['name']
         file_key = event['detail']['object']['key']
     else:
-        # Direct input format
         bucket_name = event.get('bucket')
         file_key = event.get('key')
     
-    # Extract contractId from S3 key: uploads/{userId}/contract-{uuid}.pdf
-    # CRITICAL: Do NOT generate a new UUID - use the one from get-upload-url!
+    # 2. Extract contractId from S3 key (use existing UUID from get-upload-url)
     contract_id = event.get('contractId')
     if not contract_id and file_key:
-        # Extract UUID from filename: contract-{uuid}.pdf
-        filename = file_key.split('/')[-1]  # Get "contract-uuid.pdf"
+        filename = file_key.split('/')[-1]
         if filename.startswith('contract-') and filename.endswith('.pdf'):
-            contract_id = filename[9:-4]  # Extract the UUID
+            contract_id = filename[9:-4]
             print(f"Extracted contractId from S3 key: {contract_id}")
     
     if not contract_id:
-        # Last resort fallback (should not happen in normal flow)
         contract_id = str(uuid.uuid4())
         print(f"WARNING: Generated new contractId as fallback: {contract_id}")
     
     if not bucket_name or not file_key:
         return {'error': 'Missing bucket or key'}
 
+    # 3. Get Azure credentials
     azure_key = os.environ.get('AZURE_DOC_KEY')
     azure_endpoint = os.environ.get('AZURE_DOC_ENDPOINT')
     
@@ -65,11 +98,12 @@ def lambda_handler(event, context):
         raise Exception("Missing Azure configuration")
 
     try:
-        # Download from S3
+        # 4. Download from S3
         print(f"Downloading file: {file_key}")
         s3_response = s3.get_object(Bucket=bucket_name, Key=file_key)
         file_bytes = s3_response['Body'].read()
         
+        # Determine content type
         if file_key.lower().endswith('.pdf'):
             content_type = 'application/pdf'
         elif file_key.lower().endswith('.png'):
@@ -81,7 +115,7 @@ def lambda_handler(event, context):
         all_text = ""
         total_pages = 0
         
-        # Process in batches of 2 pages at a time
+        # 5. Process in batches of 2 pages
         for start_page in range(1, MAX_PAGES_TOTAL + 1, PAGES_PER_REQUEST):
             end_page = start_page + PAGES_PER_REQUEST - 1
             analyze_url = (
@@ -99,7 +133,7 @@ def lambda_handler(event, context):
                 print(f"Error at pages {start_page}-{end_page}, stopping")
                 break
 
-            # Polling for results
+            # 6. Poll for results
             operation_url = response.headers['Operation-Location']
             status = 'running'
             retries = 0
@@ -113,6 +147,7 @@ def lambda_handler(event, context):
                 status = poll_data.get('status', 'failed')
                 retries += 1
 
+            # 7. Extract text from response
             if status == 'succeeded':
                 analyze_result = poll_data.get('analyzeResult', {})
                 pages = analyze_result.get('pages', [])
@@ -124,7 +159,6 @@ def lambda_handler(event, context):
                 all_text += page_text + "\n"
                 total_pages += pages_returned
                 print(f"Got {pages_returned} pages (total: {total_pages})")
-                # If we got less than 2 pages, we've reached the end
                 if pages_returned < PAGES_PER_REQUEST:
                     print("Last batch reached")
                     break
@@ -132,6 +166,7 @@ def lambda_handler(event, context):
                 print(f"Failed at pages {start_page}-{end_page}")
                 break
 
+        # 8. Return results
         print(f"SUCCESS! {len(all_text)} chars from {total_pages} pages")
         return {
             'statusCode': 200,

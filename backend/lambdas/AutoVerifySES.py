@@ -1,31 +1,74 @@
+"""
+=============================================================================
+LAMBDA: AutoVerifySES
+Automatically verifies new user emails in SES after Cognito signup
+=============================================================================
+
+Trigger: Cognito PostConfirmation (after user confirms email)
+Input: Cognito PostConfirmation event
+Output: Same event (passed through to Cognito)
+
+External Services:
+  - SES: Verify email identity
+
+Notes:
+  - Only runs on PostConfirmation_ConfirmSignUp trigger
+  - Skips if email already verified in SES
+  - Never fails to avoid blocking user registration
+
+=============================================================================
+"""
+
+# =============================================================================
+# IMPORTS
+# =============================================================================
+
 import json
 import boto3
 
-# חיבור לשירות המיילים
+# =============================================================================
+# CONFIGURATION
+# =============================================================================
+
 ses = boto3.client('ses', region_name='us-east-1')
 
+# =============================================================================
+# MAIN HANDLER
+# =============================================================================
+
 def lambda_handler(event, context):
+    """
+    Main Lambda entry point - verifies new user email in SES.
+    
+    Triggered by Cognito after user confirms their email.
+    Sends SES verification email so user can receive notifications.
+    
+    Args:
+        event: Cognito PostConfirmation event
+        context: AWS Lambda context object
+    
+    Returns:
+        dict: Same event (required by Cognito)
+    """
     print("Event received from Cognito:", json.dumps(event))
     
     try:
-        # בדיקה שזה רק אירוע של הרשמה חדשה (PostConfirmation)
-        # לא להפעיל על Password Reset או אירועים אחרים
+        # 1. Check if this is the right trigger (new user signup confirmation)
         trigger_source = event.get('triggerSource', '')
         
-        # רק באירוע PostConfirmation_ConfirmSignUp - משתמש חדש שאימת את האימייל
         if trigger_source != 'PostConfirmation_ConfirmSignUp':
             print(f"Skipping SES verification for trigger: {trigger_source}")
             return event
         
-        # חילוץ המייל של המשתמש שנרשם
+        # 2. Extract user email
         user_email = event['request']['userAttributes'].get('email')
         
         if user_email:
-            # נרמל את המייל ל-lowercase למנוע כפילויות
+            # Normalize email to lowercase
             user_email = user_email.lower().strip()
             print(f"Verifying email for new user: {user_email}")
             
-            # בדוק אם המייל כבר מאומת או ממתין לאימות
+            # 3. Check if email already exists in SES
             try:
                 existing = ses.list_identities(IdentityType='EmailAddress')
                 existing_emails = [e.lower() for e in existing.get('Identities', [])]
@@ -33,7 +76,7 @@ def lambda_handler(event, context):
                 if user_email in existing_emails:
                     print(f"Email {user_email} already exists in SES, skipping verification request.")
                 else:
-                    # שליחת הפקודה ל-SES לשלוח מייל אימות
+                    # 4. Send SES verification request
                     ses.verify_email_identity(EmailAddress=user_email)
                     print("Verification email sent successfully.")
             except Exception as ses_error:
@@ -43,8 +86,8 @@ def lambda_handler(event, context):
             print("No email found in event.")
 
     except Exception as e:
-        # גם אם יש שגיאה, אנחנו לא רוצים לתקוע את ההרשמה
+        # Never fail - don't block user registration
         print(f"Error: {str(e)}")
     
-    # חובה! להחזיר את ה-event לקוגניטו כדי שיסיים את ההרשמה
+    # Must return event to Cognito to complete registration
     return event

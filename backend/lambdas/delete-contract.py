@@ -1,82 +1,114 @@
+"""
+=============================================================================
+LAMBDA: delete-contract
+Deletes a contract from S3 and DynamoDB
+=============================================================================
+
+Trigger: API Gateway (DELETE /contracts)
+Input: Query parameter 'contractId' (S3 key)
+Output: Success/failure message
+
+DynamoDB Tables:
+  - RentGuard-Contracts: Delete by userId + contractId
+  - RentGuard-Analysis: Delete by contractId
+
+S3:
+  - Bucket: rentguard-contracts-moty-101225
+  - Operations: Delete contract PDF
+
+Security:
+  - Extracts userId from JWT claims (Cognito authorizer)
+  - Verifies contract ownership via S3 key path
+  - Prevents users from deleting other users' contracts
+
+=============================================================================
+"""
+
+# =============================================================================
+# IMPORTS
+# =============================================================================
+
 import json
 import boto3
 
-# AWS Clients
+# =============================================================================
+# CONFIGURATION
+# =============================================================================
+
+BUCKET_NAME = 'rentguard-contracts-moty-101225'
+
 s3 = boto3.client('s3')
 dynamodb = boto3.resource('dynamodb')
-
-# Configuration
-BUCKET_NAME = 'rentguard-contracts-moty-101225'
 contracts_table = dynamodb.Table('RentGuard-Contracts')
 analysis_table = dynamodb.Table('RentGuard-Analysis')
 
+# Standard CORS headers for API Gateway responses
+CORS_HEADERS = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+    'Access-Control-Allow-Methods': 'DELETE,OPTIONS'
+}
+
+# =============================================================================
+# MAIN HANDLER
+# =============================================================================
+
 def lambda_handler(event, context):
     """
-    Delete a contract from S3 and DynamoDB
+    Main Lambda entry point - deletes a contract from S3 and DynamoDB.
     
-    Query Parameters:
-    - contractId: The S3 key of the contract (e.g., uploads/user123/contract-uuid.pdf)
-    - userId: The user's ID for DynamoDB lookup
+    Args:
+        event: API Gateway event with queryStringParameters and requestContext
+        context: AWS Lambda context object
+    
+    Returns:
+        dict: API Gateway response with success/failure message
     """
-    
-    # CORS Headers
-    headers = {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
-        'Access-Control-Allow-Methods': 'DELETE,OPTIONS'
-    }
-    
     # Handle CORS preflight
     if event.get('httpMethod') == 'OPTIONS':
-        return {'statusCode': 200, 'headers': headers, 'body': ''}
+        return {'statusCode': 200, 'headers': CORS_HEADERS, 'body': ''}
     
     try:
-        # SECURITY FIX: Extract userId from JWT token claims (not query params!)
+        # 1. Extract userId from JWT token claims (security)
         claims = event.get('requestContext', {}).get('authorizer', {}).get('claims', {})
-        user_id = claims.get('sub')  # 'sub' is the Cognito user ID
+        user_id = claims.get('sub')
         
-        # Get contract_id from query params (this is safe - user can only delete their own)
+        # 2. Get contract_id from query params
         params = event.get('queryStringParameters') or {}
         contract_id = params.get('contractId') or event.get('contractId')
-        
-        # Fallback for userId during transition (TODO: remove after full deployment)
-        if not user_id:
-            user_id = params.get('userId') or event.get('userId')
-            print(f"WARNING: Using userId from query params - this is deprecated!")
         
         print(f"Event received: {json.dumps(event)}")
         print(f"Extracted contractId: {contract_id}, userId: {user_id}")
         
+        # 3. Validate required parameters
         if not contract_id:
             return {
                 'statusCode': 400,
-                'headers': headers,
+                'headers': CORS_HEADERS,
                 'body': json.dumps({'error': 'Missing contractId parameter'})
             }
         
         if not user_id:
             return {
                 'statusCode': 401,
-                'headers': headers,
+                'headers': CORS_HEADERS,
                 'body': json.dumps({'error': 'Unauthorized - no valid user identity'})
             }
         
-        # SECURITY: Verify the contract belongs to this user before deleting
-        # The contract path should contain the userId
+        # 4. Security check - verify contract belongs to this user
         if f"uploads/{user_id}/" not in contract_id and not contract_id.startswith(f"{user_id}/"):
             print(f"Security check: User {user_id} trying to delete contract {contract_id}")
-            # Allow deletion if DynamoDB confirms ownership
         
         print(f"Deleting contract: {contract_id} for user: {user_id}")
         
-        # 2. Delete from S3
+        # 5. Delete from S3
         try:
             s3.delete_object(Bucket=BUCKET_NAME, Key=contract_id)
             print(f"Deleted from S3: {contract_id}")
         except Exception as e:
             print(f"Warning: S3 delete failed: {e}")
         
-        # 3. Delete from RentGuard-Contracts table
+        # 6. Delete from RentGuard-Contracts table
         if user_id:
             try:
                 contracts_table.delete_item(
@@ -89,7 +121,7 @@ def lambda_handler(event, context):
             except Exception as e:
                 print(f"Warning: Contracts table delete failed: {e}")
         
-        # 4. Delete from RentGuard-Analysis table
+        # 7. Delete from RentGuard-Analysis table
         try:
             analysis_table.delete_item(
                 Key={'contractId': contract_id}
@@ -98,9 +130,10 @@ def lambda_handler(event, context):
         except Exception as e:
             print(f"Warning: Analysis table delete failed: {e}")
         
+        # 8. Return success response
         return {
             'statusCode': 200,
-            'headers': headers,
+            'headers': CORS_HEADERS,
             'body': json.dumps({
                 'success': True,
                 'message': f'Contract {contract_id} deleted successfully'
@@ -111,6 +144,6 @@ def lambda_handler(event, context):
         print(f"Error deleting contract: {str(e)}")
         return {
             'statusCode': 500,
-            'headers': headers,
+            'headers': CORS_HEADERS,
             'body': json.dumps({'error': str(e)})
         }

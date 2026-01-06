@@ -1,26 +1,118 @@
+"""
+=============================================================================
+LAMBDA: disable-user
+Disables a user in Cognito and sends notification email (admin only)
+=============================================================================
+
+Trigger: API Gateway (POST /admin/users/disable)
+Input: JSON body with username and optional reason
+Output: Success/failure message with email sent status
+
+External Services:
+  - Cognito: Disable user, get user email
+  - SES: Send notification email
+
+Security:
+  - Requires 'Admins' group membership in Cognito
+  - Returns 403 if user is not an admin
+
+=============================================================================
+"""
+
+# =============================================================================
+# IMPORTS
+# =============================================================================
+
 import json
 import boto3
+import traceback
+
+# =============================================================================
+# CONFIGURATION
+# =============================================================================
+
+USER_POOL_ID = 'us-east-1_rwsncOnh1'
+SENDER_EMAIL = 'noreply@rentguard360.com'
 
 cognito = boto3.client('cognito-idp')
 ses = boto3.client('ses')
 
-# Your Cognito User Pool ID - UPDATE THIS
-USER_POOL_ID = 'us-east-1_rwsncOnh1'
-# Your verified SES sender email
-SENDER_EMAIL = 'noreply@rentguard360.com'
+# =============================================================================
+# HELPER FUNCTIONS
+# =============================================================================
+
+def cors_headers():
+    """Returns standard CORS headers for API Gateway responses."""
+    return {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+        'Access-Control-Allow-Methods': 'POST,OPTIONS'
+    }
+
+
+def send_disable_notification(email, reason):
+    """
+    Sends notification email to user about account suspension.
+    
+    Args:
+        email: User's email address
+        reason: Reason for suspension
+    
+    Returns:
+        bool: True if email sent successfully, False otherwise
+    """
+    try:
+        ses.send_email(
+            Source=SENDER_EMAIL,
+            Destination={'ToAddresses': [email]},
+            Message={
+                'Subject': {
+                    'Data': 'RentGuard 360 - Account Disabled',
+                    'Charset': 'UTF-8'
+                },
+                'Body': {
+                    'Html': {
+                        'Data': f'''
+                        <html>
+                        <body dir="rtl" style="font-family: Arial, sans-serif;">
+                            <h2>החשבון שלך הושעה</h2>
+                            <p>שלום,</p>
+                            <p>החשבון שלך ב-RentGuard 360 הושעה.</p>
+                            <p><strong>סיבה:</strong> {reason}</p>
+                            <p>אם אתה סבור שזו טעות, אנא פנה לתמיכה.</p>
+                            <p>בברכה,<br>צוות RentGuard 360</p>
+                        </body>
+                        </html>
+                        ''',
+                        'Charset': 'UTF-8'
+                    }
+                }
+            }
+        )
+        return True
+    except Exception as e:
+        print(f"Email send failed: {e}")
+        return False
+
+# =============================================================================
+# MAIN HANDLER
+# =============================================================================
 
 def lambda_handler(event, context):
     """
-    Disable User - Admin Only
+    Main Lambda entry point - disables a user in Cognito.
     
-    Disables a user in Cognito and sends notification email.
+    Args:
+        event: API Gateway event with JSON body containing:
+               - username (required): Cognito username
+               - reason (optional): Reason for disabling
+        context: AWS Lambda context object
     
-    POST body:
-    - username: The user's Cognito username (sub or email)
-    - reason: Optional reason for disabling
+    Returns:
+        dict: API Gateway response with success/failure message
     """
     try:
-        # --- SECURITY: Verify Admin Group ---
+        # 1. Verify admin group membership
         claims = event.get('requestContext', {}).get('authorizer', {}).get('claims', {})
         groups = claims.get('cognito:groups', '')
         
@@ -31,7 +123,7 @@ def lambda_handler(event, context):
                 'body': json.dumps({'error': 'Admin access required'})
             }
         
-        # --- Parse request ---
+        # 2. Parse request body
         body = json.loads(event.get('body', '{}'))
         username = body.get('username')
         reason = body.get('reason', 'Policy violation')
@@ -43,7 +135,7 @@ def lambda_handler(event, context):
                 'body': json.dumps({'error': 'Username is required'})
             }
         
-        # --- Get user email before disabling ---
+        # 3. Get user email before disabling
         user_email = None
         try:
             user_response = cognito.admin_get_user(
@@ -61,69 +153,33 @@ def lambda_handler(event, context):
                 'body': json.dumps({'error': 'User not found'})
             }
         
-        # --- Disable the user ---
+        # 4. Disable the user in Cognito
         cognito.admin_disable_user(
             UserPoolId=USER_POOL_ID,
             Username=username
         )
         
-        # --- Send notification email ---
+        # 5. Send notification email
+        email_sent = False
         if user_email:
-            try:
-                ses.send_email(
-                    Source=SENDER_EMAIL,
-                    Destination={'ToAddresses': [user_email]},
-                    Message={
-                        'Subject': {
-                            'Data': 'RentGuard 360 - Account Disabled',
-                            'Charset': 'UTF-8'
-                        },
-                        'Body': {
-                            'Html': {
-                                'Data': f'''
-                                <html>
-                                <body dir="rtl" style="font-family: Arial, sans-serif;">
-                                    <h2>החשבון שלך הושעה</h2>
-                                    <p>שלום,</p>
-                                    <p>החשבון שלך ב-RentGuard 360 הושעה.</p>
-                                    <p><strong>סיבה:</strong> {reason}</p>
-                                    <p>אם אתה סבור שזו טעות, אנא פנה לתמיכה.</p>
-                                    <p>בברכה,<br>צוות RentGuard 360</p>
-                                </body>
-                                </html>
-                                ''',
-                                'Charset': 'UTF-8'
-                            }
-                        }
-                    }
-                )
-            except Exception as e:
-                print(f"Email send failed: {e}")
+            email_sent = send_disable_notification(user_email, reason)
         
+        # 6. Return success response
         return {
             'statusCode': 200,
             'headers': cors_headers(),
             'body': json.dumps({
                 'success': True,
                 'message': f'User {username} has been disabled',
-                'emailSent': user_email is not None
+                'emailSent': email_sent
             })
         }
         
     except Exception as e:
         print(f"Error: {str(e)}")
-        import traceback
         traceback.print_exc()
         return {
             'statusCode': 500,
             'headers': cors_headers(),
             'body': json.dumps({'error': str(e)})
         }
-
-
-def cors_headers():
-    return {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
-        'Access-Control-Allow-Methods': 'POST,OPTIONS'
-    }

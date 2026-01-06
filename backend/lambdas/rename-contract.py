@@ -1,88 +1,110 @@
 """
-RentGuard-360: Update Contract Lambda
-Updates contract metadata (fileName, propertyAddress, landlordName) in DynamoDB.
+=============================================================================
+LAMBDA: rename-contract
+Updates contract metadata (fileName, propertyAddress, landlordName)
+=============================================================================
+
+Trigger: API Gateway (POST /contracts/rename)
+Input: JSON body with contractId and optional fields to update
+Output: Success status with updated fields
+
+DynamoDB Tables:
+  - RentGuard-Contracts: Update by userId + contractId
+
+Security:
+  - Extracts userId from JWT claims (Cognito authorizer)
+  - Users can only update their own contracts
+
+=============================================================================
 """
+
+# =============================================================================
+# IMPORTS
+# =============================================================================
 
 import json
 import boto3
 from decimal import Decimal
 
-# Initialize DynamoDB
+# =============================================================================
+# CONFIGURATION
+# =============================================================================
+
 dynamodb = boto3.resource('dynamodb')
 contracts_table = dynamodb.Table('RentGuard-Contracts')
 analysis_table = dynamodb.Table('RentGuard-Analysis')
 
+# Standard CORS headers for API Gateway responses
+CORS_HEADERS = {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+    'Access-Control-Allow-Methods': 'POST,OPTIONS'
+}
+
+# =============================================================================
+# MAIN HANDLER
+# =============================================================================
+
 def lambda_handler(event, context):
     """
-    Update a contract's metadata in DynamoDB.
+    Main Lambda entry point - updates contract metadata in DynamoDB.
     
-    Expected body:
-    {
-        "contractId": "uuid",
-        "userId": "user-id", 
-        "fileName": "New Contract Name.pdf",  // optional
-        "propertyAddress": "123 Main St",     // optional
-        "landlordName": "John Doe"            // optional
-    }
+    Args:
+        event: API Gateway event with JSON body containing:
+               - contractId (required)
+               - fileName (optional)
+               - propertyAddress (optional)
+               - landlordName (optional)
+        context: AWS Lambda context object
+    
+    Returns:
+        dict: API Gateway response with updated fields
     """
-    
-    # CORS headers for all responses
-    headers = {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
-        'Access-Control-Allow-Methods': 'POST,OPTIONS'
-    }
-    
     try:
         # Handle OPTIONS preflight
         if event.get('httpMethod') == 'OPTIONS':
             return {
                 'statusCode': 200,
-                'headers': headers,
+                'headers': CORS_HEADERS,
                 'body': json.dumps({'message': 'CORS preflight OK'})
             }
         
-        # Parse request body
+        # 1. Parse request body
         body = event.get('body', '{}')
         if isinstance(body, str):
             body = json.loads(body)
         
-        # SECURITY FIX: Extract userId from JWT token claims (not body!)
+        # 2. Extract userId from JWT token claims (security)
         claims = event.get('requestContext', {}).get('authorizer', {}).get('claims', {})
-        user_id = claims.get('sub')  # 'sub' is the Cognito user ID
+        user_id = claims.get('sub')
         
-        # Fallback for transition period (TODO: remove after full deployment)
-        if not user_id:
-            user_id = body.get('userId')
-            print(f"WARNING: Using userId from body - this is deprecated!")
         
         contract_id = body.get('contractId')
         new_file_name = body.get('fileName', '').strip() if body.get('fileName') else None
         property_address = body.get('propertyAddress', '').strip() if body.get('propertyAddress') else None
         landlord_name = body.get('landlordName', '').strip() if body.get('landlordName') else None
         
-        # Validate required fields
+        # 3. Validate required fields
         if not contract_id:
             return {
                 'statusCode': 400,
-                'headers': headers,
+                'headers': CORS_HEADERS,
                 'body': json.dumps({'error': 'contractId is required'})
             }
         
         if not user_id:
             return {
                 'statusCode': 401,
-                'headers': headers,
+                'headers': CORS_HEADERS,
                 'body': json.dumps({'error': 'Unauthorized - no valid user identity'})
             }
         
-        # Build update expression dynamically
+        # 4. Build update expression dynamically
         update_parts = []
         expression_values = {}
         
         if new_file_name:
-            # Ensure filename ends with .pdf
             if not new_file_name.lower().endswith('.pdf'):
                 new_file_name = f"{new_file_name}.pdf"
             update_parts.append('fileName = :fn')
@@ -99,13 +121,13 @@ def lambda_handler(event, context):
         if not update_parts:
             return {
                 'statusCode': 400,
-                'headers': headers,
+                'headers': CORS_HEADERS,
                 'body': json.dumps({'error': 'At least one field (fileName, propertyAddress, landlordName) is required'})
             }
         
         update_expression = 'SET ' + ', '.join(update_parts)
         
-        # Update the contracts table
+        # 5. Update the contracts table
         contracts_table.update_item(
             Key={
                 'userId': user_id,
@@ -117,9 +139,10 @@ def lambda_handler(event, context):
         
         print(f"Updated contract {contract_id} for user {user_id}: {update_parts}")
         
+        # 6. Return success response
         return {
             'statusCode': 200,
-            'headers': headers,
+            'headers': CORS_HEADERS,
             'body': json.dumps({
                 'success': True,
                 'contractId': contract_id,
@@ -135,6 +158,6 @@ def lambda_handler(event, context):
         print(f"Error renaming contract: {str(e)}")
         return {
             'statusCode': 500,
-            'headers': headers,
+            'headers': CORS_HEADERS,
             'body': json.dumps({'error': str(e)})
         }
