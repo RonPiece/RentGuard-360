@@ -1,25 +1,89 @@
+"""
+=============================================================================
+LAMBDA: list-users
+Lists all users from Cognito User Pool (admin only)
+=============================================================================
+
+Trigger: API Gateway (GET /admin/users)
+Input: Optional query parameters: search, limit
+Output: List of users with email, name, status, enabled, createdAt
+
+External Services:
+  - Cognito: List users with pagination
+
+Security:
+  - Requires 'Admins' group membership in Cognito
+  - Returns 403 if user is not an admin
+
+=============================================================================
+"""
+
+# =============================================================================
+# IMPORTS
+# =============================================================================
+
 import json
 import boto3
+import traceback
+
+# =============================================================================
+# CONFIGURATION
+# =============================================================================
+
+USER_POOL_ID = 'us-east-1_rwsncOnh1'
 
 cognito = boto3.client('cognito-idp')
 
-# Your Cognito User Pool ID - UPDATE THIS
-USER_POOL_ID = 'us-east-1_rwsncOnh1'
+# =============================================================================
+# HELPER FUNCTIONS
+# =============================================================================
+
+def get_attribute(user, attr_name):
+    """
+    Get a specific attribute from Cognito user object.
+    
+    Args:
+        user: Cognito user object
+        attr_name: Name of the attribute to retrieve
+    
+    Returns:
+        str: Attribute value or None if not found
+    """
+    for attr in user.get('Attributes', []):
+        if attr['Name'] == attr_name:
+            return attr['Value']
+    return None
+
+
+def cors_headers():
+    """Returns standard CORS headers for API Gateway responses."""
+    return {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+        'Access-Control-Allow-Methods': 'GET,OPTIONS'
+    }
+
+# =============================================================================
+# MAIN HANDLER
+# =============================================================================
 
 def lambda_handler(event, context):
     """
-    List All Users - Admin Only
+    Main Lambda entry point - lists all users from Cognito.
     
-    Returns list of users with:
-    - Username (sub)
-    - Email
-    - Name
-    - Status (CONFIRMED, FORCE_CHANGE_PASSWORD, etc.)
-    - Enabled (true/false)
-    - Created date
+    Query Parameters:
+        - search (optional): Filter users by email or name
+        - limit (optional): Maximum number of users to return (default: 50)
+    
+    Args:
+        event: API Gateway event with authorization claims
+        context: AWS Lambda context object
+    
+    Returns:
+        dict: API Gateway response with list of users
     """
     try:
-        # --- SECURITY: Verify Admin Group ---
+        # 1. Verify admin group membership
         claims = event.get('requestContext', {}).get('authorizer', {}).get('claims', {})
         groups = claims.get('cognito:groups', '')
         
@@ -30,12 +94,12 @@ def lambda_handler(event, context):
                 'body': json.dumps({'error': 'Admin access required'})
             }
         
-        # --- Get query parameters ---
+        # 2. Get query parameters
         params = event.get('queryStringParameters') or {}
         search_query = params.get('search', '').lower()
         limit = int(params.get('limit', 50))
         
-        # --- List Users from Cognito ---
+        # 3. List users from Cognito with pagination
         users = []
         paginator = cognito.get_paginator('list_users')
         
@@ -50,7 +114,7 @@ def lambda_handler(event, context):
                     'createdAt': user['UserCreateDate'].isoformat() if user.get('UserCreateDate') else None
                 }
                 
-                # Apply search filter
+                # Apply search filter if provided
                 if search_query:
                     searchable = f"{user_data['email']} {user_data['name']}".lower()
                     if search_query not in searchable:
@@ -64,6 +128,7 @@ def lambda_handler(event, context):
             if len(users) >= limit:
                 break
         
+        # 4. Return users list
         return {
             'statusCode': 200,
             'headers': cors_headers(),
@@ -75,26 +140,9 @@ def lambda_handler(event, context):
         
     except Exception as e:
         print(f"Error: {str(e)}")
-        import traceback
         traceback.print_exc()
         return {
             'statusCode': 500,
             'headers': cors_headers(),
             'body': json.dumps({'error': str(e)})
         }
-
-
-def get_attribute(user, attr_name):
-    """Get user attribute from Cognito user object."""
-    for attr in user.get('Attributes', []):
-        if attr['Name'] == attr_name:
-            return attr['Value']
-    return None
-
-
-def cors_headers():
-    return {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
-        'Access-Control-Allow-Methods': 'GET,OPTIONS'
-    }

@@ -1,12 +1,49 @@
+"""
+=============================================================================
+LAMBDA: ai-analyzer
+AI-powered contract analysis using Claude (Bedrock)
+=============================================================================
+
+Trigger: Step Functions (after privacy-shield)
+Input: Sanitized contract text, clauses list, S3 metadata
+Output: Analysis result with risk score, issues, and recommendations
+
+External Services:
+  - AWS Bedrock: Claude Haiku 4.5 for legal analysis
+
+Processing Steps:
+  1. Validate input text and detect language
+  2. Build detailed prompt with Israeli rental law knowledge base
+  3. Call Claude for contract analysis
+  4. Parse JSON response from AI
+  5. Recalculate scores using Python (override AI calculations)
+
+Notes:
+  - Specialized for Israeli rental contracts (Hebrew/English)
+  - Contains comprehensive knowledge base of Israeli rental law
+  - Uses severity guide to ensure consistent risk ratings
+  - Scores are calculated by Python, not trusted from AI
+
+=============================================================================
+"""
+
+# =============================================================================
+# IMPORTS
+# =============================================================================
+
 import json
 import boto3
 from botocore.config import Config
 import traceback
 import re
 
-# Initialize Bedrock client with extended timeout
+# =============================================================================
+# CONFIGURATION
+# =============================================================================
+
+# Bedrock client with extended timeout for large contracts
 bedrock_config = Config(
-    read_timeout=300,  # 5 minutes for very large contracts
+    read_timeout=300,  # 5 minutes
     connect_timeout=30,
     retries={'max_attempts': 3}
 )
@@ -16,8 +53,17 @@ bedrock = boto3.client(
     config=bedrock_config
 )
 
+# Model settings
+MODEL_ID = "us.anthropic.claude-haiku-4-5-20251001-v1:0"
+INFERENCE_CONFIG = {"maxTokens": 8192, "temperature": 0.0}
+
+# Maximum text length to process
+MAX_TEXT_LENGTH = 25000
+
 # =============================================================================
-# ISRAELI RENTAL LAW KNOWLEDGE BASE
+# KNOWLEDGE BASE
+# Israeli Rental Law Reference (Hebrew)
+# Based on: Rental Law Amendment 2017, sections 25a-25o
 # =============================================================================
 
 KNOWLEDGE_BASE = """
@@ -75,6 +121,11 @@ KNOWLEDGE_BASE = """
 ═══════════════════════════════════════════════════════════════════
 """
 
+# =============================================================================
+# SEVERITY GUIDE
+# Criteria for risk level ratings (Hebrew)
+# =============================================================================
+
 SEVERITY_GUIDE = """
 ╔═══════════════════════════════════════════════════════════════════╗
 ║           קריטריונים לדירוג חומרה - חובה לעקוב!                   ║
@@ -110,13 +161,22 @@ SEVERITY_GUIDE = """
 - אם סעיף לא מופיע ברשימת הכללים → השתמש ב-C99
 """
 
-# Model Configuration
-MODEL_ID = "us.anthropic.claude-haiku-4-5-20251001-v1:0"
-INFERENCE_CONFIG = {"maxTokens": 8192, "temperature": 0.0}
-
+# =============================================================================
+# HELPER FUNCTIONS
+# =============================================================================
 
 def call_bedrock(model_id, system_prompt, user_message):
-    """Call Bedrock and return response text."""
+    """
+    Call Bedrock Claude API and return response text.
+    
+    Args:
+        model_id: Bedrock model identifier
+        system_prompt: System instructions for Claude
+        user_message: User message with contract text
+    
+    Returns:
+        str: AI response text
+    """
     response = bedrock.converse(
         modelId=model_id,
         system=[{"text": system_prompt}],
@@ -126,9 +186,19 @@ def call_bedrock(model_id, system_prompt, user_message):
     return response['output']['message']['content'][0]['text']
 
 
-
 def parse_json_response(ai_output_text):
-    """Parse JSON from AI response."""
+    """
+    Parse JSON from AI response, handling common issues.
+    
+    Args:
+        ai_output_text: Raw text response from Claude
+    
+    Returns:
+        dict: Parsed analysis result
+    
+    Raises:
+        ValueError: If no valid JSON found
+    """
     clean_text = ai_output_text.replace("```json", "").replace("```", "").strip()
     match = re.search(r'\{.*\}', clean_text, re.DOTALL)
     if not match:
@@ -136,12 +206,10 @@ def parse_json_response(ai_output_text):
     
     json_str = match.group(0)
     
-    # Remove invalid control characters (chars 0-31 except tab, newline, carriage return)
-    # These can appear when the AI includes raw text from the contract
+    # Remove invalid control characters (can appear from raw contract text)
     json_str = re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f]', '', json_str)
     
-    # Also fix common JSON escape issues in Hebrew text
-    # Replace unescaped newlines inside strings (not valid JSON)
+    # Fix common JSON escape issues in Hebrew text
     json_str = json_str.replace('\r\n', '\\n').replace('\r', '\\n')
     
     data = json.loads(json_str)
@@ -152,7 +220,15 @@ def parse_json_response(ai_output_text):
 
 
 def create_fallback_response(error_message):
-    """Create fallback when parsing fails."""
+    """
+    Create fallback response when parsing fails.
+    
+    Args:
+        error_message: Description of the parse error
+    
+    Returns:
+        dict: Default analysis structure with error info
+    """
     return {
         "is_contract": True,
         "overall_risk_score": 50,
@@ -170,11 +246,19 @@ def create_fallback_response(error_message):
 
 
 def detect_language(text):
-    """Simple language detection - checks if text is primarily Hebrew/English."""
+    """
+    Detect if text is in a supported language (Hebrew/English).
+    
+    Args:
+        text: Contract text to analyze
+    
+    Returns:
+        str: 'supported', 'unsupported', or 'unknown'
+    """
     if not text or len(text) < 100:
         return 'unknown'
     
-    sample = text[:2000]  # Check first 2000 chars
+    sample = text[:2000]
     hebrew_count = sum(1 for c in sample if '\u0590' <= c <= '\u05FF')
     english_count = sum(1 for c in sample if 'a' <= c.lower() <= 'z')
     other_count = sum(1 for c in sample if ord(c) > 127 and not ('\u0590' <= c <= '\u05FF'))
@@ -183,7 +267,7 @@ def detect_language(text):
     if total_letters == 0:
         return 'unknown'
     
-    # If more than 30% is non-Hebrew/English characters, it's probably unsupported
+    # If more than 30% is non-Hebrew/English, it's probably unsupported
     if other_count / total_letters > 0.3:
         return 'unsupported'
     
@@ -192,20 +276,24 @@ def detect_language(text):
 
 def recalculate_scores(analysis_json):
     """
-    חישוב ציון מסונכרן לחלוטין.
+    Recalculate all scores in Python (don't trust AI calculations).
     
-    עקרון: הניקוד שיורד בכל סעיף = הניקוד שיורד מהקטגוריה שלו.
+    Algorithm:
+    1. Each category starts at 20 points
+    2. Each issue's penalty deducts from its category (by rule prefix)
+    3. Categories don't go below 0
+    4. Overall score = sum of 5 categories (max 100)
     
-    אלגוריתם:
-    1. כל קטגוריה מתחילה ב-20 נקודות
-    2. כל penalty מורד מהקטגוריה שלו (לפי prefix)
-    3. קטגוריה לא יורדת מתחת ל-0
-    4. ציון סופי = סכום 5 הקטגוריות
+    Synchronization:
+    - Sum of F-rule penalties = 20 - financial_terms.score
+    - Sum of T-rule penalties = 20 - tenant_rights.score
+    - etc.
     
-    סנכרון:
-    - סכום penalties של F-rules = 20 - financial_terms.score
-    - סכום penalties של T-rules = 20 - tenant_rights.score
-    - וכו'...
+    Args:
+        analysis_json: Parsed analysis from AI
+    
+    Returns:
+        dict: Analysis with recalculated scores
     """
     if not analysis_json.get('is_contract', True):
         analysis_json['overall_risk_score'] = 0
@@ -227,6 +315,7 @@ def recalculate_scores(analysis_json):
         'legal_compliance': 20
     }
     
+    # Map rule prefixes to categories
     prefix_map = {
         'F': 'financial_terms',
         'T': 'tenant_rights',
@@ -281,16 +370,30 @@ def recalculate_scores(analysis_json):
     
     return analysis_json
 
+# =============================================================================
+# MAIN HANDLER
+# =============================================================================
 
 def lambda_handler(event, context):
-    """Main Lambda handler."""
+    """
+    Main Lambda entry point - analyzes rental contract using AI.
+    
+    Args:
+        event: Step Functions event with sanitizedText, clauses, metadata
+        context: AWS Lambda context object
+    
+    Returns:
+        dict: Analysis result with scores, issues, and recommendations
+    """
     try:
+        # 1. Extract input data
         sanitized_text = event.get('sanitizedText') or event.get('extractedText', '')
         contract_id = event.get('contractId', 'unknown')
         bucket = event.get('bucket')
         key = event.get('key')
         clauses_list = event.get('clauses', [])
         
+        # 2. Handle empty text
         if not sanitized_text:
             return {
                 'contractId': contract_id,
@@ -298,7 +401,7 @@ def lambda_handler(event, context):
                 'bucket': bucket, 'key': key, 'clauses': clauses_list, 'sanitizedText': ''
             }
         
-        # Check language support
+        # 3. Check language support
         lang = detect_language(sanitized_text)
         if lang == 'unsupported':
             return {
@@ -314,10 +417,11 @@ def lambda_handler(event, context):
                 'bucket': bucket, 'key': key, 'clauses': clauses_list, 'sanitizedText': sanitized_text
             }
         
-        MAX_TEXT = 25000
-        if len(sanitized_text) > MAX_TEXT:
-            sanitized_text = sanitized_text[:MAX_TEXT] + "... [Truncated]"
+        # 4. Truncate if too long
+        if len(sanitized_text) > MAX_TEXT_LENGTH:
+            sanitized_text = sanitized_text[:MAX_TEXT_LENGTH] + "... [Truncated]"
 
+        # 5. Build system prompt with knowledge base
         system_prompt = f"""אתה עורך דין ישראלי ותיק ומנוסה בדיני שכירות.
 תפקידך: לזהות **רק** סעיפים שפוגעים בשוכר באופן ממשי.
 
@@ -344,7 +448,7 @@ def lambda_handler(event, context):
 }}
 
 ═══════════════════════════════════════════════════════════════════
-� עיקרון מרכזי - לפני כל דיווח שאל את עצמך:
+🎯 עיקרון מרכזי - לפני כל דיווח שאל את עצמך:
 ═══════════════════════════════════════════════════════════════════
 
 "האם הסעיף הזה יגרום **נזק ממשי** לשוכר?"
@@ -432,24 +536,28 @@ def lambda_handler(event, context):
 
 Python יחשב את הציון - תן penalty_points מדויק לכל בעיה."""
 
+        # 6. Build user message
         user_message = {
             "role": "user",
             "content": [{"text": f"נתח את חוזה השכירות הבא:\n\n<contract>\n{sanitized_text}\n</contract>"}]
         }
         
+        # 7. Call Claude
         print(f"Calling {MODEL_ID}")
         ai_output = call_bedrock(MODEL_ID, system_prompt, user_message)
         print("Model call succeeded")
         
+        # 8. Parse response
         try:
             analysis = parse_json_response(ai_output)
         except Exception as e:
             print(f"Parse error: {e}")
             analysis = create_fallback_response(str(e))
         
-        # Python calculates ALL scores
+        # 9. Recalculate scores in Python (don't trust AI)
         analysis = recalculate_scores(analysis)
         
+        # 10. Return result
         return {
             'contractId': contract_id,
             'analysis_result': analysis,

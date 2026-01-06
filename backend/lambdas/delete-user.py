@@ -1,31 +1,79 @@
+"""
+=============================================================================
+LAMBDA: delete-user
+Permanently deletes a user from Cognito User Pool (admin only)
+=============================================================================
+
+Trigger: API Gateway (DELETE /admin/users)
+Input: Query parameter 'username' or JSON body with username
+Output: Success/failure message
+
+External Services:
+  - Cognito: Delete user
+
+Security:
+  - Requires 'Admins' group membership in Cognito
+  - Returns 403 if user is not an admin
+
+WARNING: This action is PERMANENT and cannot be undone!
+
+Environment Variables:
+  - USER_POOL_ID: Cognito User Pool ID (optional, has default)
+
+=============================================================================
+"""
+
+# =============================================================================
+# IMPORTS
+# =============================================================================
+
 import json
 import boto3
 import os
+import traceback
 
-cognito = boto3.client('cognito-idp')
+# =============================================================================
+# CONFIGURATION
+# =============================================================================
 
 USER_POOL_ID = os.environ.get('USER_POOL_ID', 'us-east-1_rwsncOnh1')
 
+cognito = boto3.client('cognito-idp')
+
+# Standard CORS headers for API Gateway responses
+CORS_HEADERS = {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+}
+
+# =============================================================================
+# MAIN HANDLER
+# =============================================================================
+
 def lambda_handler(event, context):
     """
-    Delete a user from Cognito (admin only).
-    This action is PERMANENT and cannot be undone.
+    Main Lambda entry point - permanently deletes a user from Cognito.
+    
+    Args:
+        event: API Gateway event with username in query params or body
+        context: AWS Lambda context object
+    
+    Returns:
+        dict: API Gateway response with success/failure message
     """
-    # SECURITY: Verify Admin Group
+    # 1. Verify admin group membership
     claims = event.get('requestContext', {}).get('authorizer', {}).get('claims', {})
     groups = claims.get('cognito:groups', '')
     
     if 'Admins' not in str(groups):
         return {
             'statusCode': 403,
-            'headers': {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*',
-            },
+            'headers': CORS_HEADERS,
             'body': json.dumps({'error': 'Admin access required'})
         }
     
-    # DEBUG: Log the entire incoming event
+    # Debug logging
     print("=" * 50)
     print("DELETE USER LAMBDA INVOKED")
     print("=" * 50)
@@ -37,7 +85,7 @@ def lambda_handler(event, context):
     print("=" * 50)
     
     try:
-        # Get username from query parameters first (for DELETE requests)
+        # 2. Get username from query parameters first (for DELETE requests)
         query_params = event.get('queryStringParameters') or {}
         print(f"Parsed query_params: {query_params}")
         username = query_params.get('username')
@@ -53,18 +101,15 @@ def lambda_handler(event, context):
             username = body.get('username')
             print(f"Username from body: {username}")
         
+        # 3. Validate username
         if not username:
             return {
                 'statusCode': 400,
-                'headers': {
-                    'Content-Type': 'application/json',
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Headers': 'Content-Type,Authorization',
-                },
+                'headers': CORS_HEADERS,
                 'body': json.dumps({'error': 'Username is required'})
             }
         
-        # Delete user from Cognito
+        # 4. Delete user from Cognito
         print(f"Attempting to delete user: {username}")
         print(f"Using USER_POOL_ID: {USER_POOL_ID}")
         
@@ -75,13 +120,10 @@ def lambda_handler(event, context):
         
         print(f"SUCCESS: User {username} deleted successfully")
         
+        # 5. Return success response
         return {
             'statusCode': 200,
-            'headers': {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Headers': 'Content-Type,Authorization',
-            },
+            'headers': CORS_HEADERS,
             'body': json.dumps({
                 'message': f'User {username} deleted successfully',
                 'username': username
@@ -92,23 +134,14 @@ def lambda_handler(event, context):
         print(f"ERROR: User {username} not found in Cognito")
         return {
             'statusCode': 404,
-            'headers': {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Headers': 'Content-Type,Authorization',
-            },
+            'headers': CORS_HEADERS,
             'body': json.dumps({'error': 'User not found'})
         }
     except Exception as e:
-        import traceback
         print(f"ERROR deleting user: {str(e)}")
         print(f"Traceback: {traceback.format_exc()}")
         return {
             'statusCode': 500,
-            'headers': {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Headers': 'Content-Type,Authorization',
-            },
+            'headers': CORS_HEADERS,
             'body': json.dumps({'error': str(e)})
         }

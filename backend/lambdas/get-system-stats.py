@@ -1,47 +1,128 @@
+"""
+=============================================================================
+LAMBDA: get-system-stats
+Retrieves system-wide statistics for admin dashboard
+=============================================================================
+
+Trigger: API Gateway (GET /admin/stats)
+Input: None (admin authentication required)
+Output: Comprehensive stats including contracts, users, risks, charts
+
+DynamoDB Tables:
+  - RentGuard-Contracts: Scan for contract statistics
+  - RentGuard-Analysis: Scan for common issues
+
+External Services:
+  - Cognito: List users, count registrations
+
+Security:
+  - Requires 'Admins' group membership in Cognito
+  - Returns 403 if user is not an admin
+
+=============================================================================
+"""
+
+# =============================================================================
+# IMPORTS
+# =============================================================================
+
 import json
 import boto3
+import traceback
 from datetime import datetime, timedelta
 from decimal import Decimal
-from collections import defaultdict, Counter
+from collections import defaultdict
 
-# Initialize AWS clients
+# =============================================================================
+# CONFIGURATION
+# =============================================================================
+
+# Cognito User Pool ID
+USER_POOL_ID = 'us-east-1_rwsncOnh1'
+
 dynamodb = boto3.resource('dynamodb')
 cognito = boto3.client('cognito-idp')
 
 contracts_table = dynamodb.Table('RentGuard-Contracts')
 analysis_table = dynamodb.Table('RentGuard-Analysis')
 
-# Your Cognito User Pool ID - UPDATE THIS
-USER_POOL_ID = 'us-east-1_rwsncOnh1'  # Get from environment or hardcode
+# =============================================================================
+# HELPER FUNCTIONS
+# =============================================================================
+
+def scan_all_items(table):
+    """
+    Scan entire DynamoDB table with pagination.
+    
+    Args:
+        table: DynamoDB table resource
+    
+    Returns:
+        list: All items in the table
+    """
+    items = []
+    response = table.scan()
+    items.extend(response.get('Items', []))
+    
+    while 'LastEvaluatedKey' in response:
+        response = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'])
+        items.extend(response.get('Items', []))
+    
+    return items
+
+
+def cors_headers():
+    """Returns standard CORS headers for API Gateway responses."""
+    return {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+        'Access-Control-Allow-Methods': 'GET,OPTIONS'
+    }
+
+
+class DecimalEncoder(json.JSONEncoder):
+    """Custom JSON encoder for DynamoDB Decimal types."""
+    def default(self, obj):
+        if isinstance(obj, Decimal):
+            return float(obj)
+        return super().default(obj)
+
+# =============================================================================
+# MAIN HANDLER
+# =============================================================================
 
 def lambda_handler(event, context):
     """
-    Get System Statistics - Admin Only
+    Main Lambda entry point - retrieves system statistics.
     
     Returns:
-    - Total contracts, analyzed, pending, failed counts
-    - Average risk score
-    - Total users
-    - Active users (last 30 days)
-    - Contracts over time chart data
-    - User registrations over time chart data
-    - Risk distribution
-    - Common issues list
+        - Contract counts (total, analyzed, pending, failed)
+        - Average risk score and analysis time
+        - User statistics (total, active last 30 days)
+        - Risk distribution breakdown
+        - Contracts over time chart data
+        - User registrations over time chart data
+        - Common issues list (top 5)
+    
+    Args:
+        event: API Gateway event with authorization claims
+        context: AWS Lambda context object
+    
+    Returns:
+        dict: API Gateway response with stats JSON
     """
     try:
-        # --- SECURITY: Verify Admin Group ---
-        # Debug: Log the full event structure
+        # 1. Verify admin group membership
         print(f"Full event keys: {list(event.keys())}")
         
-        # Try multiple paths for authorizer claims (different API Gateway configurations)
         claims = {}
         
-        # Path 1: Standard Cognito Authorizer
+        # Try standard Cognito Authorizer path
         if 'requestContext' in event:
             auth = event['requestContext'].get('authorizer', {})
             claims = auth.get('claims', auth)
         
-        # Path 2: JWT Authorizer (HTTP API)
+        # Try JWT Authorizer path (HTTP API)
         if not claims and 'requestContext' in event:
             jwt_claims = event['requestContext'].get('authorizer', {}).get('jwt', {}).get('claims', {})
             if jwt_claims:
@@ -49,7 +130,6 @@ def lambda_handler(event, context):
         
         groups = claims.get('cognito:groups', '')
         
-        # Handle groups - could be string "[Admins]" or list ["Admins"]
         is_admin = False
         if isinstance(groups, list):
             is_admin = 'Admins' in groups
@@ -69,7 +149,7 @@ def lambda_handler(event, context):
                 })
             }
         
-        # --- Scan Contracts Table ---
+        # 2. Scan contracts table
         contracts = scan_all_items(contracts_table)
         
         total_contracts = len(contracts)
@@ -77,21 +157,20 @@ def lambda_handler(event, context):
         pending = sum(1 for c in contracts if c.get('status') in ['pending', 'uploaded', 'processing'])
         failed = sum(1 for c in contracts if c.get('status') == 'failed')
         
-        # --- Average Risk Score & Risk Distribution ---
+        # 3. Calculate risk scores and distribution
         risk_scores = []
         risk_dist = {
-            'lowRisk': 0,      # 86-100
+            'lowRisk': 0,       # 86-100
             'lowMediumRisk': 0, # 71-85
             'mediumRisk': 0,    # 51-70
             'highRisk': 0       # 0-50
         }
         
         contracts_by_day = {}
-        # Track min date to build timeline later (default to 30 days ago if no data)
         min_contract_date = (datetime.utcnow() - timedelta(days=30)).date()
 
         for c in contracts:
-            # Risk Score Collection
+            # Risk score collection
             if c.get('riskScore'):
                 try:
                     score = float(c.get('riskScore'))
@@ -108,14 +187,12 @@ def lambda_handler(event, context):
                 except:
                     pass
 
-            # Contracts by Day (All Time)
-            # Fallback to uploadDate if analyzedDate is missing (data integrity issue)
+            # Contracts by day
             date_source = c.get('analyzedDate') or c.get('uploadDate')
             
             if date_source:
                 try:
                     analyzed_date = datetime.fromisoformat(date_source.replace('Z', '+00:00')).date()
-                    # Update min date if we find an earlier one
                     if analyzed_date < min_contract_date:
                         min_contract_date = analyzed_date
 
@@ -126,7 +203,7 @@ def lambda_handler(event, context):
 
         avg_risk_score = round(sum(risk_scores) / len(risk_scores), 1) if risk_scores else 0
         
-        # --- Contracts Timeline (All Time) ---
+        # 4. Build contracts timeline
         current_date_contracts = min_contract_date
         today = datetime.utcnow().date()
         time_series = []
@@ -138,7 +215,7 @@ def lambda_handler(event, context):
             })
             current_date_contracts += timedelta(days=1)
             
-        # --- Average analysis time ---
+        # 5. Calculate average analysis time
         analysis_times = []
         for c in contracts:
             if c.get('uploadDate') and c.get('analyzedDate'):
@@ -152,10 +229,10 @@ def lambda_handler(event, context):
                     pass
         avg_analysis_time = round(sum(analysis_times) / len(analysis_times), 1) if analysis_times else 0
         
-        # --- Cognito User Stats & Registrations Over Time ---
+        # 6. Get Cognito user stats and registrations
         user_count = 0
         active_users_30d = set()
-        user_registrations_raw = defaultdict(int) # Key: date (iso format), Value: count
+        user_registrations_raw = defaultdict(int)
         
         try:
             paginator = cognito.get_paginator('list_users')
@@ -163,7 +240,6 @@ def lambda_handler(event, context):
                 users_page = page['Users']
                 user_count += len(users_page)
                 
-                # Aggregate registrations by date
                 for u in users_page:
                     create_date = u.get('UserCreateDate')
                     if create_date:
@@ -173,14 +249,13 @@ def lambda_handler(event, context):
         except Exception as e:
             print(f"Cognito error: {e}")
             
-        # Format User Registrations for Chart (All Time)
+        # Format user registrations for chart
         user_reg_chart = []
-        # Find earliest registration date, default to 30 days ago
         if user_registrations_raw:
             min_reg_date_str = min(user_registrations_raw.keys())
             reg_start_date = datetime.fromisoformat(min_reg_date_str).date()
         else:
-             reg_start_date = datetime.utcnow().date() - timedelta(days=30)
+            reg_start_date = datetime.utcnow().date() - timedelta(days=30)
 
         curr = reg_start_date
         while curr <= today:
@@ -197,15 +272,14 @@ def lambda_handler(event, context):
             if c.get('uploadDate', '') >= thirty_days_ago:
                 active_users_30d.add(c.get('userId'))
 
-        # --- Common Issues (Scan Analysis Table) ---
+        # 7. Get common issues from analysis table
         common_issues_list = []
         try:
             analysis_items = scan_all_items(analysis_table)
-            issue_tracker = {} # Key: rule_id, Value: {'topic': topic, 'count': 0}
+            issue_tracker = {}
             
             for item in analysis_items:
                 res = item.get('analysis_result')
-                # Handle potential JSON string
                 if isinstance(res, str):
                     try:
                         res = json.loads(res)
@@ -219,22 +293,19 @@ def lambda_handler(event, context):
                         topic = issue.get('clause_topic')
                         
                         if rule_id and topic:
-                            # Normalize key
                             key = rule_id.upper()
                             if key not in issue_tracker:
                                 issue_tracker[key] = {'code': key, 'topic': topic, 'count': 0}
                             issue_tracker[key]['count'] += 1
             
-            # Convert to list and sort by count
             common_issues_list = list(issue_tracker.values())
             common_issues_list.sort(key=lambda x: x['count'], reverse=True)
-            common_issues_list = common_issues_list[:5] # Top 5
+            common_issues_list = common_issues_list[:5]
             
         except Exception as e:
             print(f"Error scanning analysis table: {e}")
-            # Non-critical failure, return empty list
 
-        # --- Build Response ---
+        # 8. Build response
         stats = {
             'contracts': {
                 'total': total_contracts,
@@ -265,40 +336,9 @@ def lambda_handler(event, context):
         
     except Exception as e:
         print(f"Error: {str(e)}")
-        import traceback
         traceback.print_exc()
         return {
             'statusCode': 500,
             'headers': cors_headers(),
             'body': json.dumps({'error': str(e)})
         }
-
-
-def scan_all_items(table):
-    """Scan entire DynamoDB table (handles pagination)."""
-    items = []
-    response = table.scan()
-    items.extend(response.get('Items', []))
-    
-    while 'LastEvaluatedKey' in response:
-        response = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'])
-        items.extend(response.get('Items', []))
-    
-    return items
-
-
-def cors_headers():
-    return {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
-        'Access-Control-Allow-Methods': 'GET,OPTIONS'
-    }
-
-
-class DecimalEncoder(json.JSONEncoder):
-    """Handle DynamoDB Decimal types."""
-    def default(self, obj):
-        if isinstance(obj, Decimal):
-            return float(obj)
-        return super().default(obj)
-

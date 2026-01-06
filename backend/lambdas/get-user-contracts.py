@@ -1,41 +1,77 @@
+"""
+=============================================================================
+LAMBDA: get-user-contracts
+Retrieves all contracts belonging to the authenticated user
+=============================================================================
+
+Trigger: API Gateway (GET /contracts)
+Input: None (userId extracted from JWT)
+Output: List of contract metadata (fileName, uploadDate, status, etc.)
+
+DynamoDB Tables:
+  - RentGuard-Contracts: Query by userId (partition key)
+
+Security:
+  - Extracts userId from JWT claims (Cognito authorizer)
+  - Users can only see their own contracts
+
+=============================================================================
+"""
+
+# =============================================================================
+# IMPORTS
+# =============================================================================
+
 import json
 import boto3
 from boto3.dynamodb.conditions import Key
 
-# וודא שזה השם המדויק של הטבלה הראשונה שיצרת
+# =============================================================================
+# CONFIGURATION
+# =============================================================================
+
 TABLE_NAME = 'RentGuard-Contracts'
 
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table(TABLE_NAME)
 
+# Standard CORS headers for API Gateway responses
+CORS_HEADERS = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type,Authorization",
+    "Access-Control-Allow-Methods": "OPTIONS,GET"
+}
+
+# =============================================================================
+# MAIN HANDLER
+# =============================================================================
+
 def lambda_handler(event, context):
+    """
+    Main Lambda entry point - fetches all contracts for the authenticated user.
+    
+    Args:
+        event: API Gateway event with requestContext containing JWT claims
+        context: AWS Lambda context object
+    
+    Returns:
+        dict: API Gateway response with list of contracts
+    """
     try:
-        # SECURITY FIX: Extract userId from JWT token claims (not query params!)
-        # The Cognito authorizer adds claims to the request context
+        # 1. Extract userId from JWT token claims (security)
         claims = event.get('requestContext', {}).get('authorizer', {}).get('claims', {})
-        user_id = claims.get('sub')  # 'sub' is the Cognito user ID
-        
-        # Fallback to query params ONLY for backwards compatibility during transition
-        # TODO: Remove this fallback after frontend is updated
-        if not user_id:
-            query_params = event.get('queryStringParameters') or {}
-            user_id = query_params.get('userId')
-            print(f"WARNING: Using userId from query params - this is deprecated!")
+        user_id = claims.get('sub')
         
         if not user_id:
             return {
                 'statusCode': 401,
-                'headers': {
-                    "Access-Control-Allow-Origin": "*",
-                    "Access-Control-Allow-Headers": "Content-Type,Authorization",
-                    "Access-Control-Allow-Methods": "OPTIONS,GET"
-                },
+                'headers': CORS_HEADERS,
                 'body': json.dumps({"error": "Unauthorized - no valid user identity"})
             }
 
         print(f"Fetching contracts for user: {user_id}")
 
-        # Query contracts for this user only
+        # 2. Query contracts for this user only
         response = table.query(
             KeyConditionExpression=Key('userId').eq(user_id)
         )
@@ -43,15 +79,10 @@ def lambda_handler(event, context):
         items = response.get('Items', [])
         print(f"Found {len(items)} contracts")
 
-        # 3. החזרת הרשימה
+        # 3. Return the contracts list
         return {
             'statusCode': 200,
-            'headers': {
-                "Access-Control-Allow-Origin": "*", # חובה ל-React
-                "Access-Control-Allow-Headers": "Content-Type",
-                "Access-Control-Allow-Methods": "OPTIONS,GET"
-            },
-            # ensure_ascii=False מאפשר להחזיר טקסט בעברית (כמו שם קובץ) בצורה קריאה
+            'headers': CORS_HEADERS,
             'body': json.dumps(items, ensure_ascii=False, default=str)
         }
 
@@ -59,8 +90,6 @@ def lambda_handler(event, context):
         print(f"Error: {str(e)}")
         return {
             'statusCode': 500,
-            'headers': {
-                "Access-Control-Allow-Origin": "*",
-            },
+            'headers': {"Access-Control-Allow-Origin": "*"},
             'body': json.dumps(f"Database Error: {str(e)}")
         }

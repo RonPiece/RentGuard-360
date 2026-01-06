@@ -1,6 +1,0 @@
-cat <<EOF > requirements.txt
-boto3
-pytesseract
-pdf2image
-pdfplumber
-EOF
