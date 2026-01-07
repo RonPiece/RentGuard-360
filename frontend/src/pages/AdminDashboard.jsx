@@ -1,3 +1,27 @@
+/**
+ * ============================================
+ *  AdminDashboard
+ *  System Statistics & Analytics for Admins
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Summary cards (contracts, users, avg time)
+ * - Line chart: Contracts analyzed over time
+ * - Line chart: User registrations over time
+ * 
+ * FEATURES:
+ * - Date range filtering (7d, 30d, month, year, all)
+ * - Responsive chart sizing
+ * - Dark/light theme support for MUI charts
+ * - Admin-only access (isAdmin check)
+ * 
+ * DEPENDENCIES:
+ * - api.js: getSystemStats
+ * - MUI X Charts: LineChart, BarChart
+ * - ThemeContext: isDark for chart theming
+ * 
+ * ============================================
+ */
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';

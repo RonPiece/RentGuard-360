@@ -1,3 +1,22 @@
+/**
+ * ============================================
+ *  GlobalErrorBoundary
+ *  Application-Wide Error Handler
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Error UI with logo and message
+ * - Reload button
+ * - Dev-only error details
+ * 
+ * FEATURES:
+ * - Catches uncaught React errors
+ * - Displays friendly error screen
+ * - Shows stack trace in development
+ * - Bilingual error message
+ * 
+ * ============================================
+ */
 import React from 'react';
 import { Shield, RefreshCw } from 'lucide-react';
 import Button from './Button';

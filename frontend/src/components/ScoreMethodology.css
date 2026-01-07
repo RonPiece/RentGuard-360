@@ -1,5 +1,20 @@
-/* Score Methodology Component Styles */
-/* Supports: RTL/LTR, Dark/Light modes */
+/*
+ * ============================================
+ *  ScoreMethodology.css
+ *  Expandable Score Explanation Styles
+ * ============================================
+ *
+ * SECTIONS:
+ * - Toggle button
+ * - Expanded content & animation
+ * - Intro text & severity legend
+ * - Categories grid
+ * - Legal source
+ * - Light mode overrides
+ *
+ * SUPPORTS: RTL/LTR, Dark/Light modes
+ * ============================================
+ */
 
 .score-methodology {
     margin-top: 1rem;

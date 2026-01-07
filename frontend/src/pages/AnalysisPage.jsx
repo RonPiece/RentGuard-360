@@ -1,3 +1,29 @@
+/**
+ * ============================================
+ *  AnalysisPage
+ *  Contract Analysis Results Display
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - State & Hooks: Analysis data, loading, polling, tabs
+ * - API Handlers: fetchAnalysis, consultClause, saveEdits
+ * - Export Handlers: Word, PDF, edited contract
+ * - Render: Risk score, issues list, contract view
+ * 
+ * DEPENDENCIES:
+ * - api.js: getAnalysis, consultClause, saveEditedContract
+ * - ExportService.js: exportToWord, exportToPDF, exportEditedContract
+ * - ContractView: Full contract text with edit capability
+ * - ScoreBreakdown: Visual score categories
+ * 
+ * FEATURES:
+ * - Auto-polling while analysis is processing
+ * - AI-powered clause explanations
+ * - Inline contract editing with auto-save
+ * - Export to Word/PDF
+ * 
+ * ============================================
+ */
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useLocation } from 'react-router-dom';
 import { getAnalysis, consultClause, saveEditedContract } from '../services/api';

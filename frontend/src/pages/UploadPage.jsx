@@ -1,3 +1,23 @@
+/**
+ * ============================================
+ *  UploadPage
+ *  Contract Upload Flow
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Drop zone for drag-and-drop PDF upload
+ * - File validation (size, type, name length)
+ * - Metadata form (property, landlord, custom name)
+ * - Progress bar during upload
+ * - Terms acceptance modal
+ * - Upload success modal
+ * 
+ * DEPENDENCIES:
+ * - api.js: uploadFile
+ * - Card, Button, Input components
+ * 
+ * ============================================
+ */
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -329,39 +349,39 @@ const UploadPage = () => {
             {showSuccessModal && (
                 <div className="auth-backdrop">
                     <div className="auth-modal" dir={isRTL ? 'rtl' : 'ltr'} style={{ textAlign: 'center', maxWidth: '420px' }}>
-                        <div style={{ 
-                            display: 'flex', 
-                            alignItems: 'center', 
-                            justifyContent: 'center', 
-                            marginBottom: '1.5rem' 
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            marginBottom: '1.5rem'
                         }}>
                             <svg width="60" height="60" viewBox="0 0 60 60" fill="none">
-                                <circle cx="30" cy="30" r="28" stroke="#10B981" strokeWidth="3" fill="rgba(16, 185, 129, 0.1)"/>
-                                <path d="M20 30L26 36L40 22" stroke="#10B981" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
+                                <circle cx="30" cy="30" r="28" stroke="#10B981" strokeWidth="3" fill="rgba(16, 185, 129, 0.1)" />
+                                <path d="M20 30L26 36L40 22" stroke="#10B981" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
                             </svg>
                         </div>
-                        
-                        <h2 style={{ 
-                            fontSize: 'var(--font-size-2xl)', 
-                            fontWeight: 'var(--font-weight-bold)', 
-                            color: 'var(--text-primary)', 
-                            marginBottom: '1rem' 
+
+                        <h2 style={{
+                            fontSize: 'var(--font-size-2xl)',
+                            fontWeight: 'var(--font-weight-bold)',
+                            color: 'var(--text-primary)',
+                            marginBottom: '1rem'
                         }}>
                             {t('upload.uploadSuccessTitle')}
                         </h2>
-                        
-                        <p style={{ 
-                            fontSize: 'var(--font-size-md)', 
-                            color: 'var(--text-secondary)', 
-                            lineHeight: '1.6', 
-                            marginBottom: '1.5rem' 
+
+                        <p style={{
+                            fontSize: 'var(--font-size-md)',
+                            color: 'var(--text-secondary)',
+                            lineHeight: '1.6',
+                            marginBottom: '1.5rem'
                         }}>
                             {t('upload.uploadSuccessMessage')}
                         </p>
-                        
-                        <Button 
-                            variant="primary" 
-                            fullWidth 
+
+                        <Button
+                            variant="primary"
+                            fullWidth
                             onClick={() => {
                                 setShowSuccessModal(false);
                                 navigate('/contracts');

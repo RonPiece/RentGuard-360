@@ -1,4 +1,28 @@
-// DAN DID IT - Added useState for delete account confirmation dialog
+/**
+ * ============================================
+ *  SettingsPage
+ *  User Account Settings & Preferences
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Profile section (name, email)
+ * - Appearance section (dark mode toggle)
+ * - Notifications section
+ * - About section
+ * - Danger zone (logout, delete account)
+ * 
+ * FEATURES:
+ * - Theme toggle (light/dark)
+ * - Account deletion with confirmation
+ * - Deletes all user contracts before account
+ * 
+ * DEPENDENCIES:
+ * - api.js: deleteAllUserContracts
+ * - AuthContext: logout, deleteAccount
+ * - ThemeContext: isDark, toggleTheme
+ * 
+ * ============================================
+ */
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -43,7 +67,7 @@ const SettingsPage = () => {
 
             // Step 2: Delete the user's Cognito account
             const result = await deleteAccount();
-            
+
             if (result.success) {
                 // User is automatically logged out after deleteAccount
                 // Redirect happens via AuthContext
@@ -177,18 +201,18 @@ const SettingsPage = () => {
             {showDeleteModal && (
                 <div className="modal-backdrop" onClick={() => !isDeleting && setShowDeleteModal(false)}>
                     <div className="modal-content delete-modal" onClick={(e) => e.stopPropagation()} dir={isRTL ? 'rtl' : 'ltr'}>
-                        <button 
-                            className="modal-close" 
+                        <button
+                            className="modal-close"
                             onClick={() => setShowDeleteModal(false)}
                             disabled={isDeleting}
                         >
                             ✕
                         </button>
-                        
+
                         <div className="modal-icon danger-icon">⚠️</div>
-                        
+
                         <h2>{t('account.deleteConfirmTitle')}</h2>
-                        
+
                         <div className="delete-warning">
                             <p><strong>{t('account.deleteConfirmMessage')}</strong></p>
                             <p>{t('account.deleteConfirmItem1')}</p>
@@ -214,15 +238,15 @@ const SettingsPage = () => {
                         )}
 
                         <div className="modal-actions">
-                            <Button 
-                                variant="secondary" 
+                            <Button
+                                variant="secondary"
                                 onClick={() => setShowDeleteModal(false)}
                                 disabled={isDeleting}
                             >
                                 {t('common.cancel')}
                             </Button>
-                            <Button 
-                                variant="danger" 
+                            <Button
+                                variant="danger"
                                 onClick={handleDeleteAccount}
                                 disabled={isDeleting || deleteConfirmText !== 'DELETE'}
                                 loading={isDeleting}

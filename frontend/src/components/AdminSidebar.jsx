@@ -1,3 +1,20 @@
+/**
+ * ============================================
+ *  AdminSidebar
+ *  Navigation Sidebar for Admin Panel
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Logo & back link
+ * - Navigation items (Dashboard, Users, Analytics)
+ * - Language/Theme toggles
+ * - User profile & logout
+ * 
+ * PROPS:
+ * - onNavigate: callback for mobile menu close
+ * 
+ * ============================================
+ */
 import React from 'react';
 import { NavLink, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';

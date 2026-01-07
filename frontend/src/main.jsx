@@ -1,3 +1,20 @@
+/**
+ * ============================================
+ *  RentGuard 360 - main.jsx
+ *  Application Entry Point
+ * ============================================
+ * 
+ * PROVIDER HIERARCHY:
+ * - StrictMode (React dev checks)
+ * - GlobalErrorBoundary (error catching)
+ * - BrowserRouter (routing)
+ * - ThemeProvider (dark/light mode)
+ * - LanguageProvider (i18n)
+ * - AuthProvider (Cognito auth)
+ * - App (main component)
+ * 
+ * ============================================
+ */
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';

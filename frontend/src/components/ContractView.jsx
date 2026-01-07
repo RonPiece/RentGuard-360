@@ -1,3 +1,34 @@
+/**
+ * ============================================
+ *  ContractView
+ *  Virtual PDF Contract Display & Editor
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Contract header (title, date)
+ * - Toolbar (filter, stats)
+ * - Clauses list with issue markers
+ * - Popup clause editor
+ * - Signature footer
+ * - Export section
+ * 
+ * FEATURES:
+ * - View all clauses with issue highlighting
+ * - Click-to-edit with popup editor
+ * - Apply AI suggested fixes
+ * - AI clause consultation (explain any clause)
+ * - Auto-save edits to localStorage + cloud
+ * - Export edited contract to Word
+ * - Revert edits (single or all)
+ * 
+ * DEPENDENCIES:
+ * - api.js: consultClause
+ * - ExportService.js: exportEditedContractWithSignatures
+ * - contractTextProcessor: clause parsing
+ * - RecommendationCard: suggestion display
+ * 
+ * ============================================
+ */
 import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { processContractClauses, detectLanguage } from '../utils/contractTextProcessor';
 import { consultClause } from '../services/api';
@@ -5,9 +36,6 @@ import { exportEditedContractWithSignatures } from '../services/ExportService';
 import RecommendationCard from './RecommendationCard';
 import './ContractView.css';
 
-/**
- * ContractView - Virtual PDF Contract Display
- */
 const ContractView = ({
     contractText = '',
     backendClauses = [],

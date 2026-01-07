@@ -1,3 +1,23 @@
+/*
+ * ============================================
+ *  AnalysisPage.css
+ *  Contract Analysis Results View
+ * ============================================
+ *
+ * SECTIONS:
+ * - Two-column layout (main + sidebar)
+ * - Contract hero card
+ * - Sidebar summary & actions
+ * - Tab navigation
+ * - Issue cards by risk level
+ * - Risk score circle
+ * - Loading & error states
+ * - AI consultation modal
+ * - Responsive breakpoints
+ *
+ * ============================================
+ */
+
 /* Uses .page-container for base styles */
 .analysis-page {
     padding: var(--space-md);

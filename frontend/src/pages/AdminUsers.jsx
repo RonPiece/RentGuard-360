@@ -1,3 +1,28 @@
+/**
+ * ============================================
+ *  AdminUsers
+ *  User Management for Administrators
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Search & filter controls
+ * - Sortable users table
+ * - Action buttons (disable, enable, delete)
+ * - Confirmation modals
+ * 
+ * FEATURES:
+ * - Search by email or name
+ * - Filter by status (all/enabled/disabled)
+ * - Column sorting (email, name, status, date)
+ * - Enable/disable users with reason
+ * - Delete users with double confirmation
+ * 
+ * DEPENDENCIES:
+ * - api.js: getUsers, disableUser, enableUser, deleteUser
+ * - ReactDOM.createPortal for modals
+ * 
+ * ============================================
+ */
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { useLanguage } from '../contexts/LanguageContext';

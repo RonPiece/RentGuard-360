@@ -1,13 +1,44 @@
 /**
- * API Service - Handles all backend API calls with Cognito authentication
+ * ============================================
+ *  API Service
+ *  Backend API Calls with Cognito Authentication
+ * ============================================
  * 
- * Endpoints:
+ * STRUCTURE:
+ * - getAuthToken: Cognito auth helper
+ * - apiCall: Generic authenticated fetch with timeout
+ * - File Operations: uploadFile, getContracts, getAnalysis, deleteContract
+ * - Contract Operations: consultClause, updateContract, saveEditedContract
+ * - Contact: sendContactMessage
+ * - Admin Operations: getSystemStats, getUsers, disableUser, enableUser, deleteUser
+ * 
+ * ENDPOINTS:
  * - GET /upload?fileName=xxx - Get presigned URL for S3 upload
  * - GET /contracts?userId=xxx - Get user's contracts list
- * - GET /analysis?contractId=xxx - Get analysis results for a contract
+ * - GET /analysis?contractId=xxx - Get analysis results
+ * - DELETE /contracts - Delete a contract
+ * - POST /consult - AI clause explanation
+ * - POST /contracts/rename - Update contract metadata
+ * - POST /contracts/save-edited - Save edited contract
+ * - POST /contact - Send support message
+ * - GET /admin/stats - System statistics (admin)
+ * - GET /admin/users - List users (admin)
+ * - POST /admin/users/disable - Disable user (admin)
+ * - POST /admin/users/enable - Enable user (admin)
+ * - DELETE /admin/users/delete - Delete user (admin)
+ * 
+ * DEPENDENCIES:
+ * - aws-amplify/auth: Cognito token retrieval
+ * - API Gateway backend
+ * 
+ * ============================================
  */
 
 import { fetchAuthSession } from 'aws-amplify/auth';
+
+// ============================================
+// CONFIGURATION
+// ============================================
 
 // API Gateway base URL - fallback to production if env var not set
 const API_BASE_URL = import.meta.env.VITE_API_ENDPOINT || 'https://qd8fvg2zm2.execute-api.us-east-1.amazonaws.com/prod';
@@ -16,6 +47,10 @@ const API_BASE_URL = import.meta.env.VITE_API_ENDPOINT || 'https://qd8fvg2zm2.ex
 if (!import.meta.env.VITE_API_ENDPOINT) {
     console.warn('⚠️ VITE_API_ENDPOINT not set, using fallback:', API_BASE_URL);
 }
+
+// ============================================
+// AUTH HELPERS
+// ============================================
 
 /**
  * Get the current user's auth token for API calls
@@ -33,6 +68,10 @@ const getAuthToken = async () => {
         throw new Error('Authentication required');
     }
 };
+
+// ============================================
+// API CALL HELPER
+// ============================================
 
 /**
  * Generic API call with Cognito authentication
@@ -95,6 +134,10 @@ const apiCall = async (endpoint, options = {}) => {
         throw error;
     }
 };
+
+// ============================================
+// FILE OPERATIONS
+// ============================================
 
 /**
  * Upload a file to S3 using presigned URL with REAL progress tracking
@@ -243,6 +286,10 @@ export const deleteContract = async (contractId, userId) => {
     return data;
 };
 
+// ============================================
+// CONTRACT OPERATIONS
+// ============================================
+
 /**
  * Ask AI to explain a specific clause
  * @param {string} contractId - The contract ID
@@ -275,6 +322,10 @@ export const updateContract = async (contractId, userId, updates) => {
 
     return data;
 };
+
+// ============================================
+// CONTACT
+// ============================================
 
 /**
  * Send a contact/support message (via CreateSupportTicket Lambda)
@@ -324,7 +375,9 @@ export const saveEditedContract = async (contractId, userId, editedClauses, full
     return data;
 };
 
-// ============ ADMIN API FUNCTIONS ============
+// ============================================
+// ADMIN API FUNCTIONS
+// ============================================
 
 /**
  * Get system statistics (admin only)
@@ -373,7 +426,6 @@ export const enableUser = async (username) => {
     return data;
 };
 
-// DAN DID IT - Added deleteAllUserContracts function to delete all contracts when user deletes their account
 /**
  * Delete all contracts for the current user
  * Used when a user deletes their account
@@ -415,7 +467,7 @@ export default {
     getAnalysis,
     pollForAnalysis,
     deleteContract,
-    deleteAllUserContracts, // DAN DID IT - Added for account deletion
+    deleteAllUserContracts,
     consultClause,
     sendContactMessage,
     saveEditedContract,

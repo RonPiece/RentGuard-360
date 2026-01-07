@@ -1,4 +1,19 @@
-/* RiskGauge Component - Premium Speedometer Style */
+/*
+ * ============================================
+ *  RiskGauge.css
+ *  Premium Risk Score Gauge Styles
+ * ============================================
+ *
+ * SECTIONS:
+ * - Base gauge layout
+ * - SVG track & progress
+ * - Indicator dot
+ * - Score number
+ * - Risk level glows (excellent, good, medium, high)
+ * - Theme & size variants
+ *
+ * ============================================
+ */
 
 .risk-gauge {
     position: relative;

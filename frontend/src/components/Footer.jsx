@@ -1,3 +1,21 @@
+/**
+ * ============================================
+ *  Footer
+ *  Application Footer with Features & Credits
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Brand column (logo, tagline)
+ * - Features column (AWS, encryption, AI, privacy)
+ * - Credits column (contact, project info)
+ * 
+ * FEATURES:
+ * - Responsive 3-column layout
+ * - Theme-aware styling
+ * - Bilingual content (Hebrew/English)
+ * 
+ * ============================================
+ */
 import React from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
