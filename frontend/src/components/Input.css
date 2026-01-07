@@ -1,4 +1,19 @@
-/* Input Component Styles - iOS Style */
+/*
+ * ============================================
+ *  Input.css
+ *  iOS-Style Input Field Styles
+ * ============================================
+ *
+ * SECTIONS:
+ * - Label & container
+ * - Input base & focus
+ * - Disabled & error states
+ * - Icon positioning
+ * - Helper text
+ * - Autofill override
+ *
+ * ============================================
+ */
 
 .input-wrapper {
     display: flex;

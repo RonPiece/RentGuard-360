@@ -1,16 +1,36 @@
+/**
+ * ============================================
+ *  ScoreBreakdown
+ *  Risk Score Visualization with Categories
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Circular progress ring (overall score)
+ * - 5-category breakdown bars
+ * - Score legend
+ * 
+ * FEATURES:
+ * - Animated SVG score ring
+ * - Color-coded risk levels (4 tiers)
+ * - Category progress bars with icons
+ * 
+ * PROPS:
+ * - overallScore: number (0-100)
+ * - breakdown: { category: { score, deductions } }
+ * - issues: array with rule_id for deduction mapping
+ * 
+ * RISK THRESHOLDS:
+ * - 86-100: Low Risk (green)
+ * - 71-85: Low-Medium Risk (teal)
+ * - 51-70: Medium Risk (orange)
+ * - 0-50: High Risk (red)
+ * 
+ * ============================================
+ */
 import React from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import './ScoreBreakdown.css';
 
-/**
- * ScoreBreakdown Component
- * Displays overall risk score and 5-category breakdown
- * 
- * Props:
- * - overallScore: number (0-100)
- * - breakdown: object with category scores
- * - issues: array of issues with rule_id, penalty_points, etc.
- */
 const ScoreBreakdown = ({ overallScore = 0, breakdown = {}, issues = [] }) => {
     const { t, isRTL } = useLanguage();
 

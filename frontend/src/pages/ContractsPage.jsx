@@ -1,3 +1,27 @@
+/**
+ * ============================================
+ *  ContractsPage
+ *  User's Contract List & Management
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - ContractCard: Individual contract display component
+ * - ContractsPage: Main page with list, modals, pagination
+ * - Contract list with risk score gauges
+ * - Auto-refresh for pending analysis
+ * - Edit/Delete contract modals
+ * - Export to Word/PDF
+ * - Sort by date or score
+ * - Pagination (20 per page)
+ * - Timeout detection (7 min)
+ * 
+ * DEPENDENCIES:
+ * - api.js: getContracts, deleteContract, getAnalysis, updateContract
+ * - ExportService.js: exportToWord, exportToPDF
+ * - RiskGauge: Visual score display
+ * 
+ * ============================================
+ */
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';

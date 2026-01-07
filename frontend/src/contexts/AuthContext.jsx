@@ -1,7 +1,29 @@
+/**
+ * ============================================
+ *  AuthContext
+ *  AWS Cognito Authentication Provider
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Amplify configuration (Cognito User Pool)
+ * - AuthContext & useAuth hook
+ * - AuthProvider with authentication state
+ * - Auth functions: login, register, logout
+ * - Password reset: forgotPassword, resetUserPassword
+ * - Account management: deleteAccount
+ * 
+ * DEPENDENCIES:
+ * - aws-amplify: Cognito integration
+ * - Environment variables: VITE_USER_POOL_ID, VITE_USER_POOL_CLIENT_ID
+ * 
+ * NOTES:
+ * - isAdmin is determined by Cognito 'Admins' group membership
+ * - All auth functions return { success, error? } objects
+ * 
+ * ============================================
+ */
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Amplify } from 'aws-amplify';
-// DAN DID IT - Added resetPassword and confirmResetPassword imports for forgot password feature
-// DAN DID IT - Added deleteUser import for account deletion feature
 import {
     signIn,
     signUp,
@@ -150,7 +172,6 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    // DAN DID IT - Added forgotPassword function to send reset code to user's email
     const forgotPassword = async (email) => {
         try {
             const output = await resetPassword({ username: email });
@@ -162,7 +183,6 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    // DAN DID IT - Added resetUserPassword function to confirm and reset password with code
     const resetUserPassword = async (email, code, newPassword) => {
         try {
             await confirmResetPassword({
@@ -177,7 +197,6 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    // DAN DID IT - Added deleteAccount function to allow users to delete their own account
     const deleteAccount = async () => {
         try {
             await deleteUser();
@@ -205,10 +224,8 @@ export const AuthProvider = ({ children }) => {
             confirmRegistration,
             logout,
             resendCode,
-            // DAN DID IT - Added forgotPassword and resetUserPassword to context
             forgotPassword,
             resetUserPassword,
-            // DAN DID IT - Added deleteAccount to context
             deleteAccount,
             checkAuthState,
         }}>

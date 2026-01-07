@@ -1,3 +1,26 @@
+/*
+ * ============================================
+ *  ContractView.css
+ *  Virtual PDF A4 Paper Contract Display
+ * ============================================
+ *
+ * SECTIONS:
+ * - Virtual PDF container & page
+ * - Contract header (title, date)
+ * - Toolbar & stats badges
+ * - Clauses & issue markers
+ * - Clause actions & hover hints
+ * - AI Explanation box
+ * - Suggested fix styling
+ * - Signature footer
+ * - Export section & buttons
+ * - Hebrew popup editor
+ * - Scroll navigation
+ * - Print styles & responsive
+ *
+ * ============================================
+ */
+
 /* ContractView Component - Virtual PDF A4 Paper Design */
 
 /* ===== Virtual PDF Container ===== */

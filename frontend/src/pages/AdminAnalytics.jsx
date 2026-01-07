@@ -1,3 +1,27 @@
+/**
+ * ============================================
+ *  AdminAnalytics
+ *  Contract Analysis Statistics for Admins
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Risk distribution pie chart
+ * - Average risk score gauge
+ * - Common problematic clauses bar chart
+ * 
+ * FEATURES:
+ * - Visual risk breakdown by category
+ * - Animated gauge showing average score
+ * - Top issues table with codes and topics
+ * - Responsive charts for mobile/tablet
+ * 
+ * DEPENDENCIES:
+ * - api.js: getSystemStats
+ * - MUI X Charts: PieChart, BarChart, Gauge
+ * - ThemeContext: isDark for chart theming
+ * 
+ * ============================================
+ */
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';

@@ -1,3 +1,16 @@
+/**
+ * ============================================
+ *  LanguageToggle
+ *  Hebrew/English Language Switcher
+ * ============================================
+ * 
+ * FEATURES:
+ * - Two-option toggle (עב | EN)
+ * - Uses LanguageContext for state
+ * - Visual indicator for active language
+ * 
+ * ============================================
+ */
 import React from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import './LanguageToggle.css';

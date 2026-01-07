@@ -1,16 +1,20 @@
+/**
+ * ============================================
+ *  Card
+ *  iOS 26 Glassmorphic Card Component
+ * ============================================
+ * 
+ * PROPS:
+ * - variant: 'elevated' | 'outlined' | 'glass'
+ * - padding: 'sm' | 'md' | 'lg'
+ * - hoverable: boolean
+ * - onClick: function (makes card clickable)
+ * 
+ * ============================================
+ */
 import React from 'react';
 import './Card.css';
 
-/**
- * Card Component - iOS 26 Liqueed Glassmorphic Style
- * 
- * @param {Object} props
- * @param {string} props.variant - Card style: 'elevated', 'outlined', 'glass'
- * @param {string} props.padding - Padding size: 'sm', 'md', 'lg'
- * @param {boolean} props.hoverable - Enables hover effect
- * @param {function} props.onClick - Click handler (makes card interactive)
- * @param {React.ReactNode} props.children - Card content
- */
 const Card = ({
     variant = 'elevated',
     padding = 'md',

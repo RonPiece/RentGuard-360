@@ -1,3 +1,23 @@
+/**
+ * ============================================
+ *  ScoreMethodology
+ *  Expandable Score Explanation Panel
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Toggle button "How is the score calculated?"
+ * - Expandable content:
+ *   - Main explanation
+ *   - Severity legend (High/Medium/Low)
+ *   - 5 categories grid with icons
+ *   - Legal source reference
+ * 
+ * FEATURES:
+ * - Bilingual (Hebrew/English)
+ * - Collapsible accordion design
+ * 
+ * ============================================
+ */
 import React, { useState } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Info, ChevronDown, ChevronUp } from 'lucide-react';

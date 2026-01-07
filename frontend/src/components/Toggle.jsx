@@ -1,12 +1,28 @@
+/**
+ * ============================================
+ *  Toggle & ThemeToggle
+ *  iOS-Style Toggle Switch Components
+ * ============================================
+ * 
+ * COMPONENTS:
+ * - Toggle: Generic toggle switch
+ * - ThemeToggle: Dark/Light mode switcher
+ * 
+ * TOGGLE PROPS:
+ * - checked: boolean
+ * - onChange: function
+ * - label: string
+ * - icon: React.ReactNode
+ * - disabled: boolean
+ * 
+ * ============================================
+ */
 import React from 'react';
 import './Toggle.css';
 import { useTheme } from '../contexts/ThemeContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Sun, Moon } from 'lucide-react';
 
-/**
- * Toggle Component - iOS Style with Dark/Light Mode Support
- */
 const Toggle = ({
     checked = false,
     onChange,

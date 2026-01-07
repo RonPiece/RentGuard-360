@@ -1,11 +1,27 @@
+/**
+ * ============================================
+ *  RecommendationCard
+ *  AI Fix Suggestion Callout
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Header with lightbulb icon
+ * - Suggestion text
+ * - Apply/Revert action buttons
+ * 
+ * PROPS:
+ * - title: string (default: 'הצעה לתיקון')
+ * - suggestion: string (fix text)
+ * - onApply: callback
+ * - onRevert: callback
+ * - isApplied: boolean
+ * 
+ * ============================================
+ */
 import React from 'react';
 import { Lightbulb, Check, RotateCcw } from 'lucide-react';
 import './RecommendationCard.css';
 
-/**
- * RecommendationCard - Modern SaaS-style callout for fix suggestions
- * Premium design with subtle background and ghost button
- */
 const RecommendationCard = ({
     title = 'הצעה לתיקון',
     suggestion,

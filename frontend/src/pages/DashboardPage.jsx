@@ -1,3 +1,23 @@
+/**
+ * ============================================
+ *  DashboardPage
+ *  User Dashboard & Overview
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Welcome banner with dynamic greeting
+ * - Stats cards (total, analyzed, pending, high risk)
+ * - Quick actions (upload, view contracts)
+ * - Getting started guide
+ * - Why Us features section
+ * - Responsive grid layout
+ * 
+ * DEPENDENCIES:
+ * - api.js: getContracts (for stats)
+ * - Card, Button components
+ * 
+ * ============================================
+ */
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';

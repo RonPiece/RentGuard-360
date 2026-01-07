@@ -1,6 +1,32 @@
+/**
+ * ============================================
+ *  LanguageContext
+ *  i18n Provider with Hebrew/English Support
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - translations object (Hebrew & English dictionaries)
+ * - LanguageContext creation
+ * - LanguageProvider component with localStorage persistence
+ * - useLanguage hook for consuming context
+ * 
+ * DEPENDENCIES:
+ * - React Context API
+ * - localStorage for language preference persistence
+ * 
+ * NOTES:
+ * - Default language is Hebrew ('he')
+ * - RTL direction is set automatically on document
+ * - Use t('key.path') to get translated strings
+ * 
+ * ============================================
+ */
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-// Translations object
+// ============================================
+// TRANSLATIONS
+// ============================================
+
 const translations = {
     he: {
         // Navigation
@@ -32,11 +58,9 @@ const translations = {
             confirmMessage: 'שלחנו קוד לכתובת',
             confirmCode: 'קוד אימות',
             confirmButton: 'אימות',
-            // DAN DID IT - Added verification success message
             verificationSuccess: 'אימות הצליח!',
             verificationSuccessMessage: 'אל תשכח לאמת את האימייל שלך כדי להשתמש באתר',
             continueToLogin: 'המשך להתחברות',
-            // DAN DID IT - Added Hebrew translations for forgot password feature
             forgotPassword: 'שכחת סיסמה?',
             forgotPasswordTitle: 'איפוס סיסמה',
             forgotPasswordMessage: 'הזן את כתובת האימייל שלך ונשלח לך קוד איפוס',
@@ -177,7 +201,6 @@ const translations = {
             analysisStarted: '✓ הניתוח התחיל',
             viewMyContracts: 'צפייה בחוזים שלי',
             uploadAnother: 'העלאת חוזה נוסף',
-            // DAN DID IT - Added email notification message
             uploadSuccessTitle: 'החוזה הועלה בהצלחה!',
             uploadSuccessMessage: 'תוצאות הניתוח של החוזה שלך ישלחו לאימייל שלך',
             goToContracts: 'עבור לחוזים שלי',
@@ -259,7 +282,6 @@ const translations = {
             ok: 'אישור',
             comingSoon: 'בקרוב',
         },
-        // DAN DID IT - Added account deletion translations
         // Account Settings
         account: {
             deleteAccount: 'מחק חשבון',
@@ -394,11 +416,9 @@ const translations = {
             confirmMessage: 'We sent a code to',
             confirmCode: 'Verification Code',
             confirmButton: 'Verify',
-            // DAN DID IT - Added verification success message (English)
             verificationSuccess: 'Verification Successful!',
             verificationSuccessMessage: "Don't forget to verify your email to use the website",
             continueToLogin: 'Continue to Login',
-            // DAN DID IT - Added English translations for forgot password feature
             forgotPassword: 'Forgot password?',
             forgotPasswordTitle: 'Reset Password',
             forgotPasswordMessage: 'Enter your email address and we will send you a reset code',
@@ -539,7 +559,6 @@ const translations = {
             analysisStarted: '✓ Analysis started',
             viewMyContracts: 'View My Contracts',
             uploadAnother: 'Upload Another Contract',
-            // DAN DID IT - Added email notification message (English)
             uploadSuccessTitle: 'Contract Uploaded Successfully!',
             uploadSuccessMessage: 'Your contract analysis results will be sent to your email',
             goToContracts: 'Go to My Contracts',
@@ -621,7 +640,6 @@ const translations = {
             ok: 'OK',
             comingSoon: 'Coming Soon',
         },
-        // DAN DID IT - Added account deletion translations (English)
         // Account Settings
         account: {
             deleteAccount: 'Delete Account',

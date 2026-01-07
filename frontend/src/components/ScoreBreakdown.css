@@ -1,3 +1,19 @@
+/*
+ * ============================================
+ *  ScoreBreakdown.css
+ *  Risk Score Visualization Styles
+ * ============================================
+ *
+ * SECTIONS:
+ * - Overall score circle
+ * - Score ring animation
+ * - Color classes (excellent, good, warning, danger)
+ * - Categories breakdown
+ * - Score legend
+ *
+ * ============================================
+ */
+
 .score-breakdown {
     display: flex;
     flex-direction: column;

@@ -1,3 +1,17 @@
+/*
+ * ============================================
+ *  LanguageToggle.css
+ *  Hebrew/English Language Switcher Styles
+ * ============================================
+ *
+ * SECTIONS:
+ * - Toggle button base
+ * - Language options (active/inactive)
+ * - Dark mode adjustments
+ *
+ * ============================================
+ */
+
 /* Language Toggle Button */
 .language-toggle {
     display: flex;

@@ -1,6 +1,22 @@
 /* ============================================
    FOOTER - Single Row, 3 Columns
    | Logo | Features | Contact+Credits |
+   ============================================
+
+   TABLE OF CONTENTS
+   ============================================
+   1. Base Styles
+   2. Light/Dark Mode
+   3. Container & Layout
+   4. Column 1: Brand
+   5. Column 2: Features
+   6. Column 3: Contact
+   7. Copyright
+   8. Responsive (768px, 480px)
+   ============================================ */
+
+/* ============================================
+   1. BASE STYLES
    ============================================ */
 
 .app-footer {

@@ -1,11 +1,35 @@
 /**
- * ExportService - Generate Word and PDF reports from contract analysis
- * Supports Hebrew text with RTL formatting
+ * ============================================
+ *  ExportService
+ *  Word & PDF Report Generation
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - exportToWord: Full Hebrew RTL Word document
+ * - exportToPDF: PDF with visual gauges (English only)
+ * - exportEditedContract: Export edited clauses with highlights
+ * - exportEditedContractWithSignatures: Full contract with signature section
+ * 
+ * DEPENDENCIES:
+ * - docx: Word document generation (Hebrew RTL support)
+ * - jsPDF: PDF generation
+ * - file-saver: Browser file download
+ * 
+ * NOTES:
+ * - PDF export has limited Hebrew support - use Word for full Hebrew
+ * - Edited clauses are highlighted in yellow
+ * - Signature version includes landlord/tenant signature blocks
+ * 
+ * ============================================
  */
 
 import { Document, Packer, Paragraph, TextRun, HeadingLevel, Table, TableRow, TableCell, WidthType, AlignmentType } from 'docx';
 import { saveAs } from 'file-saver';
 import { jsPDF } from 'jspdf';
+
+// ============================================
+// WORD EXPORT
+// ============================================
 
 /**
  * Export analysis to Word document (Full Hebrew Support)
@@ -205,6 +229,10 @@ export const exportToWord = async (analysis, fileName = 'Contract_Analysis_Repor
     const blob = await Packer.toBlob(doc);
     saveAs(blob, `${fileName}.docx`);
 };
+
+// ============================================
+// PDF EXPORT
+// ============================================
 
 /**
  * Export analysis to PDF document
@@ -425,6 +453,10 @@ export const exportToPDF = async (analysis, fileName = 'Contract_Analysis_Report
     doc.save(`${fileName}.pdf`);
 };
 
+// ============================================
+// EDITED CONTRACT EXPORT
+// ============================================
+
 /**
  * Export edited contract to Word with Hebrew RTL support
  * @param {string} originalText - Original contract text
@@ -559,6 +591,10 @@ export const exportEditedContract = async (originalText, editedClauses, issues =
     const blob = await Packer.toBlob(doc);
     saveAs(blob, `${fileName}.docx`);
 };
+
+// ============================================
+// CONTRACT WITH SIGNATURES
+// ============================================
 
 /**
  * Export edited contract to Word WITH SIGNATURES

@@ -1,4 +1,17 @@
-/* Toggle Component Styles - iOS Style */
+/*
+ * ============================================
+ *  Toggle.css
+ *  iOS-Style Toggle Switch Styles
+ * ============================================
+ *
+ * SECTIONS:
+ * - Wrapper & label
+ * - Toggle switch base
+ * - Thumb styling
+ * - Checked, disabled, hover & active states
+ *
+ * ============================================
+ */
 
 .toggle-wrapper {
     display: inline-flex;

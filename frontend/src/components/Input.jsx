@@ -1,22 +1,25 @@
+/**
+ * ============================================
+ *  Input
+ *  iOS-Style Input Field Component
+ * ============================================
+ * 
+ * PROPS:
+ * - type: string (text, email, password, etc.)
+ * - label: string
+ * - value: string
+ * - onChange: function
+ * - error: string (error message)
+ * - helperText: string
+ * - leftIcon/rightIcon: React.ReactNode
+ * - disabled: boolean
+ * - required: boolean
+ * 
+ * ============================================
+ */
 import React from 'react';
 import './Input.css';
 
-/**
- * Input Component - iOS Style
- * 
- * @param {Object} props
- * @param {string} props.type - Input type (text, email, password, etc.)
- * @param {string} props.label - Input label
- * @param {string} props.placeholder - Placeholder text
- * @param {string} props.value - Input value
- * @param {function} props.onChange - Change handler
- * @param {string} props.error - Error message
- * @param {string} props.helperText - Helper text below input
- * @param {React.ReactNode} props.leftIcon - Icon on the left
- * @param {React.ReactNode} props.rightIcon - Icon on the right
- * @param {boolean} props.disabled - Disabled state
- * @param {boolean} props.required - Required field
- */
 const Input = ({
     type = 'text',
     label,

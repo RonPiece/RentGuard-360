@@ -1,6 +1,34 @@
 /* ============================================
    ADMIN DASHBOARD - DEEP SPACE PREMIUM
    Linear/Raycast-inspired $100M SaaS Aesthetic
+   ============================================
+
+   TABLE OF CONTENTS
+   ============================================
+   1. Deep Space Environment & Theme Variables
+   2. Access Denied
+   3. Header
+   4. Tabs - Glass Style
+   5. Content
+   6. Stats Dashboard
+   7. Hyper-Glass Cards
+   8. Chart Cards
+   9. Dashboard Charts Row
+   10. Pie Chart Legend
+   11. Full Width Chart Card
+   12. Users Tab & Table
+   13. Modal - Frosted Glass
+   14. MUI Charts Customization
+   15. Light Mode Overrides
+   16. Analytics Placeholder Page
+   17. Settings Page
+   18. Responsive
+       18.1 Tablet (1024px)
+       18.2 Mobile Landscape (768px)
+       18.3 Mobile Portrait (480px)
+       18.4 Small Mobile (360px)
+   19. Analytics Page Styles
+   20. Admin Modal - Confirmation Dialogs
    ============================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');

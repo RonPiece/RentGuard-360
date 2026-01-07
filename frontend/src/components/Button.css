@@ -1,4 +1,19 @@
-/* Button Component Styles - iOS 26 Liqueed */
+/*
+ * ============================================
+ *  Button.css
+ *  iOS 26 Liquid-Style Button Styles
+ * ============================================
+ *
+ * SECTIONS:
+ * - Base styles
+ * - Sizes (sm, md, lg)
+ * - Variants (primary, secondary, ghost, danger)
+ * - States (disabled, loading, full-width)
+ * - Icons & Spinner
+ * - Dark mode overrides
+ *
+ * ============================================
+ */
 
 .btn {
     display: inline-flex;

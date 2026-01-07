@@ -1,4 +1,17 @@
-/* Card Component Styles - Premium 3-Level Contrast */
+/*
+ * ============================================
+ *  Card.css
+ *  Glassmorphic Card Styles
+ * ============================================
+ *
+ * SECTIONS:
+ * - Base & padding sizes
+ * - Variants (elevated, outlined, glass)
+ * - States (hoverable, clickable)
+ * - Dark mode enhancements
+ *
+ * ============================================
+ */
 
 .card {
     border-radius: var(--radius-lg);

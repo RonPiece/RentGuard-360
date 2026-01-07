@@ -1,3 +1,25 @@
+/**
+ * ============================================
+ *  ContactPage
+ *  Customer Support Contact Form
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Contact form (name, email, subject, message)
+ * - Quick help sidebar with FAQ
+ * - Response time information
+ * 
+ * FEATURES:
+ * - Pre-fills user name/email from auth
+ * - Sends message via API (creates support ticket)
+ * - Success confirmation state
+ * 
+ * DEPENDENCIES:
+ * - api.js: sendContactMessage
+ * - Card, Input, Button components
+ * 
+ * ============================================
+ */
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';

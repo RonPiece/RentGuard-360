@@ -1,19 +1,29 @@
+/**
+ * ============================================
+ *  RiskGauge
+ *  Premium Risk Score Visualization
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Semi-circular gradient arc
+ * - Animated indicator dot
+ * - Score number display
+ * 
+ * FEATURES:
+ * - Smooth gradient (green → yellow → red)
+ * - Animated progress from 0 to score
+ * - Glow effect matching risk level
+ * 
+ * PROPS:
+ * - score: number (0-100)
+ * - size: number in pixels (default: 80)
+ * - animate: boolean (default: true)
+ * 
+ * ============================================
+ */
 import React, { useState, useEffect } from 'react';
 import './RiskGauge.css';
 
-/**
- * RiskGauge - Premium Risk Score Visualization
- * 
- * Features:
- * - Smooth gradient arc (green → yellow → red)
- * - Animated progress from 0 to score
- * - Glow effect matching risk level
- * - Score displayed in center
- * 
- * @param {number} score - Risk score 0-100
- * @param {number} size - Size in pixels (default: 80)
- * @param {boolean} animate - Enable mount animation (default: true)
- */
 const RiskGauge = ({ score = 0, size = 80, animate = true }) => {
     const [displayScore, setDisplayScore] = useState(animate ? 0 : score);
 

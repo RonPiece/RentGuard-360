@@ -1,3 +1,32 @@
+/**
+ * ============================================
+ *  LandingPageNew
+ *  Public Landing Page & Authentication
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Navbar with auth buttons
+ * - Hero section with product demo mockups
+ * - Benefits carousel
+ * - Live demo mockups (Dashboard, Contracts, Viewer)
+ * - FAQ section
+ * - Footer
+ * 
+ * FEATURES:
+ * - Login/Register/Confirm modals
+ * - Forgot password flow
+ * - Email verification with resend
+ * - Framer Motion animations
+ * - Auto-advancing benefits carousel
+ * - Registration prompt for non-authenticated users
+ * 
+ * DEPENDENCIES:
+ * - AuthContext: login, register, confirmRegistration
+ * - framer-motion: animations
+ * - Footer component (shared)
+ * 
+ * ============================================
+ */
 import React, { useState, useEffect, useRef } from 'react';
 import { Navigate } from 'react-router-dom';
 import { motion, useInView } from 'framer-motion';
@@ -997,39 +1026,39 @@ const LandingPageNew = () => {
             {showVerificationSuccess && (
                 <div className="auth-backdrop">
                     <div className="auth-modal" dir={isRTL ? 'rtl' : 'ltr'} style={{ textAlign: 'center', maxWidth: '420px' }}>
-                        <div style={{ 
-                            display: 'flex', 
-                            alignItems: 'center', 
-                            justifyContent: 'center', 
-                            marginBottom: '1.5rem' 
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            marginBottom: '1.5rem'
                         }}>
                             <svg width="60" height="60" viewBox="0 0 60 60" fill="none">
-                                <circle cx="30" cy="30" r="28" stroke="#10B981" strokeWidth="3" fill="rgba(16, 185, 129, 0.1)"/>
-                                <path d="M20 30L26 36L40 22" stroke="#10B981" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
+                                <circle cx="30" cy="30" r="28" stroke="#10B981" strokeWidth="3" fill="rgba(16, 185, 129, 0.1)" />
+                                <path d="M20 30L26 36L40 22" stroke="#10B981" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
                             </svg>
                         </div>
-                        
-                        <h2 style={{ 
-                            fontSize: 'var(--font-size-2xl)', 
-                            fontWeight: 'var(--font-weight-bold)', 
-                            color: 'var(--text-primary)', 
-                            marginBottom: '1rem' 
+
+                        <h2 style={{
+                            fontSize: 'var(--font-size-2xl)',
+                            fontWeight: 'var(--font-weight-bold)',
+                            color: 'var(--text-primary)',
+                            marginBottom: '1rem'
                         }}>
                             {t('auth.verificationSuccess')}
                         </h2>
-                        
-                        <p style={{ 
-                            fontSize: 'var(--font-size-md)', 
-                            color: 'var(--text-secondary)', 
-                            lineHeight: '1.6', 
-                            marginBottom: '1.5rem' 
+
+                        <p style={{
+                            fontSize: 'var(--font-size-md)',
+                            color: 'var(--text-secondary)',
+                            lineHeight: '1.6',
+                            marginBottom: '1.5rem'
                         }}>
                             {t('auth.verificationSuccessMessage')}
                         </p>
-                        
-                        <Button 
-                            variant="primary" 
-                            fullWidth 
+
+                        <Button
+                            variant="primary"
+                            fullWidth
                             onClick={handleContinueToLogin}
                         >
                             {t('auth.continueToLogin')}

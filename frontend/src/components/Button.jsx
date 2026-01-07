@@ -1,20 +1,23 @@
+/**
+ * ============================================
+ *  Button
+ *  iOS 26 Liquid-Style Button Component
+ * ============================================
+ * 
+ * PROPS:
+ * - variant: 'primary' | 'secondary' | 'ghost' | 'danger'
+ * - size: 'sm' | 'md' | 'lg'
+ * - fullWidth: boolean
+ * - loading: boolean (shows spinner)
+ * - disabled: boolean
+ * - leftIcon/rightIcon: React.ReactNode
+ * - onClick: function
+ * 
+ * ============================================
+ */
 import React from 'react';
 import './Button.css';
 
-/**
- * Button Component - iOS 26 Liqueed Style
- * 
- * @param {Object} props
- * @param {string} props.variant - Button style: 'primary', 'secondary', 'ghost', 'danger'
- * @param {string} props.size - Button size: 'sm', 'md', 'lg'
- * @param {boolean} props.fullWidth - If true, button takes full width
- * @param {boolean} props.loading - Shows loading spinner
- * @param {boolean} props.disabled - Disables the button
- * @param {React.ReactNode} props.leftIcon - Icon component to show before text
- * @param {React.ReactNode} props.rightIcon - Icon component to show after text
- * @param {function} props.onClick - Click handler
- * @param {React.ReactNode} props.children - Button text/content
- */
 const Button = ({
     variant = 'primary',
     size = 'md',
