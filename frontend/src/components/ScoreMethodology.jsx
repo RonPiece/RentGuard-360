@@ -24,7 +24,7 @@ import { Info, ChevronDown, ChevronUp } from 'lucide-react';
 import './ScoreMethodology.css';
 
 const ScoreMethodology = () => {
-    const { t, isRTL } = useLanguage();
+    const { isRTL } = useLanguage();
     const [isExpanded, setIsExpanded] = useState(false);
 
     const categories = [
@@ -90,8 +90,13 @@ const ScoreMethodology = () => {
                     <div className="methodology-intro">
                         <p>
                             {isRTL
-                                ? 'הציון מתחיל מ-100 נקודות. על כל בעיה שמתגלה בחוזה מורידים נקודות לפי חומרה:'
-                                : 'Score starts at 100 points. Points are deducted for each issue found, based on severity:'}
+                                ? 'הציון הוא 5 קטגוריות × 20 נק׳ (סה״כ 100). מורידים נקודות לפי חומרה.'
+                                : 'Score = 5 categories × 20 points (total 100). Points are deducted by severity.'}
+                        </p>
+                        <p>
+                            {isRTL
+                                ? 'תקרה: קטגוריה לא יורדת מתחת ל-0 ⇒ מקסימום 20 נק׳ ירידה לכל קטגוריה (לכן סכום הקנסות יכול להיות גבוה יותר מהירידה בפועל בציון).'
+                                : 'Cap: a category cannot drop below 0 ⇒ max 20-point impact per category (so total penalties may exceed the actual score drop).'}
                         </p>
                     </div>
 

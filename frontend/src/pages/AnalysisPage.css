@@ -1361,8 +1361,10 @@
 /* Step Layout */
 .issue-step {
     display: flex;
-    gap: var(--space-md);
-    margin-bottom: var(--space-md);
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: var(--space-lg);
 }
 
 .issue-step:last-child {
@@ -1375,6 +1377,7 @@
     align-items: center;
     width: 40px;
     flex-shrink: 0;
+    margin-top: 4px; /* Align icon with first line of text */
 }
 
 .step-icon {
@@ -1388,6 +1391,7 @@
     flex-shrink: 0;
     position: relative;
     z-index: 2;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .step-icon.original {
@@ -1432,45 +1436,56 @@
     display: flex;
     align-items: center;
     gap: var(--space-sm);
-    margin-bottom: var(--space-xs);
+    margin-bottom: 8px;
     justify-content: flex-start;
 }
 
 .step-number {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
     color: var(--accent-primary);
     background: rgba(16, 185, 129, 0.1);
     padding: 3px 8px;
     border-radius: var(--radius-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .step-header h4 {
-    font-size: var(--font-size-sm);
-    font-weight: 600;
-    color: var(--text-primary);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-secondary);
     margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
 }
 
 .step-label {
-    font-size: var(--font-size-sm);
-    font-weight: 600;
-    color: #5AC8FA;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
 }
 
 /* Step Boxes */
 .step-box {
-    padding: var(--space-md);
+    padding: 16px 20px;
     border-radius: var(--radius-md);
     position: relative;
     text-align: right;
 }
 
 .step-box p {
-    font-size: var(--font-size-sm);
-    line-height: 1.7;
+    font-size: 1rem;
+    line-height: 1.85;
     margin: 0;
-    color: var(--text-secondary);
+    color: var(--text-primary);
+}
+
+/* Light mode: ensure good contrast */
+[data-theme="light"] .step-box p {
+    color: #1f2937;
 }
 
 .step-box.original {
@@ -1480,6 +1495,11 @@
 
 .step-box.original p {
     font-style: italic;
+    color: var(--text-secondary);
+}
+
+[data-theme="light"] .step-box.original p {
+    color: #4b5563;
 }
 
 .step-box.legal {

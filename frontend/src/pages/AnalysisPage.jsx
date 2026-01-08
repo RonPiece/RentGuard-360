@@ -24,9 +24,9 @@
  * 
  * ============================================
  */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link, useLocation } from 'react-router-dom';
-import { getAnalysis, consultClause, saveEditedContract } from '../services/api';
+import { getAnalysis, saveEditedContract } from '../services/api';
 import { exportToWord, exportToPDF, exportEditedContract } from '../services/ExportService';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -45,59 +45,29 @@ const AnalysisPage = () => {
     const { t, isRTL } = useLanguage();
     const { userAttributes } = useAuth();
 
+    const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
+
     // Initialize with passed contract data if available (instant load)
     const [analysis, setAnalysis] = useState(state?.contract || null);
     const [isLoading, setIsLoading] = useState(!state?.contract); // Only show loading if no data passed
     const [error, setError] = useState(null);
     const [expandedIssue, setExpandedIssue] = useState(null);
-    const [consultingIssue, setConsultingIssue] = useState(null);
-    const [aiExplanation, setAiExplanation] = useState({});
     const [showExportMenu, setShowExportMenu] = useState(false);
     const [isExporting, setIsExporting] = useState(false);
     const [activeTab, setActiveTab] = useState('issues'); // 'issues' or 'contract'
-    const [editedClauses, setEditedClauses] = useState({});
+    const [_editedClauses, setEditedClauses] = useState({});
     const [copiedIndex, setCopiedIndex] = useState(null);
     const [pollCount, setPollCount] = useState(0);
     const MAX_POLL_ATTEMPTS = 12; // 12 attempts = ~2 minutes total
     const INITIAL_DELAY = 15000; // Wait 15s before first poll (analysis takes 30-60s)
     const POLL_INTERVAL = 10000; // Then poll every 10 seconds
 
-    useEffect(() => {
-        fetchAnalysis();
-    }, [contractId]);
-
-    // Auto-polling when analysis is still processing
-    useEffect(() => {
-        // Only poll if we have a 'processing' error and haven't exceeded max attempts
-        if (error?.type === 'processing' && pollCount < MAX_POLL_ATTEMPTS && !USE_MOCK) {
-            // Use longer delay for first poll (analysis takes 30-60s typically)
-            const delay = pollCount === 0 ? INITIAL_DELAY : POLL_INTERVAL;
-            console.log(`Auto-polling in ${delay / 1000}s... (attempt ${pollCount + 1}/${MAX_POLL_ATTEMPTS})`);
-
-            const pollTimer = setTimeout(() => {
-                setPollCount(prev => prev + 1);
-                fetchAnalysis();
-            }, delay);
-
-            return () => clearTimeout(pollTimer);
-        }
-    }, [error, pollCount]);
-
-    // Reset poll count when analysis succeeds
-    useEffect(() => {
-        if (analysis) {
-            setPollCount(0);
-        }
-    }, [analysis]);
-
-    const fetchAnalysis = async () => {
+    const fetchAnalysis = useCallback(async () => {
         try {
             // Only show loading spinner on first load, not during polling
             if (pollCount === 0) {
                 setIsLoading(true);
             }
-            // Don't reset error during polling - otherwise the polling useEffect won't trigger
-            // setError(null) will happen when data is successfully fetched
 
             const decodedId = decodeURIComponent(contractId);
             console.log('Fetching analysis for:', decodedId);
@@ -148,30 +118,37 @@ const AnalysisPage = () => {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [contractId, pollCount]);
 
-    // Ask AI to explain a clause
-    const handleConsultClause = async (issue, index) => {
-        setConsultingIssue(index);
-        try {
-            const response = await consultClause(
-                decodeURIComponent(contractId),
-                issue.original_text || issue.clause_topic
-            );
-            setAiExplanation(prev => ({
-                ...prev,
-                [index]: response.explanation
-            }));
-        } catch (err) {
-            console.error('Consult failed:', err);
-            setAiExplanation(prev => ({
-                ...prev,
-                [index]: 'Failed to get AI explanation. Please try again.'
-            }));
-        } finally {
-            setConsultingIssue(null);
+    useEffect(() => {
+        fetchAnalysis();
+    }, [fetchAnalysis]);
+
+    // Auto-polling when analysis is still processing
+    useEffect(() => {
+        // Only poll if we have a 'processing' error and haven't exceeded max attempts
+        if (error?.type === 'processing' && pollCount < MAX_POLL_ATTEMPTS && !USE_MOCK) {
+            // Use longer delay for first poll (analysis takes 30-60s typically)
+            const delay = pollCount === 0 ? INITIAL_DELAY : POLL_INTERVAL;
+            console.log(`Auto-polling in ${delay / 1000}s... (attempt ${pollCount + 1}/${MAX_POLL_ATTEMPTS})`);
+
+            const pollTimer = setTimeout(() => {
+                setPollCount(prev => prev + 1);
+                fetchAnalysis();
+            }, delay);
+
+            return () => clearTimeout(pollTimer);
         }
-    };
+    }, [error, pollCount, USE_MOCK, fetchAnalysis]);
+
+    // Reset poll count when analysis succeeds
+    useEffect(() => {
+        if (analysis) {
+            setPollCount(0);
+        }
+    }, [analysis]);
+
+    
 
     const getRiskLabel = (level) => {
         const labels = { High: 'high', Medium: 'medium', Low: 'low' };

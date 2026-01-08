@@ -22,6 +22,7 @@
  * 
  * ============================================
  */
+/* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Amplify } from 'aws-amplify';
 import {
@@ -92,7 +93,7 @@ export const AuthProvider = ({ children }) => {
                 console.log('Could not fetch groups:', e);
                 setIsAdmin(false);
             }
-        } catch (error) {
+        } catch {
             setUser(null);
             setUserAttributes(null);
             setIsAuthenticated(false);

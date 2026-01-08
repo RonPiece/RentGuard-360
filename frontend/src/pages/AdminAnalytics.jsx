@@ -22,8 +22,7 @@
  * 
  * ============================================
  */
-import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { useAuth } from '../contexts/AuthContext';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { getSystemStats } from '../services/api';
@@ -44,7 +43,6 @@ import {
 import './AdminDashboard.css';
 
 const AdminAnalytics = () => {
-    const { isAdmin } = useAuth();
     const { t, isRTL } = useLanguage();
     const { isDark } = useTheme();
     const [stats, setStats] = useState(null);
@@ -55,11 +53,23 @@ const AdminAnalytics = () => {
 
     // Responsive breakpoint for chart sizing
     const isMobile = useMediaQuery('(max-width:480px)');
-    const isTablet = useMediaQuery('(max-width:768px)');
+
+    const fetchStats = useCallback(async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const data = await getSystemStats();
+            setStats(data);
+        } catch (err) {
+            setError(err.message || t('common.error'));
+        } finally {
+            setLoading(false);
+        }
+    }, [t]);
 
     useEffect(() => {
         fetchStats();
-    }, []);
+    }, [fetchStats]);
 
     // Responsive chart width
     useEffect(() => {
@@ -73,19 +83,6 @@ const AdminAnalytics = () => {
         window.addEventListener('resize', updateWidth);
         return () => window.removeEventListener('resize', updateWidth);
     }, [loading]);
-
-    const fetchStats = async () => {
-        setLoading(true);
-        setError(null);
-        try {
-            const data = await getSystemStats();
-            setStats(data);
-        } catch (err) {
-            setError(err.message || t('common.error'));
-        } finally {
-            setLoading(false);
-        }
-    };
 
     // Create MUI theme for charts
     const chartTheme = useMemo(() => createTheme({
@@ -102,7 +99,7 @@ const AdminAnalytics = () => {
         },
     }), [isDark]);
 
-    const textColor = isDark ? '#f8fafc' : '#1a1a2e';
+    const valueTextColor = isDark ? '#f8fafc' : '#1a1a2e';
     const labelColor = isDark ? '#94a3b8' : '#475569';
 
     // Risk distribution data
@@ -126,7 +123,6 @@ const AdminAnalytics = () => {
         ...issue,
         color: colors[index % colors.length]
     }));
-    const maxCount = Math.max(...(commonIssues.length ? commonIssues.map(i => i.count) : [10]), 10);
 
     // Risk score
     const rawScore = stats?.analysis?.avgRiskScore || 60;
@@ -222,7 +218,7 @@ const AdminAnalytics = () => {
                                                 [`& .${gaugeClasses.valueText}`]: {
                                                     fontSize: isMobile ? 28 : 36,
                                                     fontWeight: 'bold',
-                                                    fill: textColor,
+                                                    fill: valueTextColor,
                                                 },
                                                 [`& .${gaugeClasses.valueArc}`]: {
                                                     fill: riskColor,
@@ -326,7 +322,7 @@ export default AdminAnalytics;
 // --- Helper Components for Shiny Chart ---
 
 function BarShadedBackground(props) {
-    const { ownerState, skipAnimation, id, dataIndex, xOrigin, yOrigin, ...other } = props;
+    const { ownerState, ...other } = props;
     const { isDark } = useTheme();
 
     const animatedProps = useAnimateBar(props);
@@ -367,19 +363,9 @@ const Text = styled('text')(({ theme }) => ({
 
 function BarLabelAtBase(props) {
     const {
-        seriesId,
-        dataIndex,
-        color,
-        isFaded,
-        isHighlighted,
-        classes,
         xOrigin,
-        yOrigin,
-        x,
         y,
-        width,
         height,
-        layout,
         skipAnimation,
         ...otherProps
     } = props;

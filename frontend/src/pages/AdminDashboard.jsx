@@ -22,7 +22,7 @@
  * 
  * ============================================
  */
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -58,9 +58,22 @@ const AdminDashboard = () => {
     const chartContainerRef = useRef(null);
     const [chartWidth, setChartWidth] = useState(450);
 
+    const fetchStats = useCallback(async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const data = await getSystemStats();
+            setStats(data);
+        } catch (err) {
+            setError(err.message || t('common.error'));
+        } finally {
+            setLoading(false);
+        }
+    }, [t]);
+
     useEffect(() => {
         fetchStats();
-    }, []);
+    }, [fetchStats]);
 
     // Responsive chart width
     useEffect(() => {
@@ -83,19 +96,6 @@ const AdminDashboard = () => {
         };
     }, [loading]);
 
-    const fetchStats = async () => {
-        setLoading(true);
-        setError(null);
-        try {
-            const data = await getSystemStats();
-            setStats(data);
-        } catch (err) {
-            setError(err.message || t('common.error'));
-        } finally {
-            setLoading(false);
-        }
-    };
-
     // Create MUI theme for charts
     const chartTheme = useMemo(() => createTheme({
         palette: {
@@ -111,22 +111,10 @@ const AdminDashboard = () => {
         },
     }), [isDark]);
 
-    const textColor = isDark ? '#f8fafc' : '#1a1a2e';
     const labelColor = isDark ? '#94a3b8' : '#475569';
     const gridColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
 
-    // Access denied
-    if (!isAdmin) {
-        return (
-            <div className={`admin-dashboard page-container ${isDark ? 'dark' : 'light'}`} dir={isRTL ? 'rtl' : 'ltr'}>
-                <div className="access-denied">
-                    <Lock size={48} />
-                    <h1>{t('admin.accessDenied')}</h1>
-                    <p>{t('admin.noPermission')}</p>
-                </div>
-            </div>
-        );
-    }
+    const accessDenied = !isAdmin;
 
     // Unified Date Range Calculation
     const calculateDateRange = (range) => {
@@ -177,6 +165,13 @@ const AdminDashboard = () => {
     });
     const lineChartValues = contractsByDay.map(d => d.analyzed);
 
+    const contractsChartDataset = useMemo(() => {
+        return contractsByDay.map((d, index) => ({
+            x: lineChartDates[index],
+            analyzed: d.analyzed,
+        }));
+    }, [contractsByDay, lineChartDates]);
+
     // DEBUG: Contracts Data (Restored)
     useEffect(() => {
         if (stats?.contracts) {
@@ -196,7 +191,7 @@ const AdminDashboard = () => {
                 })
             });
         }
-    }, [stats, dateRange, contractsByDay, rangeStart, rangeEnd]);
+    }, [stats, dateRange, contractsByDay, rangeStart, rangeEnd, lineChartValues]);
 
 
 
@@ -224,8 +219,6 @@ const AdminDashboard = () => {
         return `${Math.round(seconds / 60)} ${t('admin.minutes')}`;
     };
 
-    const currentYear = new Date().getFullYear();
-
     return (
         <div className={`admin-dashboard page-container ${isDark ? 'dark' : 'light'}`} dir={isRTL ? 'rtl' : 'ltr'}>
             <header className="admin-header">
@@ -234,6 +227,14 @@ const AdminDashboard = () => {
             </header>
 
             <div className="admin-content">
+                {accessDenied && (
+                    <div className="access-denied">
+                        <Lock size={48} />
+                        <h1>{t('admin.accessDenied')}</h1>
+                        <p>{t('admin.noPermission')}</p>
+                    </div>
+                )}
+
                 {error && (
                     <div className="error-banner">
                         <AlertTriangle size={18} />
@@ -245,12 +246,12 @@ const AdminDashboard = () => {
                     </div>
                 )}
 
-                {loading ? (
+                {!accessDenied && loading ? (
                     <div className="loading-state">
                         <div className="loading-spinner"></div>
                         <p>{t('common.loading')}</p>
                     </div>
-                ) : stats && (
+                ) : !accessDenied && stats && (
                     <ThemeProvider theme={chartTheme}>
                         <div className="stats-dashboard">
                             {/* Summary Cards */}
@@ -324,7 +325,7 @@ const AdminDashboard = () => {
                                                     onChange={(e) => e.target.value && setDateRange(e.target.value)}
                                                 >
                                                     <option value="" disabled>{t('admin.selectYear') || 'Year'}</option>
-                                                    {Array.from({ length: 10 }, (_, i) => currentYear - i).map(year => (
+                                                    {[2026, 2025].map(year => (
                                                         <option key={year} value={String(year)}>{year}</option>
                                                     ))}
                                                 </select>
@@ -334,9 +335,11 @@ const AdminDashboard = () => {
                                     <div className="chart-container line-chart-container" dir="ltr">
                                         {lineChartDates.length > 0 ? (
                                             <LineChart
+                                                key={`contracts-${dateRange}-${lineChartValues.length}-${chartWidth}`}
+                                                dataset={contractsChartDataset}
                                                 xAxis={[{
-                                                    scaleType: 'point',
-                                                    data: lineChartDates,
+                                                    dataKey: 'x',
+                                                    scaleType: 'band',
                                                     tickLabelStyle: { fill: labelColor, fontSize: 10, angle: -45, textAnchor: 'end' },
                                                 }]}
                                                 yAxis={[{
@@ -345,7 +348,7 @@ const AdminDashboard = () => {
                                                     position: 'left',
                                                 }]}
                                                 series={[{
-                                                    data: lineChartValues,
+                                                    dataKey: 'analyzed',
                                                     area: true,
                                                     color: '#10B981',
                                                     showMark: false,
@@ -394,7 +397,7 @@ const AdminDashboard = () => {
                                                     onChange={(e) => e.target.value && setUserDateRange(e.target.value)}
                                                 >
                                                     <option value="" disabled>{t('admin.selectYear') || 'Year'}</option>
-                                                    {Array.from({ length: 10 }, (_, i) => currentYear - i).map(year => (
+                                                    {[2026, 2025].map(year => (
                                                         <option key={year} value={String(year)}>{year}</option>
                                                     ))}
                                                 </select>
@@ -403,6 +406,7 @@ const AdminDashboard = () => {
                                     </div>
                                     <div className="chart-container bar-chart-container" dir="ltr">
                                         <LineChart
+                                            key={`users-${userDateRange}-${userChartDataset.length}-${chartWidth}`}
                                             dataset={userChartDataset}
                                             xAxis={[{
                                                 dataKey: 'date',

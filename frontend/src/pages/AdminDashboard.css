@@ -560,11 +560,47 @@
     color: var(--admin-text);
     cursor: pointer;
     appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
     padding-right: 20px;
     background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
     background-repeat: no-repeat;
     background-position: right 4px center;
     background-size: 10px;
+    color-scheme: dark;
+}
+
+/* RTL: keep the caret from covering the year text */
+[dir="rtl"] .year-picker {
+    padding-right: 8px;
+    padding-left: 30px;
+    background-position: left 10px center;
+    text-align: start;
+}
+
+/* Year picker - Force dark background on dropdown options */
+.year-picker option {
+    background: #1f2937;
+    color: #f8fafc;
+}
+
+/* Light mode year picker */
+.admin-dashboard.light .year-picker {
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: #1f2937;
+    color-scheme: light;
+    background-image: none;
+    padding-right: 8px;
+    padding-left: 8px;
+    appearance: auto;
+    -webkit-appearance: menulist;
+    -moz-appearance: auto;
+}
+
+.admin-dashboard.light .year-picker option {
+    background: #ffffff;
+    color: #1f2937;
 }
 
 .custom-date-range {
@@ -736,7 +772,7 @@
 }
 
 .pie-legend .legend-item .legend-label {
-    flex: 1;
+    flex: none;
 }
 
 .pie-legend .legend-item .legend-value {
@@ -895,7 +931,14 @@
    ========================================== */
 
 .users-table-wrapper {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
     overflow-x: auto;
+    overflow-y: auto;
+    max-height: 600px;
+    -webkit-overflow-scrolling: touch;
     border-radius: 16px;
     border: 1px solid var(--admin-card-border);
     background: var(--admin-card-bg);
@@ -905,7 +948,35 @@
 
 .users-table {
     width: 100%;
+    min-width: 900px;
     border-collapse: collapse;
+    table-layout: fixed;
+}
+
+/* Fixed column widths for consistent layout */
+.users-table th:nth-child(1),
+.users-table td:nth-child(1) {
+    width: 280px;
+}
+
+.users-table th:nth-child(2),
+.users-table td:nth-child(2) {
+    width: 200px;
+}
+
+.users-table th:nth-child(3),
+.users-table td:nth-child(3) {
+    width: 120px;
+}
+
+.users-table th:nth-child(4),
+.users-table td:nth-child(4) {
+    width: 150px;
+}
+
+.users-table th:nth-child(5),
+.users-table td:nth-child(5) {
+    width: 150px;
 }
 
 .users-table th,
@@ -913,6 +984,9 @@
     padding: 14px 18px;
     text-align: right;
     color: var(--admin-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 [dir="ltr"] .users-table th,
@@ -1010,14 +1084,25 @@
 
 /* Actions */
 .actions-cell {
-    min-width: 90px;
+    min-width: 100px;
+    width: 100px;
     text-align: center !important;
+    position: sticky;
+    left: 0;
+    background: inherit;
+    z-index: 1;
+}
+
+[dir="rtl"] .actions-cell {
+    left: auto;
+    right: 0;
 }
 
 .action-buttons {
     display: flex;
     gap: 6px;
     justify-content: center;
+    flex-wrap: nowrap;
 }
 
 /* Glass Icon Buttons */
@@ -1648,6 +1733,13 @@
    ============================================ */
 
 @media (max-width: 1024px) {
+
+    /* Admin pages: when sidebar is hidden, let content span full width */
+    .admin-dashboard.page-container > *:not(.section-band):not(.section-band-alt) {
+        max-width: none;
+        margin-left: 0;
+        margin-right: 0;
+    }
     .admin-dashboard {
         padding: 24px 16px;
     }
@@ -1811,13 +1903,15 @@
     }
 
     .users-table {
-        min-width: 600px;
+        min-width: 900px;
+        table-layout: fixed;
         font-size: 0.8125rem;
     }
 
     .users-table th,
     .users-table td {
-        padding: 10px 8px;
+        padding: 10px 12px;
+        white-space: nowrap;
     }
 
     .action-buttons {
@@ -1958,7 +2052,6 @@
     /* Users Table - Mobile Scroll (constrained to viewport) */
     .users-table-wrapper {
         max-width: calc(100vw - 32px);
-        /* Viewport minus padding */
         width: 100%;
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
@@ -1966,13 +2059,15 @@
     }
 
     .users-table {
-        min-width: 500px;
+        min-width: 900px;
+        table-layout: fixed;
     }
 
     .users-table th,
     .users-table td {
-        padding: 8px 6px;
+        padding: 8px 10px;
         font-size: 0.75rem;
+        white-space: nowrap;
     }
 
     .action-icon-btn {
@@ -2016,7 +2111,6 @@
     gap: 20px;
     margin-bottom: 20px;
     width: 100%;
-    max-width: 100%;
     box-sizing: border-box;
 }
 
@@ -2059,17 +2153,52 @@
     gap: 24px;
     min-height: 200px;
     max-width: 100%;
-    overflow: hidden;
+    overflow: visible;
+    flex-wrap: wrap;
 }
 
 .gauge-content {
     flex-direction: column;
+    align-items: center;
 }
 
 .pie-chart-wrapper {
     flex-shrink: 0;
     max-width: 100%;
-    overflow: hidden;
+    overflow: visible;
+    display: flex;
+    justify-content: center;
+}
+
+/* Pie Legend - sits below chart on mobile */
+.pie-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8125rem;
+    color: var(--admin-text-secondary);
+}
+
+.legend-item .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.legend-item .legend-label {
+    flex: 1;
+}
+
+.legend-item .legend-value {
+    font-weight: 600;
+    color: var(--admin-text);
 }
 
 /* Bar Chart Section - Legend ABOVE Chart */
@@ -2077,23 +2206,37 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
-    align-items: stretch;
+    align-items: center;
+    width: 100%;
+    overflow: visible;
 }
 
 .bar-chart-wrapper {
     width: 100%;
     display: flex;
     justify-content: center;
+    align-items: center;
     overflow-x: auto;
+    overflow-y: visible;
     -webkit-overflow-scrolling: touch;
     order: 2;
     /* Chart goes second (below legend) */
+    padding: 20px 0;
+    min-height: 300px;
+    height: 300px;
+    flex-shrink: 0;
 }
 
 .bar-chart-legend {
     width: 100%;
     order: 1;
     /* Legend goes first (above chart) */
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: 10px;
+    flex-shrink: 0;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--admin-border);
 }
 
 .bar-chart-legend table {
@@ -2180,31 +2323,43 @@
    ANALYTICS - RESPONSIVE
    ============================================ */
 
-/* Stack cards at 1200px for better readability */
-@media (max-width: 1200px) {
+/* Stack cards earlier at 900px for better tablet experience */
+@media (max-width: 900px) {
     .analytics-cards-row {
         grid-template-columns: 1fr;
+        max-width: 100%;
     }
 
     .analytics-card-full {
         grid-column: span 1;
+        max-width: 100%;
     }
 
+    /* Stack pie chart and legend vertically */
     .chart-content {
         flex-direction: column;
         align-items: center;
-        gap: 16px;
+        gap: 20px;
     }
 
-    .pie-chart-wrapper,
-    .gauge-content {
+    .pie-chart-wrapper {
         width: 100%;
         display: flex;
         justify-content: center;
+        order: 1;
     }
 
     .pie-legend {
         width: 100%;
+        max-width: 300px;
+        order: 2;
+    }
+
+    .gauge-content {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
 }
 
@@ -2222,6 +2377,11 @@
 @media (max-width: 768px) {
     .analytics-cards-row {
         grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .analytics-card {
+        padding: 20px;
     }
 
     .analytics-card-full {
@@ -2231,15 +2391,23 @@
     .chart-content {
         flex-direction: column;
         gap: 16px;
+        min-height: 180px;
     }
 
     .bar-chart-wrapper {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
+        justify-content: flex-start;
+        padding-left: 10px;
+    }
+
+    .bar-chart-legend {
+        overflow-x: auto;
     }
 
     .bar-chart-legend table {
         font-size: 0.75rem;
+        min-width: 320px;
     }
 
     .bar-chart-legend th,
@@ -2279,7 +2447,6 @@
 
     .pie-legend {
         width: 100%;
-        padding: 0 8px;
     }
 
     .pie-legend-item {
@@ -2295,12 +2462,27 @@
         align-items: center;
     }
 
+    /* Bar chart section - more spacing on mobile */
+    .bar-chart-section {
+        gap: 25px;
+    }
+
+    .bar-chart-wrapper {
+        min-height: 280px;
+        height: 280px;
+        padding: 20px 0;
+        flex-shrink: 0;
+    }
+
     /* Bar chart legend responsive - with horizontal scroll */
     .bar-chart-legend {
         min-width: unset;
         width: 100%;
         overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
+                padding: 0 8px;
+-webkit-overflow-scrolling: touch;
+        margin-bottom: 15px;
+        flex-shrink: 0;
     }
 
     .bar-chart-legend table {
@@ -2566,8 +2748,134 @@
     color: var(--accent-success, #059669);
 }
 
-/* Responsive Modal */
+/* ============================================
+   RESPONSIVE - ADMIN DASHBOARD
+   ============================================ */
+
+/* Large tablet / Small desktop (1024px) - Start scroll here */
+@media (max-width: 1024px) {
+
+    /* Users table - horizontal scroll EARLY */
+    .users-table-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .users-table {
+        min-width: 900px;
+        table-layout: fixed;
+    }
+
+    /* Analytics charts - overflow for scroll */
+    .analytics-charts-container,
+    .chart-card {
+        overflow-x: auto;
+    }
+}
+
+/* Tablet (768px) */
+@media (max-width: 768px) {
+    .admin-dashboard {
+        padding: var(--space-md, 16px) var(--space-sm, 8px);
+    }
+
+    .users-table {
+        min-width: 900px;
+        table-layout: fixed;
+    }
+
+    .users-table th,
+    .users-table td {
+        padding: 10px 12px;
+        font-size: 12px;
+        white-space: nowrap;
+    }
+
+    /* Charts - stack vertically with scroll */
+    .charts-row {
+        flex-direction: column;
+    }
+
+    .chart-card {
+        width: 100% !important;
+        min-width: 400px;
+    }
+
+    /* Stats grid */
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Admin header */
+    .admin-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 16px;
+    }
+
+    .admin-tabs {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}
+
+/* Small tablet / large phone (600px) */
+@media (max-width: 600px) {
+    .users-table {
+        width: 1100px !important;
+        min-width: 1100px !important;
+        table-layout: fixed;
+    }
+
+    /* Filter buttons - stack */
+    .filter-group {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .filter-btn {
+        width: 100%;
+    }
+
+    .chart-card {
+        min-width: 350px;
+    }
+}
+
+/* Responsive Modal (480px) */
 @media (max-width: 480px) {
+    .admin-dashboard {
+        padding: var(--space-sm, 8px);
+    }
+
+    /* Stats - single column */
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .users-table {
+        width: 1100px !important;
+        min-width: 1100px !important;
+        table-layout: fixed;
+    }
+
+    .users-table th,
+    .users-table td {
+        padding: 8px 10px;
+        font-size: 11px;
+        white-space: nowrap;
+    }
+
+    /* Admin tab buttons */
+    .tab-button {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+
+    .chart-card {
+        min-width: 300px;
+    }
+
     .admin-modal {
         width: 94%;
         padding: 22px 20px;

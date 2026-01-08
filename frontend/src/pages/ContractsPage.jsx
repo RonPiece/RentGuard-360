@@ -22,9 +22,9 @@
  * 
  * ============================================
  */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import ReactDOM from 'react-dom';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { getContracts, deleteContract, getAnalysis, updateContract } from '../services/api';
@@ -39,7 +39,8 @@ const ANALYSIS_TIMEOUT_MS = 7 * 60 * 1000;
 
 // Check if a contract has timed out (pending for more than 7 minutes)
 const isContractTimedOut = (contract) => {
-    if (contract.status === 'analyzed' || contract.status === 'failed' || contract.status === 'error') {
+    const status = (contract.status || '').toLowerCase();
+    if (status === 'analyzed' || status === 'failed' || status === 'error') {
         return false; // Already has final status
     }
 
@@ -56,6 +57,7 @@ const isContractTimedOut = (contract) => {
 // Contract Card Component
 const ContractCard = ({ contract, onDelete, onEdit, onExport, formatDate, t, isRTL }) => {
     const [showExportMenu, setShowExportMenu] = useState(false);
+    const status = (contract.status || '').toLowerCase();
 
     // Score thresholds match legend: lower score = higher risk
     const getScoreColor = (score) => {
@@ -75,8 +77,8 @@ const ContractCard = ({ contract, onDelete, onEdit, onExport, formatDate, t, isR
     // Check for timeout - treat as failed if pending > 7 minutes
     const isTimedOut = isContractTimedOut(contract);
 
-    const isAnalyzed = contract.status === 'analyzed';
-    const isFailed = contract.status === 'failed' || contract.status === 'error' || isTimedOut;
+    const isAnalyzed = status === 'analyzed';
+    const isFailed = status === 'failed' || status === 'error' || isTimedOut;
     const score = contract.riskScore ?? contract.risk_score ?? null;
     const hasScore = isAnalyzed && score !== null && score !== undefined;
 
@@ -192,7 +194,6 @@ const ContractCard = ({ contract, onDelete, onEdit, onExport, formatDate, t, isR
 const ContractsPage = () => {
     const { user, userAttributes } = useAuth();
     const { t, isRTL } = useLanguage();
-    const location = useLocation();
     const [contracts, setContracts] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isRefreshing, setIsRefreshing] = useState(false);
@@ -209,53 +210,7 @@ const ContractsPage = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const contractsPerPage = 20;
 
-    useEffect(() => { fetchContracts(); }, [user]);
-
-    // Auto-refresh while there are pending contracts (not failed/analyzed/timed out)
-    useEffect(() => {
-        console.log('[AutoPoll] useEffect triggered - contracts count:', contracts.length);
-
-        const pendingContracts = contracts.filter(c => {
-            // Skip if already has final status
-            if (c.status === 'analyzed' || c.status === 'failed' || c.status === 'error') {
-                return false;
-            }
-            // Skip if timed out
-            if (isContractTimedOut(c)) {
-                return false;
-            }
-            // Check if actually pending/processing
-            return c.status === 'processing' ||
-                c.status === 'uploaded' ||
-                c.status === 'pending' ||
-                !c.status;  // No status yet
-        });
-
-        console.log('[AutoPoll] Contract statuses:', contracts.map(c => ({
-            id: c.contractId?.substring(0, 8),
-            status: c.status,
-            timedOut: isContractTimedOut(c)
-        })));
-        console.log('[AutoPoll] Pending contracts:', pendingContracts.length);
-
-        if (pendingContracts.length === 0) {
-            console.log('[AutoPoll] No pending contracts - NOT starting interval');
-            return;
-        }
-
-        console.log('[AutoPoll] Starting 30 second interval...');
-        const interval = setInterval(() => {
-            console.log('[AutoPoll] Interval fired - fetching contracts at', new Date().toISOString());
-            fetchContracts(false);
-        }, 30000);
-
-        return () => {
-            console.log('[AutoPoll] Cleanup - clearing interval');
-            clearInterval(interval);
-        };
-    }, [contracts, user]);
-
-    const fetchContracts = async (showLoader = true) => {
+    const fetchContracts = useCallback(async (showLoader = true) => {
         const userId = user?.userId || user?.username || userAttributes?.sub;
         if (!userId) {
             setIsLoading(false);
@@ -283,7 +238,54 @@ const ContractsPage = () => {
             setIsLoading(false);
             setIsRefreshing(false);
         }
-    };
+    }, [user, userAttributes]);
+
+    useEffect(() => { fetchContracts(); }, [fetchContracts]);
+
+    // Auto-refresh while there are pending contracts (not failed/analyzed/timed out)
+    useEffect(() => {
+        console.log('[AutoPoll] useEffect triggered - contracts count:', contracts.length);
+
+        const pendingContracts = contracts.filter(c => {
+            const status = (c.status || '').toLowerCase();
+            // Skip if already has final status
+            if (status === 'analyzed' || status === 'failed' || status === 'error') {
+                return false;
+            }
+            // Skip if timed out
+            if (isContractTimedOut(c)) {
+                return false;
+            }
+            // Check if actually pending/processing
+            return status === 'processing' ||
+                status === 'uploaded' ||
+                status === 'pending' ||
+                !status;  // No status yet
+        });
+
+        console.log('[AutoPoll] Contract statuses:', contracts.map(c => ({
+            id: c.contractId?.substring(0, 8),
+            status: (c.status || '').toLowerCase() || null,
+            timedOut: isContractTimedOut(c)
+        })));
+        console.log('[AutoPoll] Pending contracts:', pendingContracts.length);
+
+        if (pendingContracts.length === 0) {
+            console.log('[AutoPoll] No pending contracts - NOT starting interval');
+            return;
+        }
+
+        console.log('[AutoPoll] Starting 30 second interval...');
+        const interval = setInterval(() => {
+            console.log('[AutoPoll] Interval fired - fetching contracts at', new Date().toISOString());
+            fetchContracts(false);
+        }, 30000);
+
+        return () => {
+            console.log('[AutoPoll] Cleanup - clearing interval');
+            clearInterval(interval);
+        };
+    }, [contracts, fetchContracts]);
 
     const handleDelete = (contractId, e) => {
         e?.preventDefault();
@@ -299,7 +301,7 @@ const ContractsPage = () => {
             await deleteContract(deleteConfirm, userId);
             setContracts(contracts.filter(c => c.contractId !== deleteConfirm));
             setDeleteConfirm(null);
-        } catch (err) {
+        } catch {
             alert('מחיקה נכשלה');
         } finally {
             setIsDeleting(false);
@@ -335,7 +337,7 @@ const ContractsPage = () => {
                     : c
             ));
             setEditModal(null);
-        } catch (err) {
+        } catch {
             alert('שמירה נכשלה');
         } finally {
             setIsSaving(false);
@@ -347,7 +349,7 @@ const ContractsPage = () => {
             const analysis = await getAnalysis(contract.contractId);
             if (type === 'pdf') await exportToPDF(analysis, contract.fileName || 'Report');
             else await exportToWord(analysis, contract.fileName || 'Report');
-        } catch (err) {
+        } catch {
             alert('ייצוא נכשל');
         }
     };

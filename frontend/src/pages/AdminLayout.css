@@ -24,6 +24,13 @@
     min-height: 100vh;
     overflow-x: hidden;
     /* Prevent sidebar from peeking */
+    padding-left: 260px;
+    box-sizing: border-box;
+}
+
+[dir="rtl"] .admin-layout {
+    padding-left: 0;
+    padding-right: 260px;
 }
 
 .admin-layout.dark {
@@ -40,14 +47,9 @@
 
 .admin-main {
     flex: 1;
-    margin-left: 260px;
+    min-width: 0;
     min-height: 100vh;
-    transition: margin 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-[dir="rtl"] .admin-main {
-    margin-left: 0;
-    margin-right: 260px;
+    transition: padding 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ============================================
@@ -167,6 +169,16 @@
 /* Simplified: sidebar hidden by default, hamburger menu shows, overlay on toggle */
 @media (max-width: 1024px) {
 
+    .admin-layout {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    [dir="rtl"] .admin-layout {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
     /* Show mobile top bar with hamburger */
     .mobile-top-bar {
         display: flex;
@@ -174,15 +186,7 @@
 
     /* Main content takes full width, no margin for sidebar */
     .admin-main {
-        margin-left: 0;
-        margin-right: 0;
         padding-top: 56px;
-    }
-
-    /* RTL override - must also remove margin */
-    [dir="rtl"] .admin-main {
-        margin-right: 0;
-        margin-left: 0;
     }
 
     /* Enable overlay display */

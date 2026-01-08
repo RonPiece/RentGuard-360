@@ -16,7 +16,7 @@
  * ============================================
  */
 import React from 'react';
-import { NavLink, Link, useNavigate } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -35,9 +35,8 @@ import './AdminSidebar.css';
 
 const AdminSidebar = ({ onNavigate }) => {
     const { userAttributes, logout } = useAuth();
-    const { t, isRTL } = useLanguage();
+    const { t } = useLanguage();
     const { isDark } = useTheme();
-    const navigate = useNavigate();
 
     const navItems = [
         {

@@ -30,7 +30,7 @@
  * ============================================
  */
 import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
-import { processContractClauses, detectLanguage } from '../utils/contractTextProcessor';
+import { processContractClauses } from '../utils/contractTextProcessor';
 import { consultClause } from '../services/api';
 import { exportEditedContractWithSignatures } from '../services/ExportService';
 import RecommendationCard from './RecommendationCard';
@@ -42,12 +42,10 @@ const ContractView = ({
     issues = [],
     contractId = null,  // NEW: for localStorage persistence
     onClauseChange,
-    onExportEdited,
     onSaveToCloud
 }) => {
     const [editedClauses, setEditedClauses] = useState({});
     const [showOnlyIssues, setShowOnlyIssues] = useState(false);
-    const [isSaving, setIsSaving] = useState(false);
     const [saveStatus, setSaveStatus] = useState(null);
 
     // Modal editing state
@@ -103,10 +101,33 @@ const ContractView = ({
         });
     }, [contractText, backendClauses, issues, editedClauses]);
 
+    // Get current text for a clause (with clause number preserved)
+    const getClauseText = useCallback((clause) => {
+        const edit = editedClauses[clause.id];
+        if (edit?.text) {
+            // Try to find original clause number from multiple sources
+            let originalNumber = edit.originalNumber;
+            if (!originalNumber) {
+                // Try from clause.text
+                originalNumber = clause.text?.match(/^(\d+\.)\s*/)?.[1];
+            }
+            if (!originalNumber && clause.issue?.original_text) {
+                // Try from issue's original_text
+                originalNumber = clause.issue.original_text?.match(/^(\d+\.)\s*/)?.[1];
+            }
+
+            if (originalNumber && !edit.text.match(/^\d+\.\s*/)) {
+                // Add the number only if the edit text doesn't already have one
+                return `${originalNumber} ${edit.text}`;
+            }
+            return edit.text;
+        }
+        return clause.text;
+    }, [editedClauses]);
+
     // Scroll navigation state
     const containerRef = useRef(null);
     const bottomRef = useRef(null);
-    const [showScrollButton, setShowScrollButton] = useState(true); // Always show initially
     const [isAtBottom, setIsAtBottom] = useState(false);
 
     // Auto-save refs
@@ -124,8 +145,8 @@ const ContractView = ({
                 setEditedClauses(parsed);
                 console.log(`Loaded ${Object.keys(parsed).length} saved edits for contract`);
             }
-        } catch (e) {
-            console.warn('Failed to load saved edits:', e);
+        } catch (error) {
+            console.warn('Failed to load saved edits:', error);
         }
     }, [contractId]);
 
@@ -136,8 +157,8 @@ const ContractView = ({
         try {
             localStorage.setItem(storageKey, JSON.stringify(editedClauses));
             console.log(`Auto-saved ${Object.keys(editedClauses).length} edits to localStorage`);
-        } catch (e) {
-            console.warn('Failed to save edits:', e);
+        } catch (error) {
+            console.warn('Failed to save edits:', error);
         }
     }, [contractId, editedClauses]);
 
@@ -180,7 +201,7 @@ const ContractView = ({
                 clearTimeout(saveTimeoutRef.current);
             }
         };
-    }, [editedClauses, contractId, onSaveToCloud, clauses]); // Dependencies include content
+    }, [editedClauses, contractId, onSaveToCloud, clauses, getClauseText]); // Dependencies include content
 
     // Track scroll position - check both container and window
     useEffect(() => {
@@ -213,39 +234,7 @@ const ContractView = ({
     const scrollToTop = () => {
         containerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
-
-
-
-    // Detect document language
-    const documentLanguage = useMemo(() => {
-        if (clauses.length === 0) return 'he';
-        const sampleText = clauses.slice(0, 5).map(c => c.text).join(' ');
-        return detectLanguage(sampleText);
-    }, [clauses]);
-
-    // Get current text for a clause (with clause number preserved)
-    const getClauseText = (clause) => {
-        const edit = editedClauses[clause.id];
-        if (edit?.text) {
-            // Try to find original clause number from multiple sources
-            let originalNumber = edit.originalNumber;
-            if (!originalNumber) {
-                // Try from clause.text
-                originalNumber = clause.text?.match(/^(\d+\.)\s*/)?.[1];
-            }
-            if (!originalNumber && clause.issue?.original_text) {
-                // Try from issue's original_text
-                originalNumber = clause.issue.original_text?.match(/^(\d+\.)\s*/)?.[1];
-            }
-
-            if (originalNumber && !edit.text.match(/^\d+\.\s*/)) {
-                // Add the number only if the edit text doesn't already have one
-                return `${originalNumber} ${edit.text}`;
-            }
-            return edit.text;
-        }
-        return clause.text;
-    };
+    
 
     // Open popup editor
     const openEditor = (clause) => {
@@ -367,24 +356,6 @@ const ContractView = ({
     const handleExport = async () => {
         const clauseTexts = clauses.map(c => getClauseText(c));
         await exportEditedContractWithSignatures(clauseTexts, editedClauses, 'חוזה_שכירות');
-    };
-
-    // Save to cloud
-    const handleSaveToCloud = async () => {
-        if (!onSaveToCloud) return;
-        setIsSaving(true);
-        setSaveStatus(null);
-
-        try {
-            const fullEditedText = clauses.map(c => getClauseText(c)).join('\n\n');
-            await onSaveToCloud(editedClauses, fullEditedText);
-            setSaveStatus('success');
-        } catch (error) {
-            console.error('Failed to save:', error);
-            setSaveStatus('error');
-        } finally {
-            setIsSaving(false);
-        }
     };
 
     // Filter clauses
