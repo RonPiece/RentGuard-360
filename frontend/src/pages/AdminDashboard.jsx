@@ -156,42 +156,15 @@ const AdminDashboard = () => {
         return date >= rangeStart && date <= rangeEnd;
     });
 
-    const lineChartDates = contractsByDay.map(d => {
-        const date = parseLocalDate(d.date);
-        if (dateRange === 'year' || dateRange.match(/^\d{4}$/)) {
-            return date.toLocaleDateString(isRTL ? 'he-IL' : 'en-US', { month: 'short' });
-        }
-        return date.toLocaleDateString(isRTL ? 'he-IL' : 'en-US', { month: 'short', day: 'numeric' });
-    });
-    const lineChartValues = contractsByDay.map(d => d.analyzed);
-
+    // Transform for LineChart with time scale (matching userChartDataset approach)
     const contractsChartDataset = useMemo(() => {
-        return contractsByDay.map((d, index) => ({
-            x: lineChartDates[index],
+        return contractsByDay.map(d => ({
+            date: parseLocalDate(d.date),
             analyzed: d.analyzed,
         }));
-    }, [contractsByDay, lineChartDates]);
+    }, [contractsByDay]);
 
-    // DEBUG: Contracts Data (Restored)
-    useEffect(() => {
-        if (stats?.contracts) {
-            const chartTotal = lineChartValues.reduce((a, b) => a + b, 0);
-            console.log('📉 DEBUG CONTRACTS CHART:', {
-                totalAnalyzedSummary: stats.contracts.analyzed,
-                chartVisibleTotal: chartTotal,
-                dateRangeSelected: dateRange,
-                rangeStart: rangeStart.toLocaleDateString(),
-                rangeEnd: rangeEnd.toLocaleDateString(),
-                rawTimelineData: stats.contractsByDay,
-                filteredTimelineData: contractsByDay,
-                // Show explicitly what is NOT included
-                excludedData: (stats?.contractsByDay || []).filter(d => {
-                    const date = parseLocalDate(d.date);
-                    return date < rangeStart || date > rangeEnd;
-                })
-            });
-        }
-    }, [stats, dateRange, contractsByDay, rangeStart, rangeEnd, lineChartValues]);
+
 
 
 
@@ -333,19 +306,20 @@ const AdminDashboard = () => {
                                         </div>
                                     </div>
                                     <div className="chart-container line-chart-container" dir="ltr">
-                                        {lineChartDates.length > 0 ? (
+                                        {contractsChartDataset.length > 0 ? (
                                             <LineChart
-                                                key={`contracts-${dateRange}-${lineChartValues.length}-${chartWidth}`}
+                                                key={`contracts-${dateRange}-${contractsChartDataset.length}-${chartWidth}`}
                                                 dataset={contractsChartDataset}
                                                 xAxis={[{
-                                                    dataKey: 'x',
-                                                    scaleType: 'band',
+                                                    dataKey: 'date',
+                                                    scaleType: 'time',
+                                                    valueFormatter: (date) => date.toLocaleDateString(isRTL ? 'he-IL' : 'en-US', { day: 'numeric', month: 'numeric' }),
                                                     tickLabelStyle: { fill: labelColor, fontSize: 10, angle: -45, textAnchor: 'end' },
                                                 }]}
                                                 yAxis={[{
                                                     tickLabelStyle: { fill: labelColor, fontSize: 11 },
-                                                    width: 35,
-                                                    position: 'left',
+                                                    tickMinStep: 1,
+                                                    min: 0,
                                                 }]}
                                                 series={[{
                                                     dataKey: 'analyzed',
@@ -361,7 +335,7 @@ const AdminDashboard = () => {
                                                     '& .MuiChartsAxis-line': { stroke: labelColor },
                                                     '& .MuiChartsGrid-line': { stroke: gridColor },
                                                 }}
-                                                grid={{ horizontal: true }}
+                                                grid={{ vertical: true, horizontal: true }}
                                             />
                                         ) : (
                                             <div className="no-data">{t('admin.noData')}</div>
