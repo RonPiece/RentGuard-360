@@ -27,6 +27,100 @@
 }
 
 /* ============================================
+   GLOBAL TOAST
+   ============================================ */
+
+.app-toast {
+  position: fixed;
+  top: var(--space-md);
+  left: 50%;
+  transform: translate(-50%, 0);
+  z-index: 1200;
+
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+
+  width: min(640px, calc(100vw - (var(--space-md) * 2)));
+  padding: var(--space-lg);
+  background: var(--gradient-subtle);
+  border: 1px solid var(--glass-border);
+  border-top: 4px solid var(--accent-success);
+  border-left: 4px solid var(--accent-success);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+
+  animation: app-toast-pop 560ms cubic-bezier(0.22, 1, 0.36, 1) both;
+
+  pointer-events: none;
+}
+
+@supports (color: color-mix(in oklab, white, black)) {
+  .app-toast {
+    border-color: color-mix(in oklab, var(--glass-border) 55%, var(--accent-success) 45%);
+    box-shadow:
+      var(--shadow-lg),
+      0 0 0 1px color-mix(in oklab, var(--accent-success) 38%, transparent),
+      0 18px 50px color-mix(in oklab, var(--accent-success) 24%, transparent);
+  }
+}
+
+@keyframes app-toast-pop {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -18px) scale(0.94);
+  }
+  65% {
+    opacity: 1;
+    transform: translate(-50%, 2px) scale(1.03);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-toast {
+    animation: none;
+  }
+}
+
+.app-toast__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background: var(--accent-success);
+  color: var(--bg-card);
+  font-weight: var(--font-weight-bold);
+  flex: 0 0 auto;
+}
+
+.app-toast__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.app-toast__title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  line-height: var(--line-height-tight);
+}
+
+.app-toast__subtitle {
+  font-size: var(--font-size-base);
+  color: var(--text-secondary);
+  line-height: var(--line-height-normal);
+}
+
+/* ============================================
    2. NAVIGATION (DESKTOP)
    ============================================ */
 

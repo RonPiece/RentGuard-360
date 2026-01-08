@@ -465,8 +465,9 @@ export const exportToPDF = async (analysis, fileName = 'Contract_Analysis_Report
  * @param {string} fileName - Output file name
  * @param {array} backendClauses - Optional: clauses array from backend (preferred)
  */
-export const exportEditedContract = async (originalText, editedClauses, issues = [], fileName = 'Edited_Contract', backendClauses = []) => {
+export const exportEditedContract = async (originalText, editedClauses, ISSUES = [], fileName = 'Edited_Contract', backendClauses = []) => {
     const sections = [];
+    void ISSUES;
 
     // Title
     sections.push(

@@ -24,6 +24,7 @@ Security:
 
 import json
 import boto3
+from datetime import datetime
 from boto3.dynamodb.conditions import Key
 
 # =============================================================================
@@ -31,9 +32,11 @@ from boto3.dynamodb.conditions import Key
 # =============================================================================
 
 TABLE_NAME = 'RentGuard-Contracts'
+ANALYSIS_TABLE_NAME = 'RentGuard-Analysis'
 
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table(TABLE_NAME)
+analysis_table = dynamodb.Table(ANALYSIS_TABLE_NAME)
 
 # Standard CORS headers for API Gateway responses
 CORS_HEADERS = {
@@ -78,6 +81,61 @@ def lambda_handler(event, context):
         
         items = response.get('Items', [])
         print(f"Found {len(items)} contracts")
+
+        # 2.5. Reconcile pending contracts: if analysis exists, mark as analyzed
+        # This prevents contracts from being stuck in 'uploaded/pending' forever
+        # when the workflow completed but the Contracts record wasn't updated.
+        for contract in items:
+            try:
+                status = (contract.get('status') or '').lower()
+                contract_id = contract.get('contractId')
+                if not contract_id:
+                    continue
+
+                # Only reconcile non-final statuses
+                if status in ('analyzed', 'failed', 'error'):
+                    continue
+
+                analysis_resp = analysis_table.get_item(Key={'contractId': contract_id})
+                analysis_item = analysis_resp.get('Item')
+                if not analysis_item:
+                    continue
+
+                # If analysis exists, reflect it on the contract record
+                risk_score = (
+                    analysis_item.get('risk_score')
+                    if isinstance(analysis_item, dict)
+                    else None
+                )
+                analyzed_date = analysis_item.get('timestamp') or datetime.utcnow().isoformat()
+
+                contract['status'] = 'analyzed'
+                if risk_score is not None:
+                    contract['riskScore'] = risk_score
+                contract['analyzedDate'] = analyzed_date
+
+                # Best-effort persistence (so future loads are fast and consistent)
+                try:
+                    update_expression = "SET #status = :status, analyzedDate = :analyzedDate"
+                    expression_values = {
+                        ':status': 'analyzed',
+                        ':analyzedDate': analyzed_date,
+                    }
+                    if risk_score is not None:
+                        update_expression += ", riskScore = :riskScore"
+                        expression_values[':riskScore'] = risk_score
+
+                    table.update_item(
+                        Key={'userId': user_id, 'contractId': contract_id},
+                        UpdateExpression=update_expression,
+                        ExpressionAttributeNames={'#status': 'status'},
+                        ExpressionAttributeValues=expression_values,
+                    )
+                except Exception as e:
+                    print(f"Warning: Could not persist reconciliation for {contract_id}: {e}")
+
+            except Exception as e:
+                print(f"Warning: Reconciliation error: {e}")
 
         # 3. Return the contracts list
         return {

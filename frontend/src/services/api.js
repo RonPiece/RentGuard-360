@@ -122,7 +122,7 @@ const apiCall = async (endpoint, options = {}) => {
 
         try {
             return JSON.parse(text);
-        } catch (e) {
+        } catch {
             console.error('Failed to parse JSON:', text.substring(0, 100));
             throw new Error('Invalid response from server');
         }
@@ -162,7 +162,7 @@ export const uploadFile = async (file, onProgress, metadata = {}) => {
 
     if (onProgress) onProgress(5); // Starting...
 
-    const { uploadUrl, key, userId } = await apiCall(`/upload?${params.toString()}`);
+    const { uploadUrl, key, userId, contractId } = await apiCall(`/upload?${params.toString()}`);
 
     console.log(`Got presigned URL for key: ${key}, userId: ${userId}`);
 
@@ -186,6 +186,7 @@ export const uploadFile = async (file, onProgress, metadata = {}) => {
                 resolve({
                     key,
                     userId,
+                    contractId,
                     fileName: file.name,
                     uploadedAt: new Date().toISOString(),
                     metadata,

@@ -45,7 +45,6 @@
     stroke: rgba(255, 255, 255, 0.3);
     stroke-width: 2;
     filter: drop-shadow(0 0 8px var(--glow-color, rgba(245, 158, 11, 0.6)));
-    transition: cx 0.1s ease-out, cy 0.1s ease-out;
 }
 
 /* Score number in center */

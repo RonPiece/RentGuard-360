@@ -40,6 +40,10 @@ import { Upload, Brain, FileText, ChevronDown, ChevronUp, AlertTriangle, CheckCi
 import Footer from '../components/Footer';
 import './LandingPageNew.css';
 
+// Some eslint setups don't count JSX member expressions (e.g. <motion.div>) as a variable usage.
+// This keeps the import from being flagged as unused while preserving the current Framer Motion usage.
+void motion;
+
 // Registration Prompt Modal Component
 const RegisterPromptModal = ({ isOpen, onClose, onRegister, isRTL }) => {
     if (!isOpen) return null;
@@ -378,8 +382,16 @@ const LandingPageNew = () => {
     const { login, register, confirmRegistration, isAuthenticated, resendCode, forgotPassword, resetUserPassword } = useAuth();
     const { t, isRTL } = useLanguage();
 
+    const getPendingVerificationEmail = () => {
+        try {
+            return localStorage.getItem('rentguard_pending_verification') || '';
+        } catch {
+            return '';
+        }
+    };
+
     // Auth form state
-    const [authModal, setAuthModal] = useState(null);
+    const [authModal, setAuthModal] = useState(() => (getPendingVerificationEmail() ? 'confirm' : null));
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -387,7 +399,7 @@ const LandingPageNew = () => {
     const [code, setCode] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
-    const [tempEmail, setTempEmail] = useState('');
+    const [tempEmail, setTempEmail] = useState(() => getPendingVerificationEmail());
     const dropdownRef = useRef(null);
 
     // DAN DID IT - Added state variables for forgot password flow
@@ -444,14 +456,7 @@ const LandingPageNew = () => {
     const contractsInView = useInView(contractsRef, { once: true, margin: '-80px' });
     const featureInView = useInView(featureRef, { once: true, margin: '-80px' });
 
-    // Resume pending verification
-    useEffect(() => {
-        const pendingEmail = localStorage.getItem('rentguard_pending_verification');
-        if (pendingEmail && !isAuthenticated) {
-            setTempEmail(pendingEmail);
-            setAuthModal('confirm');
-        }
-    }, [isAuthenticated]);
+    
 
     // Close modal on outside click
     useEffect(() => {
@@ -576,7 +581,7 @@ const LandingPageNew = () => {
                     await resendCode(trimmedEmail);
                     setAuthModal('confirm');
                     setError('');
-                } catch (resendErr) {
+                } catch {
                     // If resend fails, user might already be confirmed
                     setError(isRTL ? 'המשתמש קיים. נסה להתחבר.' : 'User exists. Try logging in.');
                 }
@@ -630,7 +635,7 @@ const LandingPageNew = () => {
         try {
             await resendCode(tempEmail);
             setError(isRTL ? 'קוד חדש נשלח לאימייל שלך' : 'New code sent to your email');
-        } catch (err) {
+        } catch {
             setError(isRTL ? 'שליחת הקוד נכשלה. נסה שוב.' : 'Failed to resend code. Try again.');
         }
         setLoading(false);
@@ -691,7 +696,7 @@ const LandingPageNew = () => {
         try {
             await forgotPassword(tempEmail);
             setError(isRTL ? 'קוד חדש נשלח לאימייל שלך' : 'New code sent to your email');
-        } catch (err) {
+        } catch {
             setError(isRTL ? 'שליחת הקוד נכשלה. נסה שוב.' : 'Failed to resend code. Try again.');
         }
         setLoading(false);

@@ -10,7 +10,7 @@
  * - Metadata form (property, landlord, custom name)
  * - Progress bar during upload
  * - Terms acceptance modal
- * - Upload success modal
+ * - Success toast + auto-redirect to analysis
  * 
  * DEPENDENCIES:
  * - api.js: uploadFile
@@ -18,19 +18,17 @@
  * 
  * ============================================
  */
-import React, { useState, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
-import { uploadFile } from '../services/api';
+import { pollForAnalysis, uploadFile } from '../services/api';
 import Card from '../components/Card';
 import Button from '../components/Button';
 import Input from '../components/Input';
 import './UploadPage.css';
 
 const UploadPage = () => {
-    const { user } = useAuth();
     const { t, isRTL } = useLanguage();
     const navigate = useNavigate();
     const [file, setFile] = useState(null);
@@ -39,7 +37,7 @@ const UploadPage = () => {
     const [uploadProgress, setUploadProgress] = useState(0);
     const [error, setError] = useState('');
     const [uploadSuccess, setUploadSuccess] = useState(false);
-    const [uploadedKey, setUploadedKey] = useState('');
+    const [uploadedContractId, setUploadedContractId] = useState('');
     const fileInputRef = useRef(null);
 
     const [metadata, setMetadata] = useState({
@@ -51,7 +49,52 @@ const UploadPage = () => {
     const [customFileName, setCustomFileName] = useState('');
     const [termsAccepted, setTermsAccepted] = useState(false);
     const [showTermsModal, setShowTermsModal] = useState(false);
-    const [showSuccessModal, setShowSuccessModal] = useState(false); // DAN DID IT - Added state for upload success modal
+    const emitGlobalToast = (title, message) => {
+        const toast = {
+            id: `${Date.now()}_${Math.random().toString(16).slice(2)}`,
+            title,
+            message,
+            createdAt: Date.now(),
+            ttlMs: 5500,
+        };
+
+        try {
+            sessionStorage.setItem('rg_toast', JSON.stringify(toast));
+        } catch {
+            // ignore
+        }
+
+        try {
+            window.dispatchEvent(new CustomEvent('rg:toast', { detail: toast }));
+        } catch {
+            // ignore
+        }
+    };
+
+    useEffect(() => {
+        if (!uploadSuccess || !uploadedContractId) return;
+
+        let cancelled = false;
+        (async () => {
+            try {
+                // Give Step Functions some time to start writing analysis
+                const result = await pollForAnalysis(uploadedContractId, 24, 5000);
+                if (cancelled) return;
+                if (result) {
+                    navigate(`/analysis/${encodeURIComponent(uploadedContractId)}`);
+                }
+            } catch (e) {
+                // If polling fails/times out, keep the user on this page (they can go to contracts manually)
+                if (!cancelled) {
+                    console.warn('Auto-navigate polling failed:', e);
+                }
+            }
+        })();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [uploadSuccess, uploadedContractId, navigate]);
 
     const validateFile = (file) => {
         const maxSize = 5 * 1024 * 1024; // 5MB - standard for rental contracts
@@ -116,9 +159,9 @@ const UploadPage = () => {
                 termsAccepted: true,
             });
 
-            setUploadedKey(result.key);
+            setUploadedContractId(result.contractId || '');
             setUploadSuccess(true);
-            setShowSuccessModal(true); // DAN DID IT - Show success modal instead of just success message
+            emitGlobalToast(t('upload.uploadSuccessTitle'), t('upload.uploadSuccessMessage'));
             setFile(null);
             setTermsAccepted(false);
             setMetadata({
@@ -342,55 +385,6 @@ const UploadPage = () => {
                                 {t('upload.close')}
                             </Button>
                         </div>
-                    </div>
-                </div>,
-                document.body
-            )}
-
-            {/* Upload Success Modal with Email Notification - rendered via Portal */}
-            {showSuccessModal && ReactDOM.createPortal(
-                <div className="auth-backdrop">
-                    <div className="auth-modal" dir={isRTL ? 'rtl' : 'ltr'} style={{ textAlign: 'center', maxWidth: '420px' }}>
-                        <div style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            marginBottom: '1.5rem'
-                        }}>
-                            <svg width="60" height="60" viewBox="0 0 60 60" fill="none">
-                                <circle cx="30" cy="30" r="28" stroke="#10B981" strokeWidth="3" fill="rgba(16, 185, 129, 0.1)" />
-                                <path d="M20 30L26 36L40 22" stroke="#10B981" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
-                            </svg>
-                        </div>
-
-                        <h2 style={{
-                            fontSize: 'var(--font-size-2xl)',
-                            fontWeight: 'var(--font-weight-bold)',
-                            color: 'var(--text-primary)',
-                            marginBottom: '1rem'
-                        }}>
-                            {t('upload.uploadSuccessTitle')}
-                        </h2>
-
-                        <p style={{
-                            fontSize: 'var(--font-size-md)',
-                            color: 'var(--text-secondary)',
-                            lineHeight: '1.6',
-                            marginBottom: '1.5rem'
-                        }}>
-                            {t('upload.uploadSuccessMessage')}
-                        </p>
-
-                        <Button
-                            variant="primary"
-                            fullWidth
-                            onClick={() => {
-                                setShowSuccessModal(false);
-                                navigate('/contracts');
-                            }}
-                        >
-                            {t('upload.goToContracts')}
-                        </Button>
                     </div>
                 </div>,
                 document.body

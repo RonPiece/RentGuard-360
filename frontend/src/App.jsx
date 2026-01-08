@@ -191,9 +191,87 @@ const Navigation = () => {
 function App() {
   const { isAuthenticated, isLoading } = useAuth();
   const location = useLocation();
+  const [toast, setToast] = useState(() => {
+    try {
+      const raw = sessionStorage.getItem('rg_toast');
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      if (parsed?.createdAt && parsed?.ttlMs) {
+        const remaining = (parsed.createdAt + parsed.ttlMs) - Date.now();
+        if (remaining > 0) return parsed;
+      }
+    } catch {
+      // ignore
+    }
+    return null;
+  });
+  const toastTimerRef = useRef(null);
 
   // Check if current route is an admin page
   const isAdminRoute = location.pathname.startsWith('/admin');
+
+  useEffect(() => {
+    const handleToast = (event) => {
+      const nextToast = event?.detail;
+      if (!nextToast) return;
+      setToast(nextToast);
+    };
+
+    window.addEventListener('rg:toast', handleToast);
+    return () => window.removeEventListener('rg:toast', handleToast);
+  }, []);
+
+  useEffect(() => {
+    // Best-effort cleanup of expired persisted toast (no state updates here)
+    try {
+      const raw = sessionStorage.getItem('rg_toast');
+      if (!raw) return;
+      const parsed = JSON.parse(raw);
+      if (parsed?.createdAt && parsed?.ttlMs) {
+        const remaining = (parsed.createdAt + parsed.ttlMs) - Date.now();
+        if (remaining <= 0) sessionStorage.removeItem('rg_toast');
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!toast) return;
+
+    if (toastTimerRef.current) {
+      clearTimeout(toastTimerRef.current);
+      toastTimerRef.current = null;
+    }
+
+    const createdAt = typeof toast.createdAt === 'number' ? toast.createdAt : Date.now();
+    const ttlMs = typeof toast.ttlMs === 'number' ? toast.ttlMs : 5500;
+    const remaining = (createdAt + ttlMs) - Date.now();
+    const delay = Math.max(250, remaining);
+
+    toastTimerRef.current = setTimeout(() => {
+      setToast(null);
+      toastTimerRef.current = null;
+      try {
+        const raw = sessionStorage.getItem('rg_toast');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed?.id && toast?.id && parsed.id === toast.id) {
+            sessionStorage.removeItem('rg_toast');
+          }
+        }
+      } catch {
+        // ignore
+      }
+    }, delay);
+
+    return () => {
+      if (toastTimerRef.current) {
+        clearTimeout(toastTimerRef.current);
+        toastTimerRef.current = null;
+      }
+    };
+  }, [toast]);
 
   if (isLoading) {
     return (
@@ -206,6 +284,15 @@ function App() {
 
   return (
     <div className="app-container">
+      {toast && (
+        <div className="app-toast" role="status" aria-live="polite">
+          <span className="app-toast__icon" aria-hidden="true">✓</span>
+          <div className="app-toast__text">
+            <div className="app-toast__title">{toast.title}</div>
+            {toast.message && <div className="app-toast__subtitle">{toast.message}</div>}
+          </div>
+        </div>
+      )}
       {/* Hide main nav on admin pages - admin has its own sidebar */}
       {isAuthenticated && !isAdminRoute && <Navigation />}
 

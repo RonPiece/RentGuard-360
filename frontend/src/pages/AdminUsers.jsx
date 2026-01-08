@@ -23,7 +23,7 @@
  * 
  * ============================================
  */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import ReactDOM from 'react-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -63,17 +63,7 @@ const AdminUsers = () => {
     // Sorting State
     const [sortConfig, setSortConfig] = useState({ key: 'createdAt', direction: 'desc' });
 
-    useEffect(() => {
-        fetchAllUsers();
-    }, []);
-
-    useEffect(() => {
-        if (allUsers.length > 0) {
-            filterAndSortUsers();
-        }
-    }, [searchQuery, statusFilter, allUsers, sortConfig]);
-
-    const fetchAllUsers = async () => {
+    const fetchAllUsers = useCallback(async () => {
         setLoading(true);
         setError(null);
         try {
@@ -85,17 +75,9 @@ const AdminUsers = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [t]);
 
-    const handleSort = (key) => {
-        let direction = 'asc';
-        if (sortConfig.key === key && sortConfig.direction === 'asc') {
-            direction = 'desc';
-        }
-        setSortConfig({ key, direction });
-    };
-
-    const filterAndSortUsers = () => {
+    const filterAndSortUsers = useCallback(() => {
         let filtered = [...allUsers];
 
         // 1. Filter
@@ -136,7 +118,27 @@ const AdminUsers = () => {
         });
 
         setUsers(filtered);
+    }, [allUsers, searchQuery, sortConfig, statusFilter]);
+
+    useEffect(() => {
+        fetchAllUsers();
+    }, [fetchAllUsers]);
+
+    useEffect(() => {
+        if (allUsers.length > 0) {
+            filterAndSortUsers();
+        }
+    }, [allUsers.length, filterAndSortUsers]);
+
+    const handleSort = (key) => {
+        let direction = 'asc';
+        if (sortConfig.key === key && sortConfig.direction === 'asc') {
+            direction = 'desc';
+        }
+        setSortConfig({ key, direction });
     };
+
+    
 
     const getSortIcon = (columnKey) => {
         const isActive = sortConfig.key === columnKey;

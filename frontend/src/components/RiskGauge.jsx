@@ -21,40 +21,68 @@
  * 
  * ============================================
  */
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useId, useRef, useState } from 'react';
 import './RiskGauge.css';
 
 const RiskGauge = ({ score = 0, size = 80, animate = true }) => {
-    const [displayScore, setDisplayScore] = useState(animate ? 0 : score);
+    const clampScore = (value) => {
+        const n = typeof value === 'number' ? value : Number(value);
+        if (!Number.isFinite(n)) return 0;
+        return Math.max(0, Math.min(100, n));
+    };
+
+    const targetScore = clampScore(score);
+    const [animatedScore, setAnimatedScore] = useState(0);
+    const displayScore = animate ? animatedScore : targetScore;
+
+    const rafIdRef = useRef(null);
+    const isMountedRef = useRef(false);
+    const gradientId = useId();
+    const glowId = useId();
 
     // Animate score on mount
     useEffect(() => {
         if (!animate) {
-            setDisplayScore(score);
+            setAnimatedScore(targetScore);
             return;
         }
 
-        const duration = 800; // ms
-        const startTime = Date.now();
-        const startScore = 0;
+        // Cancel any in-flight animation (prevents overlapping RAF loops on rapid route changes)
+        if (rafIdRef.current) {
+            cancelAnimationFrame(rafIdRef.current);
+            rafIdRef.current = null;
+        }
 
-        const animateScore = () => {
-            const elapsed = Date.now() - startTime;
+        const duration = 800; // ms
+        const startTime = performance.now();
+        const startScore = isMountedRef.current ? clampScore(animatedScore) : 0;
+
+        const animateScore = (now) => {
+            const elapsed = now - startTime;
             const progress = Math.min(elapsed / duration, 1);
 
             // Easing function (ease-out cubic)
             const eased = 1 - Math.pow(1 - progress, 3);
-            const currentScore = Math.round(startScore + (score - startScore) * eased);
+            const currentScore = startScore + (targetScore - startScore) * eased;
 
-            setDisplayScore(currentScore);
+            setAnimatedScore(currentScore);
 
             if (progress < 1) {
-                requestAnimationFrame(animateScore);
+                rafIdRef.current = requestAnimationFrame(animateScore);
             }
         };
 
-        requestAnimationFrame(animateScore);
-    }, [score, animate]);
+        rafIdRef.current = requestAnimationFrame(animateScore);
+        isMountedRef.current = true;
+
+        return () => {
+            if (rafIdRef.current) {
+                cancelAnimationFrame(rafIdRef.current);
+                rafIdRef.current = null;
+            }
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [targetScore, animate]);
 
     // Calculate arc parameters
     const strokeWidth = 8;
@@ -81,6 +109,8 @@ const RiskGauge = ({ score = 0, size = 80, animate = true }) => {
         high: 'rgba(239, 68, 68, 0.5)'        // Red
     };
 
+    const scoreText = Math.round(displayScore);
+
     return (
         <div
             className={`risk-gauge risk-${riskLevel}`}
@@ -96,14 +126,14 @@ const RiskGauge = ({ score = 0, size = 80, animate = true }) => {
             >
                 {/* Gradient definition - Red (low score/high risk) → Yellow → Green (high score/low risk) */}
                 <defs>
-                    <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="0%">
                         <stop offset="0%" stopColor="#ef4444" />
                         <stop offset="50%" stopColor="#f59e0b" />
                         <stop offset="100%" stopColor="#10b981" />
                     </linearGradient>
 
                     {/* Glow filter */}
-                    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                    <filter id={glowId} x="-50%" y="-50%" width="200%" height="200%">
                         <feGaussianBlur stdDeviation="3" result="coloredBlur" />
                         <feMerge>
                             <feMergeNode in="coloredBlur" />
@@ -126,7 +156,7 @@ const RiskGauge = ({ score = 0, size = 80, animate = true }) => {
                 <path
                     d="M 10 55 A 40 40 0 0 1 90 55"
                     fill="none"
-                    stroke="url(#gaugeGradient)"
+                    stroke={`url(#${gradientId})`}
                     strokeWidth={strokeWidth}
                     strokeLinecap="round"
                     className="gauge-gradient-bg"
@@ -137,13 +167,13 @@ const RiskGauge = ({ score = 0, size = 80, animate = true }) => {
                 <path
                     d="M 10 55 A 40 40 0 0 1 90 55"
                     fill="none"
-                    stroke="url(#gaugeGradient)"
+                    stroke={`url(#${gradientId})`}
                     strokeWidth={strokeWidth}
                     strokeLinecap="round"
                     strokeDasharray={circumference}
                     strokeDashoffset={progressOffset}
                     className="gauge-progress"
-                    filter="url(#glow)"
+                    filter={`url(#${glowId})`}
                     style={{
                         transition: animate ? 'none' : 'stroke-dashoffset 0.5s ease-out'
                     }}
@@ -155,13 +185,13 @@ const RiskGauge = ({ score = 0, size = 80, animate = true }) => {
                     cy={55 - 40 * Math.sin((displayScore / 100) * Math.PI)}
                     r="5"
                     className="gauge-indicator"
-                    filter="url(#glow)"
+                    filter={`url(#${glowId})`}
                 />
             </svg>
 
             {/* Score number */}
             <div className="gauge-score">
-                {displayScore}
+                {scoreText}
             </div>
         </div>
     );

@@ -31,7 +31,7 @@ import React from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import './ScoreBreakdown.css';
 
-const ScoreBreakdown = ({ overallScore = 0, breakdown = {}, issues = [] }) => {
+const ScoreBreakdown = ({ overallScore = 0, breakdown = {} }) => {
     const { t, isRTL } = useLanguage();
 
     // Default category structure
@@ -71,19 +71,6 @@ const ScoreBreakdown = ({ overallScore = 0, breakdown = {}, issues = [] }) => {
         if (score >= 71) return t('score.lowMediumRisk');     // 71-85
         if (score >= 51) return t('score.mediumRisk');        // 51-70
         return t('score.highRisk');                           // 0-50
-    };
-
-    // Get deductions for a category from issues
-    const getCategoryDeductions = (categoryKey) => {
-        const prefixMap = {
-            financial_terms: 'F',
-            tenant_rights: 'T',
-            termination_clauses: 'E',
-            liability_repairs: 'L',
-            legal_compliance: 'C'
-        };
-        const prefix = prefixMap[categoryKey];
-        return issues.filter(issue => issue.rule_id?.startsWith(prefix));
     };
 
     return (
@@ -127,9 +114,7 @@ const ScoreBreakdown = ({ overallScore = 0, breakdown = {}, issues = [] }) => {
                 <div className="categories-list">
                     {Object.entries(categories).map(([key, data]) => {
                         const info = categoryInfo[key];
-                        const deductions = getCategoryDeductions(key);
                         const categoryScore = data.score ?? 20;
-                        const penaltyPoints = 20 - categoryScore;
 
                         return (
                             <div key={key} className="category-item">

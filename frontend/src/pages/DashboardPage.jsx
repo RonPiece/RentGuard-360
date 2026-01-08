@@ -18,7 +18,7 @@
  * 
  * ============================================
  */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -39,11 +39,7 @@ const DashboardPage = () => {
     });
     const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
-        fetchStats();
-    }, [user]);
-
-    const fetchStats = async () => {
+    const fetchStats = useCallback(async () => {
         try {
             const userId = user?.userId || user?.username;
             if (!userId) {
@@ -74,7 +70,11 @@ const DashboardPage = () => {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [user]);
+
+    useEffect(() => {
+        fetchStats();
+    }, [fetchStats]);
 
     const getUserName = () => {
         if (userAttributes?.name) return userAttributes.name;

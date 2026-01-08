@@ -78,7 +78,7 @@ class GlobalErrorBoundary extends React.Component {
                             Reload Page / רענון
                         </Button>
 
-                        {process.env.NODE_ENV === 'development' && this.state.error && (
+                        {import.meta.env.DEV && this.state.error && (
                             <details style={{ marginTop: '20px', textAlign: 'left', background: '#000', padding: '10px', borderRadius: '5px', overflow: 'auto', maxHeight: '200px' }}>
                                 <summary style={{ color: 'red', cursor: 'pointer' }}>Error Details</summary>
                                 <pre style={{ fontSize: '12px', color: '#ff5555' }}>
