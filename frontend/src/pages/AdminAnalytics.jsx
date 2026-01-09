@@ -246,68 +246,74 @@ const AdminAnalytics = () => {
                                     <FileText size={16} />
                                     {t('admin.commonIssues') || 'בעיות נפוצות בחוזים'}
                                 </h3>
-                                <div className="bar-chart-section">
-                                    {/* Chart with short labels */}
-                                    <div className="bar-chart-wrapper" dir="ltr">
-                                        <BarChart
-                                            layout="horizontal"
-                                            dataset={commonIssues}
-                                            yAxis={[{
-                                                scaleType: 'band',
-                                                dataKey: 'code',
-                                                colorMap: {
-                                                    type: 'ordinal',
-                                                    colors: commonIssues.map(i => i.color)
-                                                },
-                                                tickLabelStyle: {
-                                                    fill: isDark ? '#ffffff' : labelColor,
-                                                    fontSize: 12,
-                                                    fontWeight: 600
-                                                },
-                                            }]}
-                                            xAxis={[{
-                                                tickLabelStyle: { fill: labelColor, fontSize: 11 },
-                                            }]}
-                                            series={[{
-                                                dataKey: 'count',
-                                                valueFormatter: (value) => `${value}`,
-                                            }]}
-                                            width={isMobile ? Math.min(chartWidth, 320) : Math.min(chartWidth, 600)}
-                                            height={isMobile ? 180 : 250}
-                                            margin={{ left: 40, right: 15, top: 10, bottom: 25 }}
-                                            slots={{
-                                                bar: BarShadedBackground,
-                                                barLabel: BarLabelAtBase
-                                            }}
-                                            barLabel={(v) => v.value}
-                                        />
-                                    </div>
-                                    {/* Legend Table for Hebrew text */}
-                                    <div className="bar-chart-legend">
-                                        <table>
-                                            <thead>
-                                                <tr>
-                                                    <th>{t('admin.code') || 'קוד'}</th>
-                                                    <th>{t('admin.issue') || 'בעיה'}</th>
-                                                    <th>{t('admin.count') || 'כמות'}</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {commonIssues.map((issue) => (
-                                                    <tr key={issue.code}>
-                                                        <td className="code-cell">
-                                                            <span className="code-badge" style={{ backgroundColor: issue.color }}>
-                                                                {issue.code}
-                                                            </span>
-                                                        </td>
-                                                        <td className="issue-cell">{issue.topic}</td>
-                                                        <td className="count-cell">{issue.count}</td>
+                                {commonIssues.length > 0 ? (
+                                    <div className="bar-chart-section">
+                                        {/* Chart with short labels */}
+                                        <div className="bar-chart-wrapper" dir="ltr">
+                                            <BarChart
+                                                layout="horizontal"
+                                                dataset={commonIssues}
+                                                yAxis={[{
+                                                    scaleType: 'band',
+                                                    dataKey: 'code',
+                                                    colorMap: {
+                                                        type: 'ordinal',
+                                                        colors: commonIssues.map(i => i.color)
+                                                    },
+                                                    tickLabelStyle: {
+                                                        fill: isDark ? '#ffffff' : labelColor,
+                                                        fontSize: 12,
+                                                        fontWeight: 600
+                                                    },
+                                                }]}
+                                                xAxis={[{
+                                                    tickLabelStyle: { fill: labelColor, fontSize: 11 },
+                                                }]}
+                                                series={[{
+                                                    dataKey: 'count',
+                                                    valueFormatter: (value) => `${value}`,
+                                                }]}
+                                                width={isMobile ? Math.min(chartWidth, 320) : Math.min(chartWidth, 600)}
+                                                height={isMobile ? 180 : 250}
+                                                margin={{ left: 40, right: 15, top: 10, bottom: 25 }}
+                                                slots={{
+                                                    bar: BarShadedBackground,
+                                                    barLabel: BarLabelAtBase
+                                                }}
+                                                barLabel={(v) => v.value}
+                                            />
+                                        </div>
+                                        {/* Legend Table for Hebrew text */}
+                                        <div className="bar-chart-legend">
+                                            <table>
+                                                <thead>
+                                                    <tr>
+                                                        <th>{t('admin.code') || 'קוד'}</th>
+                                                        <th>{t('admin.issue') || 'בעיה'}</th>
+                                                        <th>{t('admin.count') || 'כמות'}</th>
                                                     </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
+                                                </thead>
+                                                <tbody>
+                                                    {commonIssues.map((issue) => (
+                                                        <tr key={issue.code}>
+                                                            <td className="code-cell">
+                                                                <span className="code-badge" style={{ backgroundColor: issue.color }}>
+                                                                    {issue.code}
+                                                                </span>
+                                                            </td>
+                                                            <td className="issue-cell">{issue.topic}</td>
+                                                            <td className="count-cell">{issue.count}</td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
-                                </div>
+                                ) : (
+                                    <div className="no-data" style={{ padding: '40px 20px', textAlign: 'center' }}>
+                                        {t('admin.noIssuesYet') || 'עדיין לא נמצאו בעיות - העלה חוזים לניתוח'}
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </ThemeProvider>

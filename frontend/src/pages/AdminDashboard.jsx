@@ -379,34 +379,38 @@ const AdminDashboard = () => {
                                         </div>
                                     </div>
                                     <div className="chart-container bar-chart-container" dir="ltr">
-                                        <LineChart
-                                            key={`users-${userDateRange}-${userChartDataset.length}-${chartWidth}`}
-                                            dataset={userChartDataset}
-                                            xAxis={[{
-                                                dataKey: 'date',
-                                                scaleType: 'time',
-                                                valueFormatter: (date) => date.toLocaleDateString(isRTL ? 'he-IL' : 'en-US', { day: 'numeric', month: 'numeric' }),
-                                                tickLabelStyle: { fill: labelColor, fontSize: 10, angle: -45, textAnchor: 'end' },
-                                            }]}
-                                            yAxis={[{
-                                                tickLabelStyle: { fill: labelColor, fontSize: 11 },
-                                                tickMinStep: 1,
-                                                min: 0,
-                                            }]}
-                                            series={[{
-                                                dataKey: 'count',
-                                                showMark: false,
-                                                color: '#3B82F6',
-                                            }]}
-                                            grid={{ vertical: true, horizontal: true }}
-                                            width={chartWidth}
-                                            height={220}
-                                            sx={{
-                                                '& .MuiChartsAxis-tickLabel': { fill: labelColor },
-                                                '& .MuiChartsAxis-line': { stroke: labelColor },
-                                                '& .MuiChartsGrid-line': { stroke: gridColor },
-                                            }}
-                                        />
+                                        {userChartDataset.length > 0 ? (
+                                            <LineChart
+                                                key={`users-${userDateRange}-${userChartDataset.length}-${chartWidth}`}
+                                                dataset={userChartDataset}
+                                                xAxis={[{
+                                                    dataKey: 'date',
+                                                    scaleType: 'time',
+                                                    valueFormatter: (date) => date.toLocaleDateString(isRTL ? 'he-IL' : 'en-US', { day: 'numeric', month: 'numeric' }),
+                                                    tickLabelStyle: { fill: labelColor, fontSize: 10, angle: -45, textAnchor: 'end' },
+                                                }]}
+                                                yAxis={[{
+                                                    tickLabelStyle: { fill: labelColor, fontSize: 11 },
+                                                    tickMinStep: 1,
+                                                    min: 0,
+                                                }]}
+                                                series={[{
+                                                    dataKey: 'count',
+                                                    showMark: false,
+                                                    color: '#3B82F6',
+                                                }]}
+                                                grid={{ vertical: true, horizontal: true }}
+                                                width={chartWidth}
+                                                height={220}
+                                                sx={{
+                                                    '& .MuiChartsAxis-tickLabel': { fill: labelColor },
+                                                    '& .MuiChartsAxis-line': { stroke: labelColor },
+                                                    '& .MuiChartsGrid-line': { stroke: gridColor },
+                                                }}
+                                            />
+                                        ) : (
+                                            <div className="no-data">{t('admin.noData')}</div>
+                                        )}
                                     </div>
                                 </div>
                             </div>
