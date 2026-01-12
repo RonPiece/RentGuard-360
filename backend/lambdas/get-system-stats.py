@@ -244,9 +244,11 @@ def lambda_handler(event, context):
             paginator = cognito.get_paginator('list_users')
             for page in paginator.paginate(UserPoolId=user_pool_id):
                 users_page = page['Users']
-                user_count += len(users_page)
-                
                 for u in users_page:
+                    if u.get('UserStatus') != 'CONFIRMED':
+                        continue
+
+                    user_count += 1
                     create_date = u.get('UserCreateDate')
                     if create_date:
                         d_str = create_date.date().isoformat()

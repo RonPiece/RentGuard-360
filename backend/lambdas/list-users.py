@@ -112,6 +112,10 @@ def lambda_handler(event, context):
         
         for page in paginator.paginate(UserPoolId=user_pool_id, Limit=min(limit, 60)):
             for user in page['Users']:
+                # Show only verified users in admin UI
+                if user.get('UserStatus') != 'CONFIRMED':
+                    continue
+
                 user_data = {
                     'username': user['Username'],
                     'email': get_attribute(user, 'email'),
