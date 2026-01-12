@@ -641,6 +641,18 @@ const LandingPageNew = () => {
         setLoading(false);
     };
 
+    const clearPendingVerification = () => {
+        try {
+            localStorage.removeItem('rentguard_pending_verification');
+        } catch {
+            // ignore
+        }
+        setError('');
+        setCode('');
+        setTempEmail('');
+        setAuthModal('register');
+    };
+
     // DAN DID IT - Added handleForgotPassword to send reset code to user's email
     const handleForgotPassword = async (e) => {
         e.preventDefault();
@@ -823,6 +835,12 @@ const LandingPageNew = () => {
                                     {isRTL ? 'לא קיבלת את הקוד?' : "Didn't receive the code?"}{' '}
                                     <button type="button" onClick={handleResendCode} disabled={loading}>
                                         {isRTL ? 'שלח קוד חדש' : 'Resend Code'}
+                                    </button>
+                                </p>
+                                <p className="auth-switch">
+                                    {isRTL ? 'טעית באימייל?' : 'Wrong email?'}{' '}
+                                    <button type="button" onClick={clearPendingVerification} disabled={loading}>
+                                        {isRTL ? 'הירשם מחדש' : 'Register again'}
                                     </button>
                                 </p>
                             </form>
