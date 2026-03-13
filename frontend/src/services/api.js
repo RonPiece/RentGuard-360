@@ -44,6 +44,7 @@ import { fetchAuthSession } from 'aws-amplify/auth';
 // IMPORTANT: Do not fall back to a hardcoded URL. It can accidentally point to an old AWS account/stack
 // and cause 500s like "User pool ... does not exist".
 const API_BASE_URL = import.meta.env.VITE_API_ENDPOINT;
+const CHECK_USER_API_KEY = import.meta.env.VITE_CHECK_USER_API_KEY;
 
 if (!API_BASE_URL) {
     throw new Error('Missing VITE_API_ENDPOINT. Set it from the CloudFormation stack Output ApiUrl.');
@@ -135,6 +136,43 @@ const apiCall = async (endpoint, options = {}) => {
         if (error.name === 'AbortError') {
             throw new Error('הבקשה נכשלה - הזמן הקצוב עבר. נסה שוב.');
         }
+        throw error;
+    }
+};
+
+/**
+ * Generic API call for unauthenticated endpoints (e.g., check-user)
+ * Requires Project API Key for security
+ */
+const publicApiCall = async (endpoint, options = {}) => {
+    const url = `${API_BASE_URL}${endpoint}`;
+    
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
+    try {
+        const response = await fetch(url, {
+            ...options,
+            signal: controller.signal,
+            headers: {
+                'X-Api-Key': CHECK_USER_API_KEY,
+                'Content-Type': 'application/json',
+                ...options.headers,
+            },
+        });
+
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error(`Public API Error ${response.status}:`, errorText);
+            throw new Error(`API Error: ${response.status}`);
+        }
+
+        const text = await response.text();
+        return text ? JSON.parse(text) : {};
+    } catch (error) {
+        clearTimeout(timeoutId);
         throw error;
     }
 };
@@ -562,6 +600,22 @@ export const deleteUser = async (username) => {
     return data;
 };
 
+/**
+ * Check if a user exists in Cognito and their verification status
+ * @param {string} email - The email to check
+ * @returns {status: 'EXISTS' | 'NEEDS_VERIFICATION' | 'USER_NOT_FOUND'}
+ */
+export const checkUserStatus = async (email) => {
+    try {
+        const data = await publicApiCall(`/auth/check-user?email=${encodeURIComponent(email)}`);
+        return data;
+    } catch (error) {
+        console.error('checkUserStatus error:', error);
+        // Fallback to allowing registration try if check fails
+        return { status: 'USER_NOT_FOUND' };
+    }
+};
+
 export default {
     uploadFile,
     getContracts,
@@ -577,4 +631,5 @@ export default {
     disableUser,
     enableUser,
     deleteUser,
+    checkUserStatus,
 };

@@ -632,6 +632,22 @@ Resources:
           CONTRACTS_TABLE: !Ref ContractsTable
           ANALYSIS_TABLE: !Ref AnalysisTable
 
+  CheckUserFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub '${ProjectName}-CheckUser${NameSuffix}'
+      Runtime: python3.11
+      Handler: check_user.lambda_handler
+      Role: !GetAtt RentGuardLambdaRole.Arn
+      Timeout: 10
+      MemorySize: 128
+      Code:
+        S3Bucket: !Ref LambdaCodeBucket
+        S3Key: !Ref LambdaCodeKey
+      Environment:
+        Variables:
+          USER_POOL_ID: !Ref UserPool
+
   AutoVerifySESFunction:
     Type: AWS::Lambda::Function
     Properties:
@@ -836,6 +852,59 @@ Resources:
       RestApiId: !Ref RestApi
       ParentId: !GetAtt RestApi.RootResourceId
       PathPart: upload
+
+  # /auth
+  AuthResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref RestApi
+      ParentId: !GetAtt RestApi.RootResourceId
+      PathPart: auth
+
+  # /auth/check-user
+  CheckUserResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref RestApi
+      ParentId: !Ref AuthResource
+      PathPart: check-user
+
+  CheckUserGetMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref RestApi
+      ResourceId: !Ref CheckUserResource
+      HttpMethod: GET
+      AuthorizationType: NONE
+      ApiKeyRequired: true
+      Integration:
+        Type: AWS_PROXY
+        IntegrationHttpMethod: POST
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${CheckUserFunction.Arn}/invocations'
+
+  CheckUserOptionsMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref RestApi
+      ResourceId: !Ref CheckUserResource
+      HttpMethod: OPTIONS
+      AuthorizationType: NONE
+      Integration:
+        Type: MOCK
+        RequestTemplates:
+          application/json: '{"statusCode": 200}'
+        IntegrationResponses:
+          - StatusCode: 200
+            ResponseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+              method.response.header.Access-Control-Allow-Methods: "'GET,OPTIONS'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+      MethodResponses:
+        - StatusCode: 200
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Methods: true
+            method.response.header.Access-Control-Allow-Origin: true
 
   UploadMethod:
     Type: AWS::ApiGateway::Method
@@ -1407,8 +1476,94 @@ Resources:
       - AdminUsersDisableMethod
       - AdminUsersEnableMethod
       - AdminUsersDeleteMethod
+      - CheckUserGetMethod
+      - CheckUserOptionsMethod
     Properties:
       RestApiId: !Ref RestApi
+
+  # API Security (Rate Limiting & API Key)
+  CheckUserApiKey:
+    Type: AWS::ApiGateway::ApiKey
+    Properties:
+      Name: !Sub '${ProjectName}-CheckUserKey${NameSuffix}'
+      Enabled: true
+      GenerateDistinctId: false
+
+  CheckUserUsagePlan:
+    Type: AWS::ApiGateway::UsagePlan
+    Properties:
+      UsagePlanName: !Sub '${ProjectName}-CheckUserPlan${NameSuffix}'
+      Description: Rate limiting for user existence checks
+      ApiStages:
+        - ApiId: !Ref RestApi
+          Stage: prod
+      Throttle:
+        RateLimit: 5
+        BurstLimit: 10
+
+  CheckUserUsagePlanKey:
+    Type: AWS::ApiGateway::UsagePlanKey
+    Properties:
+      KeyId: !Ref CheckUserApiKey
+      KeyType: API_KEY
+      UsagePlanId: !Ref CheckUserUsagePlan
+
+  LambdaPermissionCheckUser:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !GetAtt CheckUserFunction.Arn
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${RestApi}/*/GET/auth/check-user'
+
+  # API Deployment
+  ApiDeployment:
+    Type: AWS::ApiGateway::Deployment
+    DependsOn:
+      - UploadMethod
+      - ContractsGetMethod
+      - ContractsDeleteMethod
+      - ContractsRenameMethod
+      - ContractsSaveMethod
+      - AnalysisGetMethod
+      - ConsultMethod
+      - ContactMethod
+      - AdminStatsMethod
+      - AdminUsersGetMethod
+      - AdminUsersDisableMethod
+      - AdminUsersEnableMethod
+      - AdminUsersDeleteMethod
+      - CheckUserGetMethod
+      - CheckUserOptionsMethod
+    Properties:
+      RestApiId: !Ref RestApi
+
+  # API Security (Rate Limiting & API Key)
+  CheckUserApiKey:
+    Type: AWS::ApiGateway::ApiKey
+    Properties:
+      Name: !Sub '${ProjectName}-CheckUserKey${NameSuffix}'
+      Enabled: true
+      GenerateDistinctId: false
+
+  CheckUserUsagePlan:
+    Type: AWS::ApiGateway::UsagePlan
+    Properties:
+      UsagePlanName: !Sub '${ProjectName}-CheckUserPlan${NameSuffix}'
+      Description: Rate limiting for user existence checks
+      ApiStages:
+        - ApiId: !Ref RestApi
+          Stage: !Ref Environment
+      Throttle:
+        RateLimit: 5
+        BurstLimit: 10
+
+  CheckUserUsagePlanKey:
+    Type: AWS::ApiGateway::UsagePlanKey
+    Properties:
+      KeyId: !Ref CheckUserApiKey
+      KeyType: API_KEY
+      UsagePlanId: !Ref CheckUserUsagePlan
 
   ApiStage:
     Type: AWS::ApiGateway::Stage
