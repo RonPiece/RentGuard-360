@@ -278,6 +278,35 @@ const translations = {
             project: 'פרויקט סיום מחשוב ענן',
             copyright: '© RentGuard 360 {year} . כל הזכויות שמורות.',
         },
+        // Contract Chat Widget
+        chat: {
+            title: 'צ׳אט חוזה',
+            subtitle: 'שאלו שאלות על חוזה נבחר.',
+            open: 'פתיחת צ׳אט חוזה',
+            close: 'סגירת צ׳אט',
+            contractLabel: 'חוזה',
+            selectContract: 'בחרו חוזה',
+            loadingContracts: 'טוען חוזים...',
+            emptySelectContract: 'בחרו חוזה כדי להתחיל לשאול שאלות.',
+            emptyStart: 'אין עדיין הודעות. שאלו את השאלה הראשונה.',
+            inputPlaceholder: 'שאלו על סעיפים, תשלומים, חיות מחמד, סיום חוזה...',
+            send: 'שלח שאלה',
+            clear: 'נקה היסטוריה',
+            clearShort: 'נקה',
+            copy: 'העתק',
+            copied: 'הועתק',
+            you: 'אתם',
+            assistant: 'המערכת',
+            thinking: 'חושב...',
+            noAnswer: 'לא נוצרה תשובה.',
+            errors: {
+                loadContracts: 'טעינת החוזים נכשלה. נסו שוב.',
+                loadHistory: 'טעינת היסטוריית הצ׳אט נכשלה. נסו שוב.',
+                selectContract: 'בחרו חוזה לפני שליחת שאלה.',
+                askFailed: 'לא הצלחתי לקבל תשובה כרגע. נסו שוב.',
+                clearFailed: 'ניקוי ההיסטוריה נכשל. נסו שוב.'
+            }
+        },
         // Common
         common: {
             loading: 'טוען...',
@@ -709,6 +738,35 @@ const translations = {
             benefits: 'Full Privacy | Fast & Secure Analysis | Negotiation Tips | Secure Cloud Infrastructure',
             project: 'Cloud Computing Final Project',
             copyright: '© {year} RentGuard 360. All rights reserved.',
+        },
+        // Contract Chat Widget
+        chat: {
+            title: 'Contract Chat',
+            subtitle: 'Ask questions about a selected contract.',
+            open: 'Open contract chat',
+            close: 'Close chat',
+            contractLabel: 'Contract',
+            selectContract: 'Select contract',
+            loadingContracts: 'Loading contracts...',
+            emptySelectContract: 'Choose a contract to start asking questions.',
+            emptyStart: 'No messages yet. Ask your first question.',
+            inputPlaceholder: 'Ask about clauses, fees, pets, termination...',
+            send: 'Send question',
+            clear: 'Clear history',
+            clearShort: 'Clear',
+            copy: 'Copy',
+            copied: 'Copied',
+            you: 'You',
+            assistant: 'Assistant',
+            thinking: 'Thinking...',
+            noAnswer: 'No answer generated.',
+            errors: {
+                loadContracts: 'Failed to load contracts. Please retry.',
+                loadHistory: 'Failed to load chat history. Please retry.',
+                selectContract: 'Select a contract first.',
+                askFailed: 'Could not get an answer. Please try again.',
+                clearFailed: 'Failed to clear history. Please try again.'
+            }
         },
         // Common
         common: {

@@ -1,4 +1,4 @@
-AWSTemplateFormatVersion: '2010-09-09'
+﻿AWSTemplateFormatVersion: '2010-09-09'
 Description: 'RentGuard 360 - Complete Infrastructure Stack'
 
 # =============================================================================
@@ -179,6 +179,22 @@ Resources:
       KeySchema:
         - AttributeName: ticketId
           KeyType: HASH
+
+  ContractChatHistoryTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub 'RentGuard-ContractChatHistory${NameSuffix}'
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: userId
+          AttributeType: S
+        - AttributeName: threadKey
+          AttributeType: S
+      KeySchema:
+        - AttributeName: userId
+          KeyType: HASH
+        - AttributeName: threadKey
+          KeyType: RANGE
 
   # ---------------------------------------------------------------------------
   # COGNITO
@@ -478,6 +494,58 @@ Resources:
       Environment:
         Variables:
           CONTRACTS_TABLE: !Ref ContractsTable
+
+  AskContractQuestionFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub '${ProjectName}-AskContractQuestion${NameSuffix}'
+      Runtime: python3.11
+      Handler: ask_contract_question.lambda_handler
+      Role: !GetAtt RentGuardLambdaRole.Arn
+      Timeout: 60
+      MemorySize: 256
+      Code:
+        S3Bucket: !Ref LambdaCodeBucket
+        S3Key: !Ref LambdaCodeKey
+      Environment:
+        Variables:
+          ANALYSIS_TABLE: !Ref AnalysisTable
+          CHAT_HISTORY_TABLE: !Ref ContractChatHistoryTable
+          MODEL_ID: us.anthropic.claude-haiku-4-5-20251001-v1:0
+
+  GetContractChatHistoryFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub '${ProjectName}-GetContractChatHistory${NameSuffix}'
+      Runtime: python3.11
+      Handler: get_contract_chat_history.lambda_handler
+      Role: !GetAtt RentGuardLambdaRole.Arn
+      Timeout: 20
+      MemorySize: 128
+      Code:
+        S3Bucket: !Ref LambdaCodeBucket
+        S3Key: !Ref LambdaCodeKey
+      Environment:
+        Variables:
+          ANALYSIS_TABLE: !Ref AnalysisTable
+          CHAT_HISTORY_TABLE: !Ref ContractChatHistoryTable
+
+  ClearContractChatHistoryFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub '${ProjectName}-ClearContractChatHistory${NameSuffix}'
+      Runtime: python3.11
+      Handler: clear_contract_chat_history.lambda_handler
+      Role: !GetAtt RentGuardLambdaRole.Arn
+      Timeout: 20
+      MemorySize: 128
+      Code:
+        S3Bucket: !Ref LambdaCodeBucket
+        S3Key: !Ref LambdaCodeKey
+      Environment:
+        Variables:
+          ANALYSIS_TABLE: !Ref AnalysisTable
+          CHAT_HISTORY_TABLE: !Ref ContractChatHistoryTable
 
   SaveEditedFunction:
     Type: AWS::Lambda::Function
@@ -894,13 +962,13 @@ Resources:
         RequestTemplates:
           application/json: '{"statusCode": 200}'
         IntegrationResponses:
-          - StatusCode: 200
+          - StatusCode: '200'
             ResponseParameters:
               method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
               method.response.header.Access-Control-Allow-Methods: "'GET,OPTIONS'"
               method.response.header.Access-Control-Allow-Origin: "'*'"
       MethodResponses:
-        - StatusCode: 200
+        - StatusCode: '200'
           ResponseParameters:
             method.response.header.Access-Control-Allow-Headers: true
             method.response.header.Access-Control-Allow-Methods: true
@@ -931,13 +999,13 @@ Resources:
         RequestTemplates:
           application/json: '{"statusCode": 200}'
         IntegrationResponses:
-          - StatusCode: 200
+          - StatusCode: '200'
             ResponseParameters:
               method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization'"
               method.response.header.Access-Control-Allow-Methods: "'GET,OPTIONS'"
               method.response.header.Access-Control-Allow-Origin: "'*'"
       MethodResponses:
-        - StatusCode: 200
+        - StatusCode: '200'
           ResponseParameters:
             method.response.header.Access-Control-Allow-Headers: true
             method.response.header.Access-Control-Allow-Methods: true
@@ -989,13 +1057,13 @@ Resources:
         RequestTemplates:
           application/json: '{"statusCode": 200}'
         IntegrationResponses:
-          - StatusCode: 200
+          - StatusCode: '200'
             ResponseParameters:
               method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization'"
               method.response.header.Access-Control-Allow-Methods: "'GET,DELETE,OPTIONS'"
               method.response.header.Access-Control-Allow-Origin: "'*'"
       MethodResponses:
-        - StatusCode: 200
+        - StatusCode: '200'
           ResponseParameters:
             method.response.header.Access-Control-Allow-Headers: true
             method.response.header.Access-Control-Allow-Methods: true
@@ -1034,13 +1102,13 @@ Resources:
         RequestTemplates:
           application/json: '{"statusCode": 200}'
         IntegrationResponses:
-          - StatusCode: 200
+          - StatusCode: '200'
             ResponseParameters:
               method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization'"
               method.response.header.Access-Control-Allow-Methods: "'POST,OPTIONS'"
               method.response.header.Access-Control-Allow-Origin: "'*'"
       MethodResponses:
-        - StatusCode: 200
+        - StatusCode: '200'
           ResponseParameters:
             method.response.header.Access-Control-Allow-Headers: true
             method.response.header.Access-Control-Allow-Methods: true
@@ -1079,13 +1147,13 @@ Resources:
         RequestTemplates:
           application/json: '{"statusCode": 200}'
         IntegrationResponses:
-          - StatusCode: 200
+          - StatusCode: '200'
             ResponseParameters:
               method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization'"
               method.response.header.Access-Control-Allow-Methods: "'POST,OPTIONS'"
               method.response.header.Access-Control-Allow-Origin: "'*'"
       MethodResponses:
-        - StatusCode: 200
+        - StatusCode: '200'
           ResponseParameters:
             method.response.header.Access-Control-Allow-Headers: true
             method.response.header.Access-Control-Allow-Methods: true
@@ -1124,13 +1192,13 @@ Resources:
         RequestTemplates:
           application/json: '{"statusCode": 200}'
         IntegrationResponses:
-          - StatusCode: 200
+          - StatusCode: '200'
             ResponseParameters:
               method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization'"
               method.response.header.Access-Control-Allow-Methods: "'GET,OPTIONS'"
               method.response.header.Access-Control-Allow-Origin: "'*'"
       MethodResponses:
-        - StatusCode: 200
+        - StatusCode: '200'
           ResponseParameters:
             method.response.header.Access-Control-Allow-Headers: true
             method.response.header.Access-Control-Allow-Methods: true
@@ -1169,13 +1237,124 @@ Resources:
         RequestTemplates:
           application/json: '{"statusCode": 200}'
         IntegrationResponses:
-          - StatusCode: 200
+          - StatusCode: '200'
             ResponseParameters:
               method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization'"
               method.response.header.Access-Control-Allow-Methods: "'POST,OPTIONS'"
               method.response.header.Access-Control-Allow-Origin: "'*'"
       MethodResponses:
-        - StatusCode: 200
+        - StatusCode: '200'
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Methods: true
+            method.response.header.Access-Control-Allow-Origin: true
+
+  # /contract-chat
+  ContractChatResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref RestApi
+      ParentId: !GetAtt RestApi.RootResourceId
+      PathPart: contract-chat
+
+  # /contract-chat/ask
+  ContractChatAskResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref RestApi
+      ParentId: !Ref ContractChatResource
+      PathPart: ask
+
+  ContractChatAskMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref RestApi
+      ResourceId: !Ref ContractChatAskResource
+      HttpMethod: POST
+      AuthorizationType: COGNITO_USER_POOLS
+      AuthorizerId: !Ref CognitoAuthorizer
+      Integration:
+        Type: AWS_PROXY
+        IntegrationHttpMethod: POST
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${AskContractQuestionFunction.Arn}/invocations'
+
+  ContractChatAskOptionsMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref RestApi
+      ResourceId: !Ref ContractChatAskResource
+      HttpMethod: OPTIONS
+      AuthorizationType: NONE
+      Integration:
+        Type: MOCK
+        RequestTemplates:
+          application/json: '{"statusCode": 200}'
+        IntegrationResponses:
+          - StatusCode: '200'
+            ResponseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization'"
+              method.response.header.Access-Control-Allow-Methods: "'POST,OPTIONS'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+      MethodResponses:
+        - StatusCode: '200'
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Methods: true
+            method.response.header.Access-Control-Allow-Origin: true
+
+  # /contract-chat/history
+  ContractChatHistoryResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref RestApi
+      ParentId: !Ref ContractChatResource
+      PathPart: history
+
+  ContractChatHistoryGetMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref RestApi
+      ResourceId: !Ref ContractChatHistoryResource
+      HttpMethod: GET
+      AuthorizationType: COGNITO_USER_POOLS
+      AuthorizerId: !Ref CognitoAuthorizer
+      Integration:
+        Type: AWS_PROXY
+        IntegrationHttpMethod: POST
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetContractChatHistoryFunction.Arn}/invocations'
+
+  ContractChatHistoryDeleteMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref RestApi
+      ResourceId: !Ref ContractChatHistoryResource
+      HttpMethod: DELETE
+      AuthorizationType: COGNITO_USER_POOLS
+      AuthorizerId: !Ref CognitoAuthorizer
+      Integration:
+        Type: AWS_PROXY
+        IntegrationHttpMethod: POST
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ClearContractChatHistoryFunction.Arn}/invocations'
+
+  ContractChatHistoryOptionsMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref RestApi
+      ResourceId: !Ref ContractChatHistoryResource
+      HttpMethod: OPTIONS
+      AuthorizationType: NONE
+      Integration:
+        Type: MOCK
+        RequestTemplates:
+          application/json: '{"statusCode": 200}'
+        IntegrationResponses:
+          - StatusCode: '200'
+            ResponseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization'"
+              method.response.header.Access-Control-Allow-Methods: "'GET,DELETE,OPTIONS'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+      MethodResponses:
+        - StatusCode: '200'
           ResponseParameters:
             method.response.header.Access-Control-Allow-Headers: true
             method.response.header.Access-Control-Allow-Methods: true
@@ -1214,13 +1393,13 @@ Resources:
         RequestTemplates:
           application/json: '{"statusCode": 200}'
         IntegrationResponses:
-          - StatusCode: 200
+          - StatusCode: '200'
             ResponseParameters:
               method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization'"
               method.response.header.Access-Control-Allow-Methods: "'POST,OPTIONS'"
               method.response.header.Access-Control-Allow-Origin: "'*'"
       MethodResponses:
-        - StatusCode: 200
+        - StatusCode: '200'
           ResponseParameters:
             method.response.header.Access-Control-Allow-Headers: true
             method.response.header.Access-Control-Allow-Methods: true
@@ -1267,13 +1446,13 @@ Resources:
         RequestTemplates:
           application/json: '{"statusCode": 200}'
         IntegrationResponses:
-          - StatusCode: 200
+          - StatusCode: '200'
             ResponseParameters:
               method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization'"
               method.response.header.Access-Control-Allow-Methods: "'GET,OPTIONS'"
               method.response.header.Access-Control-Allow-Origin: "'*'"
       MethodResponses:
-        - StatusCode: 200
+        - StatusCode: '200'
           ResponseParameters:
             method.response.header.Access-Control-Allow-Headers: true
             method.response.header.Access-Control-Allow-Methods: true
@@ -1312,13 +1491,13 @@ Resources:
         RequestTemplates:
           application/json: '{"statusCode": 200}'
         IntegrationResponses:
-          - StatusCode: 200
+          - StatusCode: '200'
             ResponseParameters:
               method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization'"
               method.response.header.Access-Control-Allow-Methods: "'GET,OPTIONS'"
               method.response.header.Access-Control-Allow-Origin: "'*'"
       MethodResponses:
-        - StatusCode: 200
+        - StatusCode: '200'
           ResponseParameters:
             method.response.header.Access-Control-Allow-Headers: true
             method.response.header.Access-Control-Allow-Methods: true
@@ -1357,13 +1536,13 @@ Resources:
         RequestTemplates:
           application/json: '{"statusCode": 200}'
         IntegrationResponses:
-          - StatusCode: 200
+          - StatusCode: '200'
             ResponseParameters:
               method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization'"
               method.response.header.Access-Control-Allow-Methods: "'POST,OPTIONS'"
               method.response.header.Access-Control-Allow-Origin: "'*'"
       MethodResponses:
-        - StatusCode: 200
+        - StatusCode: '200'
           ResponseParameters:
             method.response.header.Access-Control-Allow-Headers: true
             method.response.header.Access-Control-Allow-Methods: true
@@ -1402,13 +1581,13 @@ Resources:
         RequestTemplates:
           application/json: '{"statusCode": 200}'
         IntegrationResponses:
-          - StatusCode: 200
+          - StatusCode: '200'
             ResponseParameters:
               method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization'"
               method.response.header.Access-Control-Allow-Methods: "'POST,OPTIONS'"
               method.response.header.Access-Control-Allow-Origin: "'*'"
       MethodResponses:
-        - StatusCode: 200
+        - StatusCode: '200'
           ResponseParameters:
             method.response.header.Access-Control-Allow-Headers: true
             method.response.header.Access-Control-Allow-Methods: true
@@ -1447,13 +1626,13 @@ Resources:
         RequestTemplates:
           application/json: '{"statusCode": 200}'
         IntegrationResponses:
-          - StatusCode: 200
+          - StatusCode: '200'
             ResponseParameters:
               method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization'"
               method.response.header.Access-Control-Allow-Methods: "'DELETE,OPTIONS'"
               method.response.header.Access-Control-Allow-Origin: "'*'"
       MethodResponses:
-        - StatusCode: 200
+        - StatusCode: '200'
           ResponseParameters:
             method.response.header.Access-Control-Allow-Headers: true
             method.response.header.Access-Control-Allow-Methods: true
@@ -1478,63 +1657,11 @@ Resources:
       - AdminUsersDeleteMethod
       - CheckUserGetMethod
       - CheckUserOptionsMethod
-    Properties:
-      RestApiId: !Ref RestApi
-
-  # API Security (Rate Limiting & API Key)
-  CheckUserApiKey:
-    Type: AWS::ApiGateway::ApiKey
-    Properties:
-      Name: !Sub '${ProjectName}-CheckUserKey${NameSuffix}'
-      Enabled: true
-      GenerateDistinctId: false
-
-  CheckUserUsagePlan:
-    Type: AWS::ApiGateway::UsagePlan
-    Properties:
-      UsagePlanName: !Sub '${ProjectName}-CheckUserPlan${NameSuffix}'
-      Description: Rate limiting for user existence checks
-      ApiStages:
-        - ApiId: !Ref RestApi
-          Stage: prod
-      Throttle:
-        RateLimit: 5
-        BurstLimit: 10
-
-  CheckUserUsagePlanKey:
-    Type: AWS::ApiGateway::UsagePlanKey
-    Properties:
-      KeyId: !Ref CheckUserApiKey
-      KeyType: API_KEY
-      UsagePlanId: !Ref CheckUserUsagePlan
-
-  LambdaPermissionCheckUser:
-    Type: AWS::Lambda::Permission
-    Properties:
-      FunctionName: !GetAtt CheckUserFunction.Arn
-      Action: lambda:InvokeFunction
-      Principal: apigateway.amazonaws.com
-      SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${RestApi}/*/GET/auth/check-user'
-
-  # API Deployment
-  ApiDeployment:
-    Type: AWS::ApiGateway::Deployment
-    DependsOn:
-      - UploadMethod
-      - ContractsGetMethod
-      - ContractsDeleteMethod
-      - ContractsRenameMethod
-      - ContractsSaveMethod
-      - AnalysisGetMethod
-      - ConsultMethod
-      - ContactMethod
-      - AdminStatsMethod
-      - AdminUsersGetMethod
-      - AdminUsersDisableMethod
-      - AdminUsersEnableMethod
-      - AdminUsersDeleteMethod
-      - CheckUserGetMethod
-      - CheckUserOptionsMethod
+      - ContractChatAskMethod
+      - ContractChatAskOptionsMethod
+      - ContractChatHistoryGetMethod
+      - ContractChatHistoryDeleteMethod
+      - ContractChatHistoryOptionsMethod
     Properties:
       RestApiId: !Ref RestApi
 
@@ -1629,6 +1756,38 @@ Resources:
       Principal: apigateway.amazonaws.com
       SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${RestApi}/*/*/*'
 
+  LambdaPermissionAskContractQuestion:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !GetAtt AskContractQuestionFunction.Arn
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${RestApi}/*/POST/contract-chat/ask'
+
+  LambdaPermissionGetContractChatHistory:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !GetAtt GetContractChatHistoryFunction.Arn
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${RestApi}/*/GET/contract-chat/history'
+
+  LambdaPermissionClearContractChatHistory:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !GetAtt ClearContractChatHistoryFunction.Arn
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${RestApi}/*/DELETE/contract-chat/history'
+
+  LambdaPermissionCheckUser:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !GetAtt CheckUserFunction.Arn
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${RestApi}/*/GET/auth/check-user'
+
   LambdaPermissionContact:
     Type: AWS::Lambda::Permission
     Properties:
@@ -1708,3 +1867,4 @@ Outputs:
   CloudFrontDomainName:
     Description: CloudFront Domain Name
     Value: !GetAtt CloudFrontDistribution.DomainName
+

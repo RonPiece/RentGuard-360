@@ -616,6 +616,45 @@ export const checkUserStatus = async (email) => {
     }
 };
 
+/**
+ * Ask a contract-grounded question for a selected contract
+ * @param {string} contractId - The selected contract ID
+ * @param {string} question - User question
+ * @returns {{answer: string, meta: object}}
+ */
+export const askContractQuestion = async (contractId, question) => {
+    const data = await apiCall('/contract-chat/ask', {
+        method: 'POST',
+        body: JSON.stringify({ contractId, question }),
+    });
+    return data;
+};
+
+/**
+ * Get persisted contract chat history
+ * @param {string} contractId - Contract ID
+ * @param {number} limit - Max history rows
+ */
+export const getContractChatHistory = async (contractId, limit = 30) => {
+    const data = await apiCall(
+        `/contract-chat/history?contractId=${encodeURIComponent(contractId)}&limit=${encodeURIComponent(limit)}`,
+        { method: 'GET' }
+    );
+    return Array.isArray(data?.items) ? data.items : [];
+};
+
+/**
+ * Clear persisted contract chat history
+ * @param {string} contractId - Contract ID
+ */
+export const clearContractChatHistory = async (contractId) => {
+    const data = await apiCall(
+        `/contract-chat/history?contractId=${encodeURIComponent(contractId)}`,
+        { method: 'DELETE' }
+    );
+    return data;
+};
+
 export default {
     uploadFile,
     getContracts,
@@ -632,4 +671,7 @@ export default {
     enableUser,
     deleteUser,
     checkUserStatus,
+    askContractQuestion,
+    getContractChatHistory,
+    clearContractChatHistory,
 };
