@@ -65,6 +65,19 @@
     flex-direction: column;
     gap: var(--space-md);
     padding: var(--space-lg) !important;
+    
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+    
+    scrollbar-width: none; 
+}
+
+.sidebar-card > * {
+    flex-shrink: 0;
+}
+
+.sidebar-card::-webkit-scrollbar {
+    display: none;
 }
 
 /* Contract Hero Card - Premium Glassmorphic Design */
@@ -378,20 +391,23 @@
     min-width: 0;
 }
 
-/* Scrollable Issues Section - Hidden Scrollbar */
+/* Issues section: prefer letting the whole page scroll on desktop so
+   users can smoothly scroll from the left column into the issues list
+   without being trapped in a nested scroll container. If you want the
+   old independent scrolling behavior, restore the original rules. */
 .issues-section {
-    max-height: calc(100vh - 180px);
-    overflow-y: auto;
+    /* Disable the fixed-height inner scroll so page scrolling handles
+       both the contract view and the issues list seamlessly. */
+    max-height: none;
+    overflow-y: visible;
     padding-right: var(--space-xs);
-    scrollbar-width: none;
-    /* Firefox */
-    -ms-overflow-style: none;
-    /* IE/Edge */
+    /* Explicitly allow scroll chaining (default) */
+    overscroll-behavior: auto;
 }
 
+/* Keep hidden scrollbar rule harmless when using visible overflow */
 .issues-section::-webkit-scrollbar {
     display: none;
-    /* Chrome/Safari */
 }
 
 .analysis-page .section-title {
