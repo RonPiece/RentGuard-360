@@ -38,6 +38,7 @@ import {
     confirmResetPassword,
     deleteUser,
 } from 'aws-amplify/auth';
+import api from '../services/api';
 
 // Configure Amplify
 Amplify.configure({
@@ -224,6 +225,10 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    const checkUserStatus = async (email) => {
+        return await api.checkUserStatus(email);
+    };
+
     return (
         <AuthContext.Provider value={{
             user,
@@ -240,6 +245,7 @@ export const AuthProvider = ({ children }) => {
             resetUserPassword,
             deleteAccount,
             checkAuthState,
+            checkUserStatus,
         }}>
             {children}
         </AuthContext.Provider>

@@ -379,7 +379,7 @@ const ContractViewerMockup = ({ isRTL, onScoreClick }) => (
 
 const LandingPageNew = () => {
     // DAN DID IT - Added forgotPassword and resetUserPassword from useAuth for forgot password feature
-    const { login, register, confirmRegistration, isAuthenticated, resendCode, forgotPassword, resetUserPassword } = useAuth();
+    const { login, register, confirmRegistration, isAuthenticated, resendCode, forgotPassword, resetUserPassword, checkUserStatus } = useAuth();
     const { t, isRTL } = useLanguage();
 
     const getPendingVerificationEmail = () => {
@@ -409,6 +409,9 @@ const LandingPageNew = () => {
 
     // DAN DID IT - State for verification success modal
     const [showVerificationSuccess, setShowVerificationSuccess] = useState(false);
+
+    // Track user existence for guidance buttons
+    const [userExistsStatus, setUserExistsStatus] = useState(null); // 'EXISTS' | 'NEEDS_VERIFICATION' | null
 
     // Registration prompt state
     const [showRegisterPrompt, setShowRegisterPrompt] = useState(false);
@@ -579,35 +582,46 @@ const LandingPageNew = () => {
         }
 
         setLoading(true);
+        setUserExistsStatus(null);
+
+        // Step 1: Check if user already exists using our custom backend
+        const check = await checkUserStatus(trimmedEmail);
+        
+        if (check.status === 'EXISTS') {
+            setError(isRTL ? 'נראה שכבר יש לך חשבון!' : 'It looks like you already have an account!');
+            setUserExistsStatus('EXISTS');
+            setLoading(false);
+            return;
+        }
+
+        if (check.status === 'NEEDS_VERIFICATION') {
+            setError(isRTL ? 'החשבון קיים אך דורש אימות.' : 'Account exists but requires verification.');
+            setUserExistsStatus('NEEDS_VERIFICATION');
+            // Try to resend code automatically
+            try { await resendCode(trimmedEmail); } catch (e) { console.error(e); }
+            setTempEmail(trimmedEmail);
+            localStorage.setItem('rentguard_pending_verification', trimmedEmail);
+            setAuthModal('confirm');
+            setLoading(false);
+            return;
+        }
+
+        // Step 2: Proceed with normal registration
         const result = await register(trimmedEmail, password, trimmedName);
         if (result.success) {
             setTempEmail(trimmedEmail);
             localStorage.setItem('rentguard_pending_verification', trimmedEmail);
             setAuthModal('confirm');
         } else {
-            // Check if user exists but not confirmed - redirect to verification
-            if (result.error && result.error.includes('already exists')) {
-                setTempEmail(trimmedEmail);
-                localStorage.setItem('rentguard_pending_verification', trimmedEmail);
-                // Try to resend the code
-                try {
-                    await resendCode(trimmedEmail);
-                    setAuthModal('confirm');
-                    setError('');
-                } catch {
-                    // If resend fails, user might already be confirmed
-                    setError(isRTL ? 'המשתמש קיים. נסה להתחבר.' : 'User exists. Try logging in.');
-                }
-            } else {
-                // Translate common errors
-                let errorMsg = result.error;
-                if (isRTL) {
-                    if (errorMsg.includes('Password')) errorMsg = 'הסיסמה חייבת לכלול לפחות 8 תווים, אות גדולה, אות קטנה ומספר';
-                    else if (errorMsg.includes('email')) errorMsg = 'כתובת אימייל לא תקינה';
-                    else errorMsg = 'ההרשמה נכשלה. נסה שוב.';
-                }
-                setError(errorMsg);
+            // Translate common errors
+            let errorMsg = result.error;
+            if (isRTL) {
+                if (errorMsg.includes('Password')) errorMsg = 'הסיסמה חייבת לכלול לפחות 8 תווים, אות גדולה, אות קטנה ומספר';
+                else if (errorMsg.includes('email')) errorMsg = 'כתובת אימייל לא תקינה';
+                else if (errorMsg.includes('already exists')) errorMsg = 'המשתמש כבר קיים במערכת';
+                else errorMsg = 'ההרשמה נכשלה. נסה שוב.';
             }
+            setError(errorMsg);
         }
         setLoading(false);
     };
@@ -822,8 +836,21 @@ const LandingPageNew = () => {
                                     helperText={t('auth.passwordHint')} />
                                 <Input type="password" label={isRTL ? 'אימות סיסמה' : 'Confirm Password'} value={confirmPassword}
                                     onChange={(e) => setConfirmPassword(e.target.value)} required maxLength={128} />
+                                
                                 {error && <p className="auth-error">{error}</p>}
-                                <Button variant="primary" fullWidth loading={loading} type="submit">
+
+                                {userExistsStatus === 'EXISTS' && (
+                                    <div className="auth-guidance">
+                                        <Button variant="outline" fullWidth onClick={() => { setAuthModal('login'); setEmail(email); }}>
+                                            {t('auth.loginButton')}
+                                        </Button>
+                                        <Button variant="ghost" fullWidth onClick={() => { setAuthModal('forgotPassword'); setEmail(email); }}>
+                                            {isRTL ? 'שכחתי סיסמה' : 'Forgot Password'}
+                                        </Button>
+                                    </div>
+                                )}
+
+                                <Button variant="primary" fullWidth loading={loading} type="submit" disabled={userExistsStatus === 'EXISTS'}>
                                     {t('auth.registerButton')}
                                 </Button>
                                 <p className="auth-switch">
