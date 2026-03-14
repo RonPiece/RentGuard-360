@@ -34,6 +34,7 @@ import AdminUsers from './pages/AdminUsers';
 import AdminAnalytics from './pages/AdminAnalytics';
 import LandingPage from './pages/LandingPageNew';
 import Footer from './components/Footer';
+import ContractChatWidget from './components/ContractChatWidget';
 import './styles/design-system.css';
 import './App.css';
 
@@ -319,6 +320,9 @@ function App() {
 
       {/* Hide footer on admin pages */}
       {isAuthenticated && !isAdminRoute && <Footer />}
+
+      {/* Global contract mini-chat for authenticated users */}
+      {isAuthenticated && <ContractChatWidget />}
     </div>
   );
 }
