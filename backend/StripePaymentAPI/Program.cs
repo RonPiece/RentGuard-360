@@ -24,6 +24,25 @@ builder.Services.AddScoped<IPaymentRepository, SQLPaymentRepository>();
 StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
 
 // =============================================================================
+// 2.5 DB MIGRATION / HOTFIX
+//    Update 'unlimited' packages to have exactly 15 scans, as the unlimited
+//    option is being replaced entirely.
+// =============================================================================
+try
+{
+    using (var connection = new System.Data.SqlClient.SqlConnection(builder.Configuration.GetConnectionString("PaymentsDB")))
+    {
+        connection.Open();
+        var cmd = new System.Data.SqlClient.SqlCommand("UPDATE Packages SET ScanLimit = 15 WHERE ScanLimit = -1", connection);
+        cmd.ExecuteNonQuery();
+    }
+}
+catch (Exception ex)
+{
+    Console.WriteLine("Warning: DB update failed on startup: " + ex.Message);
+}
+
+// =============================================================================
 // 3. ADD CONTROLLERS + SWAGGER
 // =============================================================================
 builder.Services.AddControllers();

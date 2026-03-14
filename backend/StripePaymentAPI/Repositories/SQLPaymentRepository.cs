@@ -36,9 +36,8 @@ namespace StripePaymentAPI.Repositories
 
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                SqlCommand command = new SqlCommand(
-                    "SELECT Id, Name, Price, Currency, ScanLimit, Description, IsActive " +
-                    "FROM Packages WHERE IsActive = 1", connection);
+                SqlCommand command = new SqlCommand("sp_GetAllPackages", connection);
+                command.CommandType = System.Data.CommandType.StoredProcedure;
 
                 connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
@@ -69,9 +68,8 @@ namespace StripePaymentAPI.Repositories
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                SqlCommand command = new SqlCommand(
-                    "SELECT Id, Name, Price, Currency, ScanLimit, Description, IsActive " +
-                    "FROM Packages WHERE Id = @Id", connection);
+                SqlCommand command = new SqlCommand("sp_GetPackageById", connection);
+                command.CommandType = System.Data.CommandType.StoredProcedure;
 
                 command.Parameters.AddWithValue("@Id", id);
 
@@ -108,11 +106,8 @@ namespace StripePaymentAPI.Repositories
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                SqlCommand command = new SqlCommand(
-                    "INSERT INTO Transactions (UserId, PackageId, StripePaymentId, Amount, Currency, Status) " +
-                    "OUTPUT INSERTED.Id, INSERTED.CreatedAt " +
-                    "VALUES (@UserId, @PackageId, @StripePaymentId, @Amount, @Currency, @Status)",
-                    connection);
+                SqlCommand command = new SqlCommand("sp_AddTransaction", connection);
+                command.CommandType = System.Data.CommandType.StoredProcedure;
 
                 command.Parameters.AddWithValue("@UserId", transaction.UserId);
                 command.Parameters.AddWithValue("@PackageId", transaction.PackageId);
@@ -144,9 +139,8 @@ namespace StripePaymentAPI.Repositories
 
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                SqlCommand command = new SqlCommand(
-                    "SELECT Id, UserId, PackageId, StripePaymentId, Amount, Currency, Status, CreatedAt " +
-                    "FROM Transactions WHERE UserId = @UserId ORDER BY CreatedAt DESC", connection);
+                SqlCommand command = new SqlCommand("sp_GetTransactionsByUserId", connection);
+                command.CommandType = System.Data.CommandType.StoredProcedure;
 
                 command.Parameters.AddWithValue("@UserId", userId);
 
@@ -184,9 +178,8 @@ namespace StripePaymentAPI.Repositories
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                SqlCommand command = new SqlCommand(
-                    "SELECT Id, UserId, PackageId, ScansRemaining, UpdatedAt " +
-                    "FROM UserSubscriptions WHERE UserId = @UserId", connection);
+                SqlCommand command = new SqlCommand("sp_GetSubscriptionByUserId", connection);
+                command.CommandType = System.Data.CommandType.StoredProcedure;
 
                 command.Parameters.AddWithValue("@UserId", userId);
 
@@ -218,16 +211,9 @@ namespace StripePaymentAPI.Repositories
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                // MERGE = UPSERT: insert if not exists, update if exists
-                SqlCommand command = new SqlCommand(
-                    "MERGE UserSubscriptions AS target " +
-                    "USING (SELECT @UserId AS UserId) AS source " +
-                    "ON target.UserId = source.UserId " +
-                    "WHEN MATCHED THEN " +
-                    "    UPDATE SET PackageId = @PackageId, ScansRemaining = @ScansRemaining, UpdatedAt = GETDATE() " +
-                    "WHEN NOT MATCHED THEN " +
-                    "    INSERT (UserId, PackageId, ScansRemaining) VALUES (@UserId, @PackageId, @ScansRemaining);",
-                    connection);
+                // Call the Upsert Stored Procedure
+                SqlCommand command = new SqlCommand("sp_UpsertSubscription", connection);
+                command.CommandType = System.Data.CommandType.StoredProcedure;
 
                 command.Parameters.AddWithValue("@UserId", userId);
                 command.Parameters.AddWithValue("@PackageId", packageId);
@@ -242,45 +228,33 @@ namespace StripePaymentAPI.Repositories
         }
 
         /// <summary>
-        /// SQL UPDATE - deducts one scan credit from the user.
+        /// Calls stored procedure sp_DeductScan to atomically deduct one scan credit.
+        /// Uses OUTPUT parameters to get the result and remaining count.
         /// Returns false if no subscription exists or no scans left.
-        /// Does NOT deduct for unlimited plans (ScansRemaining = -1).
         /// </summary>
         public bool DeductScan(string userId)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                // First check if user has unlimited scans
-                SqlCommand checkCommand = new SqlCommand(
-                    "SELECT ScansRemaining FROM UserSubscriptions WHERE UserId = @UserId",
-                    connection);
-                checkCommand.Parameters.AddWithValue("@UserId", userId);
+                SqlCommand command = new SqlCommand("sp_DeductScan", connection);
+                command.CommandType = System.Data.CommandType.StoredProcedure;
+
+                // Input parameter
+                command.Parameters.AddWithValue("@UserId", userId);
+
+                // Output parameters
+                SqlParameter successParam = new SqlParameter("@Success", System.Data.SqlDbType.Bit);
+                successParam.Direction = System.Data.ParameterDirection.Output;
+                command.Parameters.Add(successParam);
+
+                SqlParameter remainingParam = new SqlParameter("@RemainingScans", System.Data.SqlDbType.Int);
+                remainingParam.Direction = System.Data.ParameterDirection.Output;
+                command.Parameters.Add(remainingParam);
 
                 connection.Open();
-                object result = checkCommand.ExecuteScalar();
+                command.ExecuteNonQuery();
 
-                if (result == null)
-                    return false; // No subscription found
-
-                int scansRemaining = (int)result;
-
-                // Unlimited plan - always allow, don't deduct
-                if (scansRemaining == -1)
-                    return true;
-
-                // No scans left
-                if (scansRemaining <= 0)
-                    return false;
-
-                // Deduct one scan
-                SqlCommand deductCommand = new SqlCommand(
-                    "UPDATE UserSubscriptions SET ScansRemaining = ScansRemaining - 1, UpdatedAt = GETDATE() " +
-                    "WHERE UserId = @UserId AND ScansRemaining > 0",
-                    connection);
-                deductCommand.Parameters.AddWithValue("@UserId", userId);
-
-                int rowsAffected = deductCommand.ExecuteNonQuery();
-                return rowsAffected > 0;
+                return (bool)successParam.Value;
             }
         }
     }

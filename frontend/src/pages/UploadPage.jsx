@@ -22,6 +22,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useSubscription } from '../contexts/SubscriptionContext';
 import { pollForAnalysis, uploadFile } from '../services/api';
 import Card from '../components/Card';
 import Button from '../components/Button';
@@ -31,6 +32,7 @@ import './UploadPage.css';
 const UploadPage = () => {
     const { t, isRTL } = useLanguage();
     const navigate = useNavigate();
+    const { scansRemaining, isUnlimited, hasSubscription, deductScan } = useSubscription();
     const [file, setFile] = useState(null);
     const [isDragging, setIsDragging] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
@@ -147,11 +149,27 @@ const UploadPage = () => {
     const handleUpload = async () => {
         if (!file || !termsAccepted) return;
 
+        // Check if user has scans remaining
+        if (hasSubscription && !isUnlimited && scansRemaining <= 0) {
+            setError(t('subscription.noScansMessage'));
+            return;
+        }
+
         setIsUploading(true);
         setUploadProgress(0);
         setError('');
 
         try {
+            // Deduct scan credit before uploading (if user has a subscription)
+            if (hasSubscription) {
+                const deductResult = await deductScan();
+                if (!deductResult.success) {
+                    setError(deductResult.error || t('subscription.noScansMessage'));
+                    setIsUploading(false);
+                    return;
+                }
+            }
+
             const result = await uploadFile(file, setUploadProgress, {
                 propertyAddress: metadata.propertyAddress,
                 landlordName: metadata.landlordName,
@@ -193,6 +211,21 @@ const UploadPage = () => {
                 <div className="upload-header animate-fadeIn">
                     <h1>{t('upload.title')}</h1>
                     <p>{t('upload.subtitle')}</p>
+
+                    {/* No scans warning */}
+                    {hasSubscription && !isUnlimited && scansRemaining <= 0 && (
+                        <Card variant="glass" padding="md" className="no-scans-banner animate-slideUp">
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)', justifyContent: 'space-between', flexWrap: 'wrap' }}>
+                                <div>
+                                    <h3 style={{ color: 'var(--accent-warning)', marginBottom: '4px' }}>{t('subscription.noScansLeft')}</h3>
+                                    <p style={{ fontSize: 'var(--font-size-sm)', margin: 0 }}>{t('subscription.noScansMessage')}</p>
+                                </div>
+                                <Button variant="primary" onClick={() => navigate('/pricing')}>
+                                    {t('subscription.upgradePlan')}
+                                </Button>
+                            </div>
+                        </Card>
+                    )}
                 </div>
 
                 {uploadSuccess && (

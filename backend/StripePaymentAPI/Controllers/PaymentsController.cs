@@ -45,11 +45,45 @@ namespace StripePaymentAPI.Controllers
         {
             try
             {
-                // Validate request
-                if (request == null || string.IsNullOrEmpty(request.UserId) || request.PackageId <= 0)
+                if (request == null || (string.IsNullOrEmpty(request.UserId) && string.IsNullOrEmpty(request.PaymentIntentId)))
                 {
-                    return BadRequest(new { error = "UserId and PackageId are required" });
+                    return BadRequest(new { error = "Valid request payload is required" });
                 }
+
+                // --- NEW: Handle confirmation inside the same endpoint to bypass API Gateway limits ---
+                if (request.Action == "confirm" && !string.IsNullOrEmpty(request.PaymentIntentId))
+                {
+                    var confirmService = new PaymentIntentService();
+                    var existingIntent = confirmService.Get(request.PaymentIntentId);
+
+                    if (existingIntent.Status == "succeeded")
+                    {
+                        string uId = existingIntent.Metadata.ContainsKey("userId") ? existingIntent.Metadata["userId"] : null;
+                        int pId = existingIntent.Metadata.ContainsKey("packageId") ? int.Parse(existingIntent.Metadata["packageId"]) : 0;
+
+                        if (!string.IsNullOrEmpty(uId) && pId > 0)
+                        {
+                            var confPackage = _repository.GetPackageById(pId);
+                            if (confPackage != null)
+                            {
+                                var transaction = new Models.Transaction
+                                {
+                                    UserId = uId,
+                                    PackageId = pId,
+                                    StripePaymentId = existingIntent.Id,
+                                    Amount = (decimal)existingIntent.Amount / 100,
+                                    Currency = existingIntent.Currency.ToUpper(),
+                                    Status = "succeeded"
+                                };
+                                try { _repository.AddTransaction(transaction); } catch { /* Ignore */ }
+                                _repository.UpsertSubscription(uId, pId, confPackage.ScanLimit);
+                                return Ok(new { success = true, isConfirm = true });
+                            }
+                        }
+                    }
+                    return BadRequest(new { error = "Payment confirmation failed" });
+                }
+                // -----------------------------------------------------------------------------------
 
                 // Get the package from the database
                 Models.Package package = _repository.GetPackageById(request.PackageId);
@@ -213,6 +247,8 @@ namespace StripePaymentAPI.Controllers
             }
         }
 
+
+
         // =====================================================================
         // GET api/payments/subscription?userId=xxx
         // Returns the user's current subscription and remaining scans
@@ -349,13 +385,14 @@ namespace StripePaymentAPI.Controllers
     // =========================================================================
 
     /// <summary>
-    /// Request body for creating a Stripe PaymentIntent.
-    /// Received as JSON from the React frontend.
+    /// Request body for creating a Stripe PaymentIntent or confirming a payment.
     /// </summary>
     public class CreateIntentRequest
     {
         public string UserId { get; set; }
         public int PackageId { get; set; }
+        public string Action { get; set; } // "create" or "confirm"
+        public string PaymentIntentId { get; set; } // Used when Action == "confirm"
     }
 
     /// <summary>

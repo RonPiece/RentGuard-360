@@ -28,12 +28,16 @@ import ContractsPage from './pages/ContractsPage';
 import AnalysisPage from './pages/AnalysisPage';
 import SettingsPage from './pages/SettingsPage';
 import ContactPage from './pages/ContactPage';
+import PricingPage from './pages/PricingPage';
+import CheckoutPage from './pages/CheckoutPage';
+import PaymentSuccessPage from './pages/PaymentSuccessPage';
 import AdminLayout from './pages/AdminLayout';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminUsers from './pages/AdminUsers';
 import AdminAnalytics from './pages/AdminAnalytics';
 import LandingPage from './pages/LandingPageNew';
 import Footer from './components/Footer';
+import { SubscriptionProvider, useSubscription } from './contexts/SubscriptionContext';
 import './styles/design-system.css';
 import './App.css';
 
@@ -57,6 +61,7 @@ const ProtectedRoute = ({ children }) => {
 const Navigation = () => {
   const { logout, userAttributes, isAdmin } = useAuth();
   const { t, isRTL } = useLanguage();
+  const { scansRemaining, isUnlimited, hasSubscription } = useSubscription();
   const navigate = useNavigate();
   const location = useLocation();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -85,6 +90,7 @@ const Navigation = () => {
     { path: '/dashboard', label: t('nav.dashboard') },
     { path: '/upload', label: t('nav.upload') },
     { path: '/contracts', label: t('nav.contracts') },
+    { path: '/pricing', label: t('nav.pricing') },
     ...(isAdmin ? [{ path: '/admin', label: t('nav.admin') }] : []),
   ];
 
@@ -115,8 +121,22 @@ const Navigation = () => {
           ))}
         </div>
 
-        {/* Right Side - Language Toggle, Theme Toggle & Profile */}
+        {/* Right Side - Scan Badge, Language Toggle, Theme Toggle & Profile */}
         <div className="nav-right">
+          {/* Scan Credits Badge */}
+          {hasSubscription && (
+            <button
+              className="scan-badge"
+              onClick={() => navigate('/pricing')}
+              title={isUnlimited ? t('nav.unlimited') : `${scansRemaining} ${t('nav.scansLeft')}`}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="11" cy="11" r="8" />
+                <path d="M21 21l-4.35-4.35" />
+              </svg>
+              <span>{isUnlimited ? '∞' : scansRemaining}</span>
+            </button>
+          )}
           <LanguageToggle />
           <ThemeToggle />
 
@@ -305,6 +325,9 @@ function App() {
           <Route path="/analysis/:contractId" element={<ProtectedRoute><AnalysisPage /></ProtectedRoute>} />
           <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
           <Route path="/contact" element={<ProtectedRoute><ContactPage /></ProtectedRoute>} />
+          <Route path="/pricing" element={<ProtectedRoute><PricingPage /></ProtectedRoute>} />
+          <Route path="/checkout/:packageId" element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} />
+          <Route path="/payment-success" element={<ProtectedRoute><PaymentSuccessPage /></ProtectedRoute>} />
 
           {/* Admin routes with sidebar layout */}
           <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>

@@ -72,3 +72,5 @@ INSERT INTO Packages (Name, Price, ScanLimit, Description, IsActive) VALUES
 ('Pro',   79.00, -1, 'Unlimited contract scans',                1);
 GO
 
+
+

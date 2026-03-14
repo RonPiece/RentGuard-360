@@ -22,6 +22,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useSubscription } from '../contexts/SubscriptionContext';
 import { getContracts } from '../services/api';
 import Card from '../components/Card';
 import Button from '../components/Button';
@@ -31,6 +32,7 @@ import './DashboardPage.css';
 const DashboardPage = () => {
     const { userAttributes, user } = useAuth();
     const { t, isRTL } = useLanguage();
+    const { packageName, scansRemaining, isUnlimited, hasSubscription } = useSubscription();
     const [stats, setStats] = useState({
         total: 0,
         analyzed: 0,
@@ -143,7 +145,7 @@ const DashboardPage = () => {
                         {getGreeting()}, {getUserName()}
                     </h1>
                     <p className="welcome-subtitle animate-fadeIn">
-                        {isRTL ? 'ברוכים הבאים ל-RentGuard 360. העלו ונתחו חוזי שכירות עם בינה מלאכותית.' : 'Welcome to RentGuard 360. Upload and analyze rental contracts with AI.'}
+                        {t('dashboard.welcomeSubtitle')}
                     </p>
                 </section>
 
@@ -173,7 +175,7 @@ const DashboardPage = () => {
             {/* WHITE BAND: Quick Actions */}
             <div className="section-band-alt">
                 <section className="actions-section">
-                    <h2 className="section-title">{isRTL ? 'פעולות מהירות' : 'Quick Actions'}</h2>
+                    <h2 className="section-title">{t('dashboard.quickActions')}</h2>
                     <div className="actions-grid">
                         <Card variant="elevated" padding="lg" className="action-card action-card-inset animate-slideUp" style={{ animationDelay: '400ms' }}>
                             <div className="action-icon-wrapper">
@@ -203,6 +205,31 @@ const DashboardPage = () => {
                             <p>{t('dashboard.viewDescription')}</p>
                             <Link to="/contracts">
                                 <Button variant="secondary" fullWidth>{t('dashboard.viewAll')}</Button>
+                            </Link>
+                        </Card>
+
+                        {/* My Plan Card */}
+                        <Card variant="elevated" padding="lg" className="action-card action-card-inset animate-slideUp" style={{ animationDelay: '600ms' }}>
+                            <div className="action-icon-wrapper">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                                    <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" />
+                                </svg>
+                            </div>
+                            <h3>{t('subscription.myPlan')}</h3>
+                            {hasSubscription ? (
+                                <p>
+                                    {packageName} — {isUnlimited
+                                        ? t('subscription.unlimited')
+                                        : `${scansRemaining} ${t('subscription.scansRemaining')}`
+                                    }
+                                </p>
+                            ) : (
+                                <p>{t('subscription.noPlan')}</p>
+                            )}
+                            <Link to="/pricing">
+                                <Button variant="secondary" fullWidth>
+                                    {hasSubscription ? t('subscription.upgrade') : t('subscription.choosePlan')}
+                                </Button>
                             </Link>
                         </Card>
                     </div>

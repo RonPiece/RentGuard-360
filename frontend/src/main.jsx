@@ -21,6 +21,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { LanguageProvider } from './contexts/LanguageContext';
+import { SubscriptionProvider } from './contexts/SubscriptionContext';
 import GlobalErrorBoundary from './components/GlobalErrorBoundary';
 import './styles/design-system.css';
 import App from './App.jsx';
@@ -32,7 +33,9 @@ createRoot(document.getElementById('root')).render(
         <ThemeProvider>
           <LanguageProvider>
             <AuthProvider>
-              <App />
+              <SubscriptionProvider>
+                <App />
+              </SubscriptionProvider>
             </AuthProvider>
           </LanguageProvider>
         </ThemeProvider>
