@@ -79,6 +79,8 @@ const ContractChatWidget = () => {
     const [copiedMessageKey, setCopiedMessageKey] = useState('');
     const [responseHintKey, setResponseHintKey] = useState('');
     const [isTipCollapsed, setIsTipCollapsed] = useState(true);
+    const [isClearConfirmOpen, setIsClearConfirmOpen] = useState(false);
+    const [footerOffset, setFooterOffset] = useState(24);
     const inputRef = useRef(null);
     const userLabel = useMemo(() => {
         if (userAttributes?.name) return userAttributes.name;
@@ -140,6 +142,30 @@ const ContractChatWidget = () => {
             trackChatEvent('chat_opened', { route: location.pathname });
         }
     }, [open, location.pathname]);
+
+    useEffect(() => {
+        const updateFooterOffset = () => {
+            const baseOffset = window.innerWidth <= 768 ? 12 : 24;
+            const footer = document.querySelector('.app-footer');
+            if (!footer) {
+                setFooterOffset(baseOffset);
+                return;
+            }
+
+            const footerRect = footer.getBoundingClientRect();
+            const overlap = Math.max(0, window.innerHeight - footerRect.top);
+            setFooterOffset(baseOffset + overlap);
+        };
+
+        updateFooterOffset();
+        window.addEventListener('scroll', updateFooterOffset, { passive: true });
+        window.addEventListener('resize', updateFooterOffset);
+
+        return () => {
+            window.removeEventListener('scroll', updateFooterOffset);
+            window.removeEventListener('resize', updateFooterOffset);
+        };
+    }, []);
 
     useEffect(() => {
         if (!isAuthenticated || !open) return;
@@ -293,15 +319,44 @@ const ContractChatWidget = () => {
     };
 
     const clearHistory = async () => {
-        if (!selectedContractId || isAsking) return;
+        if (!selectedContractId || isAsking || messages.length === 0) return;
+
+        setIsClearConfirmOpen(true);
+    };
+
+    const confirmClearHistory = async () => {
+        if (!selectedContractId || isAsking || messages.length === 0) {
+            setIsClearConfirmOpen(false);
+            return;
+        }
+
         try {
-            await clearContractChatHistory(selectedContractId);
+            const visibleMessagesCount = messages.length;
+            const result = await clearContractChatHistory(selectedContractId);
+            const apiClearedCount = Number(result?.clearedCount || 0);
+            const resolvedClearedCount = Number.isFinite(apiClearedCount) && apiClearedCount > 0
+                ? apiClearedCount
+                : visibleMessagesCount;
+            const successMessage = resolvedClearedCount > 0
+                ? t('chat.clearSuccessMessage').replace('{count}', String(resolvedClearedCount))
+                : t('chat.clearSuccessMessageGeneric');
             setMessages([]);
             setErrorKey('');
             setResponseHintKey('');
+            setIsClearConfirmOpen(false);
+            window.dispatchEvent(new CustomEvent('rg:toast', {
+                detail: {
+                    id: `chat-clear-${Date.now()}`,
+                    title: t('chat.clearSuccessTitle'),
+                    message: successMessage,
+                    createdAt: Date.now(),
+                    ttlMs: 3800,
+                },
+            }));
             trackChatEvent('chat_history_cleared', { contractId: selectedContractId });
         } catch {
             setErrorKey('clearFailed');
+            setIsClearConfirmOpen(false);
             trackChatEvent('chat_history_clear_failed', { contractId: selectedContractId });
         }
     };
@@ -365,7 +420,11 @@ const ContractChatWidget = () => {
     };
 
     return (
-        <div className={`chat-widget ${open ? 'open' : ''}`} dir={isRTL ? 'rtl' : 'ltr'}>
+        <div
+            className={`chat-widget ${open ? 'open' : ''}`}
+            dir={isRTL ? 'rtl' : 'ltr'}
+            style={{ '--chat-offset-bottom': `${footerOffset}px` }}
+        >
             {open && (
                 <section className="chat-widget-panel" aria-label={t('chat.title')}>
                     <header className="chat-widget-header">
@@ -409,7 +468,7 @@ const ContractChatWidget = () => {
                                 type="button"
                                 className="chat-widget-clear"
                                 onClick={clearHistory}
-                                disabled={!selectedContractId || isAsking}
+                                disabled={!selectedContractId || isAsking || messages.length === 0}
                                 title={t('chat.clear')}
                             >
                                 {t('chat.clearShort')}
@@ -531,12 +590,35 @@ const ContractChatWidget = () => {
                         </button>
                         {!isTipCollapsed && (
                             <p>
-                                {t('chat.tip')}
-                                <br />
-                                {t('chat.disclaimer')}
+                                {`${t('chat.tip')} ${t('chat.disclaimer')}`}
                             </p>
                         )}
                     </div>
+
+                    {isClearConfirmOpen && (
+                        <div className="chat-widget-confirm-overlay" role="dialog" aria-modal="true" aria-label={t('chat.clear')}>
+                            <div className="chat-widget-confirm-card">
+                                <h4>{t('chat.clear')}</h4>
+                                <p>{t('chat.clearConfirm')}</p>
+                                <div className="chat-widget-confirm-actions">
+                                    <button
+                                        type="button"
+                                        className="chat-widget-confirm-cancel"
+                                        onClick={() => setIsClearConfirmOpen(false)}
+                                    >
+                                        {t('common.cancel')}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="chat-widget-confirm-danger"
+                                        onClick={confirmClearHistory}
+                                    >
+                                        {t('chat.clearShort')}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </section>
             )}
 

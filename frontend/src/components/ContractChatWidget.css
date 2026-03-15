@@ -22,6 +22,10 @@
   --chat-hint-text: #64748b;
   --chat-field-text: #334155;
   --chat-field-placeholder: #64748b;
+  --chat-select-bg: linear-gradient(180deg, #f3fcfa 0%, #e6f7f3 100%);
+  --chat-select-border: #8ad6c2;
+  --chat-select-arrow: #047857;
+  --chat-select-shadow: rgba(15, 23, 42, 0.06);
   --chat-radius-sm: 8px;
   --chat-radius-md: 12px;
   --chat-radius-lg: 16px;
@@ -30,8 +34,9 @@
   --chat-shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.15);
   position: fixed;
   inset-inline-end: 24px;
-  bottom: 24px;
+  bottom: var(--chat-offset-bottom, 24px);
   z-index: 1150;
+  transition: bottom 180ms ease;
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', 'Segoe UI', 'Roboto', sans-serif;
 }
 
@@ -147,12 +152,24 @@
 }
 
 .chat-widget-contract-picker select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
   width: 100%;
-  border: 1px solid var(--chat-border-soft);
+  border: 1px solid var(--chat-select-border);
   border-radius: var(--chat-radius-md);
-  background: #f8fafc;
+  background:
+    linear-gradient(45deg, transparent 50%, var(--chat-select-arrow) 50%) calc(100% - 16px) calc(50% - 3px) / 6px 6px no-repeat,
+    linear-gradient(135deg, var(--chat-select-arrow) 50%, transparent 50%) calc(100% - 11px) calc(50% - 3px) / 6px 6px no-repeat,
+    var(--chat-select-bg);
   color: var(--chat-field-text);
-  padding: 9px 10px;
+  padding: 10px 34px 10px 11px;
+  background-color: #dcf6ef;
+  box-shadow: inset 0 1px 0 var(--chat-select-shadow);
+}
+
+.chat-widget-contract-picker select:hover {
+  border-color: #3cbf98;
 }
 
 .chat-widget-contract-picker select option {
@@ -293,6 +310,7 @@
   margin-inline-end: auto;
   background: var(--chat-assistant-bg);
   color: var(--chat-assistant-text);
+  border-color: color-mix(in oklab, var(--chat-assistant-text) 24%, var(--chat-border-soft));
 }
 
 .chat-widget-quick-prompts {
@@ -521,7 +539,7 @@
 
 .chat-widget-tip {
   margin: 0;
-  padding: 4px 12px 10px;
+  padding: 4px 12px 8px;
   color: var(--chat-hint-text);
   font-size: 12px;
   background: #ffffff;
@@ -530,10 +548,14 @@
 
 .chat-widget-tip p {
   margin: 8px 0 0;
+  width: 100%;
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.4;
 }
 
 .chat-widget-tip.collapsed {
-  padding-bottom: 8px;
+  padding: 2px 12px 4px;
 }
 
 .chat-widget-tip-toggle {
@@ -556,6 +578,75 @@
   box-shadow: 0 0 0 3px color-mix(in oklab, var(--chat-success) 30%, transparent);
 }
 
+.chat-widget-confirm-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(8, 15, 28, 0.42);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 30;
+  padding: 18px;
+}
+
+.chat-widget-confirm-card {
+  width: min(330px, 100%);
+  border-radius: 14px;
+  border: 1px solid color-mix(in oklab, var(--chat-border-soft) 72%, transparent);
+  background: var(--chat-bg-card);
+  box-shadow: 0 18px 32px rgba(15, 23, 42, 0.28);
+  padding: 14px;
+}
+
+.chat-widget-confirm-card h4 {
+  margin: 0;
+  font-size: 16px;
+  color: var(--chat-field-text);
+}
+
+.chat-widget-confirm-card p {
+  margin: 8px 0 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--chat-hint-text);
+}
+
+.chat-widget-confirm-actions {
+  margin-top: 14px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.chat-widget-confirm-actions button {
+  border-radius: 10px;
+  padding: 7px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.chat-widget-confirm-cancel {
+  border: 1px solid var(--chat-border-soft);
+  background: transparent;
+  color: var(--chat-field-text);
+}
+
+.chat-widget-confirm-cancel:hover {
+  background: color-mix(in oklab, var(--chat-bg-page) 55%, transparent);
+}
+
+.chat-widget-confirm-danger {
+  border: 1px solid #dc2626;
+  background: #ef4444;
+  color: #fff;
+}
+
+.chat-widget-confirm-danger:hover {
+  background: #dc2626;
+}
+
 [data-theme="dark"] .chat-widget {
   --chat-primary: #10b981;
   --chat-primary-hover: #34d399;
@@ -564,9 +655,10 @@
   --chat-bg-card: #162031;
   --chat-bg-inset: #243447;
   --chat-border-soft: #2b3b4c;
-  --chat-user-bg: #047857;
-  --chat-assistant-bg: #134e3d;
-  --chat-assistant-text: #d1fae5;
+  --chat-user-bg: #0d7f61;
+  --chat-user-text: #f8fffc;
+  --chat-assistant-bg: #1a2638;
+  --chat-assistant-text: #e2ecf7;
   --chat-chip-border: #315b50;
   --chat-chip-text: #a7f3d0;
   --chat-prompt-bg: #15403a;
@@ -576,6 +668,10 @@
   --chat-hint-text: #94a3b8;
   --chat-field-text: #dbe7f3;
   --chat-field-placeholder: #94a3b8;
+  --chat-select-bg: linear-gradient(180deg, #123449 0%, #0f2b3f 100%);
+  --chat-select-border: #2cbca4;
+  --chat-select-arrow: #9af5df;
+  --chat-select-shadow: rgba(13, 23, 36, 0.6);
 }
 
 [data-theme="dark"] .chat-widget-panel {
@@ -610,11 +706,34 @@
   color: #dbe7f3;
 }
 
+[data-theme="dark"] .chat-widget-header p {
+  color: #f3fffb;
+  font-weight: 600;
+}
+
+[data-theme="dark"] .chat-widget-scope {
+  color: #ddfff4;
+  font-weight: 500;
+}
+
 [data-theme="dark"] .chat-widget-contract-picker select,
 [data-theme="dark"] .chat-widget-input-row textarea,
 [data-theme="dark"] .chat-msg-copy {
   background: #1f2b3d;
   border-color: #33465f;
+}
+
+[data-theme="dark"] .chat-widget-contract-picker select {
+  border-color: var(--chat-select-border);
+  background:
+    linear-gradient(45deg, transparent 50%, var(--chat-select-arrow) 50%) calc(100% - 16px) calc(50% - 3px) / 6px 6px no-repeat,
+    linear-gradient(135deg, var(--chat-select-arrow) 50%, transparent 50%) calc(100% - 11px) calc(50% - 3px) / 6px 6px no-repeat,
+    var(--chat-select-bg);
+  background-color: #11445a;
+}
+
+[data-theme="dark"] .chat-widget-contract-picker select:hover {
+  border-color: #4ee1c3;
 }
 
 [data-theme="dark"] .chat-widget-contract-picker select,
@@ -654,6 +773,15 @@
   border-color: #36506d;
 }
 
+[data-theme="dark"] .chat-msg.assistant {
+  border-color: #4d6786;
+}
+
+[data-theme="dark"] .chat-msg.user {
+  border-color: rgba(124, 241, 200, 0.5);
+  box-shadow: 0 5px 14px rgba(2, 20, 16, 0.5);
+}
+
 [data-theme="dark"] .chat-widget-prompt-chip {
   background: #1a2638;
 }
@@ -679,6 +807,24 @@
 
 [data-theme="dark"] .chat-widget-hint button:hover {
   background: #1b4f57;
+}
+
+[data-theme="dark"] .chat-widget-confirm-card {
+  border-color: #35516d;
+  background: #18263a;
+}
+
+[data-theme="dark"] .chat-widget-confirm-card h4 {
+  color: #e9f4ff;
+}
+
+[data-theme="dark"] .chat-widget-confirm-card p {
+  color: #b8cadd;
+}
+
+[data-theme="dark"] .chat-widget-confirm-cancel {
+  border-color: #3a516e;
+  color: #dbe7f3;
 }
 
 @keyframes chat-typing-dot {
@@ -710,7 +856,6 @@
 @media (max-width: 768px) {
   .chat-widget {
     inset-inline-end: 2.5vw;
-    bottom: 12px;
   }
 
   .chat-widget-panel {
