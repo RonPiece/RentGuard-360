@@ -35,6 +35,7 @@ import AdminLayout from './pages/AdminLayout';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminUsers from './pages/AdminUsers';
 import AdminAnalytics from './pages/AdminAnalytics';
+import AdminStripeInsights from './pages/AdminStripeInsights';
 import LandingPage from './pages/LandingPageNew';
 import Footer from './components/Footer';
 import { SubscriptionProvider, useSubscription } from './contexts/SubscriptionContext';
@@ -111,7 +112,7 @@ const Navigation = () => {
     { path: '/dashboard', label: t('nav.dashboard') },
     { path: '/upload', label: t('nav.upload') },
     { path: '/contracts', label: t('nav.contracts') },
-    { path: '/pricing', label: t('nav.pricing') },
+    ...(!isAdmin ? [{ path: '/pricing', label: t('nav.pricing') }] : []),
     ...(isAdmin ? [{ path: '/admin', label: t('nav.admin') }] : []),
   ];
 
@@ -145,17 +146,24 @@ const Navigation = () => {
         {/* Right Side - Scan Badge, Language Toggle, Theme Toggle & Profile */}
         <div className="nav-right">
           {/* Scan Credits Badge */}
-          {hasSubscription && (
+          {(hasSubscription || isAdmin) && (
             <button
               className="scan-badge"
-              onClick={() => navigate('/pricing')}
-              title={isUnlimited ? t('nav.unlimited') : `${scansRemaining} ${t('nav.scansLeft')}`}
+              onClick={() => navigate(isAdmin ? '/admin/stripe' : '/pricing')}
+              title={(isAdmin || isUnlimited) ? t('nav.unlimited') : `${scansRemaining} ${t('nav.scansLeft')}`}
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <circle cx="11" cy="11" r="8" />
                 <path d="M21 21l-4.35-4.35" />
               </svg>
-              <span>{isUnlimited ? '∞' : scansRemaining}</span>
+              {(isAdmin || isUnlimited) ? (
+                <span className="scan-badge-unlimited">
+                  <span className="scan-badge-infinity">∞</span>
+                  <span className="scan-badge-label">UNLIMITED</span>
+                </span>
+              ) : (
+                <span>{scansRemaining}</span>
+              )}
             </button>
           )}
           <LanguageToggle />
@@ -230,7 +238,7 @@ const Navigation = () => {
 };
 
 function App() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, isAdmin } = useAuth();
   const location = useLocation();
   const [toast, setToast] = useState(() => {
     try {
@@ -346,8 +354,8 @@ function App() {
           <Route path="/analysis/:contractId" element={<ProtectedRoute><RequireActivePlanRoute><AnalysisPage /></RequireActivePlanRoute></ProtectedRoute>} />
           <Route path="/settings" element={<ProtectedRoute><RequireActivePlanRoute><SettingsPage /></RequireActivePlanRoute></ProtectedRoute>} />
           <Route path="/contact" element={<ProtectedRoute><RequireActivePlanRoute><ContactPage /></RequireActivePlanRoute></ProtectedRoute>} />
-          <Route path="/pricing" element={<ProtectedRoute><PricingPage /></ProtectedRoute>} />
-          <Route path="/checkout/:packageId" element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} />
+          <Route path="/pricing" element={<ProtectedRoute>{isAdmin ? <Navigate to="/dashboard" replace /> : <PricingPage />}</ProtectedRoute>} />
+          <Route path="/checkout/:packageId" element={<ProtectedRoute>{isAdmin ? <Navigate to="/dashboard" replace /> : <CheckoutPage />}</ProtectedRoute>} />
           <Route path="/payment-success" element={<ProtectedRoute><PaymentSuccessPage /></ProtectedRoute>} />
 
           {/* Admin routes with sidebar layout */}
@@ -355,6 +363,7 @@ function App() {
             <Route index element={<AdminDashboard />} />
             <Route path="users" element={<AdminUsers />} />
             <Route path="analytics" element={<AdminAnalytics />} />
+            <Route path="stripe" element={<AdminStripeInsights />} />
           </Route>
 
           <Route path="*" element={<Navigate to={isAuthenticated ? "/dashboard" : "/"} replace />} />

@@ -154,6 +154,14 @@ export const deductScan = async (userId) => {
     }, true);
 };
 
+/**
+ * Get admin Stripe + SQL billing insights.
+ * GET /api/payments/admin-stats
+ */
+export const getAdminStripeStats = async () => {
+    return stripeApiCall('/api/payments/admin-stats', {}, true);
+};
+
 export default {
     getPackages,
     getPackageById,
@@ -162,4 +170,5 @@ export default {
     getSubscription,
     getTransactions,
     deductScan,
+    getAdminStripeStats,
 };

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using System.Data.SqlClient;
 using Stripe;
 using StripePaymentAPI.Models;
 using StripePaymentAPI.Repositories;
@@ -88,6 +89,21 @@ namespace StripePaymentAPI.Controllers
             }
 
             if (!string.Equals(callerUserId, requestedUserId, StringComparison.OrdinalIgnoreCase))
+            {
+                return Forbid();
+            }
+
+            return null;
+        }
+
+        private IActionResult EnsureAdminAccess()
+        {
+            if (!User?.Identity?.IsAuthenticated ?? true)
+            {
+                return Unauthorized(new { error = "Authentication required" });
+            }
+
+            if (!IsAdminCaller())
             {
                 return Forbid();
             }
@@ -368,6 +384,19 @@ namespace StripePaymentAPI.Controllers
 
                 UserSubscription subscription = _repository.GetSubscriptionByUserId(userId);
 
+                if (subscription == null && IsAdminCaller())
+                {
+                    return Ok(new
+                    {
+                        UserId = userId,
+                        PackageId = 0,
+                        packageName = "Admin",
+                        ScansRemaining = -1,
+                        isUnlimited = true,
+                        UpdatedAt = DateTime.UtcNow
+                    });
+                }
+
                 if (subscription == null)
                 {
                     return NotFound(new { error = $"No subscription found for user {userId}" });
@@ -438,6 +467,7 @@ namespace StripePaymentAPI.Controllers
         /// Called by the Python Lambda (or React) before processing a contract scan.
         /// </summary>
         [HttpPost("deduct")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult DeductScan([FromBody] DeductRequest request)
@@ -449,14 +479,20 @@ namespace StripePaymentAPI.Controllers
                     return BadRequest(new { error = "UserId is required" });
                 }
 
-                // Allow trusted backend-to-backend call from GetUploadUrl Lambda.
-                if (!IsInternalApiCall())
+                IActionResult accessResult = ValidateUserAccess(request.UserId);
+                if (accessResult != null)
                 {
-                    IActionResult accessResult = ValidateUserAccess(request.UserId);
-                    if (accessResult != null)
+                    return accessResult;
+                }
+
+                if (IsAdminCaller())
+                {
+                    return Ok(new
                     {
-                        return accessResult;
-                    }
+                        message = "Admin user has unlimited scans",
+                        scansRemaining = -1,
+                        isUnlimited = true
+                    });
                 }
 
                 bool success = _repository.DeductScan(request.UserId);
@@ -478,6 +514,364 @@ namespace StripePaymentAPI.Controllers
                     message = "Scan credit deducted successfully",
                     scansRemaining = sub?.ScansRemaining ?? 0,
                     isUnlimited = sub?.ScansRemaining == -1
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+        }
+
+        [HttpPost("deduct-internal")]
+        [AllowAnonymous]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public IActionResult DeductScanInternal([FromBody] DeductRequest request)
+        {
+            try
+            {
+                if (!IsInternalApiCall())
+                {
+                    return Forbid();
+                }
+
+                if (request == null || string.IsNullOrWhiteSpace(request.UserId))
+                {
+                    return BadRequest(new { error = "UserId is required" });
+                }
+
+                bool success = _repository.DeductScan(request.UserId);
+                if (!success)
+                {
+                    return BadRequest(new
+                    {
+                        error = "No scans remaining. Please upgrade your package.",
+                        scansRemaining = 0
+                    });
+                }
+
+                UserSubscription sub = _repository.GetSubscriptionByUserId(request.UserId);
+                return Ok(new
+                {
+                    message = "Scan credit deducted successfully",
+                    scansRemaining = sub?.ScansRemaining ?? 0,
+                    isUnlimited = sub?.ScansRemaining == -1
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+        }
+
+        // =====================================================================
+        // DELETE api/payments/subscription?userId=xxx
+        // Removes active SQL subscription row (admin/internal only)
+        // =====================================================================
+
+        [HttpDelete("subscription")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public IActionResult DeleteSubscription([FromQuery] string userId)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(userId))
+                {
+                    return BadRequest(new { error = "userId is required" });
+                }
+
+                bool isInternal = IsInternalApiCall();
+                if (!isInternal && !IsAdminCaller())
+                {
+                    return Forbid();
+                }
+
+                bool deleted = _repository.DeleteSubscriptionByUserId(userId);
+                return Ok(new
+                {
+                    success = true,
+                    deleted
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+        }
+
+        [HttpGet("admin-stats")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public IActionResult GetAdminStripeStats()
+        {
+            try
+            {
+                IActionResult adminAccess = EnsureAdminAccess();
+                if (adminAccess != null)
+                {
+                    return adminAccess;
+                }
+
+                decimal totalRevenue = 0m;
+                int totalTransactions = 0;
+                int successfulTransactions = 0;
+                int failedTransactions = 0;
+                int activeSubscribers = 0;
+                decimal avgOrderValue = 0m;
+                List<object> bundleBreakdown = new List<object>();
+                List<object> recentTransactions = new List<object>();
+
+                string connStr = _configuration.GetConnectionString("PaymentsDB");
+                if (!string.IsNullOrWhiteSpace(connStr))
+                {
+                    using (SqlConnection connection = new SqlConnection(connStr))
+                    {
+                        connection.Open();
+
+                        string overviewSql = @"
+SELECT
+    COUNT(*) AS TotalTransactions,
+    SUM(CASE WHEN Status = 'succeeded' THEN 1 ELSE 0 END) AS SuccessfulTransactions,
+    SUM(CASE WHEN Status = 'failed' THEN 1 ELSE 0 END) AS FailedTransactions,
+    ISNULL(SUM(CASE WHEN Status = 'succeeded' THEN Amount ELSE 0 END), 0) AS TotalRevenue,
+    ISNULL(AVG(CASE WHEN Status = 'succeeded' THEN Amount END), 0) AS AvgOrderValue
+FROM Transactions;
+SELECT COUNT(*) AS ActiveSubscribers FROM UserSubscriptions;";
+
+                        using (SqlCommand cmd = new SqlCommand(overviewSql, connection))
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                totalTransactions = Convert.ToInt32(reader["TotalTransactions"]);
+                                successfulTransactions = Convert.ToInt32(reader["SuccessfulTransactions"]);
+                                failedTransactions = Convert.ToInt32(reader["FailedTransactions"]);
+                                totalRevenue = Convert.ToDecimal(reader["TotalRevenue"]);
+                                avgOrderValue = Convert.ToDecimal(reader["AvgOrderValue"]);
+                            }
+
+                            if (reader.NextResult() && reader.Read())
+                            {
+                                activeSubscribers = Convert.ToInt32(reader["ActiveSubscribers"]);
+                            }
+                        }
+
+                        string bundlesSql = @"
+SELECT p.Name, COUNT(*) AS SubscriberCount
+FROM UserSubscriptions s
+JOIN Packages p ON p.Id = s.PackageId
+GROUP BY p.Name
+ORDER BY SubscriberCount DESC;";
+                        using (SqlCommand cmdBundles = new SqlCommand(bundlesSql, connection))
+                        using (SqlDataReader bundlesReader = cmdBundles.ExecuteReader())
+                        {
+                            while (bundlesReader.Read())
+                            {
+                                bundleBreakdown.Add(new
+                                {
+                                    name = Convert.ToString(bundlesReader["Name"]),
+                                    count = Convert.ToInt32(bundlesReader["SubscriberCount"])
+                                });
+                            }
+                        }
+
+                        string recentSql = @"
+SELECT TOP 8 t.UserId, p.Name AS BundleName, t.Amount, t.Currency, t.Status, t.CreatedAt
+FROM Transactions t
+JOIN Packages p ON p.Id = t.PackageId
+ORDER BY t.CreatedAt DESC;";
+                        using (SqlCommand cmdRecent = new SqlCommand(recentSql, connection))
+                        using (SqlDataReader recentReader = cmdRecent.ExecuteReader())
+                        {
+                            while (recentReader.Read())
+                            {
+                                recentTransactions.Add(new
+                                {
+                                    userId = Convert.ToString(recentReader["UserId"]),
+                                    bundleName = Convert.ToString(recentReader["BundleName"]),
+                                    amount = Convert.ToDecimal(recentReader["Amount"]),
+                                    currency = Convert.ToString(recentReader["Currency"]),
+                                    status = Convert.ToString(recentReader["Status"]),
+                                    createdAt = Convert.ToDateTime(recentReader["CreatedAt"]).ToString("o")
+                                });
+                            }
+                        }
+                    }
+                }
+
+                var stripeSummary = new
+                {
+                    availableBalance = 0m,
+                    pendingBalance = 0m,
+                    chargesLast30Days = 0,
+                    successfulChargesLast30Days = 0,
+                    failedChargesLast30Days = 0,
+                    refundedChargesLast30Days = 0,
+                    refundedAmountLast30Days = 0m,
+                    disputeCountLast30Days = 0,
+                    paymentIntentsLast30Days = 0,
+                    accountCountry = "N/A",
+                    defaultCurrency = "N/A",
+                    chargesEnabled = false,
+                    payoutsEnabled = false,
+                    paymentMethodBreakdown = new List<object>(),
+                    countryBreakdown = new List<object>(),
+                    currencyBreakdown = new List<object>(),
+                    error = string.Empty
+                };
+
+                try
+                {
+                    DateRangeOptions last30Days = new DateRangeOptions
+                    {
+                        GreaterThanOrEqual = DateTime.UtcNow.AddDays(-30)
+                    };
+
+                    Balance balance = new BalanceService().Get();
+                    decimal available = balance.Available?.Sum(b => b.Amount) / 100m ?? 0m;
+                    decimal pending = balance.Pending?.Sum(b => b.Amount) / 100m ?? 0m;
+
+                    ChargeListOptions chargeOptions = new ChargeListOptions
+                    {
+                        Created = last30Days,
+                        Limit = 100
+                    };
+                    List<Charge> charges = new ChargeService().ListAutoPaging(chargeOptions).Take(500).ToList();
+                    int successfulCharges = charges.Count(c => c.Paid && !string.Equals(c.Status, "failed", StringComparison.OrdinalIgnoreCase));
+                    int failedCharges = charges.Count(c => string.Equals(c.Status, "failed", StringComparison.OrdinalIgnoreCase));
+                    int refundedCharges = charges.Count(c => c.Refunded);
+                    decimal refundedAmount = charges
+                        .Where(c => c.Refunded)
+                        .Sum(c => Convert.ToDecimal(c.AmountRefunded)) / 100m;
+
+                    Dictionary<string, int> paymentMethodCounts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+                    Dictionary<string, (int count, decimal revenue)> countryStats = new Dictionary<string, (int, decimal)>(StringComparer.OrdinalIgnoreCase);
+                    Dictionary<string, decimal> currencyStats = new Dictionary<string, decimal>(StringComparer.OrdinalIgnoreCase);
+
+                    foreach (Charge charge in charges)
+                    {
+                        string paymentType = charge.PaymentMethodDetails?.Type ?? "unknown";
+                        if (!paymentMethodCounts.ContainsKey(paymentType))
+                        {
+                            paymentMethodCounts[paymentType] = 0;
+                        }
+                        paymentMethodCounts[paymentType]++;
+
+                        string country = charge.BillingDetails?.Address?.Country;
+                        if (string.IsNullOrWhiteSpace(country))
+                        {
+                            country = "Unknown";
+                        }
+
+                        decimal chargeRevenue = Convert.ToDecimal(charge.Amount) / 100m;
+                        if (!countryStats.ContainsKey(country))
+                        {
+                            countryStats[country] = (0, 0m);
+                        }
+                        countryStats[country] = (countryStats[country].count + 1, countryStats[country].revenue + chargeRevenue);
+
+                        string currency = (charge.Currency ?? "n/a").ToUpper();
+                        if (!currencyStats.ContainsKey(currency))
+                        {
+                            currencyStats[currency] = 0m;
+                        }
+                        currencyStats[currency] += chargeRevenue;
+                    }
+
+                    List<object> paymentMethodBreakdown = paymentMethodCounts
+                        .OrderByDescending(kv => kv.Value)
+                        .Select(kv => (object)new { method = kv.Key, count = kv.Value })
+                        .ToList();
+
+                    List<object> countryBreakdown = countryStats
+                        .OrderByDescending(kv => kv.Value.count)
+                        .Take(12)
+                        .Select(kv => (object)new { country = kv.Key.ToUpper(), count = kv.Value.count, revenue = kv.Value.revenue })
+                        .ToList();
+
+                    List<object> currencyBreakdown = currencyStats
+                        .OrderByDescending(kv => kv.Value)
+                        .Select(kv => (object)new { currency = kv.Key, amount = kv.Value })
+                        .ToList();
+
+                    DisputeListOptions disputeOptions = new DisputeListOptions
+                    {
+                        Created = last30Days,
+                        Limit = 100
+                    };
+                    int disputes = new DisputeService().ListAutoPaging(disputeOptions).Take(500).Count();
+
+                    PaymentIntentListOptions piOptions = new PaymentIntentListOptions
+                    {
+                        Created = last30Days,
+                        Limit = 100
+                    };
+                    int intents = new PaymentIntentService().ListAutoPaging(piOptions).Take(500).Count();
+
+                    stripeSummary = new
+                    {
+                        availableBalance = available,
+                        pendingBalance = pending,
+                        chargesLast30Days = charges.Count,
+                        successfulChargesLast30Days = successfulCharges,
+                        failedChargesLast30Days = failedCharges,
+                        refundedChargesLast30Days = refundedCharges,
+                        refundedAmountLast30Days = refundedAmount,
+                        disputeCountLast30Days = disputes,
+                        paymentIntentsLast30Days = intents,
+                        accountCountry = "N/A",
+                        defaultCurrency = balance.Available?.FirstOrDefault()?.Currency?.ToUpper() ?? "N/A",
+                        chargesEnabled = true,
+                        payoutsEnabled = true,
+                        paymentMethodBreakdown,
+                        countryBreakdown,
+                        currencyBreakdown,
+                        error = string.Empty
+                    };
+                }
+                catch (Exception stripeEx)
+                {
+                    stripeSummary = new
+                    {
+                        availableBalance = 0m,
+                        pendingBalance = 0m,
+                        chargesLast30Days = 0,
+                        successfulChargesLast30Days = 0,
+                        failedChargesLast30Days = 0,
+                        refundedChargesLast30Days = 0,
+                        refundedAmountLast30Days = 0m,
+                        disputeCountLast30Days = 0,
+                        paymentIntentsLast30Days = 0,
+                        accountCountry = "N/A",
+                        defaultCurrency = "N/A",
+                        chargesEnabled = false,
+                        payoutsEnabled = false,
+                        paymentMethodBreakdown = new List<object>(),
+                        countryBreakdown = new List<object>(),
+                        currencyBreakdown = new List<object>(),
+                        error = stripeEx.Message
+                    };
+                }
+
+                return Ok(new
+                {
+                    sql = new
+                    {
+                        totalTransactions,
+                        successfulTransactions,
+                        failedTransactions,
+                        totalRevenue,
+                        avgOrderValue,
+                        activeSubscribers,
+                        bundleBreakdown,
+                        recentTransactions
+                    },
+                    stripe = stripeSummary,
+                    generatedAt = DateTime.UtcNow.ToString("o")
                 });
             }
             catch (Exception ex)

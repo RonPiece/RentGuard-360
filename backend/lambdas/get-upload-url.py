@@ -62,6 +62,27 @@ CORS_HEADERS = {
 }
 
 
+def user_in_admin_group(raw_groups):
+    """Safely check whether Cognito groups include exactly 'Admins'."""
+    if isinstance(raw_groups, list):
+        return any(str(g).strip() == 'Admins' for g in raw_groups)
+
+    groups_text = str(raw_groups or '').strip()
+    if not groups_text:
+        return False
+
+    try:
+        parsed = json.loads(groups_text)
+        if isinstance(parsed, list):
+            return any(str(g).strip() == 'Admins' for g in parsed)
+    except Exception:
+        pass
+
+    normalized = groups_text.replace('[', '').replace(']', '').replace('"', '')
+    parts = [p.strip() for p in normalized.split(',') if p.strip()]
+    return 'Admins' in parts
+
+
 def deduct_scan_for_user(user_id):
     """
     Ask payment API to atomically deduct one scan credit.
@@ -76,7 +97,7 @@ def deduct_scan_for_user(user_id):
     if not STRIPE_API_URL:
         raise RuntimeError('STRIPE_API_URL environment variable is not set')
 
-    endpoint = f"{STRIPE_API_URL}/api/payments/deduct"
+    endpoint = f"{STRIPE_API_URL}/api/payments/deduct-internal"
     payload = json.dumps({'userId': user_id}).encode('utf-8')
     request_headers = {
         'Accept': 'application/json',
@@ -148,9 +169,11 @@ def lambda_handler(event, context):
         
         # 2. Extract userId from Cognito authorizer claims
         user_id = 'anonymous'
+        groups_value = ''
         try:
             claims = event.get('requestContext', {}).get('authorizer', {}).get('claims', {})
             user_id = claims.get('sub') or claims.get('cognito:username') or claims.get('email', 'anonymous')
+            groups_value = str(claims.get('cognito:groups', ''))
             print(f"Extracted userId: {user_id}")
         except Exception as e:
             print(f"Warning: Could not extract userId from claims: {e}")
@@ -163,31 +186,35 @@ def lambda_handler(event, context):
                 'body': json.dumps({'error': 'Authentication required'})
             }
 
-        try:
-            allowed, reason = deduct_scan_for_user(user_id)
-            if not allowed:
+        is_admin = user_in_admin_group(groups_value)
+        if not is_admin:
+            try:
+                allowed, reason = deduct_scan_for_user(user_id)
+                if not allowed:
+                    return {
+                        'statusCode': 403,
+                        'headers': CORS_HEADERS,
+                        'body': json.dumps({
+                            'error': reason,
+                            'code': 'NO_ACTIVE_PLAN_OR_SCANS'
+                        })
+                    }
+            except RuntimeError as e:
+                print(f"Configuration error: {e}")
                 return {
-                    'statusCode': 403,
+                    'statusCode': 500,
                     'headers': CORS_HEADERS,
-                    'body': json.dumps({
-                        'error': reason,
-                        'code': 'NO_ACTIVE_PLAN_OR_SCANS'
-                    })
+                    'body': json.dumps({'error': 'Subscription service is not configured'})
                 }
-        except RuntimeError as e:
-            print(f"Configuration error: {e}")
-            return {
-                'statusCode': 500,
-                'headers': CORS_HEADERS,
-                'body': json.dumps({'error': 'Subscription service is not configured'})
-            }
-        except Exception as e:
-            print(f"Failed to deduct scan for user {user_id}: {e}")
-            return {
-                'statusCode': 503,
-                'headers': CORS_HEADERS,
-                'body': json.dumps({'error': 'Could not validate subscription status. Please try again.'})
-            }
+            except Exception as e:
+                print(f"Failed to deduct scan for user {user_id}: {e}")
+                return {
+                    'statusCode': 503,
+                    'headers': CORS_HEADERS,
+                    'body': json.dumps({'error': 'Could not validate subscription status. Please try again.'})
+                }
+        else:
+            print(f"Admin user {user_id} detected - skipping scan deduction")
         
         # 4. Create unique contract ID and file key
         contract_id = str(uuid.uuid4())

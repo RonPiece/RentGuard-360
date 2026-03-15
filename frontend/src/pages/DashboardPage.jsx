@@ -30,7 +30,7 @@ import { Shield, Zap, BarChart3, Lightbulb, Cloud } from 'lucide-react';
 import './DashboardPage.css';
 
 const DashboardPage = () => {
-    const { userAttributes, user } = useAuth();
+    const { userAttributes, user, isAdmin } = useAuth();
     const { t, isRTL } = useLanguage();
     const { packageName, scansRemaining, isUnlimited, hasSubscription } = useSubscription();
     const [stats, setStats] = useState({
@@ -208,30 +208,31 @@ const DashboardPage = () => {
                             </Link>
                         </Card>
 
-                        {/* My Plan Card */}
-                        <Card variant="elevated" padding="lg" className="action-card action-card-inset animate-slideUp" style={{ animationDelay: '600ms' }}>
-                            <div className="action-icon-wrapper">
-                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                                    <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" />
-                                </svg>
-                            </div>
-                            <h3>{t('subscription.myPlan')}</h3>
-                            {hasSubscription ? (
-                                <p>
-                                    {packageName} — {isUnlimited
-                                        ? t('subscription.unlimited')
-                                        : `${scansRemaining} ${t('subscription.scansRemaining')}`
-                                    }
-                                </p>
-                            ) : (
-                                <p>{t('subscription.noPlan')}</p>
-                            )}
-                            <Link to="/pricing">
-                                <Button variant="secondary" fullWidth>
-                                    {hasSubscription ? t('subscription.upgrade') : t('subscription.choosePlan')}
-                                </Button>
-                            </Link>
-                        </Card>
+                        {!isAdmin && (
+                            <Card variant="elevated" padding="lg" className="action-card action-card-inset animate-slideUp" style={{ animationDelay: '600ms' }}>
+                                <div className="action-icon-wrapper">
+                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                                        <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" />
+                                    </svg>
+                                </div>
+                                <h3>{t('subscription.myPlan')}</h3>
+                                {hasSubscription ? (
+                                    <p>
+                                        {packageName} — {isUnlimited
+                                            ? t('subscription.unlimited')
+                                            : `${scansRemaining} ${t('subscription.scansRemaining')}`
+                                        }
+                                    </p>
+                                ) : (
+                                    <p>{t('subscription.noPlan')}</p>
+                                )}
+                                <Link to="/pricing">
+                                    <Button variant="secondary" fullWidth>
+                                        {hasSubscription ? t('subscription.upgrade') : t('subscription.choosePlan')}
+                                    </Button>
+                                </Link>
+                            </Card>
+                        )}
                     </div>
                 </section>
             </div>
