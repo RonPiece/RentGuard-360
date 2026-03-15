@@ -79,3 +79,5 @@ backend/StripePaymentAPI/publish/
 
 # C# secrets (never commit API keys!)
 backend/StripePaymentAPI/appsettings.json
+# Publish output
+backend/StripePaymentAPI/out/

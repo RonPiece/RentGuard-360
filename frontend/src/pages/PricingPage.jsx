@@ -177,7 +177,7 @@ const PricingPage = () => {
 
                     {currentPlan && (
                         <div className="current-plan-banner">
-                            <span className="current-plan-label">{isRTL ? 'רכישה אחרונה' : 'Last Purchase'}</span>
+                            <span className="current-plan-label">{isRTL ? 'חבילה אחרונה' : 'Last Bundle'}</span>
                             <span className="current-plan-name">{currentPlan}</span>
                             <span className="current-plan-scans">
                                 {getLastPurchaseDateTime()}

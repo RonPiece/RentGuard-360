@@ -32,7 +32,7 @@ import './UploadPage.css';
 const UploadPage = () => {
     const { t, isRTL } = useLanguage();
     const navigate = useNavigate();
-    const { scansRemaining, isUnlimited, hasSubscription, deductScan } = useSubscription();
+    const { scansRemaining, isUnlimited, hasSubscription, refreshSubscription } = useSubscription();
     const [file, setFile] = useState(null);
     const [isDragging, setIsDragging] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
@@ -149,6 +149,12 @@ const UploadPage = () => {
     const handleUpload = async () => {
         if (!file || !termsAccepted) return;
 
+        // Users without an active plan cannot upload contracts.
+        if (!hasSubscription) {
+            setError(t('subscription.noActivePlanMessage'));
+            return;
+        }
+
         // Check if user has scans remaining
         if (hasSubscription && !isUnlimited && scansRemaining <= 0) {
             setError(t('subscription.noScansMessage'));
@@ -160,22 +166,14 @@ const UploadPage = () => {
         setError('');
 
         try {
-            // Deduct scan credit before uploading (if user has a subscription)
-            if (hasSubscription) {
-                const deductResult = await deductScan();
-                if (!deductResult.success) {
-                    setError(deductResult.error || t('subscription.noScansMessage'));
-                    setIsUploading(false);
-                    return;
-                }
-            }
-
             const result = await uploadFile(file, setUploadProgress, {
                 propertyAddress: metadata.propertyAddress,
                 landlordName: metadata.landlordName,
                 customFileName: customFileName.trim() || file.name.replace(/\.pdf$/i, ''),
                 termsAccepted: true,
             });
+
+            await refreshSubscription();
 
             setUploadedContractId(result.contractId || '');
             setUploadSuccess(true);
@@ -211,6 +209,21 @@ const UploadPage = () => {
                 <div className="upload-header animate-fadeIn">
                     <h1>{t('upload.title')}</h1>
                     <p>{t('upload.subtitle')}</p>
+
+                    {/* No active plan warning */}
+                    {!hasSubscription && (
+                        <Card variant="glass" padding="md" className="no-scans-banner animate-slideUp">
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)', justifyContent: 'space-between', flexWrap: 'wrap' }}>
+                                <div>
+                                    <h3 style={{ color: 'var(--accent-warning)', marginBottom: '4px' }}>{t('subscription.noActivePlan')}</h3>
+                                    <p style={{ fontSize: 'var(--font-size-sm)', margin: 0 }}>{t('subscription.noActivePlanMessage')}</p>
+                                </div>
+                                <Button variant="primary" onClick={() => navigate('/pricing')}>
+                                    {t('subscription.choosePlan')}
+                                </Button>
+                            </div>
+                        </Card>
+                    )}
 
                     {/* No scans warning */}
                     {hasSubscription && !isUnlimited && scansRemaining <= 0 && (
@@ -368,7 +381,7 @@ const UploadPage = () => {
                                 fullWidth
                                 onClick={handleUpload}
                                 className="upload-button animate-slideUp"
-                                disabled={!termsAccepted}
+                                disabled={!termsAccepted || !hasSubscription || (!isUnlimited && scansRemaining <= 0)}
                             >
                                 {t('upload.uploadBtn')}
                             </Button>

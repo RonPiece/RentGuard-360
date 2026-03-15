@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 using Stripe;
 using StripePaymentAPI.Models;
 using StripePaymentAPI.Repositories;
@@ -27,6 +29,72 @@ namespace StripePaymentAPI.Controllers
             _configuration = configuration;
         }
 
+        private string GetAuthenticatedUserId()
+        {
+            return User.FindFirstValue("sub")
+                ?? User.FindFirstValue(ClaimTypes.NameIdentifier)
+                ?? User.FindFirstValue("cognito:username")
+                ?? User.FindFirstValue(ClaimTypes.Email);
+        }
+
+        private bool IsAdminCaller()
+        {
+            IEnumerable<Claim> groupClaims = User.Claims.Where(c =>
+                c.Type == "cognito:groups" || c.Type == ClaimTypes.Role);
+
+            foreach (Claim claim in groupClaims)
+            {
+                string normalized = claim.Value
+                    .Replace("[", string.Empty)
+                    .Replace("]", string.Empty)
+                    .Replace("\"", string.Empty);
+
+                string[] parts = normalized.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                if (parts.Any(p => string.Equals(p, "Admins", StringComparison.OrdinalIgnoreCase)))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private bool IsInternalApiCall()
+        {
+            string configuredKey = _configuration["InternalApi:Key"];
+            if (string.IsNullOrWhiteSpace(configuredKey)) return false;
+
+            string providedKey = Request.Headers["X-Internal-Api-Key"].FirstOrDefault();
+            return !string.IsNullOrWhiteSpace(providedKey) &&
+                   string.Equals(providedKey, configuredKey, StringComparison.Ordinal);
+        }
+
+        private IActionResult ValidateUserAccess(string requestedUserId)
+        {
+            if (string.IsNullOrWhiteSpace(requestedUserId))
+            {
+                return BadRequest(new { error = "userId is required" });
+            }
+
+            string callerUserId = GetAuthenticatedUserId();
+            if (string.IsNullOrWhiteSpace(callerUserId))
+            {
+                return Unauthorized(new { error = "Authenticated user context is missing" });
+            }
+
+            if (IsAdminCaller())
+            {
+                return null;
+            }
+
+            if (!string.Equals(callerUserId, requestedUserId, StringComparison.OrdinalIgnoreCase))
+            {
+                return Forbid();
+            }
+
+            return null;
+        }
+
         // =====================================================================
         // POST api/payments/create-intent
         // Creates a Stripe PaymentIntent for a package purchase
@@ -38,6 +106,7 @@ namespace StripePaymentAPI.Controllers
         /// Returns the client_secret that React uses with Stripe Elements.
         /// </summary>
         [HttpPost("create-intent")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -63,6 +132,12 @@ namespace StripePaymentAPI.Controllers
 
                         if (!string.IsNullOrEmpty(uId) && pId > 0)
                         {
+                            IActionResult confirmAccessResult = ValidateUserAccess(uId);
+                            if (confirmAccessResult != null)
+                            {
+                                return confirmAccessResult;
+                            }
+
                             var confPackage = _repository.GetPackageById(pId);
                             if (confPackage != null)
                             {
@@ -85,6 +160,12 @@ namespace StripePaymentAPI.Controllers
                 }
                 // -----------------------------------------------------------------------------------
 
+                IActionResult createAccessResult = ValidateUserAccess(request.UserId);
+                if (createAccessResult != null)
+                {
+                    return createAccessResult;
+                }
+
                 // Get the package from the database
                 Models.Package package = _repository.GetPackageById(request.PackageId);
 
@@ -93,9 +174,20 @@ namespace StripePaymentAPI.Controllers
                     return NotFound(new { error = $"Package with ID {request.PackageId} was not found" });
                 }
 
+                UserSubscription existingSubscriptionForPurchase = _repository.GetSubscriptionByUserId(request.UserId);
+
                 // Free package - no payment needed
                 if (package.Price <= 0)
                 {
+                    // Enforce one-time free activation per user.
+                    if (existingSubscriptionForPurchase != null)
+                    {
+                        return BadRequest(new
+                        {
+                            error = "Free package can only be activated once per user"
+                        });
+                    }
+
                     // Directly assign the free package to the user
                     _repository.UpsertSubscription(request.UserId, package.Id, package.ScanLimit);
 
@@ -162,6 +254,7 @@ namespace StripePaymentAPI.Controllers
         /// On successful payment: saves transaction + updates user subscription.
         /// </summary>
         [HttpPost("webhook")]
+        [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> StripeWebhook()
@@ -259,6 +352,7 @@ namespace StripePaymentAPI.Controllers
         /// The userId is passed as a query string parameter.
         /// </summary>
         [HttpGet("subscription")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -266,9 +360,10 @@ namespace StripePaymentAPI.Controllers
         {
             try
             {
-                if (string.IsNullOrEmpty(userId))
+                IActionResult accessResult = ValidateUserAccess(userId);
+                if (accessResult != null)
                 {
-                    return BadRequest(new { error = "userId query parameter is required" });
+                    return accessResult;
                 }
 
                 UserSubscription subscription = _repository.GetSubscriptionByUserId(userId);
@@ -306,15 +401,17 @@ namespace StripePaymentAPI.Controllers
         /// Retrieves all transactions for a specific user.
         /// </summary>
         [HttpGet("transactions")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult GetTransactions([FromQuery] string userId)
         {
             try
             {
-                if (string.IsNullOrEmpty(userId))
+                IActionResult accessResult = ValidateUserAccess(userId);
+                if (accessResult != null)
                 {
-                    return BadRequest(new { error = "userId query parameter is required" });
+                    return accessResult;
                 }
 
                 List<Models.Transaction> transactions = _repository.GetTransactionsByUserId(userId);
@@ -350,6 +447,16 @@ namespace StripePaymentAPI.Controllers
                 if (request == null || string.IsNullOrEmpty(request.UserId))
                 {
                     return BadRequest(new { error = "UserId is required" });
+                }
+
+                // Allow trusted backend-to-backend call from GetUploadUrl Lambda.
+                if (!IsInternalApiCall())
+                {
+                    IActionResult accessResult = ValidateUserAccess(request.UserId);
+                    if (accessResult != null)
+                    {
+                        return accessResult;
+                    }
                 }
 
                 bool success = _repository.DeductScan(request.UserId);

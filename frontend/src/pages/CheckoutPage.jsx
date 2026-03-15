@@ -300,8 +300,8 @@ const CheckoutPage = () => {
                                     </p>
                                     <p className="order-note-text">
                                         {isRTL
-                                            ? `גישה לתכנית ${pkg?.name ? t(`pricing.${pkg.name.toLowerCase()}`) : ''}, כולל ${pkg?.scanLimit} סריקות.`
-                                            : `Access to the ${pkg?.name || ''} plan, including ${pkg?.scanLimit} contract scans.`}
+                                            ? `גישה לחבילת ${pkg?.name ? t(`pricing.${pkg.name.toLowerCase()}`) : ''}, כולל ${pkg?.scanLimit} סריקות.`
+                                            : `Access to the ${pkg?.name || ''} bundle, including ${pkg?.scanLimit} contract scans.`}
                                     </p>
                                     <ul className="order-trust-list">
                                         <li>

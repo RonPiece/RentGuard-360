@@ -1,5 +1,7 @@
 using Stripe;
 using StripePaymentAPI.Repositories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 // =============================================================================
 // PROGRAM.CS - Server Configuration
@@ -15,6 +17,55 @@ var builder = WebApplication.CreateBuilder(args);
 //    This prevents tight coupling (no 'new' inside the controller).
 // =============================================================================
 builder.Services.AddScoped<IPaymentRepository, SQLPaymentRepository>();
+
+// =============================================================================
+// 1.5 AUTHENTICATION (COGNITO JWT)
+//    Protects payment/subscription endpoints from userId spoofing.
+// =============================================================================
+var cognitoUserPoolId = builder.Configuration["Cognito:UserPoolId"];
+var cognitoRegion = builder.Configuration["Cognito:Region"];
+var cognitoAppClientId = builder.Configuration["Cognito:AppClientId"];
+
+if (string.IsNullOrWhiteSpace(cognitoUserPoolId) ||
+    string.IsNullOrWhiteSpace(cognitoRegion) ||
+    string.IsNullOrWhiteSpace(cognitoAppClientId))
+{
+    throw new InvalidOperationException("Missing Cognito configuration. Set Cognito:UserPoolId, Cognito:Region, and Cognito:AppClientId.");
+}
+
+var cognitoAuthority = $"https://cognito-idp.{cognitoRegion}.amazonaws.com/{cognitoUserPoolId}";
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.Authority = cognitoAuthority;
+        options.RequireHttpsMetadata = true;
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                string authHeader = context.Request.Headers["Authorization"].FirstOrDefault();
+                if (!string.IsNullOrWhiteSpace(authHeader) &&
+                    !authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+                {
+                    context.Token = authHeader;
+                }
+
+                return Task.CompletedTask;
+            }
+        };
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = cognitoAuthority,
+            ValidateAudience = true,
+            ValidAudience = cognitoAppClientId,
+            ValidateLifetime = true,
+            NameClaimType = "sub"
+        };
+    });
+
+builder.Services.AddAuthorization();
 
 // =============================================================================
 // 2. STRIPE CONFIGURATION
@@ -84,6 +135,9 @@ app.UseSwaggerUI();
 
 // Enable CORS - MUST be before MapControllers
 app.UseCors("corspolicy");
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 // Map controller routes (e.g., api/packages, api/payments)
 app.MapControllers();

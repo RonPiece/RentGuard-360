@@ -41,6 +41,53 @@ namespace StripePaymentAPI
             // DI - same as Program.cs
             services.AddScoped<Repositories.IPaymentRepository, Repositories.SQLPaymentRepository>();
 
+            // Cognito JWT auth - same security model as Program.cs
+            var cognitoUserPoolId = Configuration["Cognito:UserPoolId"];
+            var cognitoRegion = Configuration["Cognito:Region"];
+            var cognitoAppClientId = Configuration["Cognito:AppClientId"];
+
+            if (string.IsNullOrWhiteSpace(cognitoUserPoolId) ||
+                string.IsNullOrWhiteSpace(cognitoRegion) ||
+                string.IsNullOrWhiteSpace(cognitoAppClientId))
+            {
+                throw new InvalidOperationException("Missing Cognito configuration. Set Cognito:UserPoolId, Cognito:Region, and Cognito:AppClientId.");
+            }
+
+            var cognitoAuthority = $"https://cognito-idp.{cognitoRegion}.amazonaws.com/{cognitoUserPoolId}";
+
+            services
+                .AddAuthentication(Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.Authority = cognitoAuthority;
+                    options.RequireHttpsMetadata = true;
+                    options.Events = new Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            string authHeader = context.Request.Headers["Authorization"].FirstOrDefault();
+                            if (!string.IsNullOrWhiteSpace(authHeader) &&
+                                !authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+                            {
+                                context.Token = authHeader;
+                            }
+
+                            return Task.CompletedTask;
+                        }
+                    };
+                    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidIssuer = cognitoAuthority,
+                        ValidateAudience = true,
+                        ValidAudience = cognitoAppClientId,
+                        ValidateLifetime = true,
+                        NameClaimType = "sub"
+                    };
+                });
+
+            services.AddAuthorization();
+
             // Stripe
             Stripe.StripeConfiguration.ApiKey = Configuration["Stripe:SecretKey"];
 
@@ -67,6 +114,8 @@ namespace StripePaymentAPI
             app.UseSwaggerUI();
             app.UseCors("corspolicy");
             app.UseRouting();
+            app.UseAuthentication();
+            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

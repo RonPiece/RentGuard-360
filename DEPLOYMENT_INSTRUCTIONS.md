@@ -62,6 +62,8 @@ Set these values:
 - `SENDER_EMAIL` (must be verified in AWS SES)
 - `STACK_NAME="RentGuard360"` (or `"RentGuard360-Test"` for testing)
 - `NAME_SUFFIX=""` (or `"-test"` for testing)
+- `STRIPE_API_URL` (base URL of StripePaymentAPI, e.g. `https://xxxx.execute-api.us-east-1.amazonaws.com/prod`)
+- `PAYMENT_INTERNAL_API_KEY` (strong random shared secret used between GetUploadUrl Lambda and Payment API)
 
 Safety note: Deploying the main stack (`STACK_NAME="RentGuard360"` with empty `NAME_SUFFIX`) requires typing `DEPLOY_MAIN` when prompted.
 
@@ -73,6 +75,20 @@ chmod +x deploy-cloudshell.sh
 ```
 
 At the end of a successful run, the script prints the key CloudFormation outputs required for the frontend (API URL, user pool IDs, buckets, CloudFront domain).
+
+## Payment API hardening (required)
+
+The Payment API now enforces Cognito JWT user identity and blocks userId spoofing.
+
+Set these configuration values for `backend/StripePaymentAPI` deployment environment:
+- `Cognito__UserPoolId=<CloudFormation UserPoolId output>`
+- `Cognito__Region=us-east-1`
+- `Cognito__AppClientId=<CloudFormation UserPoolClientId output>`
+- `InternalApi__Key=<same value as PAYMENT_INTERNAL_API_KEY>`
+
+Notes:
+- The `deduct` endpoint allows either valid JWT user auth (matching userId) or `X-Internal-Api-Key` for trusted backend calls.
+- `get-upload-url` Lambda now deducts one scan server-side before returning upload URL.
 
 ## Frontend deployment (build from the Git repo)
 Clone the repository locally, build the frontend, then upload to the stack's frontend bucket.
