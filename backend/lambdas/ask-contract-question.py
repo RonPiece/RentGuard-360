@@ -156,6 +156,7 @@ def _build_prompt(question, summary, issues, top_clauses, full_text, use_full_te
         "If the answer is not supported by the context, say explicitly that it is not found. "
         "Keep answers practical and concise. "
         "When possible, cite short clause snippets in quotes. "
+        "Output plain text only. Do not use Markdown syntax such as **bold**, headings (#), or horizontal rules. "
         "Do not provide definitive legal advice; provide contract interpretation guidance."
     )
 
@@ -202,8 +203,14 @@ def _persist_history(user_id, contract_id, question, answer, meta):
                 "meta": meta or {},
             }
         )
+
+        return {
+            "messageId": message_id,
+            "createdAt": now,
+        }
     except Exception as exc:
         print(f"history persist warning: {exc}")
+        return None
 
 
 def lambda_handler(event, context):
@@ -266,7 +273,7 @@ def lambda_handler(event, context):
             "modelId": MODEL_ID,
         }
 
-        _persist_history(
+        persisted = _persist_history(
             user_id=user_id,
             contract_id=contract_id,
             question=question,
@@ -274,11 +281,16 @@ def lambda_handler(event, context):
             meta=response_meta,
         )
 
+        created_at = (persisted or {}).get("createdAt")
+        message_id = (persisted or {}).get("messageId")
+
         return _response(
             200,
             {
                 "answer": answer,
                 "meta": response_meta,
+                "createdAt": created_at,
+                "messageId": message_id,
             },
         )
 

@@ -258,6 +258,10 @@ function App() {
 
   // Check if current route is an admin page
   const isAdminRoute = location.pathname.startsWith('/admin');
+  const isContractChatRoute =
+    location.pathname === '/dashboard' ||
+    location.pathname === '/contracts' ||
+    location.pathname.startsWith('/analysis/');
 
   useEffect(() => {
     const handleToast = (event) => {
@@ -373,8 +377,8 @@ function App() {
       {/* Hide footer on admin pages */}
       {isAuthenticated && !isAdminRoute && <Footer />}
 
-      {/* Global contract mini-chat for authenticated users */}
-      {isAuthenticated && <ContractChatWidget />}
+      {/* Show contract chat only in contract-relevant user flows */}
+      {isAuthenticated && !isAdminRoute && isContractChatRoute && <ContractChatWidget />}
     </div>
   );
 }
