@@ -76,21 +76,28 @@ StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
 
 // =============================================================================
 // 2.5 DB MIGRATION / HOTFIX
-//    Update 'unlimited' packages to have exactly 15 scans, as the unlimited
-//    option is being replaced entirely.
+//    Startup data updates are disabled by default and can be enabled explicitly
+//    for controlled one-off rollouts.
 // =============================================================================
-try
+var runStartupPackageHotfix = string.Equals(
+    builder.Configuration["StartupHotfix:EnablePackageScanLimitUpdate"]
+        ?? Environment.GetEnvironmentVariable("RUN_STARTUP_PACKAGE_HOTFIX"),
+    "true",
+    StringComparison.OrdinalIgnoreCase);
+
+if (runStartupPackageHotfix)
 {
-    using (var connection = new System.Data.SqlClient.SqlConnection(builder.Configuration.GetConnectionString("PaymentsDB")))
+    try
     {
+        using var connection = new System.Data.SqlClient.SqlConnection(builder.Configuration.GetConnectionString("PaymentsDB"));
         connection.Open();
-        var cmd = new System.Data.SqlClient.SqlCommand("UPDATE Packages SET ScanLimit = 15 WHERE ScanLimit = -1", connection);
+        using var cmd = new System.Data.SqlClient.SqlCommand("UPDATE Packages SET ScanLimit = 15 WHERE ScanLimit = -1", connection);
         cmd.ExecuteNonQuery();
     }
-}
-catch (Exception ex)
-{
-    Console.WriteLine("Warning: DB update failed on startup: " + ex.Message);
+    catch (Exception ex)
+    {
+        Console.WriteLine("Warning: DB update failed on startup: " + ex.Message);
+    }
 }
 
 // =============================================================================
@@ -117,6 +124,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("corspolicy", policy =>
     {
+        var isDevelopment = builder.Environment.IsDevelopment();
         string rawAllowedOrigins = builder.Configuration["Cors:AllowedOrigins"]
             ?? Environment.GetEnvironmentVariable("CORS_ALLOWED_ORIGINS")
             ?? string.Empty;
@@ -127,10 +135,25 @@ builder.Services.AddCors(options =>
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .ToArray();
 
-        // Safe rollout: keep existing behavior unless explicit origins are configured.
+        // In development, allow local frontend origins without extra config.
+        // In non-development environments, explicit origins are mandatory.
         if (allowedOrigins.Length == 0)
         {
-            policy.AllowAnyOrigin();
+            if (isDevelopment)
+            {
+                policy.WithOrigins(
+                    "http://localhost:5173",
+                    "http://127.0.0.1:5173",
+                    "http://localhost:4173",
+                    "http://127.0.0.1:4173",
+                    "http://localhost:3000",
+                    "http://127.0.0.1:3000");
+            }
+            else
+            {
+                throw new InvalidOperationException(
+                    "CORS is not configured. Set Cors:AllowedOrigins or CORS_ALLOWED_ORIGINS for non-development environments.");
+            }
         }
         else
         {

@@ -14,7 +14,7 @@
  * NOTE: Admin pages use AdminLayout with sidebar (no main nav)
  * ============================================
  */
-import React, { useState, useRef, useEffect } from 'react';
+import React, { lazy, Suspense, useState, useRef, useEffect } from 'react';
 import { Routes, Route, Navigate, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
 import { LanguageProvider, useLanguage } from './contexts/LanguageContext';
@@ -23,23 +23,23 @@ import LanguageToggle from './components/LanguageToggle';
 import Button from './components/Button';
 import { Shield } from 'lucide-react';
 import DashboardPage from './pages/DashboardPage';
-import UploadPage from './pages/UploadPage';
-import ContractsPage from './pages/ContractsPage';
-import AnalysisPage from './pages/AnalysisPage';
-import SettingsPage from './pages/SettingsPage';
-import ContactPage from './pages/ContactPage';
-import PricingPage from './pages/PricingPage';
-import CheckoutPage from './pages/CheckoutPage';
-import PaymentSuccessPage from './pages/PaymentSuccessPage';
-import AdminLayout from './pages/AdminLayout';
-import AdminDashboard from './pages/AdminDashboard';
-import AdminUsers from './pages/AdminUsers';
-import AdminAnalytics from './pages/AdminAnalytics';
-import AdminStripeInsights from './pages/AdminStripeInsights';
+const UploadPage = lazy(() => import('./pages/UploadPage'));
+const ContractsPage = lazy(() => import('./pages/ContractsPage'));
+const AnalysisPage = lazy(() => import('./pages/AnalysisPage'));
+const SettingsPage = lazy(() => import('./pages/SettingsPage'));
+const ContactPage = lazy(() => import('./pages/ContactPage'));
+const PricingPage = lazy(() => import('./pages/PricingPage'));
+const CheckoutPage = lazy(() => import('./pages/CheckoutPage'));
+const PaymentSuccessPage = lazy(() => import('./pages/PaymentSuccessPage'));
+const AdminLayout = lazy(() => import('./pages/AdminLayout'));
+const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
+const AdminUsers = lazy(() => import('./pages/AdminUsers'));
+const AdminAnalytics = lazy(() => import('./pages/AdminAnalytics'));
+const AdminStripeInsights = lazy(() => import('./pages/AdminStripeInsights'));
 import LandingPage from './pages/LandingPageNew';
 import Footer from './components/Footer';
 import { SubscriptionProvider, useSubscription } from './contexts/SubscriptionContext';
-import ContractChatWidget from './components/ContractChatWidget';
+const ContractChatWidget = lazy(() => import('./components/ContractChatWidget'));
 import './styles/design-system.css';
 import './App.css';
 
@@ -349,35 +349,48 @@ function App() {
       {isAuthenticated && !isAdminRoute && <Navigation />}
 
       <main className={`app-main ${isAdminRoute ? 'admin-page' : ''}`}>
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/dashboard" element={<ProtectedRoute><RequireActivePlanRoute><DashboardPage /></RequireActivePlanRoute></ProtectedRoute>} />
-          <Route path="/upload" element={<ProtectedRoute><RequireActivePlanRoute><UploadPage /></RequireActivePlanRoute></ProtectedRoute>} />
-          <Route path="/contracts" element={<ProtectedRoute><RequireActivePlanRoute><ContractsPage /></RequireActivePlanRoute></ProtectedRoute>} />
-          <Route path="/analysis/:contractId" element={<ProtectedRoute><RequireActivePlanRoute><AnalysisPage /></RequireActivePlanRoute></ProtectedRoute>} />
-          <Route path="/settings" element={<ProtectedRoute><RequireActivePlanRoute><SettingsPage /></RequireActivePlanRoute></ProtectedRoute>} />
-          <Route path="/contact" element={<ProtectedRoute><RequireActivePlanRoute><ContactPage /></RequireActivePlanRoute></ProtectedRoute>} />
-          <Route path="/pricing" element={<ProtectedRoute>{isAdmin ? <Navigate to="/dashboard" replace /> : <PricingPage />}</ProtectedRoute>} />
-          <Route path="/checkout/:packageId" element={<ProtectedRoute>{isAdmin ? <Navigate to="/dashboard" replace /> : <CheckoutPage />}</ProtectedRoute>} />
-          <Route path="/payment-success" element={<ProtectedRoute><PaymentSuccessPage /></ProtectedRoute>} />
+        <Suspense
+          fallback={
+            <div className="app-loading">
+              <div className="loading-spinner"></div>
+              <p>Loading...</p>
+            </div>
+          }
+        >
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/dashboard" element={<ProtectedRoute><RequireActivePlanRoute><DashboardPage /></RequireActivePlanRoute></ProtectedRoute>} />
+            <Route path="/upload" element={<ProtectedRoute><RequireActivePlanRoute><UploadPage /></RequireActivePlanRoute></ProtectedRoute>} />
+            <Route path="/contracts" element={<ProtectedRoute><RequireActivePlanRoute><ContractsPage /></RequireActivePlanRoute></ProtectedRoute>} />
+            <Route path="/analysis/:contractId" element={<ProtectedRoute><RequireActivePlanRoute><AnalysisPage /></RequireActivePlanRoute></ProtectedRoute>} />
+            <Route path="/settings" element={<ProtectedRoute><RequireActivePlanRoute><SettingsPage /></RequireActivePlanRoute></ProtectedRoute>} />
+            <Route path="/contact" element={<ProtectedRoute><RequireActivePlanRoute><ContactPage /></RequireActivePlanRoute></ProtectedRoute>} />
+            <Route path="/pricing" element={<ProtectedRoute>{isAdmin ? <Navigate to="/dashboard" replace /> : <PricingPage />}</ProtectedRoute>} />
+            <Route path="/checkout/:packageId" element={<ProtectedRoute>{isAdmin ? <Navigate to="/dashboard" replace /> : <CheckoutPage />}</ProtectedRoute>} />
+            <Route path="/payment-success" element={<ProtectedRoute><PaymentSuccessPage /></ProtectedRoute>} />
 
-          {/* Admin routes with sidebar layout */}
-          <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
-            <Route index element={<AdminDashboard />} />
-            <Route path="users" element={<AdminUsers />} />
-            <Route path="analytics" element={<AdminAnalytics />} />
-            <Route path="stripe" element={<AdminStripeInsights />} />
-          </Route>
+            {/* Admin routes with sidebar layout */}
+            <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="users" element={<AdminUsers />} />
+              <Route path="analytics" element={<AdminAnalytics />} />
+              <Route path="stripe" element={<AdminStripeInsights />} />
+            </Route>
 
-          <Route path="*" element={<Navigate to={isAuthenticated ? "/dashboard" : "/"} replace />} />
-        </Routes>
+            <Route path="*" element={<Navigate to={isAuthenticated ? "/dashboard" : "/"} replace />} />
+          </Routes>
+        </Suspense>
       </main>
 
       {/* Hide footer on admin pages */}
       {isAuthenticated && !isAdminRoute && <Footer />}
 
       {/* Show contract chat only in contract-relevant user flows */}
-      {isAuthenticated && !isAdminRoute && isContractChatRoute && <ContractChatWidget />}
+      {isAuthenticated && !isAdminRoute && isContractChatRoute && (
+        <Suspense fallback={null}>
+          <ContractChatWidget />
+        </Suspense>
+      )}
     </div>
   );
 }

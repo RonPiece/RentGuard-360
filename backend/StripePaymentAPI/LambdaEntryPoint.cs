@@ -101,8 +101,46 @@ namespace StripePaymentAPI
             {
                 options.AddPolicy("corspolicy", policy =>
                 {
-                    policy.AllowAnyOrigin()
-                          .AllowAnyHeader()
+                    var aspnetEnvironment = Configuration["ASPNETCORE_ENVIRONMENT"]
+                        ?? Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
+                        ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
+                        ?? string.Empty;
+                    var isDevelopment = string.Equals(aspnetEnvironment, "Development", StringComparison.OrdinalIgnoreCase);
+
+                    string rawAllowedOrigins = Configuration["Cors:AllowedOrigins"]
+                        ?? Environment.GetEnvironmentVariable("CORS_ALLOWED_ORIGINS")
+                        ?? string.Empty;
+
+                    string[] allowedOrigins = rawAllowedOrigins
+                        .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                        .Where(origin => !string.IsNullOrWhiteSpace(origin))
+                        .Distinct(StringComparer.OrdinalIgnoreCase)
+                        .ToArray();
+
+                    if (allowedOrigins.Length == 0)
+                    {
+                        if (isDevelopment)
+                        {
+                            policy.WithOrigins(
+                                "http://localhost:5173",
+                                "http://127.0.0.1:5173",
+                                "http://localhost:4173",
+                                "http://127.0.0.1:4173",
+                                "http://localhost:3000",
+                                "http://127.0.0.1:3000");
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException(
+                                "CORS is not configured. Set Cors:AllowedOrigins or CORS_ALLOWED_ORIGINS for non-development environments.");
+                        }
+                    }
+                    else
+                    {
+                        policy.WithOrigins(allowedOrigins);
+                    }
+
+                    policy.AllowAnyHeader()
                           .AllowAnyMethod();
                 });
             });
