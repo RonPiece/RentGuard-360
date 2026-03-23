@@ -1270,6 +1270,32 @@ Resources:
         IntegrationHttpMethod: POST
         Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${CreateShareLinkFunction.Arn}/invocations'
 
+  ContractsShareLinkGetMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref RestApi
+      ResourceId: !Ref ContractsShareLinkResource
+      HttpMethod: GET
+      AuthorizationType: COGNITO_USER_POOLS
+      AuthorizerId: !Ref CognitoAuthorizer
+      Integration:
+        Type: AWS_PROXY
+        IntegrationHttpMethod: POST
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${CreateShareLinkFunction.Arn}/invocations'
+
+  ContractsShareLinkDeleteMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref RestApi
+      ResourceId: !Ref ContractsShareLinkResource
+      HttpMethod: DELETE
+      AuthorizationType: COGNITO_USER_POOLS
+      AuthorizerId: !Ref CognitoAuthorizer
+      Integration:
+        Type: AWS_PROXY
+        IntegrationHttpMethod: POST
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${CreateShareLinkFunction.Arn}/invocations'
+
   ContractsShareLinkOptionsMethod:
     Type: AWS::ApiGateway::Method
     Properties:
@@ -1285,7 +1311,7 @@ Resources:
           - StatusCode: '200'
             ResponseParameters:
               method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization'"
-              method.response.header.Access-Control-Allow-Methods: "'POST,OPTIONS'"
+              method.response.header.Access-Control-Allow-Methods: "'GET,POST,DELETE,OPTIONS'"
               method.response.header.Access-Control-Allow-Origin: "'*'"
       MethodResponses:
         - StatusCode: '200'
@@ -1827,6 +1853,8 @@ Resources:
       - ContractsRenameMethod
       - ContractsSaveMethod
       - ContractsShareLinkMethod
+      - ContractsShareLinkGetMethod
+      - ContractsShareLinkDeleteMethod
       - ContractsShareLinkOptionsMethod
       - AnalysisGetMethod
       - SharedAnalysisGetMethod

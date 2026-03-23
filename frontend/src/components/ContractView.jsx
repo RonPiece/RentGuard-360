@@ -30,6 +30,7 @@
  * ============================================
  */
 import React, { useState, useMemo, useCallback, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
+import { ArrowDown, ArrowUp } from 'lucide-react';
 import { processContractClauses } from '../utils/contractTextProcessor';
 import { consultClause } from '../services/api';
 import { exportEditedContractWithSignatures, exportEditedContractWithSignaturesBlob } from '../services/ExportService';
@@ -647,7 +648,9 @@ const ContractView = forwardRef(({
                 onClick={isAtBottom ? scrollToTop : scrollToBottom}
                 title={isAtBottom ? 'גלול למעלה' : 'גלול לחתימות'}
             >
-                {isAtBottom ? '⬆️' : '⬇️'}
+                {isAtBottom
+                    ? <ArrowUp size={16} strokeWidth={2.4} aria-hidden="true" />
+                    : <ArrowDown size={16} strokeWidth={2.4} aria-hidden="true" />}
                 <span className="scroll-btn-label">
                     {isAtBottom ? 'למעלה' : 'לחתימות'}
                 </span>

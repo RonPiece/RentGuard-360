@@ -57,7 +57,7 @@
 
 .shared-retry-btn {
     border: none;
-    background: #0ea5e9;
+    background: var(--accent-primary);
     color: white;
     border-radius: 8px;
     padding: 10px 14px;

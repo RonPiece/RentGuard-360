@@ -85,6 +85,20 @@ def _hash_share_token(share_token):
     return hashlib.sha256(share_token.encode('utf-8')).hexdigest()
 
 
+def _disable_share_token(contract_id, owner_user_id):
+    """Best-effort cleanup for stale/expired share links."""
+    if not contract_id or not owner_user_id:
+        return
+    try:
+        contracts_table.update_item(
+            Key={'userId': owner_user_id, 'contractId': contract_id},
+            UpdateExpression='SET shareEnabled = :disabled REMOVE shareTokenHash, shareTokenExpiresAt, shareToken',
+            ExpressionAttributeValues={':disabled': False}
+        )
+    except Exception as exc:
+        print(f"Failed to disable expired share token: {str(exc)}")
+
+
 def _resolve_contract_id_from_share_token(share_token):
     if not share_token:
         return None, None, 'Missing share token'
@@ -105,6 +119,7 @@ def _resolve_contract_id_from_share_token(share_token):
 
     expires_at = int(match.get('shareTokenExpiresAt') or 0)
     if expires_at <= int(time.time()):
+        _disable_share_token(match.get('contractId'), match.get('userId'))
         return None, None, 'Share link has expired'
 
     return match.get('contractId'), match.get('userId'), None

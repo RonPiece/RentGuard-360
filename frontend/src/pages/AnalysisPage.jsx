@@ -26,7 +26,7 @@
  */
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, Link, useLocation } from 'react-router-dom';
-import { createShareLink, getAnalysis, saveEditedContract } from '../services/api';
+import { createShareLink, getAnalysis, getShareLink, revokeShareLink, saveEditedContract } from '../services/api';
 import { exportToWord, exportToPDF, exportEditedContract } from '../services/ExportService';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -74,7 +74,10 @@ const AnalysisPage = () => {
     const [isExporting, setIsExporting] = useState(false);
     const [isGeneratingShareLink, setIsGeneratingShareLink] = useState(false);
     const [isSharingLink, setIsSharingLink] = useState(false);
+    const [isRevokingShareLink, setIsRevokingShareLink] = useState(false);
     const [shareLink, setShareLink] = useState('');
+    const [shareLinkExpiresAt, setShareLinkExpiresAt] = useState(null);
+    const [isSharePanelVisible, setIsSharePanelVisible] = useState(true);
     const [exportNotice, setExportNotice] = useState(null);
     const [activeTab, setActiveTab] = useState('issues'); // 'issues' or 'contract'
     const [_editedClauses, setEditedClauses] = useState({});
@@ -86,7 +89,52 @@ const AnalysisPage = () => {
 
     // ContractView ref and edit state (for the export section)
     const contractViewRef = useRef(null);
+    const sharePanelRef = useRef(null);
     const [contractEditState, setContractEditState] = useState({ editedCount: 0, saveStatus: null });
+
+    const focusSharePanel = useCallback(() => {
+        setActiveTab('contract');
+        setIsSharePanelVisible(true);
+        requestAnimationFrame(() => {
+            sharePanelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        });
+    }, []);
+
+    const getShareCacheKey = useCallback((id) => `rentguard_share_link_${id}`, []);
+
+    const persistShareLink = useCallback((id, url, expiresAt) => {
+        if (!id || !url) return;
+        try {
+            localStorage.setItem(getShareCacheKey(id), JSON.stringify({
+                url,
+                expiresAt: expiresAt || null,
+            }));
+        } catch (error) {
+            console.warn('Failed to persist share link cache', error);
+        }
+    }, [getShareCacheKey]);
+
+    const clearShareLinkCache = useCallback((id) => {
+        if (!id) return;
+        try {
+            localStorage.removeItem(getShareCacheKey(id));
+        } catch (error) {
+            console.warn('Failed to clear share link cache', error);
+        }
+    }, [getShareCacheKey]);
+
+    const getShareButtonLabel = useCallback(() => {
+        if (isGeneratingShareLink) {
+            return isRTL ? 'יוצר קישור...' : 'Creating link...';
+        }
+        if (shareLink && isSharePanelVisible) {
+            return isRTL ? 'הסתר קישור שיתוף' : 'Hide shared link';
+        }
+        if (shareLink && !isSharePanelVisible) {
+            return isRTL ? 'הצג קישור שיתוף פעיל' : 'Show shared link';
+        }
+        return isRTL ? 'יצירת לינק שיתוף' : 'Create share link';
+    }, [isGeneratingShareLink, isRTL, isSharePanelVisible, shareLink]);
 
     const showExportNotice = useCallback((message) => {
         setExportNotice(message);
@@ -154,6 +202,18 @@ const AnalysisPage = () => {
             return;
         }
 
+        if (shareLink) {
+            if (isSharePanelVisible) {
+                setIsSharePanelVisible(false);
+                showExportNotice(isRTL ? 'פאנל השיתוף הוסתר' : 'Share panel hidden');
+            } else {
+                focusSharePanel();
+                showExportNotice(isRTL ? 'קישור שיתוף פעיל מוצג' : 'Active share link is shown');
+            }
+            setShowExportMenu(false);
+            return;
+        }
+
         setIsGeneratingShareLink(true);
         try {
             // Force-save latest local edits before creating the share token.
@@ -175,6 +235,10 @@ const AnalysisPage = () => {
 
             const url = `${window.location.origin}/shared/${encodeURIComponent(token)}`;
             setShareLink(url);
+            setShareLinkExpiresAt(shareResult?.expiresAt || null);
+            setIsSharePanelVisible(true);
+            persistShareLink(shareContractId, url, shareResult?.expiresAt || null);
+            focusSharePanel();
             showExportNotice(isRTL ? 'קישור שיתוף נוצר. אפשר להעתיק או לשתף מהפאנל.' : 'Share link created. Copy or share it from the panel.');
         } catch (err) {
             console.error('Failed to create share link', err);
@@ -183,7 +247,7 @@ const AnalysisPage = () => {
             setIsGeneratingShareLink(false);
             setShowExportMenu(false);
         }
-    }, [analysis?.contractId, contractId, isRTL, showExportNotice, userAttributes?.sub]);
+    }, [analysis?.contractId, contractId, focusSharePanel, isRTL, isSharePanelVisible, persistShareLink, shareLink, showExportNotice, userAttributes?.sub]);
 
     const handleManualCopyShareLink = useCallback(async () => {
         if (!shareLink) return;
@@ -224,6 +288,32 @@ const AnalysisPage = () => {
             setIsSharingLink(false);
         }
     }, [handleManualCopyShareLink, isRTL, shareLink, showExportNotice]);
+
+    const handleRevokeShareLink = useCallback(async () => {
+        const shareContractId = analysis?.contractId || contractId;
+        if (!shareContractId) {
+            showExportNotice(isRTL ? 'לא נמצא מזהה חוזה לשיתוף' : 'Missing contract id for sharing');
+            return;
+        }
+
+        setIsRevokingShareLink(true);
+        try {
+            await revokeShareLink(shareContractId);
+            setShareLink('');
+            setShareLinkExpiresAt(null);
+            setIsSharePanelVisible(false);
+            clearShareLinkCache(shareContractId);
+            showAppToast(
+                isRTL ? 'קישור השיתוף בוטל' : 'Share link revoked',
+                isRTL ? 'הקישור הישן כבר לא פעיל.' : 'The old link is no longer active.'
+            );
+        } catch (err) {
+            console.error('Failed to revoke share link', err);
+            showExportNotice(isRTL ? 'שגיאה בביטול קישור שיתוף' : 'Failed to revoke share link');
+        } finally {
+            setIsRevokingShareLink(false);
+        }
+    }, [analysis?.contractId, clearShareLinkCache, contractId, isRTL, showAppToast, showExportNotice]);
 
     const handleSaveToCloud = useCallback(async (clauses, fullEditedText) => {
         const userId = userAttributes?.sub || 'unknown-user';
@@ -318,8 +408,89 @@ const AnalysisPage = () => {
     }, [analysis]);
 
     useEffect(() => {
-        setShareLink('');
-    }, [analysis?.contractId, contractId]);
+        const contractForShare = analysis?.contractId || contractId;
+        if (!contractForShare) {
+            setShareLink('');
+            setShareLinkExpiresAt(null);
+            setIsSharePanelVisible(false);
+            return;
+        }
+
+        let hadCachedLink = false;
+
+        // Immediate UX: hydrate from local cache first.
+        try {
+            const cachedRaw = localStorage.getItem(getShareCacheKey(contractForShare));
+            if (cachedRaw) {
+                const cached = JSON.parse(cachedRaw);
+                const cachedExpiry = Number(cached?.expiresAt || 0);
+                if (cached?.url && (!cachedExpiry || cachedExpiry > (Date.now() / 1000))) {
+                    hadCachedLink = true;
+                    setShareLink(cached.url);
+                    setShareLinkExpiresAt(cached?.expiresAt || null);
+                    setIsSharePanelVisible(true);
+                } else {
+                    clearShareLinkCache(contractForShare);
+                }
+            }
+        } catch (error) {
+            console.warn('Failed to read share link cache', error);
+        }
+
+        let cancelled = false;
+
+        const loadExistingShareLink = async () => {
+            try {
+                const shareData = await getShareLink(contractForShare);
+                if (cancelled) return;
+
+                if (shareData?.active && shareData?.shareToken) {
+                    const url = `${window.location.origin}/shared/${encodeURIComponent(shareData.shareToken)}`;
+                    setShareLink(url);
+                    setShareLinkExpiresAt(shareData?.expiresAt || null);
+                    setIsSharePanelVisible(true);
+                    persistShareLink(contractForShare, url, shareData?.expiresAt || null);
+                } else {
+                    setShareLink('');
+                    setShareLinkExpiresAt(null);
+                    setIsSharePanelVisible(false);
+                    clearShareLinkCache(contractForShare);
+                }
+            } catch (err) {
+                if (cancelled) return;
+                console.warn('No active share link found', err);
+                // Keep cached link if available; otherwise clear visual state.
+                if (!hadCachedLink) {
+                    setShareLink('');
+                    setShareLinkExpiresAt(null);
+                    setIsSharePanelVisible(false);
+                }
+            }
+        };
+
+        loadExistingShareLink();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [analysis?.contractId, clearShareLinkCache, contractId, getShareCacheKey, persistShareLink]);
+
+    const getShareExpiryLabel = useCallback(() => {
+        if (!shareLinkExpiresAt) {
+            return isRTL ? 'בתוקף ל-7 ימים' : 'Valid for 7 days';
+        }
+
+        const secondsLeft = Math.floor(shareLinkExpiresAt - (Date.now() / 1000));
+        if (secondsLeft <= 0) {
+            return isRTL ? 'פג תוקף' : 'Expired';
+        }
+
+        const daysLeft = Math.ceil(secondsLeft / 86400);
+        if (isRTL) {
+            return `בתוקף לעוד ${daysLeft} ימים`;
+        }
+        return `Valid for ${daysLeft} more day${daysLeft === 1 ? '' : 's'}`;
+    }, [isRTL, shareLinkExpiresAt]);
 
 
 
@@ -379,11 +550,11 @@ const AnalysisPage = () => {
         <>
             <div className="analysis-page page-container" dir={isRTL ? 'rtl' : 'ltr'}>
                 <div className="analysis-header animate-fadeIn no-print">
+                    <h1>{t('analysis.title')}</h1>
                     <Link to="/contracts" className="back-button-premium">
                         {isRTL ? <span className="arrow">→</span> : <span className="arrow">←</span>}
                         {t('analysis.backToContracts')}
                     </Link>
-                    <h1>{t('analysis.title')}</h1>
                 </div>
 
                 <div className="analysis-layout">
@@ -495,9 +666,7 @@ const AnalysisPage = () => {
                                     <div className="export-menu-group-title">{isRTL ? 'שיתוף' : 'Share'}</div>
                                     <button onClick={handleCopyShareLink} disabled={isGeneratingShareLink}>
                                         <Share2 size={16} style={{ marginInlineEnd: '6px' }} />
-                                        {isGeneratingShareLink
-                                            ? (isRTL ? 'יוצר קישור...' : 'Creating link...')
-                                            : (isRTL ? 'יצירת לינק שיתוף' : 'Create share link')}
+                                        {getShareButtonLabel()}
                                     </button>
                                 </ActionMenu>
                             </div>
@@ -769,7 +938,7 @@ const AnalysisPage = () => {
                         {/* Export Section - Always visible when contract tab is active */}
                         {activeTab === 'contract' && result?.is_contract !== false && (
                             <div className="contract-export-bar no-print">
-                                <div className="export-primary-action" style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+                                <div className="export-primary-action export-primary-action-inline">
                                     <button className="export-btn-main" onClick={() => contractViewRef.current?.handleExport()}>
                                         <span className="export-btn-label">{isRTL ? 'ייצוא כקובץ docx (Word)' : 'Export to Word (.docx)'}</span>
                                     </button>
@@ -781,9 +950,7 @@ const AnalysisPage = () => {
                                     >
                                         <Share2 size={16} style={{ marginInlineEnd: '6px' }} />
                                         <span className="export-btn-label">
-                                            {isGeneratingShareLink
-                                                ? (isRTL ? 'יוצר קישור...' : 'Creating link...')
-                                                : (isRTL ? 'יצירת לינק שיתוף' : 'Create share link')}
+                                            {getShareButtonLabel()}
                                         </span>
                                     </button>
                                 </div>
@@ -812,11 +979,11 @@ const AnalysisPage = () => {
                             </div>
                         )}
 
-                        {activeTab === 'contract' && result?.is_contract !== false && shareLink && (
-                            <div className="share-link-panel no-print">
+                        {activeTab === 'contract' && result?.is_contract !== false && shareLink && isSharePanelVisible && (
+                            <div ref={sharePanelRef} className="share-link-panel no-print">
                                 <div className="share-link-panel-header">
                                     <div className="share-link-title">{isRTL ? 'קישור שיתוף מאובטח' : 'Secure share link'}</div>
-                                    <div className="share-link-expiry">{isRTL ? 'בתוקף ל-7 ימים' : 'Valid for 7 days'}</div>
+                                    <div className="share-link-expiry">{getShareExpiryLabel()}</div>
                                 </div>
 
                                 <div className="share-link-input-wrap">
@@ -838,7 +1005,7 @@ const AnalysisPage = () => {
                                     <button
                                         className="share-link-btn"
                                         onClick={handleShareLinkViaApps}
-                                        disabled={isSharingLink}
+                                        disabled={isSharingLink || isRevokingShareLink}
                                     >
                                         <Share2 size={15} />
                                         <span>
@@ -856,6 +1023,18 @@ const AnalysisPage = () => {
                                         <ExternalLink size={15} />
                                         <span>{isRTL ? 'פתח קישור' : 'Open link'}</span>
                                     </a>
+                                    <button
+                                        className="share-link-btn revoke share-link-btn-end"
+                                        onClick={handleRevokeShareLink}
+                                        disabled={isRevokingShareLink || isGeneratingShareLink}
+                                    >
+                                        <Trash2 size={15} />
+                                        <span>
+                                            {isRevokingShareLink
+                                                ? (isRTL ? 'מבטל קישור...' : 'Revoking...')
+                                                : (isRTL ? 'ביטול קישור' : 'Revoke link')}
+                                        </span>
+                                    </button>
                                 </div>
                             </div>
                         )}

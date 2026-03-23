@@ -38,6 +38,9 @@
 .analysis-header {
     max-width: 1400px;
     margin: 0 auto var(--space-md);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .analysis-header h1 {
@@ -485,8 +488,8 @@
    at the bottom of .analysis-main, always visible */
 .contract-export-bar {
     flex-shrink: 0;
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: minmax(320px, 1fr) auto minmax(160px, 190px);
     align-items: center;
     gap: 16px;
     width: 100%;
@@ -502,10 +505,10 @@
 .share-link-panel {
     margin-top: 10px;
     width: 100%;
-    border: 1px solid rgba(3, 105, 161, 0.25);
+    border: 1px solid rgba(5, 150, 105, 0.28);
     border-radius: var(--radius-md);
-    background: linear-gradient(145deg, rgba(14, 165, 233, 0.08) 0%, rgba(255, 255, 255, 0.8) 100%);
-    box-shadow: 0 10px 20px rgba(3, 105, 161, 0.08);
+    background: linear-gradient(145deg, rgba(236, 253, 245, 0.96) 0%, rgba(209, 250, 229, 0.7) 100%);
+    box-shadow: 0 10px 20px rgba(5, 150, 105, 0.1);
     padding: 14px;
     display: flex;
     flex-direction: column;
@@ -522,13 +525,13 @@
 .share-link-title {
     font-size: 14px;
     font-weight: 700;
-    color: #0c4a6e;
+    color: #065f46;
 }
 
 .share-link-expiry {
     font-size: 11px;
-    color: #075985;
-    background: rgba(14, 165, 233, 0.14);
+    color: #047857;
+    background: rgba(16, 185, 129, 0.16);
     border-radius: 999px;
     padding: 4px 10px;
 }
@@ -539,25 +542,26 @@
 
 .share-link-input {
     width: 100%;
-    border: 1px solid rgba(3, 105, 161, 0.25);
+    border: 1px solid rgba(5, 150, 105, 0.28);
     border-radius: 10px;
     padding: 10px 12px;
     font-size: 13px;
     color: #0f172a;
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(255, 255, 255, 0.92);
     direction: ltr;
 }
 
 .share-link-input:focus {
     outline: none;
-    border-color: #0ea5e9;
-    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
+    border-color: #10b981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
 }
 
 .share-link-actions {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
+    align-items: center;
 }
 
 .share-link-btn {
@@ -565,9 +569,9 @@
     align-items: center;
     justify-content: center;
     gap: 6px;
-    border: 1px solid rgba(3, 105, 161, 0.25);
+    border: 1px solid rgba(5, 150, 105, 0.28);
     background: rgba(255, 255, 255, 0.9);
-    color: #0c4a6e;
+    color: #065f46;
     border-radius: 10px;
     padding: 10px 12px;
     font-size: 13px;
@@ -579,8 +583,8 @@
 
 .share-link-btn:hover:not(:disabled) {
     transform: translateY(-1px);
-    background: rgba(224, 242, 254, 0.95);
-    border-color: rgba(2, 132, 199, 0.45);
+    background: rgba(236, 253, 245, 0.96);
+    border-color: rgba(5, 150, 105, 0.5);
 }
 
 .share-link-btn:disabled {
@@ -589,13 +593,30 @@
 }
 
 .share-link-btn.primary {
-    background: linear-gradient(135deg, #0369a1 0%, #0ea5e9 100%);
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
     color: #ffffff;
-    border-color: #0369a1;
+    border-color: #047857;
 }
 
 .share-link-btn.primary:hover:not(:disabled) {
-    background: linear-gradient(135deg, #075985 0%, #0284c7 100%);
+    background: linear-gradient(135deg, #047857 0%, #065f46 100%);
+}
+
+.share-link-btn.revoke {
+    background: linear-gradient(145deg, #fff7ed 0%, #fee2e2 100%);
+    color: #9f1239;
+    border: 1px solid #fda4af;
+    box-shadow: 0 4px 10px rgba(225, 29, 72, 0.12);
+}
+
+.share-link-btn.revoke:hover:not(:disabled) {
+    background: linear-gradient(145deg, #ffe4e6 0%, #fecdd3 100%);
+    border-color: #fb7185;
+    color: #881337;
+}
+
+.share-link-btn-end {
+    margin-left: auto;
 }
 
 .analysis-page .section-title {
@@ -720,6 +741,7 @@
     }
 
     .contract-export-bar {
+        display: flex;
         flex-direction: column;
         align-items: stretch;
     }
@@ -735,6 +757,10 @@
 
     .share-link-btn {
         width: 100%;
+    }
+
+    .share-link-btn-end {
+        margin-left: 0;
     }
 
     .meta-row {
@@ -781,7 +807,7 @@
     align-items: center;
     gap: 6px;
     padding: 6px 10px;
-    background: linear-gradient(135deg, #16a34a, #15803d);
+    background: var(--accent-primary);
     border: 1px solid rgba(22, 163, 74, 0.85);
     color: #ffffff;
     text-decoration: none;
@@ -790,6 +816,7 @@
     transition: all 0.2s ease;
     width: fit-content;
     border-radius: 8px;
+    margin-left: auto;
 }
 
 [data-theme="dark"] .back-button-premium {

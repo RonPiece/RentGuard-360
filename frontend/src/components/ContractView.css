@@ -63,7 +63,7 @@
         0 16px 48px rgba(0, 0, 0, 0.08);
     border-radius: var(--radius-lg);
     padding: 72px 80px;
-    font-family: 'David Libre', 'Noto Serif Hebrew', 'Times New Roman', Georgia, serif;
+    font-family: 'Calibri', 'Carlito', 'Segoe UI', 'Arial', 'Noto Sans Hebrew', sans-serif;
     line-height: 1.85;
     direction: rtl;
     text-align: right;
@@ -504,6 +504,13 @@
     gap: 6px;
 }
 
+.export-primary-action-inline {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 10px;
+}
+
 .export-btn-main {
     display: inline-flex;
     flex-direction: row;
@@ -562,13 +569,17 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    min-width: 140px;
+    min-width: 148px;
     justify-content: center;
+    white-space: nowrap;
 }
 
 .save-status-indicator {
     display: flex;
     align-items: center;
+    justify-content: flex-end;
+    min-width: 160px;
+    min-height: 40px;
 }
 
 .save-status.saving {
@@ -1051,4 +1062,12 @@
     .popup-cancel-btn {
         width: 100%;
     }
+}
+
+.scroll-nav-btn svg {
+    display: block;
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    stroke: currentColor;
 }

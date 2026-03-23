@@ -319,6 +319,25 @@ export const createShareLink = async (contractId, expiresInDays = 7) => {
 };
 
 /**
+ * Get active share link token for a contract if one exists and is not expired.
+ */
+export const getShareLink = async (contractId) => {
+    return apiCall(`/contracts/share-link?contractId=${encodeURIComponent(contractId)}`, {
+        method: 'GET',
+    });
+};
+
+/**
+ * Revoke an existing share link token for a contract.
+ */
+export const revokeShareLink = async (contractId) => {
+    return apiCall('/contracts/share-link', {
+        method: 'DELETE',
+        body: JSON.stringify({ contractId }),
+    });
+};
+
+/**
  * Get all contracts for a specific user
  * Returns empty array if no contracts or error
  */
