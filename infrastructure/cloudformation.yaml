@@ -33,6 +33,36 @@ Parameters:
     Description: Azure Document Intelligence API key
     NoEcho: true
 
+  GoogleClientId:
+    Type: String
+    Description: Google OAuth Client ID
+
+  GoogleClientSecret:
+    Type: String
+    Description: Google OAuth Client Secret
+    NoEcho: true
+
+  FacebookAppId:
+    Type: String
+    Description: Facebook App ID
+
+  FacebookAppSecret:
+    Type: String
+    Description: Facebook App Secret
+    NoEcho: true
+
+  CognitoHostedUIDomainPrefix:
+    Type: String
+    Description: Cognito Hosted UI domain prefix (must be unique per region)
+
+  OAuthRedirectUri:
+    Type: String
+    Description: OAuth redirect URI configured in Google/Facebook apps and Cognito
+
+  OAuthLogoutUri:
+    Type: String
+    Description: OAuth logout URI configured in Cognito app client
+
   SenderEmail:
     Type: String
     Default: rentguard360@gmail.com
@@ -274,12 +304,66 @@ Resources:
         PostConfirmation: !GetAtt AutoVerifySESFunction.Arn
         PostAuthentication: !GetAtt VerifySesOnLoginFunction.Arn
 
+  UserPoolGoogleIdentityProvider:
+    Type: AWS::Cognito::UserPoolIdentityProvider
+    Properties:
+      UserPoolId: !Ref UserPool
+      ProviderName: Google
+      ProviderType: Google
+      ProviderDetails:
+        client_id: !Ref GoogleClientId
+        client_secret: !Ref GoogleClientSecret
+        authorize_scopes: openid email profile
+      AttributeMapping:
+        email: email
+        name: name
+
+  UserPoolFacebookIdentityProvider:
+    Type: AWS::Cognito::UserPoolIdentityProvider
+    Properties:
+      UserPoolId: !Ref UserPool
+      ProviderName: Facebook
+      ProviderType: Facebook
+      ProviderDetails:
+        client_id: !Ref FacebookAppId
+        client_secret: !Ref FacebookAppSecret
+        authorize_scopes: email public_profile
+      AttributeMapping:
+        email: email
+        name: name
+
+  UserPoolDomain:
+    Type: AWS::Cognito::UserPoolDomain
+    Properties:
+      UserPoolId: !Ref UserPool
+      Domain: !Ref CognitoHostedUIDomainPrefix
+
   UserPoolClient:
     Type: AWS::Cognito::UserPoolClient
+    DependsOn:
+      - UserPoolGoogleIdentityProvider
+      - UserPoolFacebookIdentityProvider
+      - UserPoolDomain
     Properties:
       ClientName: !Sub '${ProjectName}-WebClient${NameSuffix}'
       UserPoolId: !Ref UserPool
       GenerateSecret: false
+      AllowedOAuthFlowsUserPoolClient: true
+      AllowedOAuthFlows:
+        - code
+      AllowedOAuthScopes:
+        - openid
+        - email
+        - profile
+        - aws.cognito.signin.user.admin
+      SupportedIdentityProviders:
+        - COGNITO
+        - Google
+        - Facebook
+      CallbackURLs:
+        - !Ref OAuthRedirectUri
+      LogoutURLs:
+        - !Ref OAuthLogoutUri
       ExplicitAuthFlows:
         - ALLOW_USER_PASSWORD_AUTH
         - ALLOW_REFRESH_TOKEN_AUTH

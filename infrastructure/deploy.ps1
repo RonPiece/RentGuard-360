@@ -23,6 +23,27 @@ param(
     [string]$AzureKey,
 
     [Parameter(Mandatory=$false)]
+    [string]$GoogleClientId,
+
+    [Parameter(Mandatory=$false)]
+    [string]$GoogleClientSecret,
+
+    [Parameter(Mandatory=$false)]
+    [string]$FacebookAppId,
+
+    [Parameter(Mandatory=$false)]
+    [string]$FacebookAppSecret,
+
+    [Parameter(Mandatory=$false)]
+    [string]$CognitoHostedUIDomainPrefix,
+
+    [Parameter(Mandatory=$false)]
+    [string]$OAuthRedirectUri,
+
+    [Parameter(Mandatory=$false)]
+    [string]$OAuthLogoutUri,
+
+    [Parameter(Mandatory=$false)]
     [string]$Email,
 
     [Parameter(Mandatory=$false)]
@@ -158,6 +179,13 @@ if (Test-Path -LiteralPath $ConfigFile) {
 
     if (-not $AzureEndpoint) { $AzureEndpoint = Get-EnvValue -Map $config -Key 'AZURE_DOC_ENDPOINT' }
     if (-not $AzureKey) { $AzureKey = Get-EnvValue -Map $config -Key 'AZURE_DOC_KEY' }
+    if (-not $GoogleClientId) { $GoogleClientId = Get-EnvValue -Map $config -Key 'GOOGLE_CLIENT_ID' }
+    if (-not $GoogleClientSecret) { $GoogleClientSecret = Get-EnvValue -Map $config -Key 'GOOGLE_CLIENT_SECRET' }
+    if (-not $FacebookAppId) { $FacebookAppId = Get-EnvValue -Map $config -Key 'FACEBOOK_APP_ID' }
+    if (-not $FacebookAppSecret) { $FacebookAppSecret = Get-EnvValue -Map $config -Key 'FACEBOOK_APP_SECRET' }
+    if (-not $CognitoHostedUIDomainPrefix) { $CognitoHostedUIDomainPrefix = Get-EnvValue -Map $config -Key 'COGNITO_HOSTED_UI_DOMAIN_PREFIX' }
+    if (-not $OAuthRedirectUri) { $OAuthRedirectUri = Get-EnvValue -Map $config -Key 'OAUTH_REDIRECT_URI' }
+    if (-not $OAuthLogoutUri) { $OAuthLogoutUri = Get-EnvValue -Map $config -Key 'OAUTH_LOGOUT_URI' }
     if (-not $Email) { $Email = Get-EnvValue -Map $config -Key 'SENDER_EMAIL' }
     if (-not $StackName) { $StackName = Get-EnvValue -Map $config -Key 'STACK_NAME' }
     if (-not $Environment) { $Environment = Get-EnvValue -Map $config -Key 'ENVIRONMENT' }
@@ -202,6 +230,34 @@ if (-not $AzureEndpoint) {
 }
 if (-not $AzureKey) {
     Write-Error "Azure key is missing. Set AZURE_DOC_KEY in config.env or pass -AzureKey."
+    exit 1
+}
+if (-not $GoogleClientId) {
+    Write-Error "Google client ID is missing. Set GOOGLE_CLIENT_ID in config.env or pass -GoogleClientId."
+    exit 1
+}
+if (-not $GoogleClientSecret) {
+    Write-Error "Google client secret is missing. Set GOOGLE_CLIENT_SECRET in config.env or pass -GoogleClientSecret."
+    exit 1
+}
+if (-not $FacebookAppId) {
+    Write-Error "Facebook app ID is missing. Set FACEBOOK_APP_ID in config.env or pass -FacebookAppId."
+    exit 1
+}
+if (-not $FacebookAppSecret) {
+    Write-Error "Facebook app secret is missing. Set FACEBOOK_APP_SECRET in config.env or pass -FacebookAppSecret."
+    exit 1
+}
+if (-not $CognitoHostedUIDomainPrefix) {
+    Write-Error "Cognito Hosted UI domain prefix is missing. Set COGNITO_HOSTED_UI_DOMAIN_PREFIX in config.env or pass -CognitoHostedUIDomainPrefix."
+    exit 1
+}
+if (-not $OAuthRedirectUri) {
+    Write-Error "OAuth redirect URI is missing. Set OAUTH_REDIRECT_URI in config.env or pass -OAuthRedirectUri."
+    exit 1
+}
+if (-not $OAuthLogoutUri) {
+    Write-Error "OAuth logout URI is missing. Set OAUTH_LOGOUT_URI in config.env or pass -OAuthLogoutUri."
     exit 1
 }
 
@@ -319,6 +375,13 @@ $deployCmd = @(
     "ParameterKey=NameSuffix,ParameterValue=$NameSuffix",
     "ParameterKey=AzureDocEndpoint,ParameterValue=$AzureEndpoint",
     "ParameterKey=AzureDocKey,ParameterValue=$AzureKey",
+    "ParameterKey=GoogleClientId,ParameterValue=$GoogleClientId",
+    "ParameterKey=GoogleClientSecret,ParameterValue=$GoogleClientSecret",
+    "ParameterKey=FacebookAppId,ParameterValue=$FacebookAppId",
+    "ParameterKey=FacebookAppSecret,ParameterValue=$FacebookAppSecret",
+    "ParameterKey=CognitoHostedUIDomainPrefix,ParameterValue=$CognitoHostedUIDomainPrefix",
+    "ParameterKey=OAuthRedirectUri,ParameterValue=$OAuthRedirectUri",
+    "ParameterKey=OAuthLogoutUri,ParameterValue=$OAuthLogoutUri",
     "ParameterKey=LambdaCodeBucket,ParameterValue=$DeploymentBucket",
     "ParameterKey=LambdaCodeKey,ParameterValue=$LambdaCodeKey",
     "ParameterKey=SenderEmail,ParameterValue=$Email",
@@ -440,13 +503,16 @@ $oauthDomain = Get-EnvValue -Map $existingEnv -Key 'VITE_COGNITO_DOMAIN'
 if (-not $oauthDomain) {
     $oauthDomain = Get-EnvValue -Map $config -Key 'VITE_COGNITO_DOMAIN'
 }
+if (-not $oauthDomain -and $CognitoHostedUIDomainPrefix) {
+    $oauthDomain = "$CognitoHostedUIDomainPrefix.auth.$Region.amazoncognito.com"
+}
 
 $oauthRedirectIn = Get-EnvValue -Map $existingEnv -Key 'VITE_OAUTH_REDIRECT_URI'
 if (-not $oauthRedirectIn) {
     $oauthRedirectIn = Get-EnvValue -Map $config -Key 'VITE_OAUTH_REDIRECT_URI'
 }
 if (-not $oauthRedirectIn) {
-    $oauthRedirectIn = "https://$CloudFrontDomain/"
+    $oauthRedirectIn = $OAuthRedirectUri
 }
 
 $oauthRedirectOut = Get-EnvValue -Map $existingEnv -Key 'VITE_OAUTH_REDIRECT_OUT_URI'
@@ -454,7 +520,7 @@ if (-not $oauthRedirectOut) {
     $oauthRedirectOut = Get-EnvValue -Map $config -Key 'VITE_OAUTH_REDIRECT_OUT_URI'
 }
 if (-not $oauthRedirectOut) {
-    $oauthRedirectOut = $oauthRedirectIn
+    $oauthRedirectOut = $OAuthLogoutUri
 }
 
 $envContent = @"
