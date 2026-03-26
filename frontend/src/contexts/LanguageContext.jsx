@@ -32,6 +32,7 @@ const translations = {
     he: {
         // Navigation
         nav: {
+            home: 'דף הבית',
             dashboard: 'לוח בקרה',
             upload: 'העלאה',
             contracts: 'חוזים',
@@ -575,6 +576,7 @@ const translations = {
     en: {
         // Navigation
         nav: {
+            home: 'Home',
             dashboard: 'Dashboard',
             upload: 'Upload',
             contracts: 'Contracts',

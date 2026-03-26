@@ -55,6 +55,27 @@
     margin-right: auto;
 }
 
+.settings-page {
+    padding: var(--space-xl);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.settings-page h1 {
+    margin-bottom: var(--space-xl);
+    color: var(--text-primary);
+}
+
+.settings-page h3 {
+    margin-bottom: var(--space-md);
+    color: var(--text-primary);
+}
+
+.settings-page p {
+    color: var(--text-secondary);
+    margin-bottom: var(--space-sm);
+}
+
 /* ============================================
    2. PAGE TITLE
    ============================================ */
@@ -110,7 +131,7 @@
 [data-theme="dark"] .section-icon,
 [data-theme="dark"] .section-icon.danger,
 [data-theme="dark"] .notification-icon,
-[data-theme="dark"] .tip-icon{
+[data-theme="dark"] .tip-icon {
     color: var(--text-secondary);
     background: transparent;
     border-color: var(--glass-border);

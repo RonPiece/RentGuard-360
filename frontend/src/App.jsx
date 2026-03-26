@@ -19,11 +19,11 @@ import { Routes, Route, Navigate, Link, useNavigate, useLocation } from 'react-r
 import { Toaster } from 'react-hot-toast';
 import { useAuth } from './contexts/AuthContext';
 import { LanguageProvider, useLanguage } from './contexts/LanguageContext';
-import { ThemeToggle } from './components/Toggle';
-import LanguageToggle from './components/LanguageToggle';
-import { Shield, Settings } from 'lucide-react';
+import Navigation from './components/Navigation';
+import ContactPublic from './pages/ContactPublic';
+import PricingPublic from './pages/PricingPublic';
 import { showAppToast } from './utils/toast';
-import DashboardPage from './pages/DashboardPage';
+import DashboardPageNew from './pages/DashboardPageNew';
 const UploadPage = lazy(() => import('./pages/UploadPage'));
 const ContractsPage = lazy(() => import('./pages/ContractsPage'));
 const AnalysisPage = lazy(() => import('./pages/AnalysisPage'));
@@ -81,205 +81,12 @@ const RequireActivePlanRoute = ({ children }) => {
   return hasSubscription ? children : <Navigate to="/pricing" replace />;
 };
 
-// Modern Navigation Component
-const Navigation = () => {
-  const { logout, userAttributes, isAdmin } = useAuth();
-  const { t, isRTL } = useLanguage();
-  const { scansRemaining, isUnlimited, hasSubscription } = useSubscription();
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [showProfileMenu, setShowProfileMenu] = useState(false);
-  const [showMobileMenu, setShowMobileMenu] = useState(false);
-  const profileRef = useRef(null);
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (profileRef.current && !profileRef.current.contains(event.target)) {
-        setShowProfileMenu(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  const handleLogout = async () => {
-    await logout();
-    navigate('/');
-  };
-
-  const isActive = (path) => location.pathname === path;
-
-  const navLinks = [
-    { path: '/dashboard', label: t('nav.dashboard') },
-    { path: '/upload', label: t('nav.upload') },
-    { path: '/contracts', label: t('nav.contracts') },
-    ...(!isAdmin ? [{ path: '/pricing', label: t('nav.pricing') }] : []),
-    ...(isAdmin ? [{ path: '/admin', label: t('nav.admin'), icon: Settings }] : []),
-  ];
-
-  const getUserInitials = () => {
-    const name = userAttributes?.name || userAttributes?.email || 'U';
-    return name.charAt(0).toUpperCase();
-  };
-
-  const notifyBundleRequired = () => {
-    showAppToast({
-      type: 'warning',
-      title: t('notifications.bundleRequiredTitle'),
-      message: t('notifications.bundleRequiredMessage'),
-      duration: 5200,
-    });
-  };
-
-  const handleBundleGatedNavigation = (event, path) => {
-    const blockedPaths = ['/dashboard', '/upload', '/contracts', '/contact', '/settings'];
-    if (!isAdmin && !hasSubscription && blockedPaths.includes(path)) {
-      event.preventDefault();
-      setShowMobileMenu(false);
-      setShowProfileMenu(false);
-      notifyBundleRequired();
-    }
-  };
-
-  return (
-    <nav className="nav-container" dir={isRTL ? 'rtl' : 'ltr'}>
-      <div className="nav-inner">
-        {/* Logo - Keep English */}
-        <Link to="/dashboard" className="nav-logo">
-          <Shield size={22} className="logo-icon" />
-          <span className="logo-text">RentGuard 360</span>
-        </Link>
-
-        {/* Desktop Navigation Links */}
-        <div className="nav-links-desktop">
-          {navLinks.map(link => (
-            <Link
-              key={link.path}
-              to={link.path}
-              className={`nav-link ${isActive(link.path) ? 'active' : ''}`}
-              onClick={(event) => handleBundleGatedNavigation(event, link.path)}
-            >
-              {link.icon && <link.icon size={14} className="nav-link-icon" />}
-              <span className="nav-link-label">{link.label}</span>
-            </Link>
-          ))}
-        </div>
-
-        {/* Right Side - Scan Badge, Language Toggle, Theme Toggle & Profile */}
-        <div className="nav-right">
-          {/* Scan Credits Badge */}
-          {(hasSubscription || isAdmin) && (
-            <button
-              className="scan-badge"
-              onClick={() => navigate(isAdmin ? '/admin/stripe' : '/pricing')}
-              title={(isAdmin || isUnlimited) ? t('nav.unlimited') : `${scansRemaining} ${t('nav.scansLeft')}`}
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="11" cy="11" r="8" />
-                <path d="M21 21l-4.35-4.35" />
-              </svg>
-              {(isAdmin || isUnlimited) ? (
-                <span className="scan-badge-unlimited">
-                  <span className="scan-badge-infinity">∞</span>
-                </span>
-              ) : (
-                <span>{scansRemaining}</span>
-              )}
-            </button>
-          )}
-          <LanguageToggle />
-          <ThemeToggle />
-
-          {/* Profile Dropdown */}
-          <div className="profile-container" ref={profileRef}>
-            <button
-              className="profile-button"
-              onClick={() => {
-                setShowMobileMenu(false); // Close mobile menu when opening profile
-                setShowProfileMenu(!showProfileMenu);
-              }}
-            >
-              <div className="profile-avatar">{getUserInitials()}</div>
-              <span className="profile-chevron">{showProfileMenu ? '▲' : '▼'}</span>
-            </button>
-
-            {showProfileMenu && (
-              <div className="profile-dropdown">
-                <div className="profile-header">
-                  <div className="profile-avatar-large">{getUserInitials()}</div>
-                  <div className="profile-info">
-                    <p className="profile-name">{userAttributes?.name || t('common.user')}</p>
-                    <p className="profile-email">{userAttributes?.email}</p>
-                  </div>
-                </div>
-                <div className="profile-divider"></div>
-                <Link
-                  to="/contact"
-                  className="profile-menu-item"
-                  onClick={(event) => {
-                    handleBundleGatedNavigation(event, '/contact');
-                    if (!event.defaultPrevented) setShowProfileMenu(false);
-                  }}
-                >
-                  {t('nav.contact')}
-                </Link>
-                <Link
-                  to="/settings"
-                  className="profile-menu-item"
-                  onClick={(event) => {
-                    handleBundleGatedNavigation(event, '/settings');
-                    if (!event.defaultPrevented) setShowProfileMenu(false);
-                  }}
-                >
-                  {t('nav.settings')}
-                </Link>
-                <button className="profile-menu-item logout" onClick={handleLogout}>
-                  {t('nav.logout')}
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            className="mobile-menu-button"
-            onClick={() => {
-              setShowProfileMenu(false); // Close profile when opening mobile menu
-              setShowMobileMenu(!showMobileMenu);
-            }}
-          >
-            {showMobileMenu ? '✕' : '☰'}
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile Menu */}
-      {showMobileMenu && (
-        <div className="mobile-menu">
-          {navLinks.map(link => (
-            <Link
-              key={link.path}
-              to={link.path}
-              className={`mobile-menu-link ${isActive(link.path) ? 'active' : ''}`}
-              onClick={(event) => {
-                handleBundleGatedNavigation(event, link.path);
-                if (!event.defaultPrevented) setShowMobileMenu(false);
-              }}
-            >
-              <span>{link.label}</span>
-            </Link>
-          ))}
-        </div>
-      )}
-    </nav>
-  );
-};
 
 function App() {
   const { isAuthenticated, isLoading, isAdmin } = useAuth();
   const { isRTL } = useLanguage();
   const location = useLocation();
+  const navigate = useNavigate();
 
   // Check if current route is an admin page
   const isAdminRoute = location.pathname.startsWith('/admin');
@@ -287,6 +94,10 @@ function App() {
     location.pathname === '/dashboard' ||
     location.pathname === '/contracts' ||
     location.pathname.startsWith('/analysis/');
+  const showPublicFooter = location.pathname === '/pricing' || location.pathname === '/contact';
+
+  // Should we render the main Navigation for this route?
+  const navVisible = !isAdminRoute && (isAuthenticated || location.pathname !== '/');
 
   useEffect(() => {
     const handleToast = (event) => {
@@ -341,10 +152,14 @@ function App() {
           },
         }}
       />
-      {/* Hide main nav on admin pages - admin has its own sidebar */}
-      {isAuthenticated && !isAdminRoute && <Navigation />}
+      {/* Main nav: render for all non-admin pages. Landing page renders its own Navigation internally. */}
+      {navVisible && (
+        <Navigation showAuthControls={!isAuthenticated} onAuthClick={(type) => {
+          if (!isAuthenticated) navigate(`/?auth=${type}`);
+        }} />
+      )}
 
-      <main className={`app-main ${isAdminRoute ? 'admin-page' : ''} ${isAuthenticated && !isAdminRoute ? 'with-nav' : ''}`}>
+      <main className={`app-main ${isAdminRoute ? 'admin-page' : ''} ${navVisible ? 'with-nav' : ''}`}>
         <Suspense
           fallback={
             <div className="app-loading">
@@ -355,13 +170,13 @@ function App() {
         >
           <Routes>
             <Route path="/" element={<LandingPage />} />
-            <Route path="/dashboard" element={<ProtectedRoute><RequireActivePlanRoute><DashboardPage /></RequireActivePlanRoute></ProtectedRoute>} />
+            <Route path="/dashboard" element={<ProtectedRoute><RequireActivePlanRoute><DashboardPageNew /></RequireActivePlanRoute></ProtectedRoute>} />
             <Route path="/upload" element={<ProtectedRoute><RequireActivePlanRoute><UploadPage /></RequireActivePlanRoute></ProtectedRoute>} />
             <Route path="/contracts" element={<ProtectedRoute><RequireActivePlanRoute><ContractsPage /></RequireActivePlanRoute></ProtectedRoute>} />
             <Route path="/analysis/:contractId" element={<ProtectedRoute><RequireActivePlanRoute><AnalysisPage /></RequireActivePlanRoute></ProtectedRoute>} />
             <Route path="/settings" element={<ProtectedRoute><RequireActivePlanRoute><SettingsPage /></RequireActivePlanRoute></ProtectedRoute>} />
-            <Route path="/contact" element={<ProtectedRoute><RequireActivePlanRoute><ContactPage /></RequireActivePlanRoute></ProtectedRoute>} />
-            <Route path="/pricing" element={<ProtectedRoute>{isAdmin ? <Navigate to="/dashboard" replace /> : <PricingPage />}</ProtectedRoute>} />
+            <Route path="/contact" element={isAuthenticated ? <ProtectedRoute><RequireActivePlanRoute><ContactPage /></RequireActivePlanRoute></ProtectedRoute> : <ContactPublic />} />
+            <Route path="/pricing" element={isAuthenticated ? <ProtectedRoute>{isAdmin ? <Navigate to="/dashboard" replace /> : <PricingPage />}</ProtectedRoute> : <PricingPublic />} />
             <Route path="/checkout/:packageId" element={<ProtectedRoute>{isAdmin ? <Navigate to="/dashboard" replace /> : <CheckoutPage />}</ProtectedRoute>} />
             <Route path="/payment-success" element={<ProtectedRoute><PaymentSuccessPage /></ProtectedRoute>} />
             <Route path="/shared/:id" element={<SharedContractView />} />
@@ -379,8 +194,8 @@ function App() {
         </Suspense>
       </main>
 
-      {/* Hide footer on admin pages */}
-      {isAuthenticated && !isAdminRoute && <Footer />}
+      {/* Hide footer on admin pages; show on authenticated app and selected public pages */}
+      {!isAdminRoute && (isAuthenticated || showPublicFooter) && <Footer />}
 
       {/* Show contract chat only in contract-relevant user flows */}
       {isAuthenticated && !isAdminRoute && isContractChatRoute && (

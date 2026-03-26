@@ -36,6 +36,7 @@ import { ThemeToggle } from '../components/Toggle';
 import LanguageToggle from '../components/LanguageToggle';
 import Button from '../components/Button';
 import Input from '../components/Input';
+import Navigation from '../components/Navigation';
 import { Upload, Brain, FileText, ChevronDown, ChevronUp, AlertTriangle, CheckCircle, Shield, Download, Edit2, Trash2, X, Cloud, Bot, Lock, Zap, Pause, Wallet, House } from 'lucide-react';
 import Footer from '../components/Footer';
 import './LandingPageNew.css';
@@ -496,6 +497,17 @@ const LandingPageNew = () => {
         }
     }, [isRTL]);
 
+    // Open auth modal if `?auth=login|register` is present (used by global nav)
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const auth = params.get('auth');
+        if (auth === 'login' || auth === 'register' || auth === 'confirm') {
+            setAuthModal(auth);
+            const cleanUrl = `${window.location.origin}${window.location.pathname}`;
+            window.history.replaceState({}, document.title, cleanUrl);
+        }
+    }, []);
+
     // Carousel auto-advance
     useEffect(() => {
         if (isPaused) return;
@@ -808,25 +820,8 @@ const LandingPageNew = () => {
 
     return (
         <div className="landing-real" dir={isRTL ? 'rtl' : 'ltr'}>
-            {/* ===== NAVBAR ===== */}
-            <nav className="lr-nav">
-                <div className="lr-nav-inner">
-                    <a href="/" className="lr-logo">
-                        <Shield size={24} className="logo-icon" />
-                        <span>RentGuard 360</span>
-                    </a>
-                    <div className="lr-nav-right">
-                        <LanguageToggle />
-                        <ThemeToggle />
-                        <button className="auth-btn" onClick={() => toggleAuth('login')}>
-                            {t('auth.login')}
-                        </button>
-                        <button className="cta-btn" onClick={() => toggleAuth('register')}>
-                            {isRTL ? 'התחל חינם' : 'Start Free'}
-                        </button>
-                    </div>
-                </div>
-            </nav>
+            {/* ===== NAVBAR (use shared Navigation component) ===== */}
+            <Navigation showAuthControls={!isAuthenticated} onAuthClick={toggleAuth} />
 
             {/* Auth Modal */}
             {authModal && (
