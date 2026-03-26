@@ -565,6 +565,88 @@ namespace StripePaymentAPI.Controllers
             }
         }
 
+        [HttpPost("subscriptions-internal")]
+        [AllowAnonymous]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public IActionResult GetSubscriptionsInternal([FromBody] InternalSubscriptionsRequest request)
+        {
+            try
+            {
+                if (!IsInternalApiCall())
+                {
+                    return Forbid();
+                }
+
+                List<string> userIds = request?.UserIds?
+                    .Where(u => !string.IsNullOrWhiteSpace(u))
+                    .Select(u => u.Trim())
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .Take(200)
+                    .ToList() ?? new List<string>();
+
+                if (userIds.Count == 0)
+                {
+                    return Ok(new { subscriptions = new List<object>() });
+                }
+
+                string connStr = SQLPaymentRepository.ActiveConnectionString ?? _configuration.GetConnectionString("PaymentsDB");
+                if (string.IsNullOrWhiteSpace(connStr))
+                {
+                    return Ok(new { subscriptions = new List<object>() });
+                }
+
+                List<object> subscriptions = new List<object>();
+                using (SqlConnection connection = new SqlConnection(connStr))
+                {
+                    connection.Open();
+
+                    string inParams = string.Join(",", userIds.Select((_, i) => $"@u{i}"));
+                    string sql = $@"
+SELECT s.UserId, s.PackageId, s.ScansRemaining, s.UpdatedAt, p.Name AS PackageName
+FROM UserSubscriptions s
+LEFT JOIN Packages p ON p.Id = s.PackageId
+WHERE s.UserId IN ({inParams});";
+
+                    using (SqlCommand cmd = new SqlCommand(sql, connection))
+                    {
+                        for (int i = 0; i < userIds.Count; i++)
+                        {
+                            cmd.Parameters.AddWithValue($"@u{i}", userIds[i]);
+                        }
+
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                int scansRemaining = Convert.ToInt32(reader["ScansRemaining"]);
+                                bool isUnlimited = scansRemaining == -1;
+                                bool isExpired = !isUnlimited && scansRemaining <= 0;
+
+                                subscriptions.Add(new
+                                {
+                                    userId = Convert.ToString(reader["UserId"]),
+                                    packageId = Convert.ToInt32(reader["PackageId"]),
+                                    packageName = Convert.ToString(reader["PackageName"]),
+                                    scansRemaining,
+                                    isUnlimited,
+                                    isExpired,
+                                    updatedAt = Convert.ToDateTime(reader["UpdatedAt"]).ToString("o")
+                                });
+                            }
+                        }
+                    }
+                }
+
+                return Ok(new { subscriptions });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+        }
+
         // =====================================================================
         // DELETE api/payments/subscription?userId=xxx
         // Removes active SQL subscription row (admin/internal only)
@@ -902,5 +984,10 @@ ORDER BY t.CreatedAt DESC;";
     public class DeductRequest
     {
         public string UserId { get; set; }
+    }
+
+    public class InternalSubscriptionsRequest
+    {
+        public List<string> UserIds { get; set; }
     }
 }

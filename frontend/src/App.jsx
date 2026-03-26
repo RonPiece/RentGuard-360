@@ -16,12 +16,13 @@
  */
 import React, { lazy, Suspense, useState, useRef, useEffect } from 'react';
 import { Routes, Route, Navigate, Link, useNavigate, useLocation } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import { useAuth } from './contexts/AuthContext';
 import { LanguageProvider, useLanguage } from './contexts/LanguageContext';
 import { ThemeToggle } from './components/Toggle';
 import LanguageToggle from './components/LanguageToggle';
-import Button from './components/Button';
-import { Shield } from 'lucide-react';
+import { Shield, Settings } from 'lucide-react';
+import { showAppToast } from './utils/toast';
 import DashboardPage from './pages/DashboardPage';
 const UploadPage = lazy(() => import('./pages/UploadPage'));
 const ContractsPage = lazy(() => import('./pages/ContractsPage'));
@@ -114,12 +115,31 @@ const Navigation = () => {
     { path: '/upload', label: t('nav.upload') },
     { path: '/contracts', label: t('nav.contracts') },
     ...(!isAdmin ? [{ path: '/pricing', label: t('nav.pricing') }] : []),
-    ...(isAdmin ? [{ path: '/admin', label: t('nav.admin') }] : []),
+    ...(isAdmin ? [{ path: '/admin', label: t('nav.admin'), icon: Settings }] : []),
   ];
 
   const getUserInitials = () => {
     const name = userAttributes?.name || userAttributes?.email || 'U';
     return name.charAt(0).toUpperCase();
+  };
+
+  const notifyBundleRequired = () => {
+    showAppToast({
+      type: 'warning',
+      title: t('notifications.bundleRequiredTitle'),
+      message: t('notifications.bundleRequiredMessage'),
+      duration: 5200,
+    });
+  };
+
+  const handleBundleGatedNavigation = (event, path) => {
+    const blockedPaths = ['/dashboard', '/upload', '/contracts', '/contact', '/settings'];
+    if (!isAdmin && !hasSubscription && blockedPaths.includes(path)) {
+      event.preventDefault();
+      setShowMobileMenu(false);
+      setShowProfileMenu(false);
+      notifyBundleRequired();
+    }
   };
 
   return (
@@ -138,7 +158,9 @@ const Navigation = () => {
               key={link.path}
               to={link.path}
               className={`nav-link ${isActive(link.path) ? 'active' : ''}`}
+              onClick={(event) => handleBundleGatedNavigation(event, link.path)}
             >
+              {link.icon && <link.icon size={14} className="nav-link-icon" />}
               <span className="nav-link-label">{link.label}</span>
             </Link>
           ))}
@@ -192,10 +214,24 @@ const Navigation = () => {
                   </div>
                 </div>
                 <div className="profile-divider"></div>
-                <Link to="/contact" className="profile-menu-item" onClick={() => setShowProfileMenu(false)}>
+                <Link
+                  to="/contact"
+                  className="profile-menu-item"
+                  onClick={(event) => {
+                    handleBundleGatedNavigation(event, '/contact');
+                    if (!event.defaultPrevented) setShowProfileMenu(false);
+                  }}
+                >
                   {t('nav.contact')}
                 </Link>
-                <Link to="/settings" className="profile-menu-item" onClick={() => setShowProfileMenu(false)}>
+                <Link
+                  to="/settings"
+                  className="profile-menu-item"
+                  onClick={(event) => {
+                    handleBundleGatedNavigation(event, '/settings');
+                    if (!event.defaultPrevented) setShowProfileMenu(false);
+                  }}
+                >
                   {t('nav.settings')}
                 </Link>
                 <button className="profile-menu-item logout" onClick={handleLogout}>
@@ -226,7 +262,10 @@ const Navigation = () => {
               key={link.path}
               to={link.path}
               className={`mobile-menu-link ${isActive(link.path) ? 'active' : ''}`}
-              onClick={() => setShowMobileMenu(false)}
+              onClick={(event) => {
+                handleBundleGatedNavigation(event, link.path);
+                if (!event.defaultPrevented) setShowMobileMenu(false);
+              }}
             >
               <span>{link.label}</span>
             </Link>
@@ -239,22 +278,8 @@ const Navigation = () => {
 
 function App() {
   const { isAuthenticated, isLoading, isAdmin } = useAuth();
+  const { isRTL } = useLanguage();
   const location = useLocation();
-  const [toast, setToast] = useState(() => {
-    try {
-      const raw = sessionStorage.getItem('rg_toast');
-      if (!raw) return null;
-      const parsed = JSON.parse(raw);
-      if (parsed?.createdAt && parsed?.ttlMs) {
-        const remaining = (parsed.createdAt + parsed.ttlMs) - Date.now();
-        if (remaining > 0) return parsed;
-      }
-    } catch {
-      // ignore
-    }
-    return null;
-  });
-  const toastTimerRef = useRef(null);
 
   // Check if current route is an admin page
   const isAdminRoute = location.pathname.startsWith('/admin');
@@ -267,7 +292,7 @@ function App() {
     const handleToast = (event) => {
       const nextToast = event?.detail;
       if (!nextToast) return;
-      setToast(nextToast);
+      showAppToast(nextToast);
     };
 
     window.addEventListener('rg:toast', handleToast);
@@ -282,49 +307,17 @@ function App() {
       const parsed = JSON.parse(raw);
       if (parsed?.createdAt && parsed?.ttlMs) {
         const remaining = (parsed.createdAt + parsed.ttlMs) - Date.now();
-        if (remaining <= 0) sessionStorage.removeItem('rg_toast');
+        if (remaining <= 0) {
+          sessionStorage.removeItem('rg_toast');
+        } else {
+          showAppToast(parsed);
+          sessionStorage.removeItem('rg_toast');
+        }
       }
     } catch {
       // ignore
     }
   }, []);
-
-  useEffect(() => {
-    if (!toast) return;
-
-    if (toastTimerRef.current) {
-      clearTimeout(toastTimerRef.current);
-      toastTimerRef.current = null;
-    }
-
-    const createdAt = typeof toast.createdAt === 'number' ? toast.createdAt : Date.now();
-    const ttlMs = typeof toast.ttlMs === 'number' ? toast.ttlMs : 5500;
-    const remaining = (createdAt + ttlMs) - Date.now();
-    const delay = Math.max(250, remaining);
-
-    toastTimerRef.current = setTimeout(() => {
-      setToast(null);
-      toastTimerRef.current = null;
-      try {
-        const raw = sessionStorage.getItem('rg_toast');
-        if (raw) {
-          const parsed = JSON.parse(raw);
-          if (parsed?.id && toast?.id && parsed.id === toast.id) {
-            sessionStorage.removeItem('rg_toast');
-          }
-        }
-      } catch {
-        // ignore
-      }
-    }, delay);
-
-    return () => {
-      if (toastTimerRef.current) {
-        clearTimeout(toastTimerRef.current);
-        toastTimerRef.current = null;
-      }
-    };
-  }, [toast]);
 
   if (isLoading) {
     return (
@@ -337,19 +330,21 @@ function App() {
 
   return (
     <div className="app-container">
-      {toast && (
-        <div className="app-toast" role="status" aria-live="polite">
-          <span className="app-toast__icon" aria-hidden="true">✓</span>
-          <div className="app-toast__text">
-            <div className="app-toast__title">{toast.title}</div>
-            {toast.message && <div className="app-toast__subtitle">{toast.message}</div>}
-          </div>
-        </div>
-      )}
+      <Toaster
+        position={isRTL ? 'top-left' : 'top-right'}
+        reverseOrder={false}
+        gutter={10}
+        containerStyle={{ top: 16 }}
+        toastOptions={{
+          style: {
+            pointerEvents: 'auto',
+          },
+        }}
+      />
       {/* Hide main nav on admin pages - admin has its own sidebar */}
       {isAuthenticated && !isAdminRoute && <Navigation />}
 
-      <main className={`app-main ${isAdminRoute ? 'admin-page' : ''}`}>
+      <main className={`app-main ${isAdminRoute ? 'admin-page' : ''} ${isAuthenticated && !isAdminRoute ? 'with-nav' : ''}`}>
         <Suspense
           fallback={
             <div className="app-loading">

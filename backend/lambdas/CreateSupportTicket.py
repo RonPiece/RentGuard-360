@@ -102,7 +102,7 @@ def build_user_confirmation_email(ticket_id, category, message_content):
     Returns:
         str: HTML email body
     """
-        return f"""
+    return f"""
         <div dir="rtl" style="margin:0; padding:24px 12px; background:#eef2f7; font-family: Arial, Helvetica, sans-serif;">
             <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width:640px; margin:0 auto; background:#ffffff; border:1px solid #dbe4ee; border-radius:14px; overflow:hidden;">
                 <tr>
@@ -138,7 +138,7 @@ def build_user_confirmation_email(ticket_id, category, message_content):
                 </tr>
             </table>
         </div>
-        """
+    """
 
 # =============================================================================
 # MAIN HANDLER

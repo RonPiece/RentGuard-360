@@ -25,6 +25,13 @@ if (!STRIPE_API_URL) {
     console.warn('Missing VITE_STRIPE_API_URL. Stripe payment features will not work.');
 }
 
+const NORMALIZED_STRIPE_API_URL = (STRIPE_API_URL || '').replace(/\/+$/, '');
+
+const buildStripeUrl = (endpoint) => {
+    const safeEndpoint = String(endpoint || '').replace(/^\/+/, '');
+    return `${NORMALIZED_STRIPE_API_URL}/${safeEndpoint}`;
+};
+
 const getAuthToken = async () => {
     try {
         const session = await fetchAuthSession();
@@ -40,7 +47,7 @@ const getAuthToken = async () => {
  * Auth is required for payment/subscription endpoints.
  */
 const stripeApiCall = async (endpoint, options = {}, requiresAuth = false) => {
-    const url = `${STRIPE_API_URL}${endpoint}`;
+    const url = buildStripeUrl(endpoint);
     const token = await getAuthToken();
 
     if (requiresAuth && !token) {

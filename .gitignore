@@ -85,3 +85,5 @@ backend/StripePaymentAPI/appsettings.json
 # Publish output
 backend/StripePaymentAPI/out/
 docs/FINAL_QA_CHECKLIST (1).md
+RentGuard-360.sln
+backend/StripePaymentAPI/appsettings.Development.json

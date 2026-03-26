@@ -109,28 +109,28 @@ const DashboardPage = () => {
             label: t('dashboard.totalContracts'),
             value: stats.total,
             icon: <FileText size={22} strokeWidth={2} />,
-            accent: '#2563eb',
+            accentClass: 'stat-icon-contracts',
         },
         {
             key: 'analyzed',
             label: t('dashboard.analyzed'),
             value: stats.analyzed,
             icon: <BadgeCheck size={22} strokeWidth={2} />,
-            accent: '#0f9f6e',
+            accentClass: 'stat-icon-analyzed',
         },
         {
             key: 'pending',
             label: t('dashboard.pending'),
             value: stats.pending,
             icon: <Clock3 size={22} strokeWidth={2} />,
-            accent: '#d97706',
+            accentClass: 'stat-icon-pending',
         },
         {
             key: 'risk',
             label: t('dashboard.highRisk'),
             value: stats.highRisk,
             icon: <TriangleAlert size={22} strokeWidth={2} />,
-            accent: '#dc2626',
+            accentClass: 'stat-icon-risk',
         },
     ];
 
@@ -155,10 +155,9 @@ const DashboardPage = () => {
                                 key={stat.label}
                                 variant="glass"
                                 padding="md"
-                                className={`stat-card stat-card-${stat.key} animate-slideUp`}
-                                style={{ animationDelay: `${index * 100}ms` }}
+                                className={`stat-card stat-card-${stat.key} animate-slideUp delay-${index + 1}`}
                             >
-                                <div className="stat-icon" style={{ color: stat.accent }}>
+                                <div className={`stat-icon ${stat.accentClass}`}>
                                     {stat.icon}
                                 </div>
                                 <div className="stat-content">
@@ -176,60 +175,66 @@ const DashboardPage = () => {
                 <section className="actions-section">
                     <h2 className="section-title">{t('dashboard.quickActions')}</h2>
                     <div className="actions-grid">
-                        <Card variant="elevated" padding="lg" className="action-card action-card-inset animate-slideUp" style={{ animationDelay: '400ms' }}>
-                            <div className="action-icon-wrapper">
-                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                                    <polyline points="17,8 12,3 7,8" />
-                                    <line x1="12" y1="3" x2="12" y2="15" />
-                                </svg>
+                        <Card variant="elevated" padding="lg" className="action-card action-card-inset animate-slideUp delay-4">
+                            <div className="action-card-content">
+                                <div className="action-icon-wrapper">
+                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                        <polyline points="17,8 12,3 7,8" />
+                                        <line x1="12" y1="3" x2="12" y2="15" />
+                                    </svg>
+                                </div>
+                                <h3>{t('dashboard.uploadContract')}</h3>
+                                <p>{t('dashboard.uploadDescription')}</p>
+                                <Link to="/upload" className="action-card-link">
+                                    <Button variant="primary" fullWidth>{t('dashboard.uploadPDF')}</Button>
+                                </Link>
                             </div>
-                            <h3>{t('dashboard.uploadContract')}</h3>
-                            <p>{t('dashboard.uploadDescription')}</p>
-                            <Link to="/upload">
-                                <Button variant="primary" fullWidth>{t('dashboard.uploadPDF')}</Button>
-                            </Link>
                         </Card>
 
-                        <Card variant="elevated" padding="lg" className="action-card action-card-inset animate-slideUp" style={{ animationDelay: '500ms' }}>
-                            <div className="action-icon-wrapper">
-                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                                    <polyline points="14,2 14,8 20,8" />
-                                    <line x1="16" y1="13" x2="8" y2="13" />
-                                    <line x1="16" y1="17" x2="8" y2="17" />
-                                </svg>
+                        <Card variant="elevated" padding="lg" className="action-card action-card-inset animate-slideUp delay-5">
+                            <div className="action-card-content">
+                                <div className="action-icon-wrapper">
+                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                        <polyline points="14,2 14,8 20,8" />
+                                        <line x1="16" y1="13" x2="8" y2="13" />
+                                        <line x1="16" y1="17" x2="8" y2="17" />
+                                    </svg>
+                                </div>
+                                <h3>{t('dashboard.viewContracts')}</h3>
+                                <p>{t('dashboard.viewDescription')}</p>
+                                <Link to="/contracts" className="action-card-link">
+                                    <Button variant="secondary" fullWidth>{t('dashboard.viewAll')}</Button>
+                                </Link>
                             </div>
-                            <h3>{t('dashboard.viewContracts')}</h3>
-                            <p>{t('dashboard.viewDescription')}</p>
-                            <Link to="/contracts">
-                                <Button variant="secondary" fullWidth>{t('dashboard.viewAll')}</Button>
-                            </Link>
                         </Card>
 
                         {!isAdmin && (
-                            <Card variant="elevated" padding="lg" className="action-card action-card-inset animate-slideUp" style={{ animationDelay: '600ms' }}>
-                                <div className="action-icon-wrapper">
-                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                                        <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" />
-                                    </svg>
+                            <Card variant="elevated" padding="lg" className="action-card action-card-inset animate-slideUp delay-6">
+                                <div className="action-card-content">
+                                    <div className="action-icon-wrapper">
+                                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                                            <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" />
+                                        </svg>
+                                    </div>
+                                    <h3>{t('subscription.myPlan')}</h3>
+                                    {hasSubscription ? (
+                                        <p>
+                                            {packageName} — {isUnlimited
+                                                ? t('subscription.unlimited')
+                                                : `${scansRemaining} ${t('subscription.scansRemaining')}`
+                                            }
+                                        </p>
+                                    ) : (
+                                        <p>{t('subscription.noPlan')}</p>
+                                    )}
+                                    <Link to="/pricing" className="action-card-link">
+                                        <Button variant="secondary" fullWidth>
+                                            {hasSubscription ? t('subscription.upgrade') : t('subscription.choosePlan')}
+                                        </Button>
+                                    </Link>
                                 </div>
-                                <h3>{t('subscription.myPlan')}</h3>
-                                {hasSubscription ? (
-                                    <p>
-                                        {packageName} — {isUnlimited
-                                            ? t('subscription.unlimited')
-                                            : `${scansRemaining} ${t('subscription.scansRemaining')}`
-                                        }
-                                    </p>
-                                ) : (
-                                    <p>{t('subscription.noPlan')}</p>
-                                )}
-                                <Link to="/pricing">
-                                    <Button variant="secondary" fullWidth>
-                                        {hasSubscription ? t('subscription.upgrade') : t('subscription.choosePlan')}
-                                    </Button>
-                                </Link>
                             </Card>
                         )}
                     </div>
@@ -238,12 +243,12 @@ const DashboardPage = () => {
 
             {/* GRAY BAND: How to Start Guide */}
             <div className="section-band">
-                <section className="guide-section animate-fadeIn" style={{ animationDelay: '600ms' }}>
+                <section className="guide-section animate-fadeIn delay-6">
                     <Card variant="glass" padding="lg" className="guide-card">
                         <h2>{t('dashboard.howToStart')}</h2>
                         <div className="guide-steps guide-steps-professional">
                             <div className="guide-step-card">
-                                <div className="guide-step-head">
+                                <div className="guide-step-head guide-step-head-simple">
                                     <span className="guide-number">1</span>
                                 </div>
                                 <div className="guide-content">
@@ -252,10 +257,8 @@ const DashboardPage = () => {
                                 </div>
                             </div>
 
-                            <span className="step-arrow" aria-hidden="true">{isRTL ? '←' : '→'}</span>
-
                             <div className="guide-step-card">
-                                <div className="guide-step-head">
+                                <div className="guide-step-head guide-step-head-simple">
                                     <span className="guide-number">2</span>
                                 </div>
                                 <div className="guide-content">
@@ -264,10 +267,8 @@ const DashboardPage = () => {
                                 </div>
                             </div>
 
-                            <span className="step-arrow" aria-hidden="true">{isRTL ? '←' : '→'}</span>
-
                             <div className="guide-step-card">
-                                <div className="guide-step-head">
+                                <div className="guide-step-head guide-step-head-simple">
                                     <span className="guide-number">3</span>
                                 </div>
                                 <div className="guide-content">
@@ -282,7 +283,7 @@ const DashboardPage = () => {
 
             {/* WHITE BAND: Why We're Different */}
             <div className="section-band-alt">
-                <section className="differentiators-section animate-fadeIn" style={{ animationDelay: '800ms' }}>
+                <section className="differentiators-section animate-fadeIn delay-8">
                     <div className="differentiators-container">
                         <div className="differentiators-image">
                             <img src="/lawyer-hero.jpg" alt="Your Legal Consultant" />

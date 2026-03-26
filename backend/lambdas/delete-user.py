@@ -30,6 +30,7 @@ Environment Variables:
 import json
 import boto3
 import os
+import socket
 import traceback
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError, URLError
@@ -121,6 +122,18 @@ def delete_sql_subscription(user_id):
             'attempted': True,
             'deleted': False,
             'error': str(e.reason)
+        }
+    except (TimeoutError, socket.timeout) as e:
+        return {
+            'attempted': True,
+            'deleted': False,
+            'error': str(e)
+        }
+    except Exception as e:
+        return {
+            'attempted': True,
+            'deleted': False,
+            'error': str(e)
         }
 
 

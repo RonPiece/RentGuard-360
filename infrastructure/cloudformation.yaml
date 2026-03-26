@@ -781,6 +781,8 @@ Resources:
       Environment:
         Variables:
           USER_POOL_ID: !Ref UserPool
+          STRIPE_API_URL: !Ref StripeApiUrl
+          PAYMENT_INTERNAL_API_KEY: !Ref PaymentInternalApiKey
 
   DisableUserFunction:
     Type: AWS::Lambda::Function

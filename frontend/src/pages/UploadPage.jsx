@@ -25,6 +25,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useSubscription } from '../contexts/SubscriptionContext';
 import { pollForAnalysis, uploadFile } from '../services/api';
+import { emitAppToast } from '../utils/toast';
 import Card from '../components/Card';
 import Button from '../components/Button';
 import Input from '../components/Input';
@@ -59,27 +60,6 @@ const UploadPage = () => {
     const blockReason = !hasUploadEntitlement
         ? t('subscription.noActivePlanMessage')
         : t('subscription.noScansMessage');
-    const emitGlobalToast = (title, message) => {
-        const toast = {
-            id: `${Date.now()}_${Math.random().toString(16).slice(2)}`,
-            title,
-            message,
-            createdAt: Date.now(),
-            ttlMs: 5500,
-        };
-
-        try {
-            sessionStorage.setItem('rg_toast', JSON.stringify(toast));
-        } catch {
-            // ignore
-        }
-
-        try {
-            window.dispatchEvent(new CustomEvent('rg:toast', { detail: toast }));
-        } catch {
-            // ignore
-        }
-    };
 
     useEffect(() => {
         if (!uploadSuccess || !uploadedContractId) return;
@@ -91,6 +71,11 @@ const UploadPage = () => {
                 const result = await pollForAnalysis(uploadedContractId, 24, 5000);
                 if (cancelled) return;
                 if (result) {
+                    emitAppToast({
+                        type: 'success',
+                        title: t('notifications.analysisReadyTitle'),
+                        message: t('notifications.analysisReadyMessage'),
+                    });
                     navigate(`/analysis/${encodeURIComponent(uploadedContractId)}`);
                 }
             } catch (e) {
@@ -104,7 +89,7 @@ const UploadPage = () => {
         return () => {
             cancelled = true;
         };
-    }, [uploadSuccess, uploadedContractId, navigate]);
+    }, [uploadSuccess, uploadedContractId, navigate, t]);
 
     const validateFile = (file) => {
         const maxSize = 5 * 1024 * 1024; // 5MB - standard for rental contracts
@@ -205,7 +190,11 @@ const UploadPage = () => {
 
             setUploadedContractId(result.contractId || '');
             setUploadSuccess(true);
-            emitGlobalToast(t('upload.uploadSuccessTitle'), t('upload.uploadSuccessMessage'));
+            emitAppToast({
+                type: 'success',
+                title: t('upload.uploadSuccessTitle'),
+                message: t('upload.uploadSuccessMessage'),
+            });
             setFile(null);
             setTermsAccepted(false);
             setMetadata({
@@ -218,6 +207,11 @@ const UploadPage = () => {
         } catch (err) {
             console.error('Upload failed:', err);
             setError(err.message || t('upload.uploadFailed'));
+            emitAppToast({
+                type: 'error',
+                title: t('notifications.uploadFailedTitle'),
+                message: err.message || t('upload.uploadFailed'),
+            });
         } finally {
             setIsUploading(false);
         }

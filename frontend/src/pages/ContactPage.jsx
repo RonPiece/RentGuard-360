@@ -25,6 +25,7 @@ import { Mail, CheckCircle2, CircleHelp, Clock3 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { sendContactMessage } from '../services/api';
+import { emitAppToast } from '../utils/toast';
 import Card from '../components/Card';
 import Input from '../components/Input';
 import Button from '../components/Button';
@@ -65,6 +66,11 @@ const ContactPage = () => {
             if (response.ticketId || response.message === 'Ticket created') {
                 setSubmitStatus('success');
                 setFormData({ ...formData, subject: '', message: '' });
+                emitAppToast({
+                    type: 'success',
+                    title: t('notifications.contactSentTitle'),
+                    message: t('notifications.contactSentMessage'),
+                });
             } else {
                 throw new Error(response.error || 'Failed to send message');
             }
@@ -72,6 +78,11 @@ const ContactPage = () => {
             console.error('Contact form error:', err);
             setError(err.message || (isRTL ? 'שליחת ההודעה נכשלה. נסו שוב.' : 'Failed to send message. Please try again.'));
             setSubmitStatus('error');
+            emitAppToast({
+                type: 'error',
+                title: t('notifications.contactFailedTitle'),
+                message: err.message || t('notifications.contactFailedMessage'),
+            });
         } finally {
             setIsSubmitting(false);
         }
