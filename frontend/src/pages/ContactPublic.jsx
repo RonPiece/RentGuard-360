@@ -26,7 +26,7 @@ const ContactPublic = () => {
     setError('');
     setSubmitStatus(null);
     try {
-      const response = await sendContactMessage(formData);
+      const response = await sendContactMessage(formData, { isPublic: true });
       if (response.ticketId || response.message === 'Ticket created') {
         setSubmitStatus('success');
         setFormData({ name: '', email: '', subject: '', message: '' });

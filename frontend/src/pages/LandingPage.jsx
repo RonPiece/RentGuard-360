@@ -1,6 +1,6 @@
 /**
  * ============================================
- *  LandingPageNew
+ *  LandingPage
  *  Public Landing Page & Authentication
  * ============================================
  * 
@@ -39,7 +39,7 @@ import Input from '../components/Input';
 import Navigation from '../components/Navigation';
 import { Upload, Brain, FileText, ChevronDown, ChevronUp, AlertTriangle, CheckCircle, Shield, Download, Edit2, Trash2, X, Cloud, Bot, Lock, Zap, Pause, Wallet, House } from 'lucide-react';
 import Footer from '../components/Footer';
-import './LandingPageNew.css';
+import './LandingPage.css';
 
 // Some eslint setups don't count JSX member expressions (e.g. <motion.div>) as a variable usage.
 // This keeps the import from being flagged as unused while preserving the current Framer Motion usage.
@@ -381,7 +381,7 @@ const ContractViewerMockup = ({ isRTL, onScoreClick }) => (
 
 // ===== MAIN LANDING PAGE =====
 
-const LandingPageNew = () => {
+const LandingPage = () => {
     // DAN DID IT - Added forgotPassword and resetUserPassword from useAuth for forgot password feature
     const { login, socialLogin, register, confirmRegistration, isAuthenticated, resendCode, forgotPassword, resetUserPassword, checkUserStatus } = useAuth();
     const { t, isRTL } = useLanguage();
@@ -1278,4 +1278,4 @@ const LandingPageNew = () => {
     );
 };
 
-export default LandingPageNew;
+export default LandingPage;

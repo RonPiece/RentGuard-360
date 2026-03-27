@@ -1,48 +1,16 @@
-/**
- * ============================================
- *  DashboardPage
- *  User Dashboard & Overview
- * ============================================
- * 
- * STRUCTURE:
- * - Welcome banner with dynamic greeting
- * - Stats cards (total, analyzed, pending, high risk)
- * - Quick actions (upload, view contracts)
- * - Getting started guide
- * - Why Us features section
- * - Responsive grid layout
- * 
- * DEPENDENCIES:
- * - api.js: getContracts (for stats)
- * - Card, Button components
- * 
- * ============================================
- */
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useSubscription } from '../contexts/SubscriptionContext';
 import { getContracts } from '../services/api';
-import Card from '../components/Card';
-import Button from '../components/Button';
-import {
-    Shield,
-    Zap,
-    BarChart3,
-    Lightbulb,
-    Cloud,
-    FileText,
-    BadgeCheck,
-    Clock3,
-    TriangleAlert,
-} from 'lucide-react';
 import './DashboardPage.css';
 
 const DashboardPage = () => {
     const { userAttributes, user, isAdmin } = useAuth();
     const { t, isRTL } = useLanguage();
     const { packageName, scansRemaining, isUnlimited, hasSubscription } = useSubscription();
+
     const [stats, setStats] = useState({
         total: 0,
         analyzed: 0,
@@ -62,10 +30,7 @@ const DashboardPage = () => {
             const contracts = await getContracts(userId);
             const contractsList = Array.isArray(contracts) ? contracts : [];
 
-            // Count analyzed contracts with riskScore
             const analyzedContracts = contractsList.filter(c => c.status === 'analyzed');
-
-            // High risk = score <= 50 (lower score means higher risk)
             const highRiskContracts = analyzedContracts.filter(c => {
                 const score = c.riskScore ?? c.risk_score ?? 100;
                 return score <= 50;
@@ -96,257 +61,242 @@ const DashboardPage = () => {
 
     const getGreeting = () => {
         const hour = new Date().getHours();
-        // Night: 21:00-4:59, Morning: 5:00-11:59, Afternoon: 12:00-16:59, Evening: 17:00-20:59
-        if (hour >= 21 || hour < 5) return t('dashboard.greeting.night');
-        if (hour < 12) return t('dashboard.greeting.morning');
-        if (hour < 17) return t('dashboard.greeting.afternoon');
-        return t('dashboard.greeting.evening');
+        if (hour >= 21 || hour < 5) return t('dashboard.greeting.night', 'Good night');
+        if (hour < 12) return t('dashboard.greeting.morning', 'Good morning');
+        if (hour < 17) return t('dashboard.greeting.afternoon', 'Good afternoon');
+        return t('dashboard.greeting.evening', 'Good evening');
     };
 
-    const statCards = [
-        {
-            key: 'contracts',
-            label: t('dashboard.totalContracts'),
-            value: stats.total,
-            icon: <FileText size={22} strokeWidth={2} />,
-            accentClass: 'stat-icon-contracts',
-        },
-        {
-            key: 'analyzed',
-            label: t('dashboard.analyzed'),
-            value: stats.analyzed,
-            icon: <BadgeCheck size={22} strokeWidth={2} />,
-            accentClass: 'stat-icon-analyzed',
-        },
-        {
-            key: 'pending',
-            label: t('dashboard.pending'),
-            value: stats.pending,
-            icon: <Clock3 size={22} strokeWidth={2} />,
-            accentClass: 'stat-icon-pending',
-        },
-        {
-            key: 'risk',
-            label: t('dashboard.highRisk'),
-            value: stats.highRisk,
-            icon: <TriangleAlert size={22} strokeWidth={2} />,
-            accentClass: 'stat-icon-risk',
-        },
-    ];
+    const scrollToPageTop = () => {
+        window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    };
 
     return (
-        <div className="dashboard-page page-container" dir={isRTL ? 'rtl' : 'ltr'}>
+        <div className="dashboard-new-container" dir={isRTL ? 'rtl' : 'ltr'}>
 
-            {/* GRAY BAND: Welcome + Stats */}
-            <div className="section-band">
-                <section className="welcome-section">
-                    <h1 className="welcome-title animate-fadeIn">
-                        {getGreeting()}, {getUserName()}
-                    </h1>
-                    <p className="welcome-subtitle animate-fadeIn">
-                        {t('dashboard.welcomeSubtitle')}
-                    </p>
-                </section>
+            {/* Hero / Circular Status Section */}
+            <section className="dashboard-hero-section">
+                <div className="dashboard-hero-header">
+                    <h2 className="dashboard-greeting">{getGreeting()}, {getUserName()}</h2>
+                    <p className="dashboard-subtitle">{t('dashboard.welcomeSubtitle')}</p>
+                </div>
 
-                <section className="stats-section">
-                    <div className="stats-grid">
-                        {statCards.map((stat, index) => (
-                            <Card
-                                key={stat.label}
-                                variant="glass"
-                                padding="md"
-                                className={`stat-card stat-card-${stat.key} animate-slideUp delay-${index + 1}`}
-                            >
-                                <div className={`stat-icon ${stat.accentClass}`}>
-                                    {stat.icon}
-                                </div>
-                                <div className="stat-content">
-                                    <p className="stat-value">{isLoading ? '-' : stat.value}</p>
-                                    <p className="stat-label">{stat.label}</p>
-                                </div>
-                            </Card>
-                        ))}
+                <div className="status-cards-grid">
+                    {/* Status Card 1: Total */}
+                    <div className="status-card">
+                        <div className="status-icon icon-primary">
+                            <span className="material-symbols-outlined">description</span>
+                        </div>
+                        <span className="status-value text-primary">{isLoading ? '-' : stats.total}</span>
+                        <span className="status-label">{t('dashboard.totalContracts')}</span>
                     </div>
-                </section>
+
+                    {/* Status Card 2: Analyzed */}
+                    <div className="status-card">
+                        <div className="status-icon icon-secondary">
+                            <span className="material-symbols-outlined">analytics</span>
+                        </div>
+                        <span className="status-value text-secondary">{isLoading ? '-' : stats.analyzed}</span>
+                        <span className="status-label">{t('dashboard.analyzed')}</span>
+                    </div>
+
+                    {/* Status Card 3: Pending */}
+                    <div className="status-card">
+                        <div className="status-icon icon-tertiary">
+                            <span className="material-symbols-outlined">pending_actions</span>
+                        </div>
+                        <span className="status-value text-tertiary">{isLoading ? '-' : stats.pending}</span>
+                        <span className="status-label">{t('dashboard.pending')}</span>
+                    </div>
+
+                    {/* Status Card 4: Risks */}
+                    <div className="status-card">
+                        <div className="status-icon icon-error">
+                            <span className="material-symbols-outlined">warning</span>
+                        </div>
+                        <span className="status-value text-error">{isLoading ? '-' : stats.highRisk}</span>
+                        <span className="status-label">{t('dashboard.highRisk')}</span>
+                    </div>
+                </div>
+            </section>
+
+            {/* Wave Divider 1 */}
+            <div className="wave-separator">
+                <svg className="wave-svg" fill="none" viewBox="0 0 1440 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+                    <path d="M0 64L60 58.7C120 53 240 43 360 48C480 53 600 75 720 85.3C840 96 960 96 1080 85.3C1200 75 1320 53 1380 42.7L1440 32V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0V64Z" className="wave-path-base"></path>
+                </svg>
             </div>
 
-            {/* WHITE BAND: Quick Actions */}
-            <div className="section-band-alt">
-                <section className="actions-section">
-                    <h2 className="section-title">{t('dashboard.quickActions')}</h2>
-                    <div className="actions-grid">
-                        <Card variant="elevated" padding="lg" className="action-card action-card-inset animate-slideUp delay-4">
-                            <div className="action-card-content">
-                                <div className="action-icon-wrapper">
-                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                                        <polyline points="17,8 12,3 7,8" />
-                                        <line x1="12" y1="3" x2="12" y2="15" />
-                                    </svg>
-                                </div>
-                                <h3>{t('dashboard.uploadContract')}</h3>
-                                <p>{t('dashboard.uploadDescription')}</p>
-                                <Link to="/upload" className="action-card-link">
-                                    <Button variant="primary" fullWidth>{t('dashboard.uploadPDF')}</Button>
-                                </Link>
-                            </div>
-                        </Card>
+            {/* Quick Actions Section */}
+            <section className="quick-actions-section">
+                <div className="quick-actions-inner">
+                    <h2 className="quick-actions-title">
+                        {t('dashboard.quickActions')}
+                        <span className="title-underline"></span>
+                    </h2>
 
-                        <Card variant="elevated" padding="lg" className="action-card action-card-inset animate-slideUp delay-5">
-                            <div className="action-card-content">
-                                <div className="action-icon-wrapper">
-                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                                        <polyline points="14,2 14,8 20,8" />
-                                        <line x1="16" y1="13" x2="8" y2="13" />
-                                        <line x1="16" y1="17" x2="8" y2="17" />
-                                    </svg>
-                                </div>
-                                <h3>{t('dashboard.viewContracts')}</h3>
-                                <p>{t('dashboard.viewDescription')}</p>
-                                <Link to="/contracts" className="action-card-link">
-                                    <Button variant="secondary" fullWidth>{t('dashboard.viewAll')}</Button>
-                                </Link>
+                    <div className="actions-grid-new">
+
+                        <Link to="/contracts" className="action-card-new action-view" onClick={scrollToPageTop}>
+                            <div className="action-bg-effect view-effect"></div>
+                            <span className="material-symbols-outlined action-large-icon text-primary">folder_open</span>
+                            <h3>{t('dashboard.viewContracts')}</h3>
+                            <p>{t('dashboard.viewDescription')}</p>
+                            <div className="action-link-text text-primary">
+                                {t('dashboard.viewAll')} <span className="material-symbols-outlined">arrow_forward</span>
                             </div>
-                        </Card>
+                        </Link>
+
+                        <Link to="/upload" className="action-card-new action-upload" onClick={scrollToPageTop}>
+                            <div className="action-bg-effect upload-effect"></div>
+                            <span className="material-symbols-outlined action-large-icon text-white">cloud_upload</span>
+                            <h3 className="text-white">{t('dashboard.uploadContract')}</h3>
+                            <p className="text-white-dim">{t('dashboard.uploadDescription')}</p>
+                            <div className="action-link-text text-white">
+                                {t('dashboard.uploadPDF')} <span className="material-symbols-outlined">arrow_forward</span>
+                            </div>
+                        </Link>
 
                         {!isAdmin && (
-                            <Card variant="elevated" padding="lg" className="action-card action-card-inset animate-slideUp delay-6">
-                                <div className="action-card-content">
-                                    <div className="action-icon-wrapper">
-                                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                                            <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" />
-                                        </svg>
-                                    </div>
-                                    <h3>{t('subscription.myPlan')}</h3>
-                                    {hasSubscription ? (
-                                        <p>
-                                            {packageName} — {isUnlimited
-                                                ? t('subscription.unlimited')
-                                                : `${scansRemaining} ${t('subscription.scansRemaining')}`
-                                            }
-                                        </p>
-                                    ) : (
-                                        <p>{t('subscription.noPlan')}</p>
-                                    )}
-                                    <Link to="/pricing" className="action-card-link">
-                                        <Button variant="secondary" fullWidth>
-                                            {hasSubscription ? t('subscription.upgrade') : t('subscription.choosePlan')}
-                                        </Button>
-                                    </Link>
+                            <Link to="/pricing" className="action-card-new action-subscription">
+                                <div className="action-bg-effect sub-effect"></div>
+                                <span className="material-symbols-outlined action-large-icon text-tertiary">card_membership</span>
+                                <h3>{t('subscription.myPlan')}</h3>
+                                {hasSubscription ? (
+                                    <p>{packageName} — {isUnlimited ? t('subscription.unlimited') : `${scansRemaining} ${t('subscription.scansRemaining')}`}</p>
+                                ) : (
+                                    <p>{t('subscription.noPlan')}</p>
+                                )}
+                                <div className="action-link-text text-tertiary">
+                                    {hasSubscription ? t('subscription.upgrade') : t('subscription.choosePlan')} <span className="material-symbols-outlined">arrow_forward</span>
                                 </div>
-                            </Card>
+                            </Link>
                         )}
                     </div>
-                </section>
+                </div>
+            </section>
+
+            {/* Wave Divider 2 */}
+            <div className="wave-separator reverse-wave">
+                <svg className="wave-svg" fill="none" viewBox="0 0 1440 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+                    <path d="M0 64L60 58.7C120 53 240 43 360 48C480 53 600 75 720 85.3C840 96 960 96 1080 85.3C1200 75 1320 53 1380 42.7L1440 32V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0V64Z" className="wave-path-base"></path>
+                </svg>
             </div>
 
-            {/* GRAY BAND: How to Start Guide */}
-            <div className="section-band">
-                <section className="guide-section animate-fadeIn delay-6">
-                    <Card variant="glass" padding="lg" className="guide-card">
+            {/* How to Start Section */}
+            <section className="how-to-start-section">
+                <div className="how-to-inner">
+                    <div className="how-to-header">
                         <h2>{t('dashboard.howToStart')}</h2>
-                        <div className="guide-steps guide-steps-professional">
-                            <div className="guide-step-card">
-                                <div className="guide-step-head guide-step-head-simple">
-                                    <span className="guide-number">1</span>
-                                </div>
-                                <div className="guide-content">
-                                    <h4>{t('dashboard.step1Title')}</h4>
-                                    <p>{t('dashboard.step1Desc')}</p>
-                                </div>
-                            </div>
+                    </div>
 
-                            <div className="guide-step-card">
-                                <div className="guide-step-head guide-step-head-simple">
-                                    <span className="guide-number">2</span>
-                                </div>
-                                <div className="guide-content">
-                                    <h4>{t('dashboard.step2Title')}</h4>
-                                    <p>{t('dashboard.step2Desc')}</p>
-                                </div>
-                            </div>
-
-                            <div className="guide-step-card">
-                                <div className="guide-step-head guide-step-head-simple">
-                                    <span className="guide-number">3</span>
-                                </div>
-                                <div className="guide-content">
-                                    <h4>{t('dashboard.step3Title')}</h4>
-                                    <p>{t('dashboard.step3Desc')}</p>
-                                </div>
-                            </div>
+                    <div className="steps-timeline">
+                        <div className="step-item">
+                            <div className="step-number text-primary">1</div>
+                            <h4>{t('dashboard.step1Title')}</h4>
+                            <p>{t('dashboard.step1Desc')}</p>
                         </div>
-                    </Card>
-                </section>
-            </div>
 
-            {/* WHITE BAND: Why We're Different */}
-            <div className="section-band-alt">
-                <section className="differentiators-section animate-fadeIn delay-8">
-                    <div className="differentiators-container">
-                        <div className="differentiators-image">
-                            <img src="/lawyer-hero.jpg" alt="Your Legal Consultant" />
+                        <div className="step-item">
+                            <div className="step-line"></div>
+                            <div className="step-number text-primary">2</div>
+                            <h4>{t('dashboard.step2Title')}</h4>
+                            <p>{t('dashboard.step2Desc')}</p>
                         </div>
-                        <div className="differentiators-content">
-                            <h2>{t('dashboard.whyUs')}</h2>
-                            <p className="differentiators-subtitle">{t('dashboard.whyUsSubtitle')}</p>
 
-                            <div className="feature-list">
-                                <div className="feature-item">
-                                    <div className="feature-icon privacy">
-                                        <Shield size={22} />
-                                    </div>
-                                    <div className="feature-text">
-                                        <h4>{t('dashboard.featurePrivacy')}</h4>
-                                        <p>{t('dashboard.featurePrivacyDesc')}</p>
-                                    </div>
-                                </div>
-
-                                <div className="feature-item">
-                                    <div className="feature-icon prompt">
-                                        <Zap size={22} />
-                                    </div>
-                                    <div className="feature-text">
-                                        <h4>{t('dashboard.featurePrompt')}</h4>
-                                        <p>{t('dashboard.featurePromptDesc')}</p>
-                                    </div>
-                                </div>
-
-                                <div className="feature-item">
-                                    <div className="feature-icon score">
-                                        <BarChart3 size={22} />
-                                    </div>
-                                    <div className="feature-text">
-                                        <h4>{t('dashboard.featureScore')}</h4>
-                                        <p>{t('dashboard.featureScoreDesc')}</p>
-                                    </div>
-                                </div>
-
-                                <div className="feature-item">
-                                    <div className="feature-icon tips">
-                                        <Lightbulb size={22} />
-                                    </div>
-                                    <div className="feature-text">
-                                        <h4>{t('dashboard.featureTips')}</h4>
-                                        <p>{t('dashboard.featureTipsDesc')}</p>
-                                    </div>
-                                </div>
-
-                                <div className="feature-item">
-                                    <div className="feature-icon aws">
-                                        <Cloud size={22} />
-                                    </div>
-                                    <div className="feature-text">
-                                        <h4>{t('dashboard.featureAws')}</h4>
-                                        <p>{t('dashboard.featureAwsDesc')}</p>
-                                    </div>
-                                </div>
-                            </div>
+                        <div className="step-item">
+                            <div className="step-line"></div>
+                            <div className="step-number text-primary">3</div>
+                            <h4>{t('dashboard.step3Title')}</h4>
+                            <p>{t('dashboard.step3Desc')}</p>
                         </div>
                     </div>
-                </section>
+                </div>
+            </section>
+
+            {/* Asymmetrical Curved Wave Divider */}
+            <div className="wave-separator dark-wave-top relative-z10">
+                <svg className="wave-svg" fill="none" viewBox="0 0 1200 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M985.66,92.83C906.67,72,823.78,31,743.84,14.19c-82.26-17.34-168.06-16.33-250.45.39-57.84,11.73-114,31.07-172,41.86A600.21,600.21,0,0,1,0,27.35V120H1200V95.83C1132.19,118.92,1055.71,111.31,985.66,92.83Z" className="wave-path-dark"></path>
+                </svg>
             </div>
+
+            <section className="why-rentguard-section">
+                <div className="why-inner">
+                    <div className="why-grid">
+
+                        <div className="why-image-wrapper">
+                            <div className="why-image-container">
+                                <div className="image-overlay"></div>
+                                <img src="/lawyer-hero.jpg" alt="Your Legal Consultant" />
+                            </div>
+                        </div>
+
+                        <div className="why-content">
+                            <h2>{t('dashboard.whyUs')}</h2>
+                            <p className="why-subtitle text-primary-light-dim">{t('dashboard.whyUsSubtitle')}</p>
+
+                            <div className="why-features-list">
+                                {/* 1. Privacy */}
+                                <div className="why-feature">
+                                    <div className="why-feature-icon">
+                                        <span className="material-symbols-outlined">lock</span>
+                                    </div>
+                                    <div className="why-feature-text">
+                                        <h5>{t('dashboard.featurePrivacy')}</h5>
+                                        <p className="text-primary-light-dim">{t('dashboard.featurePrivacyDesc')}</p>
+                                    </div>
+                                </div>
+
+                                {/* 2. Legal Professionalism */}
+                                <div className="why-feature">
+                                    <div className="why-feature-icon">
+                                        <span className="material-symbols-outlined">verified</span>
+                                    </div>
+                                    <div className="why-feature-text">
+                                        <h5>{t('dashboard.featurePrompt')}</h5>
+                                        <p className="text-primary-light-dim">{t('dashboard.featurePromptDesc')}</p>
+                                    </div>
+                                </div>
+
+                                {/* 3. Risk Score (Updated Icon name) */}
+                                <div className="why-feature">
+                                    <div className="why-feature-icon">
+                                        <span className="material-symbols-outlined">query_stats</span>
+                                    </div>
+                                    <div className="why-feature-text">
+                                        <h5>{t('dashboard.featureScore')}</h5>
+                                        <p className="text-primary-light-dim">{t('dashboard.featureScoreDesc')}</p>
+                                    </div>
+                                </div>
+
+                                {/* 4. Negotiation Tips (NEW - matching screenshot) */}
+                                <div className="why-feature">
+                                    <div className="why-feature-icon">
+                                        <span className="material-symbols-outlined">lightbulb</span>
+                                    </div>
+                                    <div className="why-feature-text">
+                                        <h5>{t('dashboard.featureTips')}</h5>
+                                        <p className="text-primary-light-dim">{t('dashboard.featureTipsDesc')}</p>
+                                    </div>
+                                </div>
+
+                                {/* 5. AWS Infrastructure */}
+                                <div className="why-feature">
+                                    <div className="why-feature-icon">
+                                        <span className="material-symbols-outlined">cloud</span>
+                                    </div>
+                                    <div className="why-feature-text">
+                                        <h5>{t('dashboard.featureAws')}</h5>
+                                        <p className="text-primary-light-dim">{t('dashboard.featureAwsDesc')}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
         </div>
     );
 };

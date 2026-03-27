@@ -23,7 +23,7 @@ import Navigation from './components/Navigation';
 import ContactPublic from './pages/ContactPublic';
 import PricingPublic from './pages/PricingPublic';
 import { showAppToast } from './utils/toast';
-import DashboardPageNew from './pages/DashboardPageNew';
+import DashboardPage from './pages/DashboardPage';
 const UploadPage = lazy(() => import('./pages/UploadPage'));
 const ContractsPage = lazy(() => import('./pages/ContractsPage'));
 const AnalysisPage = lazy(() => import('./pages/AnalysisPage'));
@@ -38,7 +38,7 @@ const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 const AdminUsers = lazy(() => import('./pages/AdminUsers'));
 const AdminAnalytics = lazy(() => import('./pages/AdminAnalytics'));
 const AdminStripeInsights = lazy(() => import('./pages/AdminStripeInsights'));
-import LandingPage from './pages/LandingPageNew';
+import LandingPage from './pages/LandingPage';
 import Footer from './components/Footer';
 import { SubscriptionProvider, useSubscription } from './contexts/SubscriptionContext';
 const ContractChatWidget = lazy(() => import('./components/ContractChatWidget'));
@@ -170,7 +170,7 @@ function App() {
         >
           <Routes>
             <Route path="/" element={<LandingPage />} />
-            <Route path="/dashboard" element={<ProtectedRoute><RequireActivePlanRoute><DashboardPageNew /></RequireActivePlanRoute></ProtectedRoute>} />
+            <Route path="/dashboard" element={<ProtectedRoute><RequireActivePlanRoute><DashboardPage /></RequireActivePlanRoute></ProtectedRoute>} />
             <Route path="/upload" element={<ProtectedRoute><RequireActivePlanRoute><UploadPage /></RequireActivePlanRoute></ProtectedRoute>} />
             <Route path="/contracts" element={<ProtectedRoute><RequireActivePlanRoute><ContractsPage /></RequireActivePlanRoute></ProtectedRoute>} />
             <Route path="/analysis/:contractId" element={<ProtectedRoute><RequireActivePlanRoute><AnalysisPage /></RequireActivePlanRoute></ProtectedRoute>} />
