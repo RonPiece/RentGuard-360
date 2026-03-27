@@ -348,11 +348,7 @@
   box-shadow: 0 22px 36px rgba(0, 0, 0, 0.52);
 }
 
-/* RTL: profile dropdown aligns to left */
-[dir="rtl"] .profile-dropdown {
-  right: auto;
-  left: 0;
-}
+
 
 .profile-header {
   display: flex;

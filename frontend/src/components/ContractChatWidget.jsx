@@ -1,9 +1,10 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { MessageCircle, X, Send, Copy, Check, Bot } from 'lucide-react';
+import { MessageCircle, X, Send, Copy, Check, Bot, ChevronDown } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { askContractQuestion, clearContractChatHistory, getContractChatHistory, getContracts } from '../services/api';
+import ActionMenu from './ActionMenu';
 import './ContractChatWidget.css';
 
 const getAnalysisContractIdFromPath = (pathname) => {
@@ -96,8 +97,11 @@ const ContractChatWidget = () => {
     const [rateLimitSecondsLeft, setRateLimitSecondsLeft] = useState(0);
     const [isTipCollapsed, setIsTipCollapsed] = useState(true);
     const [isClearConfirmOpen, setIsClearConfirmOpen] = useState(false);
+    const [isContractMenuOpen, setIsContractMenuOpen] = useState(false);
     const [footerOffset, setFooterOffset] = useState(24);
+    const [useWhyPalette, setUseWhyPalette] = useState(false);
     const lastAutoOpenedPathRef = useRef('');
+    const widgetRef = useRef(null);
     const inputRef = useRef(null);
     const userLabel = useMemo(() => {
         if (userAttributes?.name) return userAttributes.name;
@@ -127,6 +131,14 @@ const ContractChatWidget = () => {
         t('chat.promptPets'),
         t('chat.promptTermination'),
     ]), [t]);
+
+    const selectedContractLabel = useMemo(() => {
+        if (loadingContracts) return t('chat.loadingContracts');
+        if (!selectedContractId) return t('chat.selectContract');
+
+        const selected = contracts.find((contract) => contract.contractId === selectedContractId);
+        return selected?.fileName || selected?.contractId || t('chat.selectContract');
+    }, [contracts, loadingContracts, selectedContractId, t]);
 
     const routeContractId = useMemo(() => getAnalysisContractIdFromPath(location.pathname), [location.pathname]);
 
@@ -198,6 +210,53 @@ const ContractChatWidget = () => {
         };
     }, []);
 
+useEffect(() => {
+        const updatePaletteBySection = () => {
+            const whySectionNode = document.querySelector('.why-rentguard-section');
+            const footerNode = document.querySelector('.app-footer');
+
+            // Find the specific UI elements
+            const headerNode = document.querySelector('.chat-widget-header');
+            const launcherNode = document.querySelector('.chat-widget-launcher');
+
+            // THE FIX: Check the Header if chat is open, or the Launcher if closed!
+            const targetNode = open ? headerNode : launcherNode;
+
+            if (!targetNode) return;
+
+            const targetRect = targetNode.getBoundingClientRect();
+            let intersects = false;
+
+            // Check if the specific target touches the Green Saul Goodman section
+            if (whySectionNode) {
+                const sectionRect = whySectionNode.getBoundingClientRect();
+                if (targetRect.bottom >= sectionRect.top && targetRect.top <= sectionRect.bottom) {
+                    intersects = true;
+                }
+            }
+            
+            // Check if the specific target touches the Dark Green Footer
+            if (footerNode) {
+                const footerRect = footerNode.getBoundingClientRect();
+                if (targetRect.bottom >= footerRect.top && targetRect.top <= footerRect.bottom) {
+                    intersects = true;
+                }
+            }
+
+            setUseWhyPalette((prev) => (prev === intersects ? prev : intersects));
+        };
+
+        // Run immediately and attach listeners
+        updatePaletteBySection();
+        window.addEventListener('scroll', updatePaletteBySection, { passive: true });
+        window.addEventListener('resize', updatePaletteBySection);
+
+        return () => {
+            window.removeEventListener('scroll', updatePaletteBySection);
+            window.removeEventListener('resize', updatePaletteBySection);
+        };
+    }, [location.pathname, open, footerOffset]);
+
     useEffect(() => {
         if (!isAuthenticated || !open) return;
 
@@ -219,6 +278,12 @@ const ContractChatWidget = () => {
 
         loadContracts();
     }, [isAuthenticated, open, user?.userId, user?.username]);
+
+    useEffect(() => {
+        if (!open && isContractMenuOpen) {
+            setIsContractMenuOpen(false);
+        }
+    }, [open, isContractMenuOpen]);
 
     useEffect(() => {
         if (!open) return;
@@ -441,6 +506,13 @@ const ContractChatWidget = () => {
         });
     };
 
+    const handleContractSelect = (nextContractId) => {
+        setSelectedContractId(nextContractId);
+        setResponseHintKey('');
+        setIsContractMenuOpen(false);
+        trackChatEvent('chat_contract_selected', { contractId: nextContractId || null });
+    };
+
     const fallbackCopyText = (text) => {
         const textarea = document.createElement('textarea');
         textarea.value = text;
@@ -483,9 +555,10 @@ const ContractChatWidget = () => {
 
     return (
         <div
-            className={`chat-widget ${open ? 'open' : ''}`}
+            className={`chat-widget ${open ? 'open' : ''} ${useWhyPalette ? 'context-why' : ''}`}
             dir={isRTL ? 'rtl' : 'ltr'}
             style={{ '--chat-offset-bottom': `${footerOffset}px` }}
+            ref={widgetRef}
         >
             {open && (
                 <section className="chat-widget-panel" aria-label={t('chat.title')}>
@@ -505,26 +578,58 @@ const ContractChatWidget = () => {
                     </header>
 
                     <div className="chat-widget-contract-picker">
-                        <label htmlFor="chat-contract-select">{t('chat.contractLabel')}</label>
+                        <label id="chat-contract-select-label">{t('chat.contractLabel')}</label>
                         <div className="chat-widget-contract-row">
-                            <select
-                                id="chat-contract-select"
-                                value={selectedContractId}
-                                onChange={(e) => {
-                                    const nextContractId = e.target.value;
-                                    setSelectedContractId(nextContractId);
-                                    setResponseHintKey('');
-                                    trackChatEvent('chat_contract_selected', { contractId: nextContractId || null });
-                                }}
+                            <ActionMenu
+                                isOpen={isContractMenuOpen}
+                                onToggle={() => setIsContractMenuOpen((prev) => !prev)}
+                                onClose={() => setIsContractMenuOpen(false)}
+                                containerClassName="chat-contract-menu"
+                                triggerClassName="chat-contract-trigger"
+                                triggerAriaLabel={t('chat.contractLabel')}
                                 disabled={loadingContracts}
+                                triggerContent={
+                                    <>
+                                        <span
+                                            id="chat-contract-select"
+                                            className={`chat-contract-trigger-label ${selectedContractId ? 'selected' : 'placeholder'}`}
+                                        >
+                                            {selectedContractLabel}
+                                        </span>
+                                        <ChevronDown
+                                            size={15}
+                                            className={`chat-contract-trigger-chevron ${isContractMenuOpen ? 'open' : ''}`}
+                                        />
+                                    </>
+                                }
+                                panelClassName="chat-contract-dropdown"
                             >
-                                <option value="">{loadingContracts ? t('chat.loadingContracts') : t('chat.selectContract')}</option>
-                                {contracts.map((contract) => (
-                                    <option key={contract.contractId} value={contract.contractId}>
-                                        {contract.fileName || contract.contractId}
-                                    </option>
-                                ))}
-                            </select>
+                                <button
+                                    type="button"
+                                    role="menuitem"
+                                    onClick={() => handleContractSelect('')}
+                                    className={`chat-contract-option ${selectedContractId ? '' : 'active'}`}
+                                >
+                                    {loadingContracts ? t('chat.loadingContracts') : t('chat.selectContract')}
+                                </button>
+
+                                {contracts.map((contract) => {
+                                    const isActive = selectedContractId === contract.contractId;
+                                    const label = contract.fileName || contract.contractId;
+                                    return (
+                                        <button
+                                            key={contract.contractId}
+                                            type="button"
+                                            role="menuitem"
+                                            onClick={() => handleContractSelect(contract.contractId)}
+                                            title={label}
+                                            className={`chat-contract-option ${isActive ? 'active' : ''}`}
+                                        >
+                                            {label}
+                                        </button>
+                                    );
+                                })}
+                            </ActionMenu>
                             <button
                                 type="button"
                                 className="chat-widget-clear"

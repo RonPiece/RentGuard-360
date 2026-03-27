@@ -8,11 +8,14 @@ const ActionMenu = ({
     onToggle,
     onClose,
     containerClassName = '',
+    containerStyle,
     triggerClassName = '',
+    triggerStyle,
     triggerTitle,
     triggerAriaLabel,
     triggerContent,
     panelClassName = '',
+    panelStyle,
     disabled = false,
     preventDefault = true,
     children,
@@ -44,10 +47,11 @@ const ActionMenu = ({
     }, [isOpen, onClose]);
 
     return (
-        <div className={containerClassName} ref={menuRef}>
+        <div className={containerClassName} style={containerStyle} ref={menuRef}>
             <button
                 type="button"
                 className={triggerClassName}
+            style={triggerStyle}
                 title={triggerTitle}
                 aria-label={triggerAriaLabel || triggerTitle}
                 aria-expanded={isOpen}
@@ -63,7 +67,7 @@ const ActionMenu = ({
                 {triggerContent}
             </button>
             {isOpen && (
-                <div className={panelClassName} role="menu">
+                <div className={panelClassName} style={panelStyle} role="menu">
                     {children}
                 </div>
             )}

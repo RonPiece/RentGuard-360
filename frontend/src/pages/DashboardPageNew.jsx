@@ -67,6 +67,10 @@ const DashboardPageNew = () => {
         return t('dashboard.greeting.evening', 'Good evening');
     };
 
+    const scrollToPageTop = () => {
+        window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    };
+
     return (
         <div className="dashboard-new-container" dir={isRTL ? 'rtl' : 'ltr'}>
 
@@ -133,7 +137,7 @@ const DashboardPageNew = () => {
 
                     <div className="actions-grid-new">
 
-                        <Link to="/contracts" className="action-card-new action-view">
+                        <Link to="/contracts" className="action-card-new action-view" onClick={scrollToPageTop}>
                             <div className="action-bg-effect view-effect"></div>
                             <span className="material-symbols-outlined action-large-icon text-primary">folder_open</span>
                             <h3>{t('dashboard.viewContracts')}</h3>
@@ -143,7 +147,7 @@ const DashboardPageNew = () => {
                             </div>
                         </Link>
 
-                        <Link to="/upload" className="action-card-new action-upload">
+                        <Link to="/upload" className="action-card-new action-upload" onClick={scrollToPageTop}>
                             <div className="action-bg-effect upload-effect"></div>
                             <span className="material-symbols-outlined action-large-icon text-white">cloud_upload</span>
                             <h3 className="text-white">{t('dashboard.uploadContract')}</h3>
