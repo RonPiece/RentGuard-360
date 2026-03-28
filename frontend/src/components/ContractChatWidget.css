@@ -122,20 +122,37 @@
   box-shadow: var(--chat-shadow-lg);
   overflow: hidden;
   
-  /* THE FIX: Smooth opening animation */
+  /* Smooth open + close motion from the bottom edge */
   transform-origin: bottom right;
-  animation: chat-panel-spring 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  animation: chat-panel-enter 320ms cubic-bezier(0.2, 0.95, 0.18, 1) forwards;
+  will-change: transform, opacity;
 }
 
-/* Put this anywhere in your CSS file */
-@keyframes chat-panel-spring {
+/* Exit animation used before unmounting the panel */
+.chat-widget-panel.closing {
+  animation: chat-panel-exit 240ms cubic-bezier(0.4, 0, 1, 1) forwards;
+  pointer-events: none;
+}
+
+@keyframes chat-panel-enter {
   from {
     opacity: 0;
-    transform: scale(0.8) translateY(20px);
+    transform: translateY(18px) scale(0.96);
   }
   to {
     opacity: 1;
-    transform: scale(1) translateY(0);
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes chat-panel-exit {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(18px) scale(0.96);
   }
 }
 
@@ -1148,6 +1165,7 @@
     width: 95vw;
     height: 74vh;
     border-radius: var(--chat-radius-lg);
+    transform-origin: bottom center;
   }
 
   .chat-widget-launcher span {

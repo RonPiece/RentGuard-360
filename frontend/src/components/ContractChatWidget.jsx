@@ -8,6 +8,7 @@ import ActionMenu from './ActionMenu';
 import './ContractChatWidget.css';
 
 const CHAT_AUTO_OPEN_PREF_KEY = 'rentguard_chat_auto_open_contract';
+const CHAT_PANEL_CLOSE_MS = 260;
 
 const isContractChatAutoOpenEnabled = () => {
     try {
@@ -110,11 +111,13 @@ const ContractChatWidget = () => {
     const [isTipCollapsed, setIsTipCollapsed] = useState(true);
     const [isClearConfirmOpen, setIsClearConfirmOpen] = useState(false);
     const [isContractMenuOpen, setIsContractMenuOpen] = useState(false);
+    const [isClosing, setIsClosing] = useState(false);
     const [footerOffset, setFooterOffset] = useState(24);
     const [useWhyPalette, setUseWhyPalette] = useState(false);
     const lastAutoOpenedPathRef = useRef('');
     const widgetRef = useRef(null);
     const inputRef = useRef(null);
+    const closeTimerRef = useRef(null);
     const userLabel = useMemo(() => {
         if (userAttributes?.name) return userAttributes.name;
         if (typeof userAttributes?.email === 'string' && userAttributes.email.includes('@')) {
@@ -202,6 +205,13 @@ const ContractChatWidget = () => {
     useEffect(() => {
         const updateFooterOffset = () => {
             const baseOffset = window.innerWidth <= 768 ? 12 : 24;
+            const shouldPinToViewportBottom = open && window.innerWidth <= 768;
+
+            if (shouldPinToViewportBottom) {
+                setFooterOffset(baseOffset);
+                return;
+            }
+
             const footer = document.querySelector('.app-footer');
             if (!footer) {
                 setFooterOffset(baseOffset);
@@ -220,6 +230,15 @@ const ContractChatWidget = () => {
         return () => {
             window.removeEventListener('scroll', updateFooterOffset);
             window.removeEventListener('resize', updateFooterOffset);
+        };
+    }, [open]);
+
+    useEffect(() => {
+        return () => {
+            if (closeTimerRef.current) {
+                clearTimeout(closeTimerRef.current);
+                closeTimerRef.current = null;
+            }
         };
     }, []);
 
@@ -572,15 +591,37 @@ const ContractChatWidget = () => {
         }
     };
 
+    const openPanel = () => {
+        if (closeTimerRef.current) {
+            clearTimeout(closeTimerRef.current);
+            closeTimerRef.current = null;
+        }
+        setIsClosing(false);
+        setOpen(true);
+    };
+
+    const closePanel = () => {
+        if (!open || isClosing) return;
+
+        setIsClosing(true);
+        closeTimerRef.current = setTimeout(() => {
+            setOpen(false);
+            setIsClosing(false);
+            closeTimerRef.current = null;
+        }, CHAT_PANEL_CLOSE_MS);
+    };
+
+    const showPanel = open || isClosing;
+
     return (
         <div
-            className={`chat-widget ${open ? 'open' : ''} ${useWhyPalette ? 'context-why' : ''}`}
+            className={`chat-widget ${open ? 'open' : ''} ${showPanel ? 'panel-visible' : ''} ${isClosing ? 'closing' : ''} ${useWhyPalette ? 'context-why' : ''}`}
             dir={isRTL ? 'rtl' : 'ltr'}
             style={{ '--chat-offset-bottom': `${footerOffset}px` }}
             ref={widgetRef}
         >
-            {open && (
-                <section className="chat-widget-panel" aria-label={t('chat.title')}>
+            {showPanel && (
+                <section className={`chat-widget-panel ${isClosing ? 'closing' : ''}`} aria-label={t('chat.title')}>
                     <header className="chat-widget-header">
                         <div>
                             <h3>{t('chat.title')}</h3>
@@ -588,7 +629,7 @@ const ContractChatWidget = () => {
                         </div>
                         <button
                             className="chat-widget-close"
-                            onClick={() => setOpen(false)}
+                            onClick={closePanel}
                             aria-label={t('chat.close')}
                             type="button"
                         >
@@ -826,11 +867,11 @@ const ContractChatWidget = () => {
                 </section>
             )}
 
-            {!open && (
+            {!showPanel && (
                 <button
                     type="button"
                     className="chat-widget-launcher"
-                    onClick={() => setOpen(true)}
+                    onClick={openPanel}
                     aria-label={t('chat.open')}
                 >
                     <MessageCircle size={20} />
