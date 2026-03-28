@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useSubscription } from '../contexts/SubscriptionContext';
 import { useLanguage } from '../contexts/LanguageContext';
+import { Search } from 'lucide-react';
 
 const ScanBadge = () => {
   const { isAdmin } = useAuth();
@@ -20,9 +21,13 @@ const ScanBadge = () => {
       onClick={() => navigate(isAdmin ? '/admin/stripe' : '/pricing')}
       title={(isAdmin || isUnlimited) ? t('nav.unlimited') : `${scansRemaining} ${t('nav.scansLeft')}`}
     >
-      <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>
-        {(isAdmin || isUnlimited) ? 'all_inclusive' : 'database'}
-      </span>
+      {(isAdmin || isUnlimited) ? (
+        <span className="material-symbols-outlined" style={{ fontSize: '18px' }}> 
+          all_inclusive
+        </span>
+      ) : (
+        <Search size={18} />
+      )}
 
       {(isAdmin || isUnlimited) ? (
         <span className="scan-badge-unlimited">

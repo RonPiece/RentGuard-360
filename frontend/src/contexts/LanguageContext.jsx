@@ -272,6 +272,36 @@ const translations = {
             liabilityRepairs: 'אחריות ותיקונים',
             legalCompliance: 'עמידה בחוק',
         },
+        // Contact Page
+        contact: {
+            title: 'אנחנו כאן בשבילך',
+            subtitle: 'יש לך שאלות לגבי ניהול השכירות שלך? הצוות המקצועי של RentGuard זמין לסייע לך בכל נושא משפטי או טכני.',
+            successTitle: 'ההודעה נשלחה בהצלחה!',
+            successMessage: 'נחזור אליכם בהקדם האפשרי.',
+            sendAnother: 'שליחת הודעה נוספת',
+            fullName: 'שם מלא',
+            fullNamePlaceholder: 'ישראל ישראלי',
+            phone: 'טלפון',
+            phonePlaceholder: '054-7820346',
+            email: 'אימייל',
+            emailPlaceholder: 'name@company.com',
+            message: 'הודעה',
+            messagePlaceholder: 'איך נוכל לעזור לך היום?',
+            sending: 'שולח...',
+            sendMessage: 'שלח הודעה',
+            contactDetails: 'פרטי התקשרות',
+            address: 'כתובתנו',
+            addressValue: 'אור עקיבא, המרכז המשפטי, ישראל',
+            emailLabel: 'דואר אלקטרוני',
+            emailValue: 'rentguard360@gmail.com',
+            phoneLabel: 'טלפון',
+            phoneValue: '050-0000000',
+            joinText: 'הצטרפו לאלפי בעלי נכסים שבוחרים בשקט נפשי עם RentGuard.',
+            defaultSubject: 'פנייה חדשה מדף צור קשר',
+            errorMessage: 'שליחת ההודעה נכשלה. נסו שוב.',
+            secureCommunication: 'תקשורת מאובטחת',
+            fastResponse: 'מענה תוך 24 שעות',
+        },
         methodology: {
             title: 'איך מחושב הציון?',
             intro1: 'הציון הוא 5 קטגוריות × 20 נק׳ (סה״כ 100). מורידים נקודות לפי חומרה.',
@@ -567,6 +597,10 @@ const translations = {
             processing: 'מעבד תשלום...',
             securedByStripe: 'תשלום מאובטח באמצעות Stripe',
             testMode: 'מצב בדיקה — השתמש בכרטיס',
+            termsLabel: 'אני מאשר/ת את ',
+            termsLinkText: 'תנאי השירות ומדיניות הפרטיות',
+            termsDisclaimer: '. אני מבין/ה שמדובר ברכישה חד-פעמית של חבילת סריקות ושלא יתבצע חיוב חוזר.',
+            termsRequired: 'יש לאשר את תנאי השירות כדי להמשיך',
         },
         // Payment Success Page
         paymentSuccess: {
@@ -592,6 +626,30 @@ const translations = {
             noScansLeft: 'אין סריקות נותרות',
             noScansMessage: 'שדרגו את החבילה שלכם כדי להמשיך לסרוק חוזים.',
             upgradePlan: 'שדרוג חבילה',
+        },
+        // Billing Page
+        billing: {
+            title: 'ניהול חיובים ותשלומים',
+            subtitle: 'נהלו את אמצעי התשלום, צפו בחשבוניות והיסטוריית חיובים במקום אחד מאובטח.',
+            currentPlan: 'החבילה הנוכחית',
+            scansRemaining: 'סריקות נותרו',
+            unlimited: 'ללא הגבלה',
+            noPlan: 'אין חבילה פעילה',
+            upgradePlan: 'שדרוג חבילה',
+            portalTitle: 'ניהול אמצעי תשלום וחשבוניות',
+            portalDesc: 'עדכנו כרטיס אשראי, הורידו חשבוניות PDF וצפו בהיסטוריית התשלומים שלכם.',
+            portalButton: 'ניהול אמצעי תשלום והיסטוריית חיובים',
+            portalLoading: 'מכין קישור מאובטח...',
+            portalError: 'לא הצלחנו לפתוח את פורטל התשלומים. נסו שוב.',
+            feature1Title: 'עדכון אמצעי תשלום',
+            feature1Desc: 'הוסיפו או החליפו כרטיס אשראי בצורה מאובטחת.',
+            feature2Title: 'הורדת חשבוניות',
+            feature2Desc: 'הורידו חשבוניות מפורטות בפורמט PDF.',
+            feature3Title: 'היסטוריית תשלומים',
+            feature3Desc: 'צפו בכל העסקאות והתשלומים שביצעתם.',
+            poweredByStripe: 'מאובטח ע"י Stripe',
+            securityNote: 'כל הנתונים שלכם מוצפנים ומאובטחים ברמת התעשייה.',
+            backToSettings: 'חזרה להגדרות',
         },
     },
     en: {
@@ -836,6 +894,36 @@ const translations = {
             terminationClauses: 'Termination & Exit',
             liabilityRepairs: 'Liability & Repairs',
             legalCompliance: 'Legal Compliance',
+        },
+        // Contact Page
+        contact: {
+            title: 'We are here for you',
+            subtitle: 'Have questions about your rental management? The RentGuard professional team is available to assist you with any legal or technical issue.',
+            successTitle: 'Message Sent Successfully!',
+            successMessage: 'We\'ll get back to you as soon as possible.',
+            sendAnother: 'Send Another Message',
+            fullName: 'Full Name',
+            fullNamePlaceholder: 'John Smith',
+            phone: 'Phone',
+            phonePlaceholder: '054-7820346',
+            email: 'Email',
+            emailPlaceholder: 'name@company.com',
+            message: 'Message',
+            messagePlaceholder: 'How can we help you today?',
+            sending: 'Sending...',
+            sendMessage: 'Send Message',
+            contactDetails: 'Contact Details',
+            address: 'Address',
+            addressValue: 'Or Akiva, The Legal Center, Israel',
+            emailLabel: 'Email',
+            emailValue: 'rentguard360@gmail.com',
+            phoneLabel: 'Phone',
+            phoneValue: '050-0000000',
+            joinText: 'Join thousands of property owners who choose peace of mind with RentGuard.',
+            defaultSubject: 'New Contact Page Inquiry',
+            errorMessage: 'Failed to send message. Please try again.',
+            secureCommunication: 'Secure Communication',
+            fastResponse: 'Response within 24 hours',
         },
         methodology: {
             title: 'How is the score calculated?',
@@ -1132,6 +1220,10 @@ const translations = {
             processing: 'Processing...',
             securedByStripe: 'Secured by Stripe',
             testMode: 'Test mode — use card',
+            termsLabel: 'I agree to the ',
+            termsLinkText: 'Terms of Service and Privacy Policy',
+            termsDisclaimer: '. I understand this is a one-time purchase of a scan bundle and no recurring charges will apply.',
+            termsRequired: 'You must agree to the Terms of Service to proceed',
         },
         // Payment Success Page
         paymentSuccess: {
@@ -1158,11 +1250,53 @@ const translations = {
             noScansMessage: 'Upgrade your bundle to continue scanning contracts.',
             upgradePlan: 'Upgrade Bundle',
         },
+        // Billing Page
+        billing: {
+            title: 'Billing & Payments',
+            subtitle: 'Manage your payment methods, view invoices and billing history in one secure place.',
+            currentPlan: 'Current Plan',
+            scansRemaining: 'scans remaining',
+            unlimited: 'Unlimited',
+            noPlan: 'No active plan',
+            upgradePlan: 'Upgrade Plan',
+            portalTitle: 'Manage Payment Methods & Invoices',
+            portalDesc: 'Update your credit card, download PDF invoices and view your complete payment history.',
+            portalButton: 'Manage Payment Methods & Billing History',
+            portalLoading: 'Preparing secure link...',
+            portalError: 'Could not open the billing portal. Please try again.',
+            feature1Title: 'Update Payment Methods',
+            feature1Desc: 'Add or replace your credit card securely.',
+            feature2Title: 'Download Invoices',
+            feature2Desc: 'Download detailed invoices in PDF format.',
+            feature3Title: 'Payment History',
+            feature3Desc: 'View all your transactions and payments.',
+            poweredByStripe: 'Powered by Stripe',
+            securityNote: 'All your data is encrypted and secured at industry level.',
+            backToSettings: 'Back to Settings',
+        },
     },
 };
 
+const translateFromLanguage = (language, key) => {
+    const keys = String(key || '').split('.');
+    let value = translations[language] || translations.he;
+    for (const k of keys) {
+        value = value?.[k];
+    }
+    return value || key;
+};
+
+const defaultLanguageContext = {
+    language: 'he',
+    setLanguage: () => {},
+    t: (key) => translateFromLanguage('he', key),
+    toggleLanguage: () => {},
+    isRTL: true,
+    translations: translations.he,
+};
+
 // Create context
-const LanguageContext = createContext();
+const LanguageContext = createContext(defaultLanguageContext);
 
 // Provider component
 export const LanguageProvider = ({ children }) => {
@@ -1180,14 +1314,7 @@ export const LanguageProvider = ({ children }) => {
         document.documentElement.lang = language;
     }, [language]);
 
-    const t = (key) => {
-        const keys = key.split('.');
-        let value = translations[language];
-        for (const k of keys) {
-            value = value?.[k];
-        }
-        return value || key;
-    };
+    const t = (key) => translateFromLanguage(language, key);
 
     const toggleLanguage = () => {
         setLanguage(prev => prev === 'he' ? 'en' : 'he');
@@ -1212,8 +1339,8 @@ export const LanguageProvider = ({ children }) => {
 // Custom hook
 export const useLanguage = () => {
     const context = useContext(LanguageContext);
-    if (!context) {
-        throw new Error('useLanguage must be used within a LanguageProvider');
+    if (context === defaultLanguageContext && import.meta.env.DEV) {
+        console.warn('useLanguage fallback is active. Wrap components with LanguageProvider to avoid missing translations.');
     }
     return context;
 };

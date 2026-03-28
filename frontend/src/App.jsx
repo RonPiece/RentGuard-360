@@ -33,6 +33,8 @@ const ContactPage = lazy(() => import('./pages/ContactPage'));
 const PricingPage = lazy(() => import('./pages/PricingPage'));
 const CheckoutPage = lazy(() => import('./pages/CheckoutPage'));
 const PaymentSuccessPage = lazy(() => import('./pages/PaymentSuccessPage'));
+const BillingPage = lazy(() => import('./pages/BillingPage'));
+const TermsPage = lazy(() => import('./pages/TermsPage'));
 const AdminLayout = lazy(() => import('./pages/AdminLayout'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 const AdminUsers = lazy(() => import('./pages/AdminUsers'));
@@ -175,11 +177,13 @@ function App() {
             <Route path="/contracts" element={<ProtectedRoute><RequireActivePlanRoute><ContractsPage /></RequireActivePlanRoute></ProtectedRoute>} />
             <Route path="/analysis/:contractId" element={<ProtectedRoute><RequireActivePlanRoute><AnalysisPage /></RequireActivePlanRoute></ProtectedRoute>} />
             <Route path="/settings" element={<ProtectedRoute><RequireActivePlanRoute><SettingsPage /></RequireActivePlanRoute></ProtectedRoute>} />
+            <Route path="/billing" element={<ProtectedRoute><RequireActivePlanRoute><BillingPage /></RequireActivePlanRoute></ProtectedRoute>} />
             <Route path="/contact" element={isAuthenticated ? <ProtectedRoute><RequireActivePlanRoute><ContactPage /></RequireActivePlanRoute></ProtectedRoute> : <ContactPublic />} />
             <Route path="/pricing" element={isAuthenticated ? <ProtectedRoute>{isAdmin ? <Navigate to="/dashboard" replace /> : <PricingPage />}</ProtectedRoute> : <PricingPublic />} />
             <Route path="/checkout/:packageId" element={<ProtectedRoute>{isAdmin ? <Navigate to="/dashboard" replace /> : <CheckoutPage />}</ProtectedRoute>} />
             <Route path="/payment-success" element={<ProtectedRoute><PaymentSuccessPage /></ProtectedRoute>} />
             <Route path="/shared/:id" element={<SharedContractView />} />
+            <Route path="/terms" element={<TermsPage />} />
 
             {/* Admin routes with sidebar layout */}
             <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>

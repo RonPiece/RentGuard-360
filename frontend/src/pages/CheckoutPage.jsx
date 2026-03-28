@@ -19,7 +19,7 @@
  * ============================================
  */
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -44,6 +44,7 @@ const CheckoutForm = ({ pkg, clientSecret, onSuccess }) => {
     const { isDark } = useTheme();
     const [isProcessing, setIsProcessing] = useState(false);
     const [error, setError] = useState(null);
+    const [termsAccepted, setTermsAccepted] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -123,11 +124,30 @@ const CheckoutForm = ({ pkg, clientSecret, onSuccess }) => {
                 <span>{t('checkout.testMode')}: 4242 4242 4242 4242</span>
             </div>
 
+            {/* Payment Terms Consent */}
+            <div className="checkout-terms-wrapper">
+                <label className="checkout-terms-label">
+                    <input
+                        type="checkbox"
+                        className="checkout-terms-checkbox"
+                        checked={termsAccepted}
+                        onChange={(e) => setTermsAccepted(e.target.checked)}
+                    />
+                    <span className="checkout-terms-text">
+                        {t('checkout.termsLabel')}
+                        <Link to="/terms" target="_blank" className="checkout-terms-link">
+                            {t('checkout.termsLinkText')}
+                        </Link>
+                        {t('checkout.termsDisclaimer')}
+                    </span>
+                </label>
+            </div>
+
             <Button
                 type="submit"
                 variant="primary"
                 fullWidth
-                disabled={!stripe || isProcessing}
+                disabled={!stripe || isProcessing || !termsAccepted}
             >
                 {isProcessing ? t('checkout.processing') : (() => {
                     const price = !isRTL ? Math.round(pkg.price / 3.7) : pkg.price;
@@ -154,7 +174,7 @@ const CheckoutPage = () => {
     const { packageId } = useParams();
     const navigate = useNavigate();
     const { t, isRTL } = useLanguage();
-    const { user } = useAuth();
+    const { user, userAttributes } = useAuth();
     const { refreshSubscription } = useSubscription();
 
     const [pkg, setPkg] = useState(null);
@@ -163,6 +183,8 @@ const CheckoutPage = () => {
     const [error, setError] = useState(null);
 
     const userId = user?.userId || user?.username;
+    const userEmail = userAttributes?.email;
+    const userName = userAttributes?.name;
 
     // Fetch package + create PaymentIntent on mount
     useEffect(() => {
@@ -176,7 +198,7 @@ const CheckoutPage = () => {
 
                 // 2. If free package, handle immediately
                 if (packageData.price <= 0) {
-                    const result = await createPaymentIntent(userId, parseInt(packageId));
+                    const result = await createPaymentIntent(userId, parseInt(packageId), userEmail, userName);
                     if (result.isFree) {
                         await refreshSubscription();
                         navigate('/payment-success', {
@@ -187,7 +209,7 @@ const CheckoutPage = () => {
                 }
 
                 // 3. Create PaymentIntent for paid packages
-                const intentData = await createPaymentIntent(userId, parseInt(packageId));
+                const intentData = await createPaymentIntent(userId, parseInt(packageId), userEmail, userName);
                 setClientSecret(intentData.clientSecret);
             } catch (err) {
                 console.error('Checkout init error:', err);

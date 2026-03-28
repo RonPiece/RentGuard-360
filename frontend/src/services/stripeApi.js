@@ -101,10 +101,14 @@ export const getPackageById = async (id) => {
  * Create a Stripe PaymentIntent for a package purchase.
  * POST /api/payments/create-intent
  */
-export const createPaymentIntent = async (userId, packageId) => {
+/**
+ * Create a Stripe PaymentIntent.
+ * POST /api/payments/create-intent
+ */
+export const createPaymentIntent = async (userId, packageId, userEmail, userName) => {
     return stripeApiCall('/api/payments/create-intent', {
         method: 'POST',
-        body: JSON.stringify({ userId, packageId }),
+        body: JSON.stringify({ userId, packageId, email: userEmail, name: userName }),
     }, true);
 };
 
@@ -169,6 +173,23 @@ export const getAdminStripeStats = async () => {
     return stripeApiCall('/api/payments/admin-stats', {}, true);
 };
 
+// ============================================
+// CUSTOMER PORTAL
+// ============================================
+
+/**
+ * Create a Stripe Customer Portal session.
+ * The backend finds/creates a Stripe Customer by email,
+ * then generates a portal URL for managing payment methods & invoices.
+ * POST /api/payments/customer-portal
+ */
+export const createCustomerPortalSession = async (userId, email, name, returnUrl) => {
+    return stripeApiCall('/api/payments/customer-portal', {
+        method: 'POST',
+        body: JSON.stringify({ userId, email, name, returnUrl }),
+    }, true);
+};
+
 export default {
     getPackages,
     getPackageById,
@@ -178,4 +199,5 @@ export default {
     getTransactions,
     deductScan,
     getAdminStripeStats,
+    createCustomerPortalSession,
 };

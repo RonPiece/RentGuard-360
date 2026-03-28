@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
+import { useNavigate } from 'react-router-dom';
 import {
     UserRound,
     Palette,
@@ -26,6 +27,7 @@ const SettingsPage = () => {
     const { userAttributes, logout, deleteAccount, user } = useAuth();
     const { isDark, toggleTheme } = useTheme();
     const { t, isRTL } = useLanguage();
+    const navigate = useNavigate();
 
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [deleteConfirmText, setDeleteConfirmText] = useState('');
@@ -158,8 +160,8 @@ const SettingsPage = () => {
                             <span className="card-number">•••• 4421</span>
                         </div>
                     </div>
-                    <button className="cube-link-btn text-secondary" onClick={() => alert('Future Billing Logic Here')}>
-                        {isRTL ? 'היסטוריית חיובים' : 'Billing History'} &rarr;
+                    <button className="cube-link-btn text-secondary" onClick={() => navigate('/billing')}>
+                        {isRTL ? 'ניהול חיובים' : 'Manage Billing'} &rarr;
                     </button>
                 </div>
 

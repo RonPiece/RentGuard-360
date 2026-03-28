@@ -282,6 +282,89 @@
     font-family: var(--font-mono);
 }
 
+/* Payment Terms Consent */
+.checkout-terms-wrapper {
+    padding: var(--space-md);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    background: linear-gradient(180deg, rgba(5, 150, 105, 0.03), rgba(5, 150, 105, 0.01));
+    transition: border-color var(--transition-fast);
+}
+
+.checkout-terms-wrapper:has(input:checked) {
+    border-color: rgba(5, 150, 105, 0.3);
+    background: linear-gradient(180deg, rgba(5, 150, 105, 0.06), rgba(5, 150, 105, 0.02));
+}
+
+.checkout-terms-label {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-sm);
+    cursor: pointer;
+    line-height: 1.6;
+}
+
+.checkout-terms-checkbox {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    min-width: 18px;
+    border: 2px solid var(--glass-border);
+    border-radius: 4px;
+    margin-top: 2px;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s ease;
+    background: var(--bg-card);
+}
+
+.checkout-terms-checkbox:checked {
+    background: var(--accent-primary);
+    border-color: var(--accent-primary);
+}
+
+.checkout-terms-checkbox:checked::after {
+    content: '';
+    position: absolute;
+    top: 1px;
+    left: 5px;
+    width: 5px;
+    height: 9px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.checkout-terms-text {
+    font-size: var(--font-size-xs);
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.checkout-terms-link {
+    color: var(--accent-primary);
+    font-weight: var(--font-weight-semibold);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.checkout-terms-link:hover {
+    color: var(--accent-primary-hover);
+}
+
+[data-theme="dark"] .checkout-terms-wrapper {
+    background: linear-gradient(180deg, rgba(16, 185, 129, 0.04), rgba(16, 185, 129, 0.01));
+}
+
+[data-theme="dark"] .checkout-terms-wrapper:has(input:checked) {
+    border-color: rgba(52, 211, 153, 0.3);
+}
+
+[data-theme="dark"] .checkout-terms-checkbox {
+    background: var(--bg-inset);
+}
+
 /* Secure Badge */
 .checkout-secure {
     display: flex;

@@ -20,12 +20,23 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import { useAuth } from './AuthContext';
 import { getSubscription, deductScan as apiDeductScan } from '../services/stripeApi';
 
-const SubscriptionContext = createContext(null);
+const defaultSubscriptionContext = {
+    subscription: null,
+    scansRemaining: 0,
+    isUnlimited: false,
+    packageName: null,
+    hasSubscription: false,
+    isLoading: false,
+    refreshSubscription: async () => {},
+    deductScan: async () => ({ success: false, error: 'Subscription context unavailable' }),
+};
+
+const SubscriptionContext = createContext(defaultSubscriptionContext);
 
 export const useSubscription = () => {
     const context = useContext(SubscriptionContext);
-    if (!context) {
-        throw new Error('useSubscription must be used within a SubscriptionProvider');
+    if (context === defaultSubscriptionContext && import.meta.env.DEV) {
+        console.warn('useSubscription fallback is active. Wrap components with SubscriptionProvider to avoid missing subscription state.');
     }
     return context;
 };
@@ -33,7 +44,7 @@ export const useSubscription = () => {
 export const SubscriptionProvider = ({ children }) => {
     const { user, isAuthenticated, isAdmin } = useAuth();
     const [subscription, setSubscription] = useState(null);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     const getUserId = useCallback(() => {
         return user?.userId || user?.username || null;
@@ -80,6 +91,7 @@ export const SubscriptionProvider = ({ children }) => {
             refreshSubscription();
         } else {
             setSubscription(null);
+            setIsLoading(false);
         }
     }, [isAuthenticated, refreshSubscription]);
 

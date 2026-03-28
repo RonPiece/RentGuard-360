@@ -5,7 +5,7 @@
  * ============================================
  */
 import React, { useState } from 'react';
-import { Mail, CheckCircle2, MapPin, Phone, Send } from 'lucide-react';
+import { Mail, CheckCircle2, MapPin, Phone, Send, Shield, Clock } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { sendContactMessage } from '../services/api';
@@ -46,7 +46,7 @@ const ContactPage = () => {
                 ...formData,
                 email: userAttributes?.email || formData.email,
                 // Defaulting subject since it's removed from UI but might be needed by API
-                subject: isRTL ? 'פנייה חדשה מדף צור קשר' : 'New Contact Page Inquiry'
+                subject: t('contact.defaultSubject')
             });
 
             if (response.ticketId || response.message === 'Ticket created') {
@@ -62,7 +62,7 @@ const ContactPage = () => {
             }
         } catch (err) {
             console.error('Contact form error:', err);
-            setError(err.message || (isRTL ? 'שליחת ההודעה נכשלה. נסו שוב.' : 'Failed to send message. Please try again.'));
+            setError(err.message || t('contact.errorMessage'));
             setSubmitStatus('error');
             emitAppToast({
                 type: 'error',
@@ -80,12 +80,10 @@ const ContactPage = () => {
             {/* Header Section */}
             <div className="contact-header animate-fadeIn">
                 <h1 className="headline-font">
-                    {isRTL ? 'אנחנו כאן בשבילך' : 'We are here for you'}
+                    {t('contact.title')}
                 </h1>
                 <p>
-                    {isRTL
-                        ? 'יש לך שאלות לגבי ניהול השכירות שלך? הצוות המקצועי של RentGuard זמין לסייע לך בכל נושא משפטי או טכני.'
-                        : 'Have questions about your rental management? The RentGuard professional team is available to assist you with any legal or technical issue.'}
+                    {t('contact.subtitle')}
                 </p>
             </div>
 
@@ -100,39 +98,39 @@ const ContactPage = () => {
                                 <span className="success-icon" aria-hidden="true">
                                     <CheckCircle2 size={48} strokeWidth={2} />
                                 </span>
-                                <h3>{isRTL ? 'ההודעה נשלחה בהצלחה!' : 'Message Sent Successfully!'}</h3>
-                                <p>{isRTL ? 'נחזור אליכם בהקדם האפשרי.' : 'We\'ll get back to you as soon as possible.'}</p>
+                                <h3>{t('contact.successTitle')}</h3>
+                                <p>{t('contact.successMessage')}</p>
                                 <Button
                                     variant="secondary"
                                     onClick={() => setSubmitStatus(null)}
                                 >
-                                    {isRTL ? 'שליחת הודעה נוספת' : 'Send Another Message'}
+                                    {t('contact.sendAnother')}
                                 </Button>
                             </div>
                         ) : (
                             <form onSubmit={handleSubmit} className="contact-form">
                                 <div className="form-row-2col">
                                     <Input
-                                        label={isRTL ? 'שם מלא' : 'Full Name'}
+                                        label={t('contact.fullName')}
                                         name="name"
                                         value={formData.name}
                                         onChange={handleChange}
                                         required
-                                        placeholder={isRTL ? 'ישראל ישראלי' : 'John Smith'}
+                                        placeholder={t('contact.fullNamePlaceholder')}
                                     />
                                     <Input
-                                        label={isRTL ? 'טלפון' : 'Phone'}
+                                        label={t('contact.phone')}
                                         name="phone"
                                         type="tel"
                                         value={formData.phone}
                                         onChange={handleChange}
                                         dir="ltr"
-                                        placeholder="054-7820346"
+                                        placeholder={t('contact.phonePlaceholder')}
                                     />
                                 </div>
 
                                 <Input
-                                    label={isRTL ? 'אימייל' : 'Email'}
+                                    label={t('contact.email')}
                                     name="email"
                                     type="email"
                                     value={userAttributes?.email || formData.email}
@@ -140,17 +138,17 @@ const ContactPage = () => {
                                     disabled={!!userAttributes?.email}
                                     required
                                     dir="ltr"
-                                    placeholder="name@company.com"
+                                    placeholder={t('contact.emailPlaceholder')}
                                 />
 
                                 <div className="textarea-wrapper">
-                                    <label className="input-label">{isRTL ? 'הודעה' : 'Message'}</label>
+                                    <label className="input-label">{t('contact.message')}</label>
                                     <textarea
                                         name="message"
                                         value={formData.message}
                                         onChange={handleChange}
                                         required
-                                        placeholder={isRTL ? 'איך נוכל לעזור לך היום?' : 'How can we help you today?'}
+                                        placeholder={t('contact.messagePlaceholder')}
                                         rows={5}
                                         className="contact-textarea"
                                     />
@@ -165,9 +163,20 @@ const ContactPage = () => {
                                     type="submit"
                                     className="submit-btn"
                                 >
-                                    <span>{isSubmitting ? (isRTL ? 'שולח...' : 'Sending...') : (isRTL ? 'שלח הודעה' : 'Send Message')}</span>
+                                    <span>{isSubmitting ? t('contact.sending') : t('contact.sendMessage')}</span>
                                     {!isSubmitting && <Send size={18} className={isRTL ? 'icon-rtl' : 'icon-ltr'} />}
                                 </Button>
+                                
+                                <div className="trust-bar">
+                                    <div className="trust-item">
+                                        <Shield size={18} className="trust-icon" />
+                                        <span>{t('contact.secureCommunication')}</span>
+                                    </div>
+                                    <div className="trust-item">
+                                        <Clock size={18} className="trust-icon" />
+                                        <span>{t('contact.fastResponse')}</span>
+                                    </div>
+                                </div>
                             </form>
                         )}
                     </Card>
@@ -178,15 +187,15 @@ const ContactPage = () => {
 
                     {/* Contact Details Card */}
                     <div className="info-details-card">
-                        <h2 className="headline-font">{isRTL ? 'פרטי התקשרות' : 'Contact Details'}</h2>
+                        <h2 className="headline-font">{t('contact.contactDetails')}</h2>
                         <ul className="info-list">
                             <li>
                                 <div className="info-icon">
                                     <MapPin size={20} />
                                 </div>
                                 <div className="info-text">
-                                    <p className="info-label">{isRTL ? 'כתובתנו' : 'Address'}</p>
-                                    <p className="info-value">{isRTL ? 'אור עקיבא, המרכז המשפטי, ישראל' : 'Or Akiva, The Legal Center, Israel'}</p>
+                                    <p className="info-label">{t('contact.address')}</p>
+                                    <p className="info-value">{t('contact.addressValue')}</p>
                                 </div>
                             </li>
                             <li>
@@ -194,8 +203,8 @@ const ContactPage = () => {
                                     <Mail size={20} />
                                 </div>
                                 <div className="info-text">
-                                    <p className="info-label">{isRTL ? 'דואר אלקטרוני' : 'Email'}</p>
-                                    <p className="info-value" dir="ltr">rentguard360@gmail.com</p>
+                                    <p className="info-label">{t('contact.emailLabel')}</p>
+                                    <p className="info-value" dir="ltr">{t('contact.emailValue')}</p>
                                 </div>
                             </li>
                             <li>
@@ -203,8 +212,8 @@ const ContactPage = () => {
                                     <Phone size={20} />
                                 </div>
                                 <div className="info-text">
-                                    <p className="info-label">{isRTL ? 'טלפון' : 'Phone'}</p>
-                                    <p className="info-value" dir="ltr">050-0000000</p>
+                                    <p className="info-label">{t('contact.phoneLabel')}</p>
+                                    <p className="info-value" dir="ltr">{t('contact.phoneValue')}</p>
                                 </div>
                             </li>
                         </ul>
@@ -219,9 +228,7 @@ const ContactPage = () => {
                         />
                         <div className="brand-image-overlay">
                             <p>
-                                {isRTL
-                                    ? 'הצטרפו לאלפי בעלי נכסים שבוחרים בשקט נפשי עם RentGuard.'
-                                    : 'Join thousands of property owners who choose peace of mind with RentGuard.'}
+                                {t('contact.joinText')}
                             </p>
                         </div>
                     </div>

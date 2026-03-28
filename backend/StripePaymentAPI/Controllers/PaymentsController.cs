@@ -111,6 +111,104 @@ namespace StripePaymentAPI.Controllers
             return null;
         }
 
+        private Customer GetOrCreateStripeCustomer(string email, string name, string userId)
+        {
+            var customerService = new CustomerService();
+            var listOptions = new CustomerListOptions
+            {
+                Email = email,
+                Limit = 1
+            };
+
+            StripeList<Customer> existingCustomers = customerService.List(listOptions);
+
+            if (existingCustomers.Data != null && existingCustomers.Data.Count > 0)
+            {
+                return existingCustomers.Data[0];
+            }
+
+            // Create a new Stripe Customer
+            var createOptions = new CustomerCreateOptions
+            {
+                Email = email,
+                Name = name ?? "",
+                Metadata = new Dictionary<string, string>
+                {
+                    { "rentguard_user_id", userId }
+                }
+            };
+            return customerService.Create(createOptions);
+        }
+
+        /// <summary>
+        /// Creates a finalized, paid Invoice for a completed payment.
+        /// This ensures invoices appear in the Stripe Customer Portal
+        /// and the customer's Total Spend / Payments count is updated.
+        /// </summary>
+        private void CreateInvoiceForPayment(string customerId, string packageName, long amountInSmallestUnit, string currency, string paymentIntentId)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(customerId) || amountInSmallestUnit <= 0)
+                {
+                    return;
+                }
+
+                var invoiceService = new InvoiceService();
+                var existingInvoices = invoiceService.List(new InvoiceListOptions
+                {
+                    Customer = customerId,
+                    Limit = 20
+                });
+
+                bool alreadyExists = existingInvoices?.Data?.Any(inv =>
+                    inv?.Metadata != null
+                    && inv.Metadata.TryGetValue("payment_intent_id", out string existingPaymentIntentId)
+                    && string.Equals(existingPaymentIntentId, paymentIntentId, StringComparison.Ordinal)) == true;
+
+                if (alreadyExists)
+                {
+                    return;
+                }
+
+                // 1. Create the Invoice as draft first
+                Invoice invoice = invoiceService.Create(new InvoiceCreateOptions
+                {
+                    Customer = customerId,
+                    AutoAdvance = false, // We'll finalize manually
+                    Metadata = new Dictionary<string, string>
+                    {
+                        { "payment_intent_id", paymentIntentId }
+                    }
+                });
+
+                // 2. Attach the line item directly to this invoice
+                var invoiceItemService = new InvoiceItemService();
+                invoiceItemService.Create(new InvoiceItemCreateOptions
+                {
+                    Customer = customerId,
+                    Invoice = invoice.Id,
+                    Amount = amountInSmallestUnit,
+                    Currency = currency.ToLower(),
+                    Description = $"RentGuard 360 — {packageName}"
+                });
+
+                // 3. Finalize the invoice (moves it from draft to open)
+                invoiceService.FinalizeInvoice(invoice.Id);
+
+                // 4. Mark the invoice as paid (since payment already succeeded)
+                invoiceService.Pay(invoice.Id, new InvoicePayOptions
+                {
+                    PaidOutOfBand = true  // We already collected payment via PaymentIntent
+                });
+            }
+            catch (Exception ex)
+            {
+                // Log but don't fail the main flow — the payment already succeeded
+                Console.WriteLine($"[Invoice] Warning: Could not create invoice for PI {paymentIntentId}: {ex.Message}");
+            }
+        }
+
         // =====================================================================
         // POST api/payments/create-intent
         // Creates a Stripe PaymentIntent for a package purchase
@@ -168,6 +266,23 @@ namespace StripePaymentAPI.Controllers
                                 };
                                 try { _repository.AddTransaction(transaction); } catch { /* Ignore */ }
                                 _repository.UpsertSubscription(uId, pId, confPackage.ScanLimit);
+
+                                // Create a Stripe Invoice so it appears in Customer Portal
+                                if (!string.IsNullOrEmpty(existingIntent.CustomerId))
+                                {
+                                    long invoiceAmount = existingIntent.AmountReceived > 0
+                                        ? existingIntent.AmountReceived
+                                        : existingIntent.Amount;
+
+                                    CreateInvoiceForPayment(
+                                        existingIntent.CustomerId,
+                                        confPackage.Name,
+                                        invoiceAmount,
+                                        existingIntent.Currency,
+                                        existingIntent.Id
+                                    );
+                                }
+
                                 return Ok(new { success = true, isConfirm = true });
                             }
                         }
@@ -234,6 +349,14 @@ namespace StripePaymentAPI.Controllers
                         Enabled = true
                     }
                 };
+
+                // Link the PaymentIntent to a Stripe Customer to sync billing info
+                if (!string.IsNullOrWhiteSpace(request.Email))
+                {
+                    Customer customer = GetOrCreateStripeCustomer(request.Email, request.Name, request.UserId);
+                    options.Customer = customer.Id;
+                    options.SetupFutureUsage = "off_session"; // Saves payment method for future use
+                }
 
                 var service = new PaymentIntentService();
                 PaymentIntent paymentIntent = service.Create(options);
@@ -316,6 +439,21 @@ namespace StripePaymentAPI.Controllers
 
                         // Update the user's subscription (UPSERT)
                         _repository.UpsertSubscription(userId, packageId, package.ScanLimit);
+
+                        if (!string.IsNullOrEmpty(paymentIntent.CustomerId))
+                        {
+                            long invoiceAmount = paymentIntent.AmountReceived > 0
+                                ? paymentIntent.AmountReceived
+                                : paymentIntent.Amount;
+
+                            CreateInvoiceForPayment(
+                                paymentIntent.CustomerId,
+                                package.Name,
+                                invoiceAmount,
+                                paymentIntent.Currency,
+                                paymentIntent.Id
+                            );
+                        }
                     }
                 }
                 else if (stripeEvent.Type == Events.PaymentIntentPaymentFailed)
@@ -961,6 +1099,67 @@ ORDER BY t.CreatedAt DESC;";
                 return BadRequest(new { error = ex.Message });
             }
         }
+
+        // =====================================================================
+        // POST api/payments/customer-portal
+        // Creates a Stripe Customer Portal session URL
+        // =====================================================================
+
+        /// <summary>
+        /// Creates a Stripe Customer Portal session.
+        /// Finds or creates a Stripe Customer by email, then generates a portal URL
+        /// where the user can manage payment methods, view invoices and billing history.
+        /// </summary>
+        [HttpPost("customer-portal")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public IActionResult CreateCustomerPortalSession([FromBody] CustomerPortalRequest request)
+        {
+            try
+            {
+                if (request == null || string.IsNullOrWhiteSpace(request.Email))
+                {
+                    return BadRequest(new { error = "Email is required" });
+                }
+
+                IActionResult accessResult = ValidateUserAccess(request.UserId);
+                if (accessResult != null)
+                {
+                    return accessResult;
+                }
+
+                // Step 1: Find existing Stripe Customer by email, or create a new one
+                Customer stripeCustomer = GetOrCreateStripeCustomer(request.Email, request.Name, request.UserId);
+
+                // Step 2: Create a Billing Portal Session
+                string returnUrl = !string.IsNullOrWhiteSpace(request.ReturnUrl)
+                    ? request.ReturnUrl
+                    : "http://localhost:5173/billing";
+
+                var portalService = new Stripe.BillingPortal.SessionService();
+                var portalOptions = new Stripe.BillingPortal.SessionCreateOptions
+                {
+                    Customer = stripeCustomer.Id,
+                    ReturnUrl = returnUrl
+                };
+
+                Stripe.BillingPortal.Session portalSession = portalService.Create(portalOptions);
+
+                return Ok(new
+                {
+                    url = portalSession.Url
+                });
+            }
+            catch (StripeException ex)
+            {
+                return BadRequest(new { error = $"Stripe error: {ex.Message}" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+        }
     }
 
     // =========================================================================
@@ -976,6 +1175,8 @@ ORDER BY t.CreatedAt DESC;";
         public int PackageId { get; set; }
         public string Action { get; set; } // "create" or "confirm"
         public string PaymentIntentId { get; set; } // Used when Action == "confirm"
+        public string Email { get; set; }
+        public string Name { get; set; }
     }
 
     /// <summary>
@@ -989,5 +1190,16 @@ ORDER BY t.CreatedAt DESC;";
     public class InternalSubscriptionsRequest
     {
         public List<string> UserIds { get; set; }
+    }
+
+    /// <summary>
+    /// Request body for creating a Stripe Customer Portal session.
+    /// </summary>
+    public class CustomerPortalRequest
+    {
+        public string UserId { get; set; }
+        public string Email { get; set; }
+        public string Name { get; set; }
+        public string ReturnUrl { get; set; }
     }
 }
