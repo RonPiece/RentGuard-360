@@ -26,6 +26,7 @@ function getCloseLabel() {
 export function showAppToast(payload) {
     const detail = payload || {};
     const type = normalizeType(detail.type || detail.variant);
+    const icon = detail.icon;
     const title = detail.title || '';
     const message = detail.message || '';
     const duration = typeof detail.duration === 'number'
@@ -36,7 +37,7 @@ export function showAppToast(payload) {
     return toast.custom(
         (instance) => (
             <div className={`rg-hot-toast rg-hot-toast--${type}`} dir={direction} role="status" aria-live={type === 'error' ? 'assertive' : 'polite'}>
-                <span className="rg-hot-toast__icon" aria-hidden="true">{getIcon(type)}</span>
+                <span className="rg-hot-toast__icon" aria-hidden="true">{icon ?? getIcon(type)}</span>
                 <div className="rg-hot-toast__content">
                     {title && <div className="rg-hot-toast__title">{title}</div>}
                     {message && <div className="rg-hot-toast__message">{message}</div>}

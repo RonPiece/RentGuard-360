@@ -53,7 +53,14 @@ import {
     CalendarDays,
     ScrollText,
     AlertTriangle,
-    ShieldCheck
+    ShieldCheck,
+    Hourglass,
+    Timer,
+    XCircle,
+    AlertCircle,
+    ChevronDown,
+    ArrowRight,
+    ArrowLeft
 } from 'lucide-react';
 import './AnalysisPage.css';
 import './LegalCard.css';
@@ -92,6 +99,7 @@ const AnalysisPage = () => {
     const contractViewRef = useRef(null);
     const sharePanelRef = useRef(null);
     const prevSaveStatusRef = useRef(null);
+    const lastSavingToastAtRef = useRef(0);
     const [contractEditState, setContractEditState] = useState({ editedCount: 0, saveStatus: null });
 
     const focusSharePanel = useCallback(() => {
@@ -143,14 +151,20 @@ const AnalysisPage = () => {
         setTimeout(() => setExportNotice(null), 3000);
     }, []);
 
-    const showAppToast = useCallback((title, message) => {
+    const showAppToast = useCallback((title, message, options = {}) => {
+        const ttlMs = typeof options === 'number' ? options : (options.ttlMs ?? 2600);
+        const type = typeof options === 'number' ? 'success' : (options.type ?? 'success');
+        const icon = typeof options === 'number' ? undefined : options.icon;
+
         window.dispatchEvent(new CustomEvent('rg:toast', {
             detail: {
                 id: `share-${Date.now()}`,
                 title,
                 message,
+                type,
+                icon,
                 createdAt: Date.now(),
-                ttlMs: 2600,
+                ttlMs,
             },
         }));
     }, []);
@@ -160,17 +174,32 @@ const AnalysisPage = () => {
         if (status === prevSaveStatusRef.current) return;
         prevSaveStatusRef.current = status;
 
+        if (status === 'saving') {
+            const now = Date.now();
+            // Avoid flooding toasts on very frequent autosave cycles.
+            if (now - lastSavingToastAtRef.current > 1500) {
+                showAppToast(
+                    isRTL ? 'שומר שינויים' : 'Saving changes',
+                    isRTL ? 'המערכת שומרת את העריכות שלך כעת.' : 'Your edits are being saved now.',
+                    { ttlMs: 1500, type: 'info', icon: '⟳' }
+                );
+                lastSavingToastAtRef.current = now;
+            }
+        }
+
         if (status === 'success') {
             showAppToast(
                 isRTL ? 'השינויים נשמרו' : 'Edits saved',
-                isRTL ? 'השינויים נשמרו אוטומטית בענן.' : 'Your edits were autosaved to the cloud.'
+                isRTL ? 'השינויים נשמרו אוטומטית בענן.' : 'Your edits were autosaved to the cloud.',
+                { type: 'success', icon: '✓' }
             );
         }
 
         if (status === 'error') {
             showAppToast(
                 isRTL ? 'שמירה נכשלה' : 'Save failed',
-                isRTL ? 'לא הצלחנו לשמור את העריכות. נסה שוב בעוד רגע.' : 'Could not save your edits. Please try again in a moment.'
+                isRTL ? 'לא הצלחנו לשמור את העריכות. נסה שוב בעוד רגע.' : 'Could not save your edits. Please try again in a moment.',
+                { type: 'error', icon: '⚠' }
             );
         }
     }, [contractEditState.saveStatus, isRTL, showAppToast]);
@@ -238,7 +267,6 @@ const AnalysisPage = () => {
 
         setIsGeneratingShareLink(true);
         try {
-            // Force-save latest local edits before creating the share token.
             const currentPayload = contractViewRef.current?.getCurrentEditedPayload?.();
             if (currentPayload && userAttributes?.sub) {
                 await saveEditedContract(
@@ -345,7 +373,6 @@ const AnalysisPage = () => {
 
     const fetchAnalysis = useCallback(async () => {
         try {
-            // Only show loading spinner on first load, not during polling
             if (pollCount === 0) {
                 setIsLoading(true);
             }
@@ -354,19 +381,16 @@ const AnalysisPage = () => {
             console.log('Fetching analysis for:', decodedId);
             const data = await getAnalysis(decodedId);
             setAnalysis(prev => ({
-                ...prev, // Keep existing metadata (like from navigation state)
-                ...data, // Overwrite with fresh data
-                // Ensure metadata persists if api returns nulls but we had them in state
+                ...prev, 
+                ...data, 
                 fileName: data.fileName || prev?.fileName || data.fileName,
                 propertyAddress: data.propertyAddress || prev?.propertyAddress || data.propertyAddress,
                 landlordName: data.landlordName || prev?.landlordName || data.landlordName,
                 uploadDate: data.uploadDate || prev?.uploadDate || data.uploadDate,
             }));
-            setError(null); // Clear error on success
+            setError(null); 
         } catch (err) {
             console.error('Failed to fetch analysis:', err);
-
-            // Parse error message for user-friendly display
             const errorMsg = err.message || '';
 
             if (errorMsg.includes('404')) {
@@ -405,11 +429,8 @@ const AnalysisPage = () => {
         fetchAnalysis();
     }, [fetchAnalysis]);
 
-    // Auto-polling when analysis is still processing
     useEffect(() => {
-        // Only poll if we have a 'processing' error and haven't exceeded max attempts
         if (error?.type === 'processing' && pollCount < MAX_POLL_ATTEMPTS && !USE_MOCK) {
-            // Use longer delay for first poll (analysis takes 30-60s typically)
             const delay = pollCount === 0 ? INITIAL_DELAY : POLL_INTERVAL;
             console.log(`Auto-polling in ${delay / 1000}s... (attempt ${pollCount + 1}/${MAX_POLL_ATTEMPTS})`);
 
@@ -422,7 +443,6 @@ const AnalysisPage = () => {
         }
     }, [error, pollCount, USE_MOCK, fetchAnalysis]);
 
-    // Reset poll count when analysis succeeds
     useEffect(() => {
         if (analysis) {
             setPollCount(0);
@@ -440,7 +460,6 @@ const AnalysisPage = () => {
 
         let hadCachedLink = false;
 
-        // Immediate UX: hydrate from local cache first.
         try {
             const cachedRaw = localStorage.getItem(getShareCacheKey(contractForShare));
             if (cachedRaw) {
@@ -481,7 +500,6 @@ const AnalysisPage = () => {
             } catch (err) {
                 if (cancelled) return;
                 console.warn('No active share link found', err);
-                // Keep cached link if available; otherwise clear visual state.
                 if (!hadCachedLink) {
                     setShareLink('');
                     setShareLinkExpiresAt(null);
@@ -514,8 +532,6 @@ const AnalysisPage = () => {
         return `Valid for ${daysLeft} more day${daysLeft === 1 ? '' : 's'}`;
     }, [isRTL, shareLinkExpiresAt]);
 
-
-
     const getRiskLabel = (level) => {
         const labels = { High: 'high', Medium: 'medium', Low: 'low' };
         return labels[level] || 'medium';
@@ -533,17 +549,26 @@ const AnalysisPage = () => {
     }
 
     if (error) {
-        const errorIcon = {
-            processing: '⏳',
-            timeout: '⏱️',
-            failed: '❌',
-            error: '⚠️'
-        }[error.type] || '⚠️';
+        // Replaced emojis with Lucide Icons for error states
+        let ErrorIconComponent;
+        switch (error.type) {
+            case 'processing':
+                ErrorIconComponent = <Hourglass className="error-icon" size={48} />;
+                break;
+            case 'timeout':
+                ErrorIconComponent = <Timer className="error-icon" size={48} />;
+                break;
+            case 'failed':
+                ErrorIconComponent = <XCircle className="error-icon" size={48} />;
+                break;
+            default:
+                ErrorIconComponent = <AlertCircle className="error-icon" size={48} />;
+        }
 
         return (
             <div className="analysis-page page-container" dir={isRTL ? 'rtl' : 'ltr'}>
                 <div className={`error-state error-${error.type}`}>
-                    <div className="error-icon">{errorIcon}</div>
+                    {ErrorIconComponent}
                     <h2>{error.title}</h2>
                     <p>{error.message}</p>
                     {error.details && (
@@ -572,8 +597,13 @@ const AnalysisPage = () => {
         <>
             <div className="analysis-page page-container" dir={isRTL ? 'rtl' : 'ltr'}>
                 
+                {/* 1. Header Row */}
                 <div className="analysis-header animate-fadeIn no-print">
                     <h1>{t('analysis.title')}</h1>
+                    <Link to="/contracts" className="back-button-premium">
+                        {isRTL ? 'חזרה לחוזים' : 'Back to Contracts'}
+                        {isRTL ? <ArrowLeft className="arrow" size={20} /> : <ArrowRight className="arrow" size={20} />}
+                    </Link>
                 </div>
 
                 <div className="analysis-layout">
@@ -768,9 +798,7 @@ const AnalysisPage = () => {
                                                         </div>
                                                     </div>
                                                     <button className={`expand-trigger ${expandedIssue === index ? 'expanded' : ''}`}>
-                                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                            <polyline points="6 9 12 15 18 9"></polyline>
-                                                        </svg>
+                                                        <ChevronDown size={20} strokeWidth={2} aria-hidden="true" />
                                                     </button>
                                                 </div>
 
@@ -850,14 +878,14 @@ const AnalysisPage = () => {
                                                         </div>
                                                     )}
 
-                                                    {/* Negotiation Tip */}
+                                                    {/* Negotiation Tip - Removed Emoji */}
                                                     {issue.negotiation_tip && (
                                                         <div className="legal-section tip-section">
                                                             <div className="section-icon tip-icon">
                                                                 <MessageCircle size={18} />
                                                             </div>
                                                             <div className="section-body">
-                                                                <h4 className="section-label tip-label">💡 {isRTL ? 'טיפ למשא ומתן' : 'Negotiation Tip'}</h4>
+                                                                <h4 className="section-label tip-label">{isRTL ? 'טיפ למשא ומתן' : 'Negotiation Tip'}</h4>
                                                                 <p className="tip-text">{issue.negotiation_tip}</p>
                                                             </div>
                                                         </div>
@@ -907,7 +935,7 @@ const AnalysisPage = () => {
                                             padding: '3rem 2rem',
                                             textAlign: 'center'
                                         }}>
-                                            <span style={{ fontSize: '48px', marginBottom: '1rem' }}>⚠️</span>
+                                            <AlertTriangle size={48} className="text-yellow-500" style={{ marginBottom: '1rem', color: 'var(--warning-color)' }} />
                                             <h3 style={{
                                                 fontSize: '1.5rem',
                                                 fontWeight: 'bold',
@@ -942,7 +970,6 @@ const AnalysisPage = () => {
                                             }));
                                         }}
                                         onExportEdited={async (editedClausesMap) => {
-                                            // Export edited contract to Word with Hebrew
                                             const contractText = analysis?.sanitizedText || analysis?.full_text || analysis?.contractText || '';
                                             const backendClauses = analysis?.clauses_list || analysis?.clauses || [];
                                             await exportEditedContract(contractText, editedClausesMap, issues, 'Edited_Contract', backendClauses);
@@ -957,7 +984,7 @@ const AnalysisPage = () => {
                         {/* Export Section - Always visible when contract tab is active */}
                         {activeTab === 'contract' && result?.is_contract !== false && (
                             <div className="contract-export-bar no-print">
-                                <div className="export-primary-action export-primary-action-inline">
+                                <div className="export-actions-row">
                                     <button className="export-btn-main" onClick={() => contractViewRef.current?.handleExport()}>
                                         <span className="export-btn-label">{isRTL ? 'ייצוא כקובץ docx (Word)' : 'Export to Word (.docx)'}</span>
                                     </button>
@@ -972,19 +999,20 @@ const AnalysisPage = () => {
                                             {getShareButtonLabel()}
                                         </span>
                                     </button>
+
+                                    <div className={`reset-btn-wrapper ${contractEditState.editedCount > 0 ? 'show' : ''}`}>
+                                        <button
+                                            className="export-btn-secondary"
+                                            title={isRTL ? 'איפוס כל העריכות שביצעת' : 'Reset all edited clauses'}
+                                            onClick={() => contractViewRef.current?.requestClearAll()}
+                                        >
+                                            <Eraser size={15} aria-hidden="true" />
+                                            <span>{isRTL ? 'איפוס עריכות' : 'Reset edits'}</span>
+                                            <span className="export-btn-counter">{contractEditState.editedCount}</span>
+                                        </button>
+                                    </div>
                                 </div>
 
-                                {contractEditState.editedCount > 0 && (
-                                    <button
-                                        className="export-btn-secondary"
-                                        title={isRTL ? 'איפוס כל העריכות שביצעת' : 'Reset all edited clauses'}
-                                        onClick={() => contractViewRef.current?.requestClearAll()}
-                                    >
-                                        <Eraser size={15} aria-hidden="true" />
-                                        <span>{isRTL ? 'איפוס עריכות' : 'Reset edits'}</span>
-                                        <span className="export-btn-counter">{contractEditState.editedCount}</span>
-                                    </button>
-                                )}
                             </div>
                         )}
 
@@ -1048,14 +1076,6 @@ const AnalysisPage = () => {
                             </div>
                         )}
                     </main>
-
-                    {/* 3. NEW: The 3rd Column just for the Back Button (Your Red Box) */}
-                    <aside className="analysis-side-actions no-print">
-                        <Link to="/contracts" className="back-button-premium">
-                            {isRTL ? <span className="arrow">→</span> : <span className="arrow">←</span>}
-                            {isRTL ? 'חזרה לחוזים' : 'Back to Contracts'}
-                        </Link>
-                    </aside>
                 </div>
             </div>
         </>
@@ -1063,4 +1083,3 @@ const AnalysisPage = () => {
 };
 
 export default AnalysisPage;
-
