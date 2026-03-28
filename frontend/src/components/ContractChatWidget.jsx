@@ -7,6 +7,18 @@ import { askContractQuestion, clearContractChatHistory, getContractChatHistory, 
 import ActionMenu from './ActionMenu';
 import './ContractChatWidget.css';
 
+const CHAT_AUTO_OPEN_PREF_KEY = 'rentguard_chat_auto_open_contract';
+
+const isContractChatAutoOpenEnabled = () => {
+    try {
+        const saved = localStorage.getItem(CHAT_AUTO_OPEN_PREF_KEY);
+        if (saved === null) return true;
+        return saved !== 'false';
+    } catch {
+        return true;
+    }
+};
+
 const getAnalysisContractIdFromPath = (pathname) => {
     const match = String(pathname || '').match(/^\/analysis\/([^/?#]+)/);
     if (!match || !match[1]) return null;
@@ -145,6 +157,7 @@ const ContractChatWidget = () => {
     useEffect(() => {
         if (!isAuthenticated) return;
         if (!routeContractId) return;
+        if (!isContractChatAutoOpenEnabled()) return;
 
         const currentPath = location.pathname;
         if (lastAutoOpenedPathRef.current === currentPath) {

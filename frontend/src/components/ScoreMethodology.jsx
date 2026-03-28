@@ -13,12 +13,12 @@
  *   - Legal source reference
  * 
  * FEATURES:
- * - Bilingual (Hebrew/English)
  * - Collapsible accordion design
  * 
  * ============================================
  */
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import {
     Info,
@@ -33,54 +33,96 @@ import {
 import './ScoreMethodology.css';
 
 const ScoreMethodology = () => {
-    const { isRTL } = useLanguage();
+    const { t, isRTL } = useLanguage();
     const [isExpanded, setIsExpanded] = useState(false);
+    const popupRef = useRef(null);
+    const containerRef = useRef(null);
+    const [popupStyle, setPopupStyle] = useState({});
+
+// מנגנון סגירה בלחיצה בחוץ (מעודכן ל-Portal)
+    useEffect(() => {
+        function handleClickOutside(event) {
+            // בודקים אם הלחיצה לא בתוך הכפתור ולא בתוך הפופאפ המרחף
+            if (
+                containerRef.current && !containerRef.current.contains(event.target) &&
+                popupRef.current && !popupRef.current.contains(event.target)
+            ) {
+                setIsExpanded(false);
+            }
+        }
+        if (isExpanded) {
+            document.addEventListener("mousedown", handleClickOutside);
+        }
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        }
+    }, [isExpanded]);
+
+    // חישוב המיקום ברגע הפתיחה
+    useEffect(() => {
+        if (isExpanded && containerRef.current) {
+            const rect = containerRef.current.getBoundingClientRect();
+            // ממקמים את הפופאפ בדיוק מעל הכפתור
+            setPopupStyle({
+                position: 'fixed',
+                bottom: window.innerHeight - rect.top + 12, // 12px מעל הכפתור
+                left: rect.left,
+                width: rect.width,
+                zIndex: 9999 // מעל הכל!
+            });
+        }
+    }, [isExpanded]);
+
+    // גלילה חכמה למעלה אם חסר מקום
+    useEffect(() => {
+        if (isExpanded && popupRef.current) {
+            setTimeout(() => {
+                const rect = popupRef.current.getBoundingClientRect();
+                if (rect.top < 100) {
+                    window.scrollBy({
+                        top: rect.top - 120, 
+                        behavior: 'smooth'   
+                    });
+                }
+            }, 50);
+        }
+    }, [isExpanded]);
 
     const categories = [
         {
             key: 'financial_terms',
             icon: BadgeDollarSign,
-            labelHe: 'תנאים פיננסיים',
-            labelEn: 'Financial Terms',
-            descHe: 'ערבות, קנסות איחור, ביטוח',
-            descEn: 'Deposits, late fees, insurance'
+            label: t('methodology.catFinancial'),
+            desc: t('methodology.catFinancialDesc')
         },
         {
             key: 'tenant_rights',
             icon: House,
-            labelHe: 'זכויות השוכר',
-            labelEn: 'Tenant Rights',
-            descHe: 'כניסה לדירה, סאבלט, פרטיות',
-            descEn: 'Entry notice, subletting, privacy'
+            label: t('methodology.catRights'),
+            desc: t('methodology.catRightsDesc')
         },
         {
             key: 'termination_clauses',
             icon: FileText,
-            labelHe: 'סיום חוזה',
-            labelEn: 'Termination',
-            descHe: 'תקופת הודעה, יציאה מוקדמת',
-            descEn: 'Notice period, early exit'
+            label: t('methodology.catTermination'),
+            desc: t('methodology.catTerminationDesc')
         },
         {
             key: 'liability_repairs',
             icon: Wrench,
-            labelHe: 'אחריות ותיקונים',
-            labelEn: 'Liability & Repairs',
-            descHe: 'תיקונים, בלאי סביר',
-            descEn: 'Repairs, normal wear'
+            label: t('methodology.catLiability'),
+            desc: t('methodology.catLiabilityDesc')
         },
         {
             key: 'legal_compliance',
             icon: Scale,
-            labelHe: 'תאימות חוקית',
-            labelEn: 'Legal Compliance',
-            descHe: 'התאמה לחוק השכירות 2017',
-            descEn: '2017 Rental Law compliance'
+            label: t('methodology.catLegal'),
+            desc: t('methodology.catLegalDesc')
         }
     ];
 
     return (
-        <div className="score-methodology">
+        <div className={`score-methodology ${isExpanded ? 'expanded' : ''}`} ref={containerRef}>
             <button
                 className="methodology-toggle"
                 onClick={() => setIsExpanded(!isExpanded)}
@@ -88,49 +130,48 @@ const ScoreMethodology = () => {
             >
                 <div className="toggle-content">
                     <Info size={16} />
-                    <span>{isRTL ? 'איך מחושב הציון?' : 'How is the score calculated?'}</span>
+                    <span>{t('methodology.title')}</span>
                 </div>
-                <ChevronDown size={16} className="methodology-chevron" />
+                <ChevronDown size={16} className={`methodology-chevron ${isExpanded ? 'rotated' : ''}`} />
             </button>
 
-            {isExpanded && (
+            <div className="methodology-content-wrapper" ref={popupRef}>
                 <div className="methodology-content">
+                    
                     {/* Main Explanation */}
                     <div className="methodology-intro">
-                        <p>
-                            {isRTL
-                                ? 'הציון הוא 5 קטגוריות × 20 נק׳ (סה״כ 100). מורידים נקודות לפי חומרה.'
-                                : 'Score = 5 categories × 20 points (total 100). Points are deducted by severity.'}
-                        </p>
-                        <p>
-                            {isRTL
-                                ? 'תקרה: קטגוריה לא יורדת מתחת ל-0 ⇒ מקסימום 20 נק׳ ירידה לכל קטגוריה (לכן סכום הקנסות יכול להיות גבוה יותר מהירידה בפועל בציון).'
-                                : 'Cap: a category cannot drop below 0 ⇒ max 20-point impact per category (so total penalties may exceed the actual score drop).'}
-                        </p>
+                        <p>{t('methodology.intro1')}</p>
+                        <p>{t('methodology.intro2')}</p>
                     </div>
 
                     {/* Severity Legend */}
                     <div className="severity-legend">
                         <div className="severity-item high">
-                            <span className="severity-dot"></span>
-                            <span className="severity-label">{isRTL ? 'גבוה' : 'High'}</span>
-                            <span className="severity-points">8-10 {isRTL ? 'נקודות' : 'pts'}</span>
+                            <div className="severity-header">
+                                <span className="severity-dot"></span>
+                                <span className="severity-label">{t('methodology.high')}</span>
+                            </div>
+                            <span className="severity-points">8-10 {t('methodology.pts')}</span>
                         </div>
                         <div className="severity-item medium">
-                            <span className="severity-dot"></span>
-                            <span className="severity-label">{isRTL ? 'בינוני' : 'Medium'}</span>
-                            <span className="severity-points">4-6 {isRTL ? 'נקודות' : 'pts'}</span>
+                            <div className="severity-header">
+                                <span className="severity-dot"></span>
+                                <span className="severity-label">{t('methodology.medium')}</span>
+                            </div>
+                            <span className="severity-points">4-6 {t('methodology.pts')}</span>
                         </div>
                         <div className="severity-item low">
-                            <span className="severity-dot"></span>
-                            <span className="severity-label">{isRTL ? 'נמוך' : 'Low'}</span>
-                            <span className="severity-points">2-3 {isRTL ? 'נקודות' : 'pts'}</span>
+                            <div className="severity-header">
+                                <span className="severity-dot"></span>
+                                <span className="severity-label">{t('methodology.low')}</span>
+                            </div>
+                            <span className="severity-points">2-3 {t('methodology.pts')}</span>
                         </div>
                     </div>
 
                     {/* Categories */}
                     <div className="categories-header">
-                        <h4>{isRTL ? '5 קטגוריות × 20 נקודות = 100' : '5 Categories × 20 points = 100'}</h4>
+                        <h4>{t('methodology.categoriesHeader')}</h4>
                     </div>
 
                     <div className="categories-grid">
@@ -140,12 +181,8 @@ const ScoreMethodology = () => {
                                     <cat.icon size={18} strokeWidth={2} />
                                 </span>
                                 <div className="category-info">
-                                    <span className="category-label">
-                                        {isRTL ? cat.labelHe : cat.labelEn}
-                                    </span>
-                                    <span className="category-desc">
-                                        {isRTL ? cat.descHe : cat.descEn}
-                                    </span>
+                                    <span className="category-label">{cat.label}</span>
+                                    <span className="category-desc">{cat.desc}</span>
                                 </div>
                                 <span className="category-points">20</span>
                             </div>
@@ -157,14 +194,10 @@ const ScoreMethodology = () => {
                         <span className="source-icon" aria-hidden="true">
                             <ScrollText size={16} strokeWidth={2} />
                         </span>
-                        <span className="source-text">
-                            {isRTL
-                                ? 'מבוסס על חוק השכירות והשאילה (תיקון 2017) - סעיפים 25א-25טו'
-                                : 'Based on Israeli Rental Law (2017 Amendment) - Sections 25a-25o'}
-                        </span>
+                        <span className="source-text">{t('methodology.legalSource')}</span>
                     </div>
                 </div>
-            )}
+            </div>
         </div>
     );
 };

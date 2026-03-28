@@ -1,16 +1,7 @@
 /*
  * ============================================
- *  ScoreBreakdown.css
- *  Risk Score Visualization Styles
- * ============================================
- *
- * SECTIONS:
- * - Overall score circle
- * - Score ring animation
- * - Color classes (excellent, good, warning, danger)
- * - Categories breakdown
- * - Score legend
- *
+ * ScoreBreakdown.css
+ * Risk Score Visualization Styles
  * ============================================
  */
 
@@ -20,8 +11,8 @@
     gap: var(--space-md);
 }
 
-/* Overall Score Circle - Centered */
-.overall-score {
+/* Overall Score Circle */
+.score-breakdown .overall-score {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -30,23 +21,17 @@
     text-align: center;
 }
 
-.score-circle {
+.score-breakdown .score-circle {
     position: relative;
     width: 100px;
     height: 100px;
     flex-shrink: 0;
 }
 
-.score-ring {
-    width: 100%;
-    height: 100%;
-}
+.score-breakdown .score-ring { width: 100%; height: 100%; }
+.score-breakdown .score-ring circle { transition: stroke-dasharray 1s ease-out; }
 
-.score-ring circle {
-    transition: stroke-dasharray 1s ease-out;
-}
-
-.score-value {
+.score-breakdown .score-value {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -54,78 +39,38 @@
     text-align: center;
 }
 
-.score-number {
-    font-size: 28px;
-    font-weight: var(--font-weight-bold);
-    line-height: 1;
-}
+.score-breakdown .score-number { font-size: 28px; font-weight: var(--font-weight-bold); line-height: 1; color: var(--text-primary); }
+.score-breakdown .score-max { font-size: 12px; color: var(--text-secondary); }
 
-.score-max {
-    font-size: 12px;
-    color: var(--text-secondary);
-}
-
-.score-label {
+.score-breakdown .score-label {
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-semibold);
     padding: 6px 12px;
     border-radius: var(--radius-full);
-    background: var(--bg-secondary);
     text-transform: uppercase;
     white-space: nowrap;
 }
 
-/* Color classes - 4 distinct levels */
-.excellent {
-    color: var(--accent-success);
-    /* Bright green for Low Risk */
-}
+/* Color classes */
+.score-breakdown .excellent { color: var(--accent-success); }
+.score-breakdown .good { color: #14b8a6; } /* Teal */
+.score-breakdown .warning { color: var(--accent-warning); }
+.score-breakdown .danger { color: var(--accent-danger); }
 
-.good {
-    color: #14b8a6;
-    /* Teal for Low-Medium Risk - distinct from green */
-}
+.score-breakdown .excellent .score-label { background: rgba(52, 199, 89, 0.15); color: var(--accent-success); }
+.score-breakdown .good .score-label { background: rgba(20, 184, 166, 0.15); color: #14b8a6; }
+.score-breakdown .warning .score-label { background: rgba(255, 149, 0, 0.15); color: var(--accent-warning); }
+.score-breakdown .danger .score-label { background: rgba(255, 59, 48, 0.15); color: var(--accent-danger); }
 
-.warning {
-    color: var(--accent-warning);
-    /* Orange for Medium Risk */
-}
-
-.danger {
-    color: var(--accent-danger);
-    /* Red for High Risk */
-}
-
-.excellent .score-label {
-    background: rgba(52, 199, 89, 0.15);
-    color: var(--accent-success);
-}
-
-.good .score-label {
-    background: rgba(20, 184, 166, 0.15);
-    /* Teal background */
-    color: #14b8a6;
-}
-
-.warning .score-label {
-    background: rgba(255, 149, 0, 0.15);
-    color: var(--accent-warning);
-}
-
-.danger .score-label {
-    background: rgba(255, 59, 48, 0.15);
-    color: var(--accent-danger);
-}
-
-/* Categories Breakdown - Level 3 (inset) */
-.categories-breakdown {
+/* Categories Breakdown */
+.score-breakdown .categories-breakdown {
     background: var(--bg-inset);
     border-radius: var(--radius-md);
     padding: var(--space-lg);
     border: 1px solid var(--glass-border);
 }
 
-.breakdown-title {
+.score-breakdown .breakdown-title {
     font-size: 14px;
     font-weight: 700;
     margin-bottom: var(--space-md);
@@ -134,28 +79,21 @@
     letter-spacing: 0.5px;
 }
 
-.categories-list {
+.score-breakdown .categories-list {
     display: flex;
     flex-direction: column;
     gap: var(--space-md);
 }
 
-/* Shared visual surface for score rows */
-.category-item,
-.legend-item {
-    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
+/* Shared visual surface */
+.score-breakdown .category-item,
+.score-breakdown .legend-item {
+    border: 1px solid var(--glass-border);
     border-radius: 10px;
-    background: rgba(0, 0, 0, 0.02);
-    border-color: rgba(0, 0, 0, 0.08);
+    background: var(--glass-bg);
 }
 
-[data-theme="dark"] .category-item,
-.legend-item {
-    background: rgba(255, 255, 255, 0.02);
-    border-color: rgba(255, 255, 255, 0.08);
-}
-
-.category-item {
+.score-breakdown .category-item {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -163,7 +101,7 @@
     flex-wrap: nowrap;
 }
 
-.category-icon {
+.score-breakdown .category-icon {
     width: 26px;
     height: 26px;
     text-align: center;
@@ -173,40 +111,16 @@
     justify-content: center;
     border-radius: 8px;
     border: 1px solid transparent;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28);
 }
 
-.icon-financial_terms {
-    color: #10b981;
-    background: linear-gradient(145deg, rgba(16, 185, 129, 0.16), rgba(16, 185, 129, 0.06));
-    border-color: rgba(16, 185, 129, 0.35);
-}
+/* Same Vibrant Icon Colors as Methodology */
+.score-breakdown .icon-financial_terms { color: #10b981; background: rgba(16, 185, 129, 0.12); border-color: rgba(16, 185, 129, 0.25); }
+.score-breakdown .icon-tenant_rights { color: #3b82f6; background: rgba(59, 130, 246, 0.12); border-color: rgba(59, 130, 246, 0.25); }
+.score-breakdown .icon-termination_clauses { color: #8b5cf6; background: rgba(139, 92, 246, 0.12); border-color: rgba(139, 92, 246, 0.25); }
+.score-breakdown .icon-liability_repairs { color: #0ea5e9; background: rgba(14, 165, 233, 0.12); border-color: rgba(14, 165, 233, 0.25); }
+.score-breakdown .icon-legal_compliance { color: #f59e0b; background: rgba(245, 158, 11, 0.12); border-color: rgba(245, 158, 11, 0.25); }
 
-.icon-tenant_rights {
-    color: #3b82f6;
-    background: linear-gradient(145deg, rgba(59, 130, 246, 0.16), rgba(59, 130, 246, 0.06));
-    border-color: rgba(59, 130, 246, 0.35);
-}
-
-.icon-termination_clauses {
-    color: #8b5cf6;
-    background: linear-gradient(145deg, rgba(139, 92, 246, 0.16), rgba(139, 92, 246, 0.06));
-    border-color: rgba(139, 92, 246, 0.35);
-}
-
-.icon-liability_repairs {
-    color: #0ea5e9;
-    background: linear-gradient(145deg, rgba(14, 165, 233, 0.16), rgba(14, 165, 233, 0.06));
-    border-color: rgba(14, 165, 233, 0.35);
-}
-
-.icon-legal_compliance {
-    color: #f59e0b;
-    background: linear-gradient(145deg, rgba(245, 158, 11, 0.18), rgba(245, 158, 11, 0.07));
-    border-color: rgba(245, 158, 11, 0.38);
-}
-
-.category-name {
+.score-breakdown .category-name {
     font-size: 13px;
     font-weight: 600;
     color: var(--text-primary);
@@ -217,7 +131,7 @@
     white-space: nowrap;
 }
 
-.category-bar {
+.score-breakdown .category-bar {
     flex: 0 0 60px;
     height: 8px;
     background: var(--bg-page);
@@ -225,7 +139,7 @@
     overflow: hidden;
 }
 
-.category-score {
+.score-breakdown .category-score {
     font-weight: 700;
     font-size: 13px;
     min-width: 42px;
@@ -234,40 +148,24 @@
     color: var(--text-primary);
 }
 
-[dir="rtl"] .category-score {
-    text-align: right;
-}
+[dir="rtl"] .score-breakdown .category-score { text-align: right; }
 
-.category-progress {
+.score-breakdown .category-progress {
     height: 100%;
     border-radius: var(--radius-full);
     transition: width 0.8s ease-out;
 }
 
-.category-progress.excellent {
-    background: var(--accent-success);
-}
-
-.category-progress.good {
-    background: #14b8a6;
-    /* Teal */
-}
-
-.category-progress.warning {
-    background: var(--accent-warning);
-}
-
-.category-progress.danger {
-    background: var(--accent-danger);
-}
+.score-breakdown .category-progress.excellent { background: var(--accent-success); }
+.score-breakdown .category-progress.good { background: #14b8a6; } /* Teal */
+.score-breakdown .category-progress.warning { background: var(--accent-warning); }
+.score-breakdown .category-progress.danger { background: var(--accent-danger); }
 
 /* Hide deductions in compact mode */
-.category-deductions {
-    display: none;
-}
+.score-breakdown .category-deductions { display: none; }
 
 /* Score Legend */
-.score-legend {
+.score-breakdown .score-legend {
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -277,7 +175,7 @@
     margin-top: var(--space-md);
 }
 
-.legend-item {
+.score-breakdown .legend-item {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -288,41 +186,22 @@
     padding: 8px 10px;
 }
 
-.legend-item-main {
+.score-breakdown .legend-item-main {
     display: inline-flex;
     align-items: center;
     gap: 10px;
 }
 
-.legend-label {
-    font-weight: 600;
-}
+.score-breakdown .legend-label { font-weight: 600; }
+.score-breakdown .legend-range { font-weight: 700; color: var(--text-primary); direction: ltr; }
 
-.legend-range {
-    font-weight: 700;
-    color: var(--text-secondary);
-    direction: ltr;
-}
-
-.legend-item .dot {
+.score-breakdown .legend-item .dot {
     width: 14px;
     height: 14px;
     border-radius: 50%;
 }
 
-.excellent .dot {
-    background: var(--accent-success);
-}
-
-.good .dot {
-    background: #14b8a6;
-    /* Teal */
-}
-
-.warning .dot {
-    background: var(--accent-warning);
-}
-
-.danger .dot {
-    background: var(--accent-danger);
-}
+.score-breakdown .excellent .dot { background: var(--accent-success); }
+.score-breakdown .good .dot { background: #14b8a6; }
+.score-breakdown .warning .dot { background: var(--accent-warning); }
+.score-breakdown .danger .dot { background: var(--accent-danger); }

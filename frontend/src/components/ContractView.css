@@ -1,11 +1,12 @@
 /*
  * ============================================
- *  ContractView.css
- *  Virtual PDF A4 Paper Contract Display
+ * ContractView.css
+ * Virtual PDF A4 Paper Contract Display
  * ============================================
  *
  * SECTIONS:
  * - Virtual PDF container & page
+ * - Minimize Actions
  * - Contract header (title, date)
  * - Toolbar & stats badges
  * - Clauses & issue markers
@@ -14,14 +15,12 @@
  * - Suggested fix styling
  * - Signature footer
  * - Export section & buttons
- * - Hebrew popup editor
+ * - Hebrew popup editor & modals
  * - Scroll navigation
  * - Print styles & responsive
  *
  * ============================================
  */
-
-/* ContractView Component - Virtual PDF A4 Paper Design */
 
 .contract-scroll-content {
     display: flex;
@@ -41,9 +40,15 @@
     min-height: 600px;
     position: relative;
     overflow: visible;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Dark mode - only affects container background */
+/* TIGHT COLLAPSE: Shrink the container when minimized */
+.virtual-pdf-container.minimized {
+    min-height: 0;
+    padding-bottom: 0;
+}
+
 @media (prefers-color-scheme: dark) {
     .virtual-pdf-container {
         background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
@@ -54,7 +59,6 @@
 .virtual-pdf-page {
     max-width: 794px;
     margin: 0 auto var(--space-md);
-    /* Paper is ALWAYS white */
     background-color: #ffffff !important;
     color: #1a1a1a !important;
     box-shadow:
@@ -67,6 +71,15 @@
     line-height: 1.85;
     direction: rtl;
     text-align: right;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative; /* REQUIRED for absolute positioning of the button */
+    padding-top: 24px; /* במובייל - מוריד את כל התוכן קצת למטה */
+}
+
+/* TIGHT COLLAPSE: Shrink the white paper padding when minimized */
+.virtual-pdf-container.minimized .virtual-pdf-page {
+    padding-bottom: 24px;
+    padding-top: 40px;
 }
 
 /* Force all text inside paper to be black */
@@ -74,12 +87,60 @@
     color: inherit;
 }
 
+/* ===== Minimize / Maximize Button ===== */
+.pdf-header-actions {
+    display: none; /* HIDDEN BY DEFAULT ON DESKTOP */
+    position: absolute;
+    top: 20px;
+    z-index: 10;
+}
+
+/* LTR / RTL Absolute positioning in the corners */
+[dir="rtl"] .pdf-header-actions { right: 16px; }
+[dir="ltr"] .pdf-header-actions { left: 16px; }
+
+.minimize-pdf-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 8px 14px;
+    color: #475569 !important;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.minimize-pdf-btn:hover {
+    background: #e2e8f0;
+    color: #0f172a !important;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.minimize-pdf-btn svg {
+    color: currentColor;
+}
+
 /* ===== Contract Header ===== */
 .contract-header-formal {
-    text-align: center;
+text-align: center;
+    /* הדחיפה הזו למטה מבטיחה שגם בפלאפון הכי צר, הכותרת לא תעלה על הכפתור */
+    margin-top: 36px; 
     margin-bottom: 48px;
     padding-bottom: 24px;
     border-bottom: 2px solid #1a1a1a;
+    transition: all 0.3s ease;
+}
+
+.virtual-pdf-container.minimized .contract-header-formal {
+    margin-bottom: 0;
+    border-bottom: none;
+    padding-bottom: 0;
 }
 
 .contract-main-title {
@@ -112,6 +173,7 @@
     display: flex;
     align-items: center;
     gap: 12px;
+    flex-wrap: wrap;
 }
 
 .filter-toggle {
@@ -130,10 +192,17 @@
 }
 
 .stat-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     font-size: 0.75rem;
     padding: 4px 12px;
     border-radius: 100px;
-    font-weight: 500;
+    font-weight: 600;
+}
+
+.stat-badge svg {
+    opacity: 0.8;
 }
 
 .stat-badge.total {
@@ -246,18 +315,15 @@
     align-items: center;
     gap: 8px;
     flex-shrink: 0;
-    /* Ensure actions stay on top of the hint */
     position: relative;
     z-index: 5;
 }
 
-/* Edit Hint Overlay - Subtle / Minimal */
 /* Edit Hint Overlay - Floating in Right Margin */
 .clause-hover-hint {
     position: absolute;
     top: 50%;
-    right: -60px;
-    /* Centers it nicely in the 80px padding */
+    right: -70px;
     left: auto;
     bottom: auto;
     transform: translateY(-50%);
@@ -278,33 +344,9 @@
     white-space: nowrap;
 }
 
-/* Ensure hint fits on smaller screens - move inside if needed */
-@media (max-width: 900px) {
-    .clause-hover-hint {
-        right: 8px;
-        top: 8px;
-        transform: none;
-        background: rgba(255, 255, 255, 0.9);
-        border: 1px solid rgba(0, 0, 0, 0.05);
-    }
-}
-
-/* Show Hint on Hover */
 .clause-item:hover .clause-hover-hint {
     opacity: 1;
     visibility: visible;
-}
-
-/* Hover state for the hint itself (if it was interactive, but it's pointer-events: none) 
-   We just want it to look integrated. */
-
-/* Dark Mode Support for Hint */
-@media (prefers-color-scheme: dark) {
-    .clause-hover-hint {
-        background: rgba(255, 255, 255, 0.1);
-        color: #aaa;
-        border-color: rgba(255, 255, 255, 0.1);
-    }
 }
 
 /* Generalized Action Button */
@@ -331,37 +373,18 @@
 
 /* Consult Button Specifics */
 .consult-btn {
-    background: #f0f0f0;
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    color: #0ea5e9 !important;
+    border: 1px solid #bae6fd;
 }
 
 .consult-btn:hover:not(:disabled) {
-    background: #e0e0e0;
+    background: #e0f2fe;
+    box-shadow: 0 2px 6px rgba(14, 165, 233, 0.2);
 }
 
-/* Revert Button Specifics */
-.revert-btn {
-    background: #fee2e2;
-    color: #dc2626 !important;
-}
-
-.revert-btn:hover {
-    background: #fecaca;
-}
-
-/* Popup Revert Button */
-.popup-revert-btn {
-    padding: 12px 24px;
-    background: #fee2e2;
-    color: #b91c1c !important;
-    border: none;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 500;
-    cursor: pointer;
-}
-
-.popup-revert-btn:hover {
-    background: #fecaca;
+.spin {
+    animation: spin 1s linear infinite;
 }
 
 /* ===== AI Explanation ===== */
@@ -387,13 +410,26 @@
     background: rgba(0, 0, 0, 0.03);
 }
 
+.explanation-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
 .toggle-explanation {
     background: none;
     border: none;
-    font-size: 0.75rem;
     cursor: pointer;
     color: #0369a1 !important;
-    padding: 4px 8px;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+}
+
+.toggle-explanation:hover {
+    background: rgba(3, 105, 161, 0.1);
 }
 
 .explanation-content {
@@ -416,7 +452,9 @@
 }
 
 .suggested-fix strong {
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: 8px;
     margin-bottom: 12px;
     color: #000000 !important;
     font-size: 1rem;
@@ -434,6 +472,9 @@
 }
 
 .apply-fix-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
     padding: 8px 16px;
     background: #f59e0b;
     color: white !important;
@@ -498,159 +539,58 @@
     color: #1a1a1a !important;
 }
 
-.export-primary-action {
+/* ===== Floating Scroll Button ===== */
+.scroll-nav-btn {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    left: auto;
     display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-.export-primary-action-inline {
-    flex-direction: row;
-    flex-wrap: nowrap;
-    align-items: center;
-    gap: 10px;
-}
-
-.export-btn-main {
-    display: inline-flex;
-    flex-direction: row;
     align-items: center;
     gap: 8px;
-    padding: 12px 22px;
-    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-    color: white !important;
+    padding: 12px 20px;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
     border: none;
-    border-radius: 8px;
-    font-size: 0.95rem;
-    font-weight: 700;
-    line-height: 1.25;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-    transition: all 0.2s ease;
-}
-
-.export-btn-label {
-    font-weight: 700;
-}
-
-.export-btn-main:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
-}
-
-.save-btn-main {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 14px 28px;
-    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-    color: white !important;
-    border: none;
-    border-radius: 8px;
-    font-size: 1rem;
+    border-radius: 50px;
+    font-size: 14px;
     font-weight: 600;
     cursor: pointer;
+    box-shadow: 0 4px 20px rgba(16, 185, 129, 0.35);
+    z-index: 100;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: slideUp 0.3s ease;
 }
 
-.save-btn-main:hover:not(:disabled) {
-    transform: translateY(-2px);
+[dir="ltr"] .scroll-nav-btn {
+    left: 32px;
+    right: auto;
 }
 
-.save-btn-main:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
+.scroll-nav-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 28px rgba(37, 99, 235, 0.45);
 }
 
-.save-status {
-    padding: 8px 16px;
-    border-radius: 6px;
-    font-size: 0.875rem;
-    font-weight: 500;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    min-width: 148px;
-    justify-content: center;
+.scroll-nav-btn.at-bottom {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    box-shadow: 0 4px 20px rgba(16, 185, 129, 0.35);
+}
+
+.scroll-nav-btn.at-bottom:hover {
+    box-shadow: 0 8px 28px rgba(16, 185, 129, 0.45);
+}
+
+.scroll-btn-label {
     white-space: nowrap;
 }
 
-.save-status-indicator {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    min-width: 160px;
-    min-height: 40px;
+.scroll-nav-btn svg {
+    display: block;
+    flex-shrink: 0;
 }
 
-.save-status.saving {
-    color: #0284c7 !important;
-    background: rgba(14, 165, 233, 0.12);
-}
-
-.save-status.success {
-    color: #047857 !important;
-    background: rgba(16, 185, 129, 0.12);
-}
-
-.save-status.error {
-    color: #dc2626 !important;
-    background: rgba(239, 68, 68, 0.12);
-}
-
-/* Clear Edits Button */
-.export-btn-secondary {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 11px 20px;
-    background: linear-gradient(145deg, #fff7ed 0%, #fee2e2 100%);
-    color: #9f1239 !important;
-    border: 1px solid #fda4af;
-    border-radius: 10px;
-    font-size: 0.875rem;
-    font-weight: 700;
-    letter-spacing: 0.01em;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 4px 10px rgba(225, 29, 72, 0.12);
-}
-
-.export-btn-secondary:hover {
-    background: linear-gradient(145deg, #ffe4e6 0%, #fecdd3 100%);
-    border-color: #fb7185;
-    color: #881337 !important;
-    transform: translateY(-1px);
-    box-shadow: 0 6px 14px rgba(225, 29, 72, 0.18);
-}
-
-/* Save to Cloud Button */
-.export-btn-cloud {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 14px 28px;
-    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-    color: white !important;
-    border: none;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-    transition: all 0.2s ease;
-}
-
-.export-btn-cloud:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
-}
-
-.export-btn-cloud:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-/* ===== Hebrew Popup Editor ===== */
+/* ===== Hebrew Popup Editor & Modals ===== */
 .clause-editor-modal {
     position: fixed;
     top: 0;
@@ -669,6 +609,7 @@
 .clause-popup-content {
     background: #ffffff !important;
     color: #1a1a1a !important;
+    font-family: 'David Libre', 'Noto Serif Hebrew', 'Times New Roman', Georgia, serif;
     border-radius: 16px;
     max-width: 700px;
     width: 100%;
@@ -680,15 +621,8 @@
 }
 
 @keyframes popupSlideIn {
-    from {
-        opacity: 0;
-        transform: scale(0.95) translateY(-10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-    }
+    from { opacity: 0; transform: scale(0.95) translateY(-10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
 }
 
 .popup-header {
@@ -699,21 +633,26 @@
     border-bottom: 2px solid #1a1a1a;
 }
 
-.popup-header h3 {
+.popup-title {
     margin: 0;
     font-size: 1.25rem;
     color: #1a1a1a !important;
     font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .popup-close {
     background: none;
     border: none;
-    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
-    padding: 4px 8px;
+    padding: 6px;
     color: #888888 !important;
-    border-radius: 4px;
+    border-radius: 6px;
     transition: all 0.15s;
 }
 
@@ -748,20 +687,11 @@
     color: #1a1a1a !important;
 }
 
-.popup-section.suggested {
-    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-    padding: 16px;
-    border-radius: 8px;
-    border: 1px solid #fbbf24;
-}
-
-/* ===== Modern Popup Suggested Fix ===== */
+/* Modern Popup Suggested Fix */
 .popup-suggested-modern {
     position: relative;
     padding: 20px !important;
-    background: linear-gradient(135deg,
-            rgba(254, 243, 199, 0.5) 0%,
-            rgba(253, 230, 138, 0.3) 100%) !important;
+    background: linear-gradient(135deg, rgba(254, 243, 199, 0.5) 0%, rgba(253, 230, 138, 0.3) 100%) !important;
     border-left: 4px solid #f59e0b !important;
     border-radius: 0 12px 12px 0 !important;
     border-top: 1px solid rgba(251, 191, 36, 0.3) !important;
@@ -777,7 +707,9 @@
 }
 
 .popup-suggested-icon {
-    font-size: 1.125rem;
+    display: flex;
+    align-items: center;
+    color: #b45309;
 }
 
 .popup-suggested-header label {
@@ -796,20 +728,6 @@
     color: #451a03 !important;
     margin-bottom: 16px;
     font-family: 'Heebo', 'Assistant', 'Rubik', 'Segoe UI', sans-serif;
-}
-
-.popup-apply-btn {
-    padding: 8px 16px;
-    background: #f59e0b;
-    color: white !important;
-    border: none;
-    border-radius: 6px;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.popup-apply-btn:hover {
-    background: #d97706;
 }
 
 /* Modern Ghost Button for Popup */
@@ -860,10 +778,17 @@
 .popup-footer {
     display: flex;
     justify-content: center;
+    flex-wrap: wrap;
     gap: 12px;
     padding: 20px 24px;
     border-top: 1px solid #e0e0e0;
     background: #fafafa;
+}
+
+.action-with-icon {
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .popup-save-btn {
@@ -880,6 +805,21 @@
 
 .popup-save-btn:hover {
     transform: translateY(-1px);
+}
+
+.popup-revert-btn {
+    padding: 12px 24px;
+    background: #fee2e2;
+    color: #b91c1c !important;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.popup-revert-btn:hover {
+    background: #fecaca;
 }
 
 .popup-cancel-btn {
@@ -906,6 +846,13 @@
     font-style: italic;
 }
 
+.no-issues-message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
 .error-toast {
     position: fixed;
     bottom: 24px;
@@ -922,97 +869,71 @@
     z-index: 100;
 }
 
-.error-toast button {
-    background: none;
-    border: none;
-    color: #dc2626 !important;
-    cursor: pointer;
+.error-toast-icon {
+    margin-right: 8px;
 }
 
-/* ===== Floating Scroll Button ===== */
-.scroll-nav-btn {
-    position: fixed;
-    bottom: 32px;
-    right: 32px;
-    left: auto;
+.error-toast-close {
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: inherit;
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 12px 20px;
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-    color: white;
-    border: none;
-    border-radius: 50px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    box-shadow: 0 4px 20px rgba(16, 185, 129, 0.35);
-    z-index: 100;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    animation: slideUp 0.3s ease;
+    justify-content: center;
 }
 
-/* LTR mode - button on left */
-[dir="ltr"] .scroll-nav-btn {
-    left: 32px;
-    right: auto;
+/* ===== Warning & Small Modals ===== */
+.small-modal {
+    max-width: 400px;
+    padding: 0;
 }
 
-@keyframes slideUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.warning-header {
+    border-bottom: none;
+    padding: 24px 24px 0;
+    color: #dc2626 !important;
 }
 
-.scroll-nav-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 28px rgba(37, 99, 235, 0.45);
+.warning-header .popup-title {
+    color: #dc2626 !important;
 }
 
-.scroll-nav-btn.at-bottom {
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-    box-shadow: 0 4px 20px rgba(16, 185, 129, 0.35);
+.center-text {
+    padding: 16px 24px 32px;
+    text-align: center;
 }
 
-.scroll-nav-btn.at-bottom:hover {
-    box-shadow: 0 8px 28px rgba(16, 185, 129, 0.45);
+.modal-description {
+    margin: 0;
+    font-size: 1rem;
+    color: #555555 !important;
 }
 
-.scroll-btn-label {
-    white-space: nowrap;
+.warning-text {
+    font-size: 0.875rem;
+    color: #dc2626 !important;
+    margin-top: 8px;
+    display: block;
+}
+
+.center-footer {
+    justify-content: center;
+    background: #f9fafb;
+}
+
+.fixed-width {
+    width: auto;
+    min-width: 120px;
 }
 
 /* ===== Print Styles ===== */
 @media print {
-    .no-print {
-        display: none !important;
-    }
-
-    .virtual-pdf-container {
-        background: none !important;
-        padding: 0;
-    }
-
-    .virtual-pdf-page {
-        box-shadow: none;
-        padding: 0;
-        max-width: 100%;
-    }
-
-    .clause-item {
-        border: none !important;
-        background: none !important;
-    }
-
-    .contract-footer-signature {
-        break-inside: avoid;
-    }
+    .no-print { display: none !important; }
+    .virtual-pdf-container { background: none !important; padding: 0; }
+    .virtual-pdf-page { box-shadow: none; padding: 0; max-width: 100%; }
+    .clause-item { border: none !important; background: none !important; }
+    .contract-footer-signature { break-inside: avoid; }
 }
 
 /* ===== Responsive ===== */
@@ -1020,9 +941,26 @@
     .virtual-pdf-page {
         padding: 48px 32px;
     }
-
     .virtual-pdf-container {
         padding: 16px 16px 28px;
+    }
+    .virtual-pdf-container.minimized .virtual-pdf-page {
+        padding-bottom: 24px;
+    }
+    
+    /* Show minimize button only on tablet/mobile */
+    .pdf-header-actions {
+        display: block;
+    }
+
+    .clause-hover-hint {
+        right: 8px;
+        top: 8px;
+        transform: none;
+        background: rgba(255, 255, 255, 0.95);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
 }
 
@@ -1030,44 +968,23 @@
     .virtual-pdf-page {
         padding: 32px 20px;
     }
-
+    .virtual-pdf-container.minimized .virtual-pdf-page {
+        padding-bottom: 16px;
+    }
     .signatures {
         flex-direction: column;
         align-items: center;
     }
-
-    .export-primary-action {
-        width: 100%;
-    }
-
-    .export-btn-main,
-    .save-btn-main {
-        width: 100%;
-        justify-content: center;
-    }
-
-    .export-btn-main {
-        padding: 12px 14px;
-    }
-
     .clause-popup-content {
         max-height: 90vh;
     }
-
     .popup-footer {
         flex-direction: column;
     }
-
     .popup-save-btn,
+    .popup-revert-btn,
     .popup-cancel-btn {
         width: 100%;
+        justify-content: center;
     }
-}
-
-.scroll-nav-btn svg {
-    display: block;
-    flex-shrink: 0;
-    width: 18px;
-    height: 18px;
-    stroke: currentColor;
 }

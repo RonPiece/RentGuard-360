@@ -4,6 +4,7 @@ import {
     UserRound,
     Palette,
     BellRing,
+    MessageCircle,
     Info,
     ShieldAlert,
     Lightbulb,
@@ -21,6 +22,7 @@ import Toggle from '../components/Toggle';
 import './SettingsPage.css';
 
 const SettingsPage = () => {
+    const CHAT_AUTO_OPEN_PREF_KEY = 'rentguard_chat_auto_open_contract';
     const { userAttributes, logout, deleteAccount, user } = useAuth();
     const { isDark, toggleTheme } = useTheme();
     const { t, isRTL } = useLanguage();
@@ -29,6 +31,27 @@ const SettingsPage = () => {
     const [deleteConfirmText, setDeleteConfirmText] = useState('');
     const [isDeleting, setIsDeleting] = useState(false);
     const [deleteError, setDeleteError] = useState('');
+    const [chatAutoOpenEnabled, setChatAutoOpenEnabled] = useState(() => {
+        try {
+            const saved = localStorage.getItem(CHAT_AUTO_OPEN_PREF_KEY);
+            if (saved === null) return true;
+            return saved !== 'false';
+        } catch {
+            return true;
+        }
+    });
+
+    const handleChatAutoOpenToggle = () => {
+        setChatAutoOpenEnabled((prev) => {
+            const next = !prev;
+            try {
+                localStorage.setItem(CHAT_AUTO_OPEN_PREF_KEY, String(next));
+            } catch {
+                // Ignore storage failures and keep in-memory value.
+            }
+            return next;
+        });
+    };
 
     const handleLogout = async () => {
         await logout();
@@ -140,7 +163,30 @@ const SettingsPage = () => {
                     </button>
                 </div>
 
-                {/* 4. Notifications Cube */}
+                {/* 4. Contract Chat Behavior */}
+                <div className="bento-card bento-col-2 flex-between">
+                    <div>
+                        <div className="cube-icon-wrapper icon-primary">
+                            <MessageCircle size={24} />
+                        </div>
+                        <h3>{isRTL ? 'התנהגות צ׳אט' : 'Chat Behavior'}</h3>
+                        <p className="cube-desc">
+                            {isRTL
+                                ? 'קובע אם צ׳אט החוזה ייפתח אוטומטית בעת כניסה לעמוד ניתוח חוזה.'
+                                : 'Control whether the contract chat opens automatically when entering an analysis page.'}
+                        </p>
+                    </div>
+                    <div className="cube-action-row">
+                        <span className="status-text">
+                            {chatAutoOpenEnabled
+                                ? (isRTL ? 'פתיחה אוטומטית: פעילה' : 'Auto-open: On')
+                                : (isRTL ? 'פתיחה אוטומטית: כבויה' : 'Auto-open: Off')}
+                        </span>
+                        <Toggle checked={chatAutoOpenEnabled} onChange={handleChatAutoOpenToggle} />
+                    </div>
+                </div>
+
+                {/* 5. Notifications Cube */}
                 <div className="bento-card bento-col-2 flex-between">
                     <div>
                         <div className="cube-icon-wrapper icon-tertiary">
@@ -164,7 +210,7 @@ const SettingsPage = () => {
                     </div>
                 </div>
 
-                {/* 5. About Cube */}
+                {/* 6. About Cube */}
                 <div className="bento-card bento-col-2 flex-between">
                     <div>
                         <div className="cube-icon-wrapper icon-primary">
@@ -184,7 +230,7 @@ const SettingsPage = () => {
                     </div>
                 </div>
 
-                {/* 6. Danger Zone */}
+                {/* 7. Danger Zone */}
 <div className="bento-card bento-col-6 danger-cube">
     <div className="danger-info">
         <div className="cube-icon-wrapper icon-danger">
