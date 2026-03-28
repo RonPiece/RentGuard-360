@@ -1,27 +1,11 @@
 /**
  * ============================================
- *  ContactPage
- *  Customer Support Contact Form
- * ============================================
- * 
- * STRUCTURE:
- * - Contact form (name, email, subject, message)
- * - Quick help sidebar with FAQ
- * - Response time information
- * 
- * FEATURES:
- * - Pre-fills user name/email from auth
- * - Sends message via API (creates support ticket)
- * - Success confirmation state
- * 
- * DEPENDENCIES:
- * - api.js: sendContactMessage
- * - Card, Input, Button components
- * 
+ * ContactPage
+ * Customer Support Contact Form
  * ============================================
  */
 import React, { useState } from 'react';
-import { Mail, CheckCircle2, CircleHelp, Clock3 } from 'lucide-react';
+import { Mail, CheckCircle2, MapPin, Phone, Send } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { sendContactMessage } from '../services/api';
@@ -37,7 +21,7 @@ const ContactPage = () => {
     const [formData, setFormData] = useState({
         name: userAttributes?.name || '',
         email: userAttributes?.email || '',
-        subject: '',
+        phone: '', // Added phone field from the new design
         message: '',
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -61,11 +45,13 @@ const ContactPage = () => {
             const response = await sendContactMessage({
                 ...formData,
                 email: userAttributes?.email || formData.email,
+                // Defaulting subject since it's removed from UI but might be needed by API
+                subject: isRTL ? 'פנייה חדשה מדף צור קשר' : 'New Contact Page Inquiry'
             });
 
             if (response.ticketId || response.message === 'Ticket created') {
                 setSubmitStatus('success');
-                setFormData({ ...formData, subject: '', message: '' });
+                setFormData({ ...formData, phone: '', message: '' });
                 emitAppToast({
                     type: 'success',
                     title: t('notifications.contactSentTitle'),
@@ -90,135 +76,156 @@ const ContactPage = () => {
 
     return (
         <div className="contact-page page-container" dir={isRTL ? 'rtl' : 'ltr'}>
+
+            {/* Header Section */}
             <div className="contact-header animate-fadeIn">
-                <h1>
-                    <span className="contact-title-icon" aria-hidden="true">
-                        <Mail size={20} strokeWidth={2.2} />
-                    </span>
-                    <span>{t('nav.contact')}</span>
+                <h1 className="headline-font">
+                    {isRTL ? 'אנחנו כאן בשבילך' : 'We are here for you'}
                 </h1>
-                <p>{isRTL ? 'יש לכם שאלה או צריכים עזרה? אנחנו כאן בשבילכם!' : 'Have a question or need help? We\'re here for you!'}</p>
+                <p>
+                    {isRTL
+                        ? 'יש לך שאלות לגבי ניהול השכירות שלך? הצוות המקצועי של RentGuard זמין לסייע לך בכל נושא משפטי או טכני.'
+                        : 'Have questions about your rental management? The RentGuard professional team is available to assist you with any legal or technical issue.'}
+                </p>
             </div>
 
-            <div className="contact-content">
-                <Card variant="elevated" padding="lg" className="contact-form-card animate-slideUp">
-                    {submitStatus === 'success' ? (
-                        <div className="success-message">
-                            <span className="success-icon" aria-hidden="true">
-                                <CheckCircle2 size={36} strokeWidth={2.4} />
-                            </span>
-                            <h3>{isRTL ? 'ההודעה נשלחה!' : 'Message Sent!'}</h3>
-                            <p>{isRTL ? 'נחזור אליכם תוך 24 שעות.' : 'We\'ll get back to you within 24 hours.'}</p>
-                            <Button
-                                variant="secondary"
-                                onClick={() => setSubmitStatus(null)}
-                            >
-                                {isRTL ? 'שליחת הודעה נוספת' : 'Send Another Message'}
-                            </Button>
-                        </div>
-                    ) : (
-                        <form onSubmit={handleSubmit}>
-                            <h3>{isRTL ? 'שלחו לנו הודעה' : 'Send Us a Message'}</h3>
+            {/* Main Layout Grid */}
+            <div className="contact-grid">
 
-                            <div className="form-row">
-                                <Input
-                                    label={isRTL ? 'שם' : 'Name'}
-                                    name="name"
-                                    value={formData.name}
-                                    onChange={handleChange}
-                                    required
-                                    placeholder={isRTL ? 'ישראל ישראלי' : 'John Smith'}
-                                />
+                {/* Left/Right Column: Contact Form */}
+                <div className="contact-form-column animate-slideUp">
+                    <Card variant="elevated" padding="lg" className="contact-form-card">
+                        {submitStatus === 'success' ? (
+                            <div className="success-message">
+                                <span className="success-icon" aria-hidden="true">
+                                    <CheckCircle2 size={48} strokeWidth={2} />
+                                </span>
+                                <h3>{isRTL ? 'ההודעה נשלחה בהצלחה!' : 'Message Sent Successfully!'}</h3>
+                                <p>{isRTL ? 'נחזור אליכם בהקדם האפשרי.' : 'We\'ll get back to you as soon as possible.'}</p>
+                                <Button
+                                    variant="secondary"
+                                    onClick={() => setSubmitStatus(null)}
+                                >
+                                    {isRTL ? 'שליחת הודעה נוספת' : 'Send Another Message'}
+                                </Button>
+                            </div>
+                        ) : (
+                            <form onSubmit={handleSubmit} className="contact-form">
+                                <div className="form-row-2col">
+                                    <Input
+                                        label={isRTL ? 'שם מלא' : 'Full Name'}
+                                        name="name"
+                                        value={formData.name}
+                                        onChange={handleChange}
+                                        required
+                                        placeholder={isRTL ? 'ישראל ישראלי' : 'John Smith'}
+                                    />
+                                    <Input
+                                        label={isRTL ? 'טלפון' : 'Phone'}
+                                        name="phone"
+                                        type="tel"
+                                        value={formData.phone}
+                                        onChange={handleChange}
+                                        dir="ltr"
+                                        placeholder="054-7820346"
+                                    />
+                                </div>
+
                                 <Input
                                     label={isRTL ? 'אימייל' : 'Email'}
                                     name="email"
                                     type="email"
                                     value={userAttributes?.email || formData.email}
                                     onChange={handleChange}
-                                    disabled
+                                    disabled={!!userAttributes?.email}
                                     required
-                                    placeholder="example@email.com"
+                                    dir="ltr"
+                                    placeholder="name@company.com"
                                 />
-                            </div>
 
-                            <Input
-                                label={isRTL ? 'נושא' : 'Subject'}
-                                name="subject"
-                                value={formData.subject}
-                                onChange={handleChange}
-                                required
-                                placeholder={isRTL ? 'במה נוכל לעזור?' : 'How can we help?'}
-                            />
+                                <div className="textarea-wrapper">
+                                    <label className="input-label">{isRTL ? 'הודעה' : 'Message'}</label>
+                                    <textarea
+                                        name="message"
+                                        value={formData.message}
+                                        onChange={handleChange}
+                                        required
+                                        placeholder={isRTL ? 'איך נוכל לעזור לך היום?' : 'How can we help you today?'}
+                                        rows={5}
+                                        className="contact-textarea"
+                                    />
+                                </div>
 
-                            <div className="textarea-wrapper">
-                                <label className="input-label">{isRTL ? 'הודעה' : 'Message'}</label>
-                                <textarea
-                                    name="message"
-                                    value={formData.message}
-                                    onChange={handleChange}
-                                    required
-                                    placeholder={isRTL ? 'תארו את הבעיה או השאלה שלכם בפירוט...' : 'Describe your issue or question in detail...'}
-                                    rows={5}
-                                    className="contact-textarea"
-                                />
-                            </div>
+                                {error && <p className="form-error">{error}</p>}
 
-                            {error && <p className="form-error">{error}</p>}
+                                <Button
+                                    variant="primary"
+                                    fullWidth
+                                    loading={isSubmitting}
+                                    type="submit"
+                                    className="submit-btn"
+                                >
+                                    <span>{isSubmitting ? (isRTL ? 'שולח...' : 'Sending...') : (isRTL ? 'שלח הודעה' : 'Send Message')}</span>
+                                    {!isSubmitting && <Send size={18} className={isRTL ? 'icon-rtl' : 'icon-ltr'} />}
+                                </Button>
+                            </form>
+                        )}
+                    </Card>
+                </div>
 
-                            <Button
-                                variant="primary"
-                                fullWidth
-                                loading={isSubmitting}
-                                type="submit"
-                            >
-                                {isSubmitting ? (isRTL ? 'שולח...' : 'Sending...') : (isRTL ? 'שליחת הודעה' : 'Send Message')}
-                            </Button>
-                        </form>
-                    )}
-                </Card>
+                {/* Left/Right Column: Info & Branding */}
+                <div className="contact-info-column animate-slideUp" style={{ animationDelay: '100ms' }}>
 
-                <div className="contact-info animate-slideUp" style={{ animationDelay: '100ms' }}>
-                    <Card variant="glass" padding="md">
-                        <h4>
-                            <span className="info-card-icon" aria-hidden="true">
-                                <CircleHelp size={16} strokeWidth={2.4} />
-                            </span>
-                            <span>{isRTL ? 'עזרה מהירה' : 'Quick Help'}</span>
-                        </h4>
-                        <ul className="help-list">
+                    {/* Contact Details Card */}
+                    <div className="info-details-card">
+                        <h2 className="headline-font">{isRTL ? 'פרטי התקשרות' : 'Contact Details'}</h2>
+                        <ul className="info-list">
                             <li>
-                                <strong>{isRTL ? 'הניתוח מראה "מעבד..."?' : 'Analysis shows "Processing"?'}</strong>
-                                <span>{isRTL ? 'הניתוח נמשך עד 2 דקות. הדף מתעדכן אוטומטית - אין צורך לרענן.' : 'Analysis takes up to 2 minutes. The page auto-updates - no need to refresh.'}</span>
+                                <div className="info-icon">
+                                    <MapPin size={20} />
+                                </div>
+                                <div className="info-text">
+                                    <p className="info-label">{isRTL ? 'כתובתנו' : 'Address'}</p>
+                                    <p className="info-value">{isRTL ? 'אור עקיבא, המרכז המשפטי, ישראל' : 'Or Akiva, The Legal Center, Israel'}</p>
+                                </div>
                             </li>
                             <li>
-                                <strong>{isRTL ? 'דרישות הקובץ?' : 'File requirements?'}</strong>
-                                <span>{isRTL ? 'PDF בלבד, בין 30KB ל-5MB. שם קובץ עד 100 תווים.' : 'PDF only, between 30KB and 5MB. Filename up to 100 characters.'}</span>
+                                <div className="info-icon">
+                                    <Mail size={20} />
+                                </div>
+                                <div className="info-text">
+                                    <p className="info-label">{isRTL ? 'דואר אלקטרוני' : 'Email'}</p>
+                                    <p className="info-value" dir="ltr">rentguard360@gmail.com</p>
+                                </div>
                             </li>
                             <li>
-                                <strong>{isRTL ? 'איך לייצא את הניתוח?' : 'How to export analysis?'}</strong>
-                                <span>{isRTL ? 'בדף הניתוח, לחצו על "ייצוא" לקבלת דוח Word או PDF.' : 'On the analysis page, click "Export" to get a Word or PDF report.'}</span>
-                            </li>
-                            <li>
-                                <strong>{isRTL ? 'מה משמעות הציון?' : 'What does the score mean?'}</strong>
-                                <span>{isRTL ? '100 = מושלם. נקודות מנוכות לפי חומרת הסעיפים הבעייתיים.' : '100 = perfect. Points are deducted based on issue severity.'}</span>
+                                <div className="info-icon">
+                                    <Phone size={20} />
+                                </div>
+                                <div className="info-text">
+                                    <p className="info-label">{isRTL ? 'טלפון' : 'Phone'}</p>
+                                    <p className="info-value" dir="ltr">050-0000000</p>
+                                </div>
                             </li>
                         </ul>
-                    </Card>
+                    </div>
 
-                    <Card variant="glass" padding="md">
-                        <h4>
-                            <span className="info-card-icon" aria-hidden="true">
-                                <Clock3 size={16} strokeWidth={2.4} />
-                            </span>
-                            <span>{isRTL ? 'זמן תגובה' : 'Response Time'}</span>
-                        </h4>
-                        <p className="response-info">
-                            {isRTL
-                                ? <>אנחנו בדרך כלל עונים תוך <strong>24 שעות</strong> בימי עבודה. לבעיות דחופות, הוסיפו "דחוף" בנושא ההודעה.</>
-                                : <>We usually respond within <strong>24 hours</strong> on business days. For urgent issues, add "Urgent" to the subject line.</>
-                            }
-                        </p>
-                    </Card>
+                    {/* Office Image Branding Box */}
+                    <div className="brand-image-card">
+                        <img
+                            src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80"
+                            alt="Office"
+                            className="office-bg"
+                        />
+                        <div className="brand-image-overlay">
+                            <p>
+                                {isRTL
+                                    ? 'הצטרפו לאלפי בעלי נכסים שבוחרים בשקט נפשי עם RentGuard.'
+                                    : 'Join thousands of property owners who choose peace of mind with RentGuard.'}
+                            </p>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>

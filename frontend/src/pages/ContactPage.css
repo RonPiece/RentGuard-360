@@ -1,38 +1,29 @@
-/* 
- * ContactPage.css - Contact Page Styles
+/* * ContactPage.css - Contact Page Styles
  * Contact form, help cards, response info
- * 
- * STRUCTURE:
+ * * STRUCTURE:
  * 1. Page Layout
  * 2. Page Header
  * 3. Content Layout
- * 4. Form Card
- * 5. Textarea
- * 6. Messages (Error/Success)
- * 7. Info Cards
- * 8. Media Queries (768px, 600px, 480px)
- * 
- * NOTE: 
- * - Uses .page-container for base layout (from design-system.css)
- * - Uses .animate-fadeIn, .animate-slideUp (from design-system.css)
+ * 4. Form Card & Inputs
+ * 5. Info & Branding Column
+ * 6. Trust Bar
+ * 7. Messages (Error/Success)
+ * 8. Media Queries
  */
 
 /* ============================================
    1. PAGE LAYOUT
    ============================================ */
 
-/* 
- * Contact Page Layout Fix:
- * Same approach as Settings page - use flexbox to fill remaining space
- * so the --bg-page background extends to the footer with no gap.
- */
-
-
-/* All direct children get centered with max-width */
 .contact-page>* {
-    max-width: 1000px;
+    max-width: 1100px;
     margin-left: auto;
     margin-right: auto;
+}
+
+.headline-font {
+    /* If you have Plus Jakarta Sans, it will use it, otherwise fall back to your existing headings */
+    font-family: 'Plus Jakarta Sans', var(--font-heading, sans-serif);
 }
 
 /* ============================================
@@ -41,114 +32,263 @@
 
 .contact-header {
     text-align: center;
-    margin-bottom: var(--space-xl);
+    margin-bottom: var(--space-2xl, 4rem);
 }
 
 .contact-header h1 {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-sm);
-    font-size: var(--font-size-3xl);
-    font-weight: var(--font-weight-bold);
-    color: var(--text-primary);
-    margin-bottom: var(--space-sm);
-}
-
-.contact-title-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 34px;
-    height: 34px;
-    border-radius: 10px;
-    background: linear-gradient(145deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.08));
-    color: var(--accent-primary);
-    border: 1px solid rgba(16, 185, 129, 0.3);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    font-size: clamp(2rem, 5vw, 3rem);
+    /* Responsive typography */
+    font-weight: 800;
+    color: #004137;
+    /* Match the mockup's brand color */
+    margin-bottom: var(--space-sm, 1rem);
+    letter-spacing: -0.02em;
 }
 
 .contact-header p {
     color: var(--text-secondary);
-    font-size: var(--font-size-lg);
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
 }
 
 /* ============================================
-   3. CONTENT LAYOUT
+   3. CONTENT LAYOUT (Grid)
    ============================================ */
 
-.contact-content {
+.contact-grid {
     display: grid;
+    /* 1.5fr for the form, 1fr for the info. In RTL, 1.5fr automatically goes to the right! */
     grid-template-columns: 1.5fr 1fr;
-    gap: var(--space-xl);
-    align-items: start;
+    gap: var(--space-xl, 2rem);
+    align-items: stretch;
 }
 
-/* ============================================
-   4. FORM CARD
-   ============================================ */
-
-.contact-form-card h3 {
-    color: var(--text-primary);
-    margin-bottom: var(--space-lg);
-    font-size: var(--font-size-xl);
-}
-
-.contact-form-card form {
+.contact-form-column {
     display: flex;
     flex-direction: column;
-    gap: var(--space-md);
 }
 
-.form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--space-md);
+.contact-info-column {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg, 1.5rem);
 }
 
 /* ============================================
-   5. TEXTAREA
+   4. FORM CARD & INPUTS
    ============================================ */
+
+.contact-form-card {
+    height: 100%;
+    background: var(--bg-surface, #ffffff);
+    border-radius: var(--radius-xl, 1rem);
+    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.05);
+}
+
+.contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg, 1.5rem);
+}
+
+.form-row-2col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-md, 1rem);
+}
 
 .textarea-wrapper {
     display: flex;
     flex-direction: column;
-    gap: var(--space-xs);
+    gap: var(--space-xs, 0.5rem);
 }
 
 .input-label {
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-sm, 0.875rem);
+    font-weight: 600;
     color: var(--text-secondary);
 }
 
 .contact-textarea {
     width: 100%;
-    padding: var(--space-md);
+    padding: var(--space-md, 1rem) var(--space-lg, 1.25rem);
     font-family: var(--font-sans);
-    font-size: var(--font-size-base);
+    font-size: var(--font-size-base, 1rem);
     color: var(--text-primary);
-    background: var(--bg-tertiary);
-    border: 1.5px solid var(--glass-border);
-    border-radius: var(--radius-md);
+    background: var(--bg-tertiary, #f3f4f5);
+    border: 2px solid transparent;
+    border-radius: var(--radius-md, 0.75rem);
     resize: vertical;
-    transition: all var(--transition-fast);
+    transition: all 0.3s ease;
 }
 
 .contact-textarea:focus {
     outline: none;
-    border-color: var(--accent-primary);
-    box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+    background: var(--bg-surface, #ffffff);
+    border-color: rgba(0, 65, 55, 0.2);
+    box-shadow: 0 0 0 4px rgba(0, 65, 55, 0.05);
 }
 
-[data-theme="dark"] .contact-textarea {
+/* Submit Button Override to match mockup */
+.submit-btn {
+    background-color: #004137 !important;
+    color: white !important;
+    padding: 1.25rem !important;
+    font-size: 1.125rem !important;
+    font-weight: 700 !important;
+    border-radius: var(--radius-md, 0.75rem) !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.75rem;
+    box-shadow: 0 10px 25px -5px rgba(0, 65, 55, 0.3) !important;
+    transition: all 0.3s ease !important;
+    margin-top: 0.5rem;
+}
+
+.submit-btn:hover {
+    background-color: #003028 !important;
+    transform: translateY(-2px);
+}
+
+.submit-btn:active {
+    transform: translateY(0) scale(0.98);
+}
+
+.icon-rtl {
+    transform: rotate(180deg);
+}
+
+/* ============================================
+   5. INFO & BRANDING COLUMN
+   ============================================ */
+
+.info-details-card {
+    background-color: #004137;
+    /* Mockup brand color */
+    color: white;
+    padding: 2.5rem;
+    border-radius: var(--radius-xl, 1rem);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 20px 40px -10px rgba(0, 65, 55, 0.3);
+}
+
+/* Abstract circle decoration */
+.info-details-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 150px;
+    height: 150px;
     background: rgba(255, 255, 255, 0.05);
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--shadow-md);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
 }
 
-[data-theme="dark"] .contact-textarea:focus {
-    border-color: var(--accent-primary);
-    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+.info-details-card h2 {
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    position: relative;
+    z-index: 2;
+}
+
+.info-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    position: relative;
+    z-index: 2;
+}
+
+.info-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.25rem;
+    transition: transform 0.2s ease;
+}
+
+.info-list li:hover .info-icon {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.info-icon {
+    width: 48px;
+    height: 48px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: white;
+    transition: background 0.3s ease;
+}
+
+.info-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.info-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.7);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.info-value {
+    font-size: 1.125rem;
+    font-weight: 500;
+    color: white;
+}
+
+/* Image Card */
+.brand-image-card {
+    position: relative;
+    border-radius: var(--radius-xl, 1rem);
+    overflow: hidden;
+    aspect-ratio: 4/3;
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.15);
+}
+
+.office-bg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.7s ease;
+}
+
+.brand-image-card:hover .office-bg {
+    transform: scale(1.05);
+}
+
+.brand-image-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 2rem;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.4) 60%, transparent);
+    backdrop-filter: blur(2px);
+}
+
+.brand-image-overlay p {
+    color: white;
+    font-size: 1.125rem;
+    font-weight: 600;
+    line-height: 1.4;
+    text-align: right;
 }
 
 /* ============================================
@@ -156,147 +296,86 @@
    ============================================ */
 
 .form-error {
-    color: var(--accent-danger);
-    font-size: var(--font-size-sm);
-    padding: var(--space-sm);
+    color: var(--accent-danger, #ef4444);
+    font-size: var(--font-size-sm, 0.875rem);
+    padding: var(--space-sm, 0.75rem);
     background: rgba(239, 68, 68, 0.1);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-sm, 0.5rem);
     text-align: center;
 }
 
 .success-message {
     text-align: center;
-    padding: var(--space-xl);
+    padding: var(--space-2xl, 3rem) var(--space-xl, 2rem);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
 }
 
 .success-icon {
-    width: 72px;
-    height: 72px;
+    width: 80px;
+    height: 80px;
     border-radius: 50%;
-    display: inline-flex;
+    display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--accent-success);
-    background: radial-gradient(circle at 30% 30%, rgba(16, 185, 129, 0.22), rgba(16, 185, 129, 0.08));
-    border: 1px solid rgba(16, 185, 129, 0.35);
-    margin-bottom: var(--space-md);
+    color: #004137;
+    background: rgba(0, 65, 55, 0.1);
+    margin-bottom: 1.5rem;
 }
 
 .success-message h3 {
-    color: var(--accent-success);
-    margin-bottom: var(--space-sm);
+    color: #004137;
+    margin-bottom: 0.5rem;
+    font-size: 1.5rem;
 }
 
 .success-message p {
     color: var(--text-secondary);
-    margin-bottom: var(--space-lg);
-}
-
-/* ============================================
-   7. INFO CARDS
-   ============================================ */
-
-.contact-info {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-md);
-}
-
-.contact-info h4 {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: var(--text-primary);
-    margin-bottom: var(--space-sm);
-}
-
-.info-card-icon {
-    width: 24px;
-    height: 24px;
-    border-radius: 8px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--accent-primary);
-    background: rgba(16, 185, 129, 0.12);
-    border: 1px solid rgba(16, 185, 129, 0.28);
-    flex-shrink: 0;
-}
-
-.help-list li {
-    padding-bottom: var(--space-sm);
-    border-bottom: 1px solid rgba(148, 163, 184, 0.16);
-}
-
-.help-list li:last-child {
-    padding-bottom: 0;
-    border-bottom: none;
-}
-
-.help-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-md);
-}
-
-.help-list li {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.help-list li strong {
-    color: var(--text-primary);
-    font-size: var(--font-size-sm);
-}
-
-.help-list li span {
-    color: var(--text-secondary);
-    font-size: var(--font-size-xs);
-}
-
-.response-info {
-    color: var(--text-secondary);
-    font-size: var(--font-size-sm);
-    line-height: 1.6;
+    margin-bottom: 2rem;
+    font-size: 1.125rem;
 }
 
 /* ============================================
    8. MEDIA QUERIES
    ============================================ */
 
-/* Tablet (iPad Mini/Air) */
-@media (max-width: 768px) {
-    .contact-content {
+/* Tablet */
+@media (max-width: 900px) {
+    .contact-grid {
         grid-template-columns: 1fr;
+        /* Stack columns */
+    }
+
+    .contact-form-column {
+        order: 2;
+        /* Form goes to the bottom on mobile */
+    }
+
+    .contact-info-column {
+        order: 1;
+        /* Info goes to the top on mobile */
     }
 }
 
-/* Mobile (iPhone Pro) */
+/* Mobile */
 @media (max-width: 600px) {
-    .contact-page {
-        padding: var(--space-lg) var(--space-sm);
+    .contact-header {
+        margin-bottom: 2rem;
     }
 
-    .contact-header h1 {
-        font-size: var(--font-size-2xl);
-    }
-
-    .contact-header p {
-        font-size: var(--font-size-base);
-    }
-
-    .contact-info {
-        order: -1;
-    }
-}
-
-/* Small Mobile (iPhone SE) */
-@media (max-width: 480px) {
-    .form-row {
+    .form-row-2col {
         grid-template-columns: 1fr;
+        /* Stack inputs */
+    }
+
+    .info-details-card {
+        padding: 1.5rem;
+    }
+
+    .trust-bar {
+        gap: 1.5rem;
     }
 }
