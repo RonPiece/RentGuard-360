@@ -651,6 +651,142 @@ const translations = {
             securityNote: 'כל הנתונים שלכם מוצפנים ומאובטחים ברמת התעשייה.',
             backToSettings: 'חזרה להגדרות',
         },
+        // Terms of Service
+        terms: {
+            title: 'תנאי שירות',
+            updated: 'עודכן לאחרונה: מרץ 2026',
+            tocTitle: 'תוכן עניינים',
+            contactPrefix: 'לשאלות נוספות, פנו אלינו דרך',
+            contactLinkText: 'עמוד צור קשר',
+            contactMiddle: 'או במייל ל-',
+            sections: [
+                {
+                    id: 'acceptance',
+                    title: '1. הסכמה לתנאים',
+                    content: 'בשימוש באתר ובשירותי RentGuard 360, אתה מסכים לתנאי שימוש אלה. אם אינך מסכים לתנאים, אנא הימנע משימוש בשירותים.',
+                },
+                {
+                    id: 'service',
+                    title: '2. תיאור השירות',
+                    content: 'RentGuard 360 מספקת שירות ניתוח חוזי שכירות באמצעות בינה מלאכותית. השירות כולל:',
+                    list: [
+                        'סריקה אוטומטית של חוזי שכירות בפורמט PDF',
+                        'זיהוי סעיפים בעייתיים וניגודי אינטרסים',
+                        'דירוג סיכון מפורט לכל סעיף',
+                        'המלצות ותיקונים מוצעים',
+                        'יצוא דוחות בפורמט PDF ו-Word',
+                    ],
+                },
+                {
+                    id: 'purchases',
+                    title: '3. רכישות ותשלומים',
+                    content: 'כל הרכישות באתר הן רכישות חד-פעמיות של חבילות סריקה. לא מתבצע חיוב חוזר או מנוי מתחדש אוטומטית. התשלומים מעובדים באמצעות Stripe ומאובטחים בהתאם לתקני PCI DSS. RentGuard 360 אינה שומרת את פרטי כרטיס האשראי שלך — כל המידע הרגיש מנוהל ישירות על ידי Stripe.',
+                },
+                {
+                    id: 'refund',
+                    title: '4. מדיניות החזרים',
+                    content: 'מאחר שהשירות מספק ניתוח מיידי לאחר רכישה, החזרים יינתנו רק במקרים יוצאי דופן (למשל כשל טכני שמנע מהמערכת להשלים את הניתוח). לבקשות החזר, פנו אלינו דרך עמוד צור קשר.',
+                },
+                {
+                    id: 'data',
+                    title: '5. שמירת מידע ופרטיות',
+                    content: 'אנו מחויבים להגנה על פרטיותך. הנקודות העיקריות:',
+                    list: [
+                        'חוזים שהועלו מאוחסנים מוצפנים בשרתי AWS',
+                        'המידע משמש אך ורק לצורך מתן השירות המבוקש',
+                        'אנו לא מוכרים או משתפים מידע אישי עם צדדים שלישיים',
+                        'תוכלו לבקש מחיקת המידע שלכם בכל עת',
+                        'אנו משתמשים ב-cookies הכרחיים בלבד לתפעול האתר',
+                    ],
+                },
+                {
+                    id: 'security',
+                    title: '6. אבטחת מידע',
+                    content: 'אנו מיישמים אמצעי אבטחה מתקדמים כדי להגן על המידע שלכם, כולל הצפנת SSL/TLS, אחסון מוצפן, אימות רב-שלבי (MFA) וניטור אבטחה שוטף. השרתים שלנו מתארחים ב-AWS ועומדים בתקני אבטחה בינלאומיים.',
+                },
+                {
+                    id: 'disclaimer',
+                    title: '7. הגבלת אחריות',
+                    content: 'הניתוח המסופק על ידי RentGuard 360 הוא בגדר מידע כללי בלבד ואינו מהווה ייעוץ משפטי. מומלץ בחום להתייעץ עם עורך דין לפני חתימה על כל חוזה. RentGuard 360 אינה אחראית להחלטות שהתקבלו על בסיס הניתוח בלבד.',
+                },
+                {
+                    id: 'ip',
+                    title: '8. קניין רוחני',
+                    content: 'כל הזכויות בשירות, כולל עיצוב, קוד, אלגוריתמים ותוכן, שייכות ל-RentGuard 360. אין להעתיק, להפיץ או לשכפל כל חלק מהשירות ללא אישור בכתב.',
+                },
+                {
+                    id: 'changes',
+                    title: '9. שינויים בתנאים',
+                    content: 'אנו שומרים לעצמנו את הזכות לעדכן תנאים אלה מעת לעת. שינויים מהותיים יפורסמו באתר ו/או ישלחו בדוא"ל. המשך השימוש בשירות לאחר עדכון התנאים מהווה הסכמה לתנאים המעודכנים.',
+                },
+                {
+                    id: 'contact',
+                    title: '10. יצירת קשר',
+                    content: 'לשאלות בנוגע לתנאי שימוש אלה או לכל נושא אחר, ניתן לפנות אלינו דרך עמוד צור קשר באתר או במייל.',
+                },
+            ]
+        },
+        // Privacy Policy
+        privacy: {
+            title: 'מדיניות פרטיות',
+            updated: 'עודכן לאחרונה: מרץ 2026',
+            tocTitle: 'תוכן עניינים',
+            contactPrefix: 'לשאלות נוספות בנושא פרטיות, פנו אלינו דרך',
+            contactLinkText: 'עמוד צור קשר',
+            contactMiddle: 'או במייל ל-',
+            sections: [
+                {
+                    id: 'general',
+                    title: '1. כללי',
+                    content: 'אנו ב-RentGuard 360 ("החברה", "אנו", "שלנו") מכבדים את פרטיותך ומחויבים להגן עליה. מדיניות פרטיות זו מתארת באילו אופנים אנו אוספים, משתמשים ומגנים על המידע האישי שלך בעת השימוש באתר ובשירותים שלנו.'
+                },
+                {
+                    id: 'collection',
+                    title: '2. איסוף מידע',
+                    content: 'אנו אוספים סוגי מידע שונים לשם אספקת השירות:',
+                    list: [
+                        'פרטי התקשרות והרשמה (כתובת דוא"ל, שם מלא).',
+                        'מידע פיננסי מעובד בצורה מאובטחת על ידי חברות סליקה צד שלישי המורשות לכך (Stripe); אנו לא שומרים את פרטי כרטיס האשראי שלך בשרתינו.',
+                        'מסמכים והסכמי שכירות שאתה בוחר להעלות (לשם ניתוח באמצעות מערכות הבינה המלאכותית שלנו).'
+                    ]
+                },
+                {
+                    id: 'usage',
+                    title: '3. שימוש במידע',
+                    content: 'שימוש במידע שנאסף נעשה אך ורק לשם המטרות הבאות:',
+                    list: [
+                        'מתן שירות ניתוח מסמכים (הממוחשב והאוטומטי) ושיפור חוויית המשתמש והשירות.',
+                        'ניהול חשבונות המשתמשים שלנו ואספקת תמיכה טכנית.',
+                        'משלוח הודעות שירות (כגון עדכונים במערכת או הפקת דוחות) – לא יישלח תוכן שיווקי אלא אם ניתנה הסכמה מפורשת.'
+                    ]
+                },
+                {
+                    id: 'sharing',
+                    title: '4. שיתוף מידע עם צדדים שלישיים',
+                    content: 'איננו מוכרים, סוחרים או מעבירים מידע מזהה אישי לצורכי שיווק לצדדים שלישיים. אנו עשויים לשתף מידע עם ספקי שירות שעוזרים לנו לתפעל את המערכת שלנו (למשל, Amazon Web Services וספקי סליקה) ובלבד שספקים אלה מתחייבים לשמור על סודיות ואבטחת המידע בהתאם לאותם סטנדרטים מחמירים שלנו.'
+                },
+                {
+                    id: 'ai-processing',
+                    title: '5. עיבוד בבינה מלאכותית',
+                    content: 'ההסכמים שתעלה למערכת מועברים לעיבוד במנועי בינה מלאכותית (LLMs). אנו נוקטים באמצעים טכנולוגיים ליישום הסתרת נתונים אישיים (השחרה) בטרם הניתוח, במטרה למנוע סריקה של פרטים כגון תעודת זהות ומספרי טלפון, למען ההגנה על פרטיותך.'
+                },
+                {
+                    id: 'data-retention',
+                    title: '6. שמירת מידע ומחיקתו',
+                    content: 'מסמכים שהועלו לסריקה נשמרים תחת הצפנה קפדנית, ומוחזקים בחשבונך. תוכל באזור האישי (או דרך פנייה לתמיכה) למחוק את המסמכים ואף למחוק את החשבון במלואו, תוך מחיקה מלאה של המידע מהשרתים, בהתאם לדרישות החוק.'
+                },
+                {
+                    id: 'cookies',
+                    title: '7. Cookies ("עוגיות")',
+                    content: 'האתר משתמש בטכנולוגיות מעקב מסוג "עוגיות" (Cookies) בכדי להבטיח את תפקודו התקין של האתר וניהול מצב התחברות (Sessions). תוכל לבטל את האפשרות בדפדפן, אך לא תוכל להשתמש בשירותי המערכת הדורשים התחברות.'
+                },
+                {
+                    id: 'contact',
+                    title: '8. פניות',
+                    content: 'בכל שאלה בנושא פרטיות או במקרה של בקשה לעיון, תיקון או מחיקה של המידע האישי שברשותנו, ניתן לפנות אלינו לפי פרטי הקשר שמופיעים באתר.'
+                }
+            ]
+        },
     },
     en: {
         // Navigation
@@ -1273,6 +1409,142 @@ const translations = {
             poweredByStripe: 'Powered by Stripe',
             securityNote: 'All your data is encrypted and secured at industry level.',
             backToSettings: 'Back to Settings',
+        },
+        // Terms of Service
+        terms: {
+            title: 'Terms of Service',
+            updated: 'Last updated: March 2026',
+            tocTitle: 'Table of Contents',
+            contactPrefix: 'For additional questions, reach us via the',
+            contactLinkText: 'Contact page',
+            contactMiddle: 'or email us at',
+            sections: [
+                {
+                    id: 'acceptance',
+                    title: '1. Acceptance of Terms',
+                    content: 'By using the RentGuard 360 website and services, you agree to these Terms of Service. If you do not agree, please refrain from using our services.',
+                },
+                {
+                    id: 'service',
+                    title: '2. Service Description',
+                    content: 'RentGuard 360 provides AI-powered rental contract analysis. The service includes:',
+                    list: [
+                        'Automated scanning of rental contracts in PDF format',
+                        'Identification of problematic clauses and conflicts of interest',
+                        'Detailed risk scoring for each clause',
+                        'Recommendations and suggested amendments',
+                        'Report export in PDF and Word formats',
+                    ],
+                },
+                {
+                    id: 'purchases',
+                    title: '3. Purchases & Payments',
+                    content: 'All purchases on the site are one-time purchases of scan bundles. There is no recurring billing or auto-renewing subscriptions. Payments are processed through Stripe and are secured according to PCI DSS standards. RentGuard 360 does not store your credit card details — all sensitive information is handled directly by Stripe.',
+                },
+                {
+                    id: 'refund',
+                    title: '4. Refund Policy',
+                    content: 'Since the service provides instant analysis upon purchase, refunds are only issued in exceptional circumstances (e.g., a technical failure that prevented the system from completing the analysis). For refund requests, please contact us through the Contact page.',
+                },
+                {
+                    id: 'data',
+                    title: '5. Data Storage & Privacy',
+                    content: 'We are committed to protecting your privacy. Key points:',
+                    list: [
+                        'Uploaded contracts are stored encrypted on AWS servers',
+                        'Information is used solely to provide the requested service',
+                        'We do not sell or share personal data with third parties',
+                        'You may request deletion of your data at any time',
+                        'We use only essential cookies for site operation',
+                    ],
+                },
+                {
+                    id: 'security',
+                    title: '6. Data Security',
+                    content: 'We implement advanced security measures to protect your information, including SSL/TLS encryption, encrypted storage, multi-factor authentication (MFA), and continuous security monitoring. Our servers are hosted on AWS and comply with international security standards.',
+                },
+                {
+                    id: 'disclaimer',
+                    title: '7. Limitation of Liability',
+                    content: 'The analysis provided by RentGuard 360 is for informational purposes only and does not constitute legal advice. It is strongly recommended to consult with a lawyer before signing any contract. RentGuard 360 is not liable for decisions made based solely on the analysis.',
+                },
+                {
+                    id: 'ip',
+                    title: '8. Intellectual Property',
+                    content: 'All rights in the service, including design, code, algorithms, and content, belong to RentGuard 360. No part of the service may be copied, distributed, or reproduced without written permission.',
+                },
+                {
+                    id: 'changes',
+                    title: '9. Changes to Terms',
+                    content: 'We reserve the right to update these terms from time to time. Material changes will be published on the site and/or sent by email. Continued use of the service after terms are updated constitutes acceptance of the updated terms.',
+                },
+                {
+                    id: 'contact',
+                    title: '10. Contact Us',
+                    content: 'For questions regarding these Terms of Service or any other matter, please contact us through the Contact page on the site or by email.',
+                },
+            ]
+        },
+        // Privacy Policy
+        privacy: {
+            title: 'Privacy Policy',
+            updated: 'Last updated: March 2026',
+            tocTitle: 'Table of Contents',
+            contactPrefix: 'For privacy-related questions, reach us via the',
+            contactLinkText: 'Contact page',
+            contactMiddle: 'or email us at',
+            sections: [
+                {
+                    id: 'general',
+                    title: '1. General Overview',
+                    content: 'At RentGuard 360 ("Company", "we", or "our"), we respect your privacy and are committed to protecting it. This Privacy Policy outlines how we collect, use, and safeguard your personal information when you use our website and services.'
+                },
+                {
+                    id: 'collection',
+                    title: '2. Information Collection',
+                    content: 'We collect various types of information to provide our services:',
+                    list: [
+                        'Registration and contact details (email address, full name).',
+                        'Financial information is processed securely by authorized third-party payment gateways (e.g., Stripe); we do not store your credit card information on our servers.',
+                        'Agreements and documents you choose to upload (for analysis through our AI systems).'
+                    ]
+                },
+                {
+                    id: 'usage',
+                    title: '3. Use of Information',
+                    content: 'The collected information is used solely for the following purposes:',
+                    list: [
+                        'Providing automated document analysis services and improving your user experience.',
+                        'Managing user accounts and providing customer or technical support.',
+                        'Sending service notifications (such as system updates or report completions) – no marketing content will be sent without explicit consent.'
+                    ]
+                },
+                {
+                    id: 'sharing',
+                    title: '4. Sharing Information with Third Parties',
+                    content: 'We do not sell, trade, or transfer Personally Identifiable Information to outside parties for marketing purposes. We may share information with trusted third-party service providers (e.g., AWS, payment processors) acting on our behalf, provided that they agree to keep this information confidential and comply with our stringent privacy standards.'
+                },
+                {
+                    id: 'ai-processing',
+                    title: '5. AI Data Processing',
+                    content: 'Agreements you upload to the system are processed by Large Language Models (LLMs). Before the analysis, we employ text extraction and data masking mechanisms designed to redact potentially sensitive personal data (such as national IDs or phone numbers), to better safeguard your privacy.'
+                },
+                {
+                    id: 'data-retention',
+                    title: '6. Data Retention and Deletion',
+                    content: 'The documents uploaded for scanning are securely encrypted and retained in your account. You can request the deletion of your documents or even delete your entire account through the settings dashboard or by contacting support. Once requested, your data will be permanently removed from our active servers in compliance with applicable laws.'
+                },
+                {
+                    id: 'cookies',
+                    title: '7. Cookies',
+                    content: 'We use cookies strictly for managing your authenticated sessions and ensuring the proper functioning of the site. While you may disable cookies in your browser settings, doing so will impact the functionality of areas requiring user login.'
+                },
+                {
+                    id: 'contact',
+                    title: '8. Contacting Us',
+                    content: 'If you have any questions regarding this Privacy Policy or wish to review, update, or remove your personal data, please reach out to us using the contact details provided on our site.'
+                }
+            ]
         },
     },
 };

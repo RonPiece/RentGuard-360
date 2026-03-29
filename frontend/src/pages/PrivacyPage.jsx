@@ -1,7 +1,7 @@
 /**
  * ============================================
- *  TermsPage
- *  Terms of Service & Privacy Policy
+ *  PrivacyPage
+ *  Privacy Policy
  * ============================================
  */
 import React from 'react';
@@ -9,9 +9,9 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { Calendar } from 'lucide-react';
 import './TermsPage.css';
 
-const TermsPage = () => {
+const PrivacyPage = () => {
     const { translations, isRTL } = useLanguage();
-    const { title, updated, tocTitle, sections, contactPrefix, contactLinkText, contactMiddle } = translations.terms;
+    const { title, updated, tocTitle, sections, contactPrefix, contactLinkText, contactMiddle } = translations.privacy;
 
     return (
         <div className="terms-container" dir={isRTL ? 'rtl' : 'ltr'}>
@@ -69,4 +69,4 @@ const TermsPage = () => {
     );
 };
 
-export default TermsPage;
+export default PrivacyPage;

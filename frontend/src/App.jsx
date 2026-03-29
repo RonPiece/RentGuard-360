@@ -36,6 +36,7 @@ const CheckoutPage = lazy(() => import('./pages/CheckoutPage'));
 const PaymentSuccessPage = lazy(() => import('./pages/PaymentSuccessPage'));
 const BillingPage = lazy(() => import('./pages/BillingPage'));
 const TermsPage = lazy(() => import('./pages/TermsPage'));
+const PrivacyPage = lazy(() => import('./pages/PrivacyPage'));
 const AdminLayout = lazy(() => import('./pages/AdminLayout'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 const AdminUsers = lazy(() => import('./pages/AdminUsers'));
@@ -189,6 +190,7 @@ function App() {
             <Route path="/payment-success" element={<ProtectedRoute><PaymentSuccessPage /></ProtectedRoute>} />
             <Route path="/shared/:id" element={<SharedContractView />} />
             <Route path="/terms" element={<TermsPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
 
             {/* Admin routes with sidebar layout */}
             <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
