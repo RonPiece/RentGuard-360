@@ -625,7 +625,7 @@ const AnalysisPage = () => {
                 )}
 
                 {activeTab === 'issues' && issues.length > 0 && (
-                    <div className="lf-section-divider no-print">
+                    <div className="lf-section-divider lf-section-divider-desktop no-print">
                         <div className="lf-line"></div>
                         <h2>{t('analysis.deepAnalysisAndClauses')}</h2>
                         <div className="lf-line"></div>
@@ -637,6 +637,13 @@ const AnalysisPage = () => {
                     
                     {/* Left Column: Issues List or Contract View */}
                     <div className="lf-main-content">
+                        {activeTab === 'issues' && issues.length > 0 && (
+                            <div className="lf-section-divider lf-section-divider-mobile no-print">
+                                <div className="lf-line"></div>
+                                <h2>{t('analysis.deepAnalysisAndClauses')}</h2>
+                                <div className="lf-line"></div>
+                            </div>
+                        )}
                         
                         {activeTab === 'issues' && issues.length > 0 && (
                             <div className="lf-issues-list">
@@ -699,7 +706,14 @@ const AnalysisPage = () => {
                                             <div className={`lf-risk-line border-${riskClass}`}></div>
                                             
                                             {/* Header */}
-                                            <div className="lf-clause-header" onClick={() => setExpandedIssue(isExpanded ? null : index)}>
+                                            <div
+                                                className="lf-clause-header"
+                                                onClick={() => {
+                                                    const selectedText = window.getSelection?.()?.toString()?.trim();
+                                                    if (selectedText) return;
+                                                    setExpandedIssue(isExpanded ? null : index);
+                                                }}
+                                            >
                                                 <div className="lf-clause-title-area">
                                                     <div className="lf-clause-badges">
                                                         <span className={`lf-badge bg-${riskClass}`}>
