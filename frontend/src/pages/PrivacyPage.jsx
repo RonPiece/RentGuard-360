@@ -64,7 +64,7 @@ const PrivacyPage = () => {
                             <Calendar size={16} /> {updated}
                         </span>
                         <span className="meta-dot"></span>
-                        <span className="meta-badge">מסמך משפטי</span>
+                        <span className="meta-badge">{isRTL ? 'מסמך משפטי' : 'Legal Document'}</span>
                     </div>
                 </div>
             </header>
@@ -77,7 +77,7 @@ const PrivacyPage = () => {
                     <div className="sidebar-card">
                         <div className="sidebar-header">
                             <h2>{tocTitle}</h2>
-                            <p>ניווט מהיר בסעיפים</p>
+                            <p>{isRTL ? 'ניווט מהיר בסעיפים' : 'Quick Navigation'}</p>
                         </div>
                         <nav className="toc-nav">
                             {sections.map((section, idx) => {

@@ -1,21 +1,4 @@
-/**
- * ============================================
- *  Footer
- *  Application Footer with Features & Credits
- * ============================================
- * 
- * STRUCTURE:
- * - Brand column (logo, tagline)
- * - Features column (AWS, encryption, AI, privacy)
- * - Credits column (contact, project info)
- * 
- * FEATURES:
- * - Responsive 3-column layout
- * - Theme-aware styling
- * - Bilingual content (Hebrew/English)
- * ============================================
- */
-import React from 'react';
+﻿import React from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { Link } from 'react-router-dom';
@@ -25,64 +8,62 @@ import './Footer.css';
 const Footer = () => {
     const { t, isRTL } = useLanguage();
     const { theme } = useTheme();
+    const currentYear = new Date().getFullYear();
 
     return (
         <footer className={`app-footer ${theme}`} dir={isRTL ? 'rtl' : 'ltr'}>
             <div className="footer-container">
-                <div className="footer-flex-row">
-
-                    {/* Left/Right Brand Column */}
-                    <div className="footer-brand-col">
-                        <span className="footer-brand-name">RentGuard 360</span>
-                        <p className="footer-tagline">
-                            {t('footer.legalTagline')}
-                        </p>
+                <div className="footer-main">
+                    
+                    {/* Brand Section */}
+                    <div className="footer-brand">
+                        <span className="footer-logo">RentGuard 360</span>
+                        <p className="footer-desc">{t('footer.legalTagline')}</p>
                     </div>
 
-                    {/* Center Links Column */}
-                    <div className="footer-links-col">
-                        <Link to="/terms" className="footer-link">
-                            {t('footer.termsLink')}
-                        </Link>
-                        <Link to="/privacy" className="footer-link">
-                            {t('footer.privacyLink')}
-                        </Link>
-                        <Link to="/contact" className="footer-link">
-                            {t('footer.contactLink')}
-                        </Link>
+                    {/* Navigation Columns */}
+                    <div className="footer-nav">
+                        <div className="footer-col">
+                            <h4 className="footer-col-title">{isRTL ? 'ניווט מהיר' : 'Quick Links'}</h4>
+                            <Link to="/" className="footer-link">{t('nav.home')}</Link>
+                            <Link to="/pricing" className="footer-link">{t('nav.pricing')}</Link>
+                            <Link to="/contact" className="footer-link">{t('nav.contact')}</Link>
+                            <a href="mailto:RENTGUARD360@GMAIL.COM" className="footer-link" dir="ltr" style={{ textTransform: 'lowercase' }}>rentguard360@gmail.com</a>
+                        </div>
+                        <div className="footer-col">
+                            <h4 className="footer-col-title">{isRTL ? 'אזור אישי' : 'Personal Area'}</h4>
+                            <Link to="/dashboard" className="footer-link">{t('nav.dashboard')}</Link>
+                            <Link to="/contracts" className="footer-link">{t('nav.contracts')}</Link>
+                            <Link to="/upload" className="footer-link">{t('nav.upload')}</Link>
+                            <Link to="/settings" className="footer-link">{t('nav.settings')}</Link>
+                        </div>
+                        <div className="footer-col">
+                            <h4 className="footer-col-title">{isRTL ? 'משפטי' : 'Legal'}</h4>
+                            <Link to="/terms" className="footer-link">{t('footer.termsLink')}</Link>
+                            <Link to="/privacy" className="footer-link">{t('footer.privacyLink')}</Link>
+                        </div>
                     </div>
-
                 </div>
 
-                {/* Bottom Copyright & Credits Row */}
-                <div className="footer-copyright">
-                    {isRTL ? (
-                        <p className="footer-credit-line footer-credit-line-rtl">
-                            <span className="footer-credit-rtl-label">{t('footer.builtBy')}</span>
-                            <span className="footer-credit-names" dir="ltr">
-                                <a href="https://github.com/RonPiece" target="_blank" rel="noopener noreferrer">Ron <Github size={12} className="footer-github-icon" /></a>
-                                <span>, </span>
-                                <a href="https://github.com/fakesociety" target="_blank" rel="noopener noreferrer">Moty <Github size={12} className="footer-github-icon" /></a>
-                                <span> &amp; </span>
-                                <a href="https://github.com/idan0508" target="_blank" rel="noopener noreferrer">Idan <Github size={12} className="footer-github-icon" /></a>
-                            </span>
-                            <span className="footer-credit-separator" aria-hidden="true">|</span>
-                            <span className="footer-credit-copy" dir="ltr">© 2026 RentGuard 360</span>
-                        </p>
-                    ) : (
-                        <p className="footer-credit-line footer-credit-line-ltr">
-                            <span className="footer-credit-ltr-label">{t('footer.builtBy')}</span>
-                            <span className="footer-credit-names" dir="ltr">
-                                <a href="https://github.com/RonPiece" target="_blank" rel="noopener noreferrer">Ron <Github size={12} className="footer-github-icon" /></a>
-                                <span>, </span>
-                                <a href="https://github.com/fakesociety" target="_blank" rel="noopener noreferrer">Moty <Github size={12} className="footer-github-icon" /></a>
-                                <span> &amp; </span>
-                                <a href="https://github.com/idan0508" target="_blank" rel="noopener noreferrer">Idan <Github size={12} className="footer-github-icon" /></a>
-                            </span>
-                            <span className="footer-credit-separator" aria-hidden="true">|</span>
-                            <span className="footer-credit-copy" dir="ltr">© 2026 RentGuard 360</span>
-                        </p>
-                    )}
+                {/* Bottom Section */}
+                <div className="footer-bottom">
+                    <div className="footer-credits">
+                        <span className="footer-built-by">{t('footer.builtBy')}</span>
+                        <div className="footer-creators">
+                            <a href="https://github.com/RonPiece" target="_blank" rel="noopener noreferrer">Ron</a>
+                            <span>,</span>
+                            <a href="https://github.com/fakesociety" target="_blank" rel="noopener noreferrer">Moty</a>
+                            <span>&amp;</span>
+                            <a href="https://github.com/idan0508" target="_blank" rel="noopener noreferrer">Idan</a>
+                        </div>
+                        <a href="https://github.com/RonPiece/RentGuard-360" target="_blank" rel="noopener noreferrer" className="footer-github-link" aria-label="GitHub Repository">
+                            <Github size={18} className="footer-github-icon" />
+                        </a>
+                    </div>
+                    
+                    <div className="footer-copy">
+                        &copy; {currentYear} RentGuard 360.
+                    </div>
                 </div>
             </div>
         </footer>

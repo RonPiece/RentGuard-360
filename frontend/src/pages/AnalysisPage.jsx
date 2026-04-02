@@ -445,7 +445,7 @@ const AnalysisPage = () => {
         return (
             <div className="lf-page-wrapper" dir={isRTL ? 'rtl' : 'ltr'}>
                 <div className="lf-loading-state">
-                    <div className="lf-spinner"></div>
+                    <div className="loading-spinner"></div>
                     <p>{t('analysis.loading')}</p>
                 </div>
             </div>
@@ -855,6 +855,7 @@ const AnalysisPage = () => {
                                             backendClauses={analysis?.clauses_list || analysis?.clauses || []}
                                             issues={issues}
                                             contractId={analysis?.contractId || contractId}
+                                            initialEditedClauses={analysis?.editedClauses}
                                             onClauseChange={(clauseId, text, action) => {
                                                 setEditedClauses(prev => ({ ...prev, [clauseId]: { text, action } }));
                                             }}

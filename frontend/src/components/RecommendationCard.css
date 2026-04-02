@@ -158,14 +158,14 @@
 .dark .recommendation-card,
 :root.dark .recommendation-card {
     /* Clean Dark Mode Background */
-    background-color: rgba(30, 41, 59, 0.6) !important;
+    background-color: rgba(251, 191, 36, 0.15) !important;
     /* DarkSlate / Glass */
 
     /* Yellow border for visibility */
     border-left: 4px solid #fbbf24 !important;
-    border-top: 1px solid rgba(251, 191, 36, 0.2) !important;
-    border-right: 1px solid rgba(251, 191, 36, 0.2) !important;
-    border-bottom: 1px solid rgba(251, 191, 36, 0.2) !important;
+    border-top: 1px solid rgba(251, 191, 36, 0.4) !important;
+    border-right: 1px solid rgba(251, 191, 36, 0.4) !important;
+    border-bottom: 1px solid rgba(251, 191, 36, 0.4) !important;
 
     /* Subtle glow */
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;

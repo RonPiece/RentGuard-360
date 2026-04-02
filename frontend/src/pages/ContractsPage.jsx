@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ============================================
  * ContractsPage
  * User's Contract List & Management (LexisFlow Modern UI)
@@ -64,6 +64,39 @@ const ContractCard = ({ contract, onDelete, onEdit, onExport, onShare, formatDat
 
     const scoreData = hasScore ? getScoreData(score) : { color: '#64748b', class: 'pending', label: '---' };
 
+    const [animatedScore, setAnimatedScore] = useState(0);
+
+    useEffect(() => {
+        if (!hasScore) return;
+
+        let startTime;
+        let rafId;
+
+        const animate = (time) => {
+            if (!startTime) startTime = time;
+            const progress = Math.min((time - startTime) / 1500, 1);
+            // easeOutCubic matching the css transition
+            const easeOut = 1 - Math.pow(1 - progress, 3);
+            
+            setAnimatedScore(Math.floor(easeOut * score));
+
+            if (progress < 1) {
+                rafId = requestAnimationFrame(animate);
+            } else {
+                setAnimatedScore(score);
+            }
+        };
+
+        const timer = setTimeout(() => {
+            rafId = requestAnimationFrame(animate);
+        }, 50);
+
+        return () => {
+            clearTimeout(timer);
+            if (rafId) cancelAnimationFrame(rafId);
+        };
+    }, [hasScore, score]);
+
     // Determine Card Border & Badge Color based on status
     let cardClass = 'lf-card-pending';
     let badgeClass = 'lf-badge-pending';
@@ -79,8 +112,18 @@ const ContractCard = ({ contract, onDelete, onEdit, onExport, onShare, formatDat
         badgeLabel = isTimedOut ? t('contracts.statusTimedOutRetry') : t('contracts.statusAnalysisFailed');
     }
 
+    const handleMouseMove = (e) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        e.currentTarget.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
+        e.currentTarget.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
+    };
+
     return (
-        <div className={`lf-contract-card ${cardClass}`}>
+        <div 
+            className={`lf-contract-card ${cardClass}`} 
+            style={{ zIndex: activeMenu ? 99 : 1 }}
+            onMouseMove={handleMouseMove}
+        >
 
             <div className="lf-card-header">
                 <div className="lf-card-title-group">
@@ -124,15 +167,15 @@ const ContractCard = ({ contract, onDelete, onEdit, onExport, onShare, formatDat
             {/* Gauge or Processing State */}
             <div className="lf-card-gauge-area">
                 {hasScore ? (
-                    <div className="lf-gauge-container" style={{ '--percentage': score, '--gauge-color': scoreData.color }}>
-                        <div className="lf-gauge-track"></div>
+                      <div className="lf-gauge-container" style={{ '--percentage': animatedScore, '--gauge-color': scoreData.color }}>
+                          <div className="lf-gauge-track"></div>
 
-                        <div className="lf-gauge-reveal">
-                            <div className="lf-gauge-gradient"></div>
-                        </div>
+                          <div className="lf-gauge-reveal">
+                              <div className="lf-gauge-gradient"></div>
+                          </div>
 
-                        <div className="lf-gauge-content">
-                            <span className="lf-gauge-score">{score}</span>
+                          <div className="lf-gauge-content">
+                              <span className="lf-gauge-score">{animatedScore}</span>
                             <span className="lf-gauge-label">{t('contracts.riskScore', 'מדד סיכון')}</span>
                         </div>
                     </div>
@@ -196,6 +239,7 @@ const ContractCard = ({ contract, onDelete, onEdit, onExport, onShare, formatDat
                         isOpen={activeMenu === 'export'}
                         onToggle={() => setActiveMenu(activeMenu === 'export' ? null : 'export')}
                         onClose={() => setActiveMenu(null)}
+                        containerClassName="lf-card-menu-wrap"
                         triggerClassName="lf-btn-download"
                         triggerContent={<Download size={20} />}
                         panelClassName={`lf-dropdown-menu export-menu ${isRTL ? 'rtl' : 'ltr'}`}
@@ -538,15 +582,13 @@ const ContractsPage = () => {
             </section>
 
             {/* WAVE DIVIDER */}
-            <div className="lf-wave-divider">
-                <svg preserveAspectRatio="none" viewBox="0 0 1440 120">
-                    <path d="M0,64L80,69.3C160,75,320,85,480,80C640,75,800,53,960,48C1120,43,1280,53,1360,58.7L1440,64L1440,120L1360,120C1280,120,1120,120,960,120C800,120,640,120,480,120C320,120,160,120,80,120L0,120Z"></path>
-                </svg>
-            </div>
+            <div className="wave-separator">
+                <svg className="wave-svg" fill="none" viewBox="0 0 1440 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+                    <path d="M0 64L60 58.7C120 53 240 43 360 48C480 53 600 75 720 85.3C840 96 960 96 1080 85.3C1200 75 1320 53 1380 42.7L1440 32V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0V64Z" className="wave-path-base"></path>
+                </svg>            </div>
 
             {/* MAIN CONTENT AREA */}
             <section className="lf-content-section">
-
                 {/* Search & Filters */}
                 {contracts.length > 0 && (
                     <div className="lf-filter-bar">

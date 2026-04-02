@@ -5,7 +5,7 @@
  * ============================================
  */
 import React, { useState } from 'react';
-import { Mail, CheckCircle2, MapPin, Phone, Send, Shield, Clock } from 'lucide-react';
+import { Mail, CheckCircle2, MapPin, Send, Shield, Clock } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { sendContactMessage } from '../services/api';
@@ -21,7 +21,6 @@ const ContactPage = () => {
     const [formData, setFormData] = useState({
         name: userAttributes?.name || '',
         email: userAttributes?.email || '',
-        phone: '', // Added phone field from the new design
         message: '',
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -51,7 +50,7 @@ const ContactPage = () => {
 
             if (response.ticketId || response.message === 'Ticket created') {
                 setSubmitStatus('success');
-                setFormData({ ...formData, phone: '', message: '' });
+                setFormData({ ...formData, message: '' });
                 emitAppToast({
                     type: 'success',
                     title: t('notifications.contactSentTitle'),
@@ -111,25 +110,15 @@ const ContactPage = () => {
                             </div>
                         ) : (
                             <form onSubmit={handleSubmit} className="contact-form">
-                                <div className="form-row-2col">
-                                    <Input
-                                        label={t('contact.fullName')}
-                                        name="name"
-                                        value={formData.name}
-                                        onChange={handleChange}
-                                        required
-                                        placeholder={t('contact.fullNamePlaceholder')}
-                                    />
-                                    <Input
-                                        label={t('contact.phone')}
-                                        name="phone"
-                                        type="tel"
-                                        value={formData.phone}
-                                        onChange={handleChange}
-                                        dir="ltr"
-                                        placeholder={t('contact.phonePlaceholder')}
-                                    />
-                                </div>
+                                <Input
+                                    label={t('contact.fullName')}
+                                    name="name"
+                                    value={userAttributes?.name || formData.name}
+                                    onChange={handleChange}
+                                    disabled={!!userAttributes?.name}
+                                    required
+                                    placeholder={t('contact.fullNamePlaceholder')}
+                                />
 
                                 <Input
                                     label={t('contact.email')}
@@ -209,22 +198,13 @@ const ContactPage = () => {
                                     <p className="info-value" dir="ltr">{t('contact.emailValue')}</p>
                                 </div>
                             </li>
-                            <li>
-                                <div className="info-icon">
-                                    <Phone size={20} />
-                                </div>
-                                <div className="info-text">
-                                    <p className="info-label">{t('contact.phoneLabel')}</p>
-                                    <p className="info-value" dir="ltr">{t('contact.phoneValue')}</p>
-                                </div>
-                            </li>
                         </ul>
                     </div>
 
                     {/* Office Image Branding Box */}
                     <div className="brand-image-card">
                         <img
-                            src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80"
+                            src="https://th.bing.com/th/id/R.9e680f0c790498d5fc052ac7701771a2?rik=G%2bFlz%2feEtrssRg&riu=http%3a%2f%2fwww.highoncinemaa.com%2fwp-content%2fuploads%2f2022%2f07%2fBetter-Call-Saul-Season-6-Episode-9-Review-Sauls-Office-Breaking-Bad.jpg&ehk=M0NeG4gsEcXTGa%2fo%2baUn9l2uFo8qaQ9NiuL1q%2bYGfak%3d&risl=&pid=ImgRaw&r=0"
                             alt="Office"
                             className="office-bg"
                         />

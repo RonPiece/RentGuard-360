@@ -122,9 +122,31 @@
 }
 
 .upload-modern-action-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    display: flex;
+    justify-content: center;
     gap: 0.85rem;
+}
+
+@media (max-width: 1024px) {
+    .upload-modern-action-btn.upload {
+        display: none !important;
+    }
+    .upload-modern-action-btn.scan {
+        display: flex !important;
+        flex: 1;
+        max-width: 350px; /* Optional constraint so it isn't full width */
+    }
+}
+
+@media (min-width: 1025px) {
+    .upload-modern-action-btn.scan {
+        display: none !important;
+    }
+    .upload-modern-action-btn.upload {
+        display: flex !important;
+        flex: 1;
+        max-width: 350px;
+    }
 }
 
 .upload-modern-action-btn {
@@ -385,29 +407,26 @@
 }
 
 [data-theme="dark"] .upload-modern-dropzone {
-    background: rgba(255, 255, 255, 0.75);
-    border-color: rgba(0, 133, 96, 0.6);
+    background: rgba(0, 190, 130, 0.12); /* Lighter glowing green in dark mode */
+    border-color: rgba(0, 190, 130, 0.7);
 }
 
-[data-theme="dark"] .upload-modern-dropzone h3,
-[data-theme="dark"] .upload-modern-files-section h4 {
-    color: #000000;
+[data-theme="dark"] .upload-modern-dropzone h3 {
+    color: #ffffff;
 }
 
-[data-theme="dark"] .upload-modern-dropzone p,
 [data-theme="dark"] .upload-modern-file-size,
 [data-theme="dark"] .upload-modern-status.uploading {
-    color: #1a1a1a;
+    color: #e2e8f0; /* Softer readable modern color */
 }
 
 [data-theme="dark"] .upload-modern-icon {
-    color: #005a41;
+    color: #00be82; /* Lighter vivid icon */
 }
 
 [data-theme="dark"] .upload-modern-dropzone:hover {
-    background: rgba(255, 255, 255, 0.95); 
-    border-color: #008560; 
-    transform: scale(1.01); 
+    background: rgba(0, 190, 130, 0.18); /* Slightly more vivid on hover */
+    border-color: #00be82;
 }
 
 .drop-locked-note {
@@ -766,3 +785,11 @@
         padding: var(--space-md);
     }
 }
+[data-theme="dark"] .upload-modern-files-section h4 {
+    color: #e2e8f0;
+}
+
+[data-theme="dark"] .upload-modern-dropzone p {
+    color: rgba(255, 255, 255, 0.85);
+}
+

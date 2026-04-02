@@ -131,23 +131,29 @@ const ContractView = forwardRef(({
         });
     }, []);
 
-    useEffect(() => {
-        if (!readOnly) return;
-        const normalized = initialEditedClauses || {};
-        editedClausesRef.current = normalized;
-        setEditedClauses(normalized);
-    }, [readOnly, initialEditedClauses]);
-
-    const containerRef = useRef(null);
+const containerRef = useRef(null);
     const bottomRef = useRef(null);
-    const [isAtBottom, setIsAtBottom] = useState(false);
+    const [showScrollUp, setShowScrollUp] = useState(false);
 
     const isFirstRender = useRef(true);
     const saveTimeoutRef = useRef(null);
     const saveStatusTimeoutRef = useRef(null);
-    const skipNextCloudSaveRef = useRef(false);
     const lastCloudSaveSignatureRef = useRef('');
     const lastReportedEditStateRef = useRef('');
+
+    useEffect(() => {
+        // If initialEditedClauses is provided (e.g. from backend analysis fetch), override local state initially
+        if (initialEditedClauses && Object.keys(initialEditedClauses).length > 0) {
+            // Ensure we don't infinitely re-trigger if it hasn't functionally changed
+            const currentStr = JSON.stringify(editedClausesRef.current);
+            const newStr = JSON.stringify(initialEditedClauses);        
+            if (currentStr !== newStr) {
+                editedClausesRef.current = initialEditedClauses;        
+                setEditedClauses(initialEditedClauses);
+                lastCloudSaveSignatureRef.current = newStr;
+            }
+        }
+    }, [initialEditedClauses]);
 
     useEffect(() => {
         if (readOnly || !contractId) return;
@@ -158,7 +164,7 @@ const ContractView = forwardRef(({
                 const parsed = JSON.parse(saved);
                 editedClausesRef.current = parsed;
                 setEditedClauses(parsed);
-                skipNextCloudSaveRef.current = true;
+                lastCloudSaveSignatureRef.current = saved;
             }
         } catch (error) {
             console.warn('Failed to load saved edits:', error);
@@ -178,30 +184,19 @@ const ContractView = forwardRef(({
     useEffect(() => {
         if (readOnly || !onSaveToCloud || !contractId) return;
 
+        const currentEditsSignature = JSON.stringify(editedClauses);    
+
         if (isFirstRender.current) {
             isFirstRender.current = false;
-            const initialText = clauses.map(c => getClauseText(c)).join('\n\n');
-            lastCloudSaveSignatureRef.current = JSON.stringify({
-                contractId, editedClauses, fullEditedText: initialText,
-            });
-            return;
-        }
-
-        if (skipNextCloudSaveRef.current) {
-            skipNextCloudSaveRef.current = false;
-            const skippedText = clauses.map(c => getClauseText(c)).join('\n\n');
-            lastCloudSaveSignatureRef.current = JSON.stringify({
-                contractId, editedClauses, fullEditedText: skippedText,
-            });
+            lastCloudSaveSignatureRef.current = currentEditsSignature;
             return;
         }
 
         if (Object.keys(editedClauses).length === 0) return;
 
-        const fullEditedText = clauses.map(c => getClauseText(c)).join('\n\n');
-        const saveSignature = JSON.stringify({ contractId, editedClauses, fullEditedText });
+        if (currentEditsSignature === lastCloudSaveSignatureRef.current) return;
 
-        if (saveSignature === lastCloudSaveSignatureRef.current) return;
+        const fullEditedText = clauses.map(c => getClauseText(c)).join('\n\n');
 
         if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
         setSaveStatus('saving');
@@ -209,7 +204,7 @@ const ContractView = forwardRef(({
         saveTimeoutRef.current = setTimeout(async () => {
             try {
                 await onSaveToCloud(editedClauses, fullEditedText);
-                lastCloudSaveSignatureRef.current = saveSignature;
+                lastCloudSaveSignatureRef.current = currentEditsSignature;
                 setSaveStatus('success');
                 if (saveStatusTimeoutRef.current) clearTimeout(saveStatusTimeoutRef.current);
                 saveStatusTimeoutRef.current = setTimeout(() => setSaveStatus(null), 3000);
@@ -232,23 +227,43 @@ const ContractView = forwardRef(({
     }, []);
 
     useEffect(() => {
-        const checkScroll = () => {
-            const container = containerRef.current;
-            if (!container) return;
-            if (bottomRef.current) {
-                const rect = bottomRef.current.getBoundingClientRect();
-                const isVisible = rect.top <= window.innerHeight;
-                setIsAtBottom(isVisible);
+        const handleScroll = (e) => {
+            // Toggle arrow direction based on the internal container scroll
+            if (containerRef.current) {
+                setShowScrollUp(containerRef.current.scrollTop > 200);
+            } else {
+                setShowScrollUp(window.scrollY > 200);
             }
         };
 
-        window.addEventListener('scroll', checkScroll, true);
-        checkScroll();
-        return () => window.removeEventListener('scroll', checkScroll, true);
+        // Attach global document scroll with capture perfectly tracks ALL scrolling elements
+        document.addEventListener('scroll', handleScroll, { passive: true, capture: true });
+        
+        // Initial setup
+        handleScroll();
+        
+        return () => {
+            document.removeEventListener('scroll', handleScroll, { capture: true });
+        };
     }, []);
 
     const scrollToBottom = () => bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
-    const scrollToTop = () => containerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    const scrollToTop = () => {
+        // Scroll the actual contract wrapper to the top
+        if (containerRef.current) {
+            containerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        // Also scroll the window to the top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        // Scroll the main container if it exists
+        const mainScrollContainer = document.querySelector('main, .app-main, .lf-cv-container');
+        if (mainScrollContainer) {
+            mainScrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    };
 
     const openEditor = (clause) => {
         if (readOnly) return;
@@ -575,20 +590,20 @@ const ContractView = forwardRef(({
                         </footer>
 
                         <div ref={bottomRef}></div>
+
+                        {/* Floating Scroll Button Wrapper inside Paper */}
+                        <div className="lf-cv-scroll-fab-wrapper">
+                            <button
+                                className={`lf-cv-scroll-fab no-print ${showScrollUp ? 'at-bottom' : ''}`}
+                                onClick={showScrollUp ? scrollToTop : scrollToBottom}
+                                title={showScrollUp ? t('contractView.scrollUp') : t('contractView.scrollToSignatures')}
+                            >
+                                {showScrollUp ? <ArrowUp size={16} strokeWidth={2.4} /> : <ArrowDown size={16} strokeWidth={2.4} />}
+                            </button>
+                        </div>
                     </>
                 )}
             </div>
-
-            {/* Floating Scroll Button */}
-            {!isMinimized && (
-                <button
-                    className={`lf-cv-scroll-fab no-print ${isAtBottom ? 'at-bottom' : ''}`}
-                    onClick={isAtBottom ? scrollToTop : scrollToBottom}
-                    title={isAtBottom ? t('contractView.scrollUp') : t('contractView.scrollToSignatures')}
-                >
-                    {isAtBottom ? <ArrowUp size={20} strokeWidth={2.4} /> : <ArrowDown size={20} strokeWidth={2.4} />}
-                </button>
-            )}
 
             {/* ===== MODALS ===== */}
 

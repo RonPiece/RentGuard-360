@@ -676,3 +676,22 @@
 @keyframes spinBtn {
     to { transform: rotate(360deg); }
 }
+
+/* --- Override Titles to Green in Light Mode requested by user --- */
+[data-theme="light"] .billing-title,
+[data-theme="light"] .billing-subtitle,
+[data-theme="light"] .billing-card h3,
+[data-theme="light"] .billing-feature-card h4,
+[data-theme="light"] .portal-text h3,
+[data-theme="light"] .transactions-header h3 {
+    color: #00694c !important;
+}
+
+[data-theme="light"] .feature-icon-wrapper.blue {
+    background: rgba(5, 150, 105, 0.1) !important;
+    color: #10b981 !important;
+}
+
+
+[data-theme="light"] .portal-btn { background: var(--accent-primary) !important; color: white !important; }
+

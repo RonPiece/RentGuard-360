@@ -40,8 +40,16 @@
 [data-theme="dark"] .lf-cv-paper {
     background: #1e293b;
     border-color: rgba(255, 255, 255, 0.1);
-    color: #f8fafc;
+    color: #ffffff;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .lf-cv-paper .lf-cv-header h1,
+[data-theme="dark"] .lf-cv-paper .lf-cv-header p,
+[data-theme="dark"] .lf-cv-paper .lf-cv-clause-text,
+[data-theme="dark"] .lf-cv-paper .lf-cv-clause-text-input,
+[data-theme="dark"] .lf-cv-paper {
+    color: #ffffff;
 }
 
 /* Minimize / Maximize Actions */
@@ -258,26 +266,50 @@
 .lf-cv-sig-date { text-align: center; margin-top: 3rem; font-weight: 600; }
 
 /* ===== Floating Scroll FAB ===== */
-.lf-cv-scroll-fab {
-    position: fixed;
+.lf-cv-scroll-fab-wrapper {
+    position: sticky;
     bottom: 2rem;
-    right: 2rem;
-    width: 3.5rem;
-    height: 3.5rem;
+    height: 0;
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    pointer-events: none;
+    z-index: 100;
+}
+[dir="rtl"] .lf-cv-scroll-fab-wrapper {
+    justify-content: flex-end;
+}
+
+.lf-cv-scroll-fab {
+    pointer-events: auto;
+    width: 2.5rem;
+    height: 2.5rem;
+    margin-left: -3.5rem; /* Moves it outside the text area padding */
     border-radius: 50%;
-    background: var(--accent-primary);
-    color: white;
-    border: none;
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+    border: 1px solid var(--glass-border);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    box-shadow: 0 10px 25px rgba(5, 150, 105, 0.4);
-    z-index: 100;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
+    transform: translateY(-2rem); 
+    backdrop-filter: blur(8px);
 }
-[dir="rtl"] .lf-cv-scroll-fab { right: auto; left: 2rem; }
-.lf-cv-scroll-fab:hover { transform: translateY(-4px); box-shadow: 0 14px 30px rgba(5, 150, 105, 0.5); }
+[data-theme="dark"] .lf-cv-scroll-fab {
+    background: rgba(30, 41, 59, 1);
+    color: #ffffff; /* pure white text/icon in dark mode */
+    border-color: rgba(255, 255, 255, 0.2);
+}
+.lf-cv-scroll-fab:hover { 
+    transform: translateY(-36px); 
+    background: var(--accent-primary);
+    color: white;
+    box-shadow: 0 6px 15px rgba(5, 150, 105, 0.3); 
+    border-color: transparent;
+}
 
 /* ===== Modals ===== */
 .lf-cv-modal-overlay {

@@ -56,7 +56,6 @@ const ProtectedRoute = ({ children }) => {
     return (
       <div className="app-loading">
         <div className="loading-spinner"></div>
-        <p>Loading...</p>
       </div>
     );
   }
@@ -161,7 +160,6 @@ function App() {
     return (
       <div className="app-loading">
         <div className="loading-spinner"></div>
-        <p>Loading RentGuard 360...</p>
       </div>
     );
   }
@@ -191,7 +189,6 @@ function App() {
           fallback={
             <div className="app-loading">
               <div className="loading-spinner"></div>
-              <p>Loading...</p>
             </div>
           }
         >
