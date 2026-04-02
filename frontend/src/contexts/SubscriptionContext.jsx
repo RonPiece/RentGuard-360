@@ -28,6 +28,7 @@ const defaultSubscriptionContext = {
     packageName: null,
     hasSubscription: false,
     isLoading: false,
+    error: null,
     refreshSubscription: async () => {},
     deductScan: async () => ({ success: false, error: 'Subscription context unavailable' }),
 };
@@ -43,10 +44,11 @@ export const useSubscription = () => {
 };
 
 export const SubscriptionProvider = ({ children }) => {
-    const { user, userAttributes, isAuthenticated, isAdmin } = useAuth();
+    const { user, userAttributes, isAuthenticated, isAdmin, isLoading: isAuthLoading } = useAuth();
     const [subscription, setSubscription] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isEntitlementKnown, setIsEntitlementKnown] = useState(false);
+    const [error, setError] = useState(null);
 
     const getUserId = useCallback(async () => {
         // Backend authorization expects Cognito "sub" as the canonical user id.
@@ -82,45 +84,50 @@ export const SubscriptionProvider = ({ children }) => {
         // Critical: set these BEFORE the first await to avoid a one-render redirect race.
         setIsLoading(true);
         setIsEntitlementKnown(false);
+        setError(null);
 
         let hasDefinitiveEntitlement = false;
 
-        const userId = await getUserId();
-
-        if (!userId) {
-            // Never keep the app stuck on loading when user id is temporarily unavailable.
-            setSubscription(null);
-            hasDefinitiveEntitlement = true;
-            return;
-        }
-
-        // Admin users always have unlimited access and do not require a bundle.
-        if (isAdmin) {
-            const adminSubscription = {
-                userId,
-                packageName: 'Admin',
-                scansRemaining: -1,
-                isUnlimited: true,
-                updatedAt: new Date().toISOString(),
-            };
-            setSubscription(adminSubscription);
-            hasDefinitiveEntitlement = true;
-            return;
-        }
-
         try {
-            const data = await getSubscription(userId);
-            setSubscription(data);
-            hasDefinitiveEntitlement = true;
-        } catch (err) {
-            if (isNoSubscriptionError(err)) {
+            // Admin users always have unlimited access and do not require a bundle.
+            if (isAdmin) {
+                const adminUserId = await getUserId();
+                const adminSubscription = {
+                    userId: adminUserId || 'admin',
+                    packageName: 'Admin',
+                    scansRemaining: -1,
+                    isUnlimited: true,
+                    updatedAt: new Date().toISOString(),
+                };
+                setSubscription(adminSubscription);
+                hasDefinitiveEntitlement = true;
+                return;
+            }
+
+            const userId = await getUserId();
+
+            if (!userId) {
+                // Never keep the app stuck on loading when user id is temporarily unavailable.
                 setSubscription(null);
                 hasDefinitiveEntitlement = true;
-            } else {
-                // Fallback to no subscription to avoid endless loading when backend is unavailable.
-                setSubscription(null);
+                return;
+            }
+
+            try {
+                const data = await getSubscription(userId);
+                setSubscription(data);
                 hasDefinitiveEntitlement = true;
-                console.error('Failed to fetch subscription:', err);
+            } catch (err) {
+                if (isNoSubscriptionError(err)) {
+                    setSubscription(null);
+                    hasDefinitiveEntitlement = true;
+                } else {
+                    // Fallback to error state to avoid false redirects to pricing when backend is unavailable.
+                    setSubscription(null);
+                    setError(err.message || 'Failed to fetch subscription');
+                    hasDefinitiveEntitlement = true;
+                    console.error('Failed to fetch subscription:', err);
+                }
             }
         } finally {
             setIsEntitlementKnown(hasDefinitiveEntitlement);
@@ -130,14 +137,17 @@ export const SubscriptionProvider = ({ children }) => {
 
     // Fetch subscription on login
     useEffect(() => {
+        if (isAuthLoading) return; // Wait for AuthContext to resolve
+
         if (isAuthenticated) {
             refreshSubscription();
         } else {
             setSubscription(null);
+            setError(null);
             setIsLoading(false);
             setIsEntitlementKnown(true);
         }
-    }, [isAuthenticated, refreshSubscription]);
+    }, [isAuthenticated, isAuthLoading, refreshSubscription]);
 
     const deductScan = async () => {
         const userId = await getUserId();
@@ -170,6 +180,7 @@ export const SubscriptionProvider = ({ children }) => {
             hasSubscription,
             isLoading,
             isEntitlementKnown,
+            error,
             refreshSubscription,
             deductScan,
         }}>

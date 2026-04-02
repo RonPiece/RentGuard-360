@@ -248,7 +248,7 @@ const ContractsPage = () => {
     }, []);
 
     const fetchContracts = useCallback(async (showLoader = true) => {
-        const userId = user?.userId || user?.username || userAttributes?.sub;
+        const userId = userAttributes?.sub || user?.userId || user?.sub || user?.username;
         if (!userId) {
             setIsLoading(false);
             return;
@@ -303,7 +303,7 @@ const ContractsPage = () => {
 
     const confirmDelete = async () => {
         if (!deleteConfirm) return;
-        const userId = user?.userId || user?.username || userAttributes?.sub;
+        const userId = userAttributes?.sub || user?.userId || user?.sub || user?.username;
         setIsDeleting(true);
         try {
             await deleteContract(deleteConfirm, userId);
@@ -329,7 +329,7 @@ const ContractsPage = () => {
 
     const saveEdit = async () => {
         if (!editModal) return;
-        const userId = user?.userId || user?.username || userAttributes?.sub;
+        const userId = userAttributes?.sub || user?.userId || user?.sub || user?.username;
         setIsSaving(true);
         try {
             const updates = {

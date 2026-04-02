@@ -25,7 +25,10 @@ if (!STRIPE_API_URL) {
     console.warn('Missing VITE_STRIPE_API_URL. Stripe payment features will not work.');
 }
 
-const NORMALIZED_STRIPE_API_URL = (STRIPE_API_URL || '').replace(/\/+$/, '');
+// Map local development calls to the Vite proxy to avoid CORS issues
+const NORMALIZED_STRIPE_API_URL = import.meta.env.DEV && STRIPE_API_URL
+    ? '/__stripe_api__'
+    : (STRIPE_API_URL || '').replace(/\/+$/, '');
 
 const buildStripeUrl = (endpoint) => {
     const safeEndpoint = String(endpoint || '').replace(/^\/+/, '');
