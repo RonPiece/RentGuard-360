@@ -66,7 +66,7 @@ const ProtectedRoute = ({ children }) => {
 
 const RequireActivePlanRoute = ({ children }) => {
   const { isAdmin } = useAuth();
-  const { hasSubscription, isLoading: isSubscriptionLoading, isEntitlementKnown } = useSubscription();
+  const { hasSubscription, isLoading: isSubscriptionLoading, isEntitlementKnown, error, refreshSubscription } = useSubscription();
   const location = useLocation();
 
   if (isAdmin) {
@@ -82,6 +82,21 @@ const RequireActivePlanRoute = ({ children }) => {
     );
   }
 
+  if (error) {
+    return (
+      <div className="app-error" style={{ textAlign: 'center', padding: '50px 20px', maxWidth: '600px', margin: '0 auto' }}>
+        <h2 style={{ color: '#d32f2f' }}>Connection Error</h2>
+        <p style={{ margin: '20px 0' }}>We could not verify your subscription status due to a network or server error ({error}). Please make sure you are connected to the internet and try again.</p>
+        <button 
+          onClick={() => refreshSubscription()} 
+          style={{ padding: '10px 20px', background: '#1976d2', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+        >
+          Try Again
+        </button>
+      </div>
+    );
+  }
+
   if (!hasSubscription) {
     return <Navigate to="/pricing" replace state={{ from: location.pathname }} />;
   }
@@ -92,6 +107,7 @@ const RequireActivePlanRoute = ({ children }) => {
 
 function App() {
   const { isAuthenticated, isLoading, isAdmin } = useAuth();
+  const { hasSubscription, isEntitlementKnown } = useSubscription();
   const { isRTL } = useLanguage();
   const location = useLocation();
   const navigate = useNavigate();
@@ -103,6 +119,9 @@ function App() {
     location.pathname === '/contracts' ||
     location.pathname.startsWith('/analysis/');
   const showPublicFooter = location.pathname === '/pricing' || location.pathname === '/contact';
+  const authenticatedFallbackRoute = isAdmin
+    ? '/dashboard'
+    : (!isEntitlementKnown ? '/dashboard' : (hasSubscription ? '/dashboard' : '/pricing'));
 
   // Should we render the main Navigation for this route?
   const navVisible = !isAdminRoute && (isAuthenticated || location.pathname !== '/');
@@ -178,6 +197,7 @@ function App() {
         >
           <Routes>
             <Route path="/" element={<LandingPage />} />
+            <Route path="/index.html" element={<LandingPage />} />
             <Route path="/dashboard" element={<ProtectedRoute><RequireActivePlanRoute><DashboardPage /></RequireActivePlanRoute></ProtectedRoute>} />
             <Route path="/upload" element={<ProtectedRoute><RequireActivePlanRoute><UploadPage /></RequireActivePlanRoute></ProtectedRoute>} />
             <Route path="/contracts" element={<ProtectedRoute><RequireActivePlanRoute><ContractsPage /></RequireActivePlanRoute></ProtectedRoute>} />
@@ -200,7 +220,7 @@ function App() {
               <Route path="stripe" element={<AdminStripeInsights />} />
             </Route>
 
-            <Route path="*" element={<Navigate to={isAuthenticated ? "/pricing" : "/"} replace />} />
+            <Route path="*" element={<Navigate to={isAuthenticated ? authenticatedFallbackRoute : "/"} replace />} />
           </Routes>
         </Suspense>
       </main>

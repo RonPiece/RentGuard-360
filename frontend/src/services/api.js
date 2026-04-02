@@ -45,6 +45,9 @@ import { fetchAuthSession } from 'aws-amplify/auth';
 // and cause 500s like "User pool ... does not exist".
 const API_BASE_URL = import.meta.env.VITE_API_ENDPOINT;
 const CHECK_USER_API_KEY = import.meta.env.VITE_CHECK_USER_API_KEY;
+const IS_LOCAL_DEV = Boolean(import.meta.env.DEV) && typeof window !== 'undefined'
+    && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+const EFFECTIVE_API_BASE_URL = IS_LOCAL_DEV ? '/__rg_api__' : API_BASE_URL;
 
 if (!API_BASE_URL) {
     throw new Error('Missing VITE_API_ENDPOINT. Set it from the CloudFormation stack Output ApiUrl.');
@@ -84,8 +87,16 @@ const apiCall = async (endpoint, options = {}) => {
 
     const token = await getAuthToken();
 
-    const url = `${API_BASE_URL}${endpoint}`;
+    const url = `${EFFECTIVE_API_BASE_URL}${endpoint}`;
     console.log(`API Call: ${url}`);
+
+    const method = String(options.method || 'GET').toUpperCase();
+    const defaultHeaders = {
+        'Authorization': token,
+    };
+    if (method !== 'GET' && method !== 'HEAD') {
+        defaultHeaders['Content-Type'] = 'application/json';
+    }
 
     // Create AbortController for timeout
     const controller = new AbortController();
@@ -96,8 +107,7 @@ const apiCall = async (endpoint, options = {}) => {
             ...options,
             signal: controller.signal,
             headers: {
-                'Authorization': token,
-                'Content-Type': 'application/json',
+                ...defaultHeaders,
                 ...options.headers,
             },
         });
@@ -153,7 +163,7 @@ const apiCall = async (endpoint, options = {}) => {
  */
 const publicApiCall = async (endpoint, options = {}, config = {}) => {
     const { requireApiKey = true } = config;
-    const url = `${API_BASE_URL}${endpoint}`;
+    const url = `${EFFECTIVE_API_BASE_URL}${endpoint}`;
     const method = (options.method || 'GET').toUpperCase();
     const baseHeaders = {};
 

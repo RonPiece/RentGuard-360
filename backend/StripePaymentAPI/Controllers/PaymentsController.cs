@@ -38,6 +38,26 @@ namespace StripePaymentAPI.Controllers
                 ?? User.FindFirstValue(ClaimTypes.Email);
         }
 
+        private HashSet<string> GetAuthenticatedUserAliases()
+        {
+            HashSet<string> aliases = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            void AddAlias(string value)
+            {
+                if (!string.IsNullOrWhiteSpace(value))
+                {
+                    aliases.Add(value.Trim());
+                }
+            }
+
+            AddAlias(User.FindFirstValue("sub"));
+            AddAlias(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            AddAlias(User.FindFirstValue("cognito:username"));
+            AddAlias(User.FindFirstValue(ClaimTypes.Email));
+
+            return aliases;
+        }
+
         private bool IsAdminCaller()
         {
             IEnumerable<Claim> groupClaims = User.Claims.Where(c =>
@@ -77,8 +97,8 @@ namespace StripePaymentAPI.Controllers
                 return BadRequest(new { error = "userId is required" });
             }
 
-            string callerUserId = GetAuthenticatedUserId();
-            if (string.IsNullOrWhiteSpace(callerUserId))
+            HashSet<string> callerAliases = GetAuthenticatedUserAliases();
+            if (callerAliases.Count == 0)
             {
                 return Unauthorized(new { error = "Authenticated user context is missing" });
             }
@@ -88,9 +108,39 @@ namespace StripePaymentAPI.Controllers
                 return null;
             }
 
-            if (!string.Equals(callerUserId, requestedUserId, StringComparison.OrdinalIgnoreCase))
+            if (!callerAliases.Contains(requestedUserId.Trim()))
             {
                 return Forbid();
+            }
+
+            return null;
+        }
+
+        private UserSubscription ResolveSubscriptionWithAliases(string requestedUserId)
+        {
+            IEnumerable<string> candidates = new[] { requestedUserId }
+                .Concat(GetAuthenticatedUserAliases())
+                .Where(id => !string.IsNullOrWhiteSpace(id))
+                .Select(id => id.Trim())
+                .Distinct(StringComparer.OrdinalIgnoreCase);
+
+            foreach (string candidate in candidates)
+            {
+                UserSubscription subscription = _repository.GetSubscriptionByUserId(candidate);
+                if (subscription == null)
+                {
+                    continue;
+                }
+
+                if (!string.Equals(subscription.UserId, requestedUserId, StringComparison.OrdinalIgnoreCase))
+                {
+                    // Migrate to the currently requested user identity to prevent future mismatches.
+                    UserSubscription newSub = _repository.UpsertSubscription(requestedUserId, subscription.PackageId, subscription.ScansRemaining);
+                    _repository.DeleteSubscriptionByUserId(subscription.UserId);
+                    return newSub;
+                }
+
+                return subscription;
             }
 
             return null;
@@ -524,7 +574,7 @@ namespace StripePaymentAPI.Controllers
                     return accessResult;
                 }
 
-                UserSubscription subscription = _repository.GetSubscriptionByUserId(userId);
+                UserSubscription subscription = ResolveSubscriptionWithAliases(userId);
 
                 if (subscription == null && IsAdminCaller())
                 {
@@ -637,7 +687,10 @@ namespace StripePaymentAPI.Controllers
                     });
                 }
 
-                bool success = _repository.DeductScan(request.UserId);
+                UserSubscription existingSubscription = ResolveSubscriptionWithAliases(request.UserId);
+                string targetUserId = existingSubscription?.UserId ?? request.UserId;
+
+                bool success = _repository.DeductScan(targetUserId);
 
                 if (!success)
                 {
@@ -649,7 +702,7 @@ namespace StripePaymentAPI.Controllers
                 }
 
                 // Get updated subscription
-                UserSubscription sub = _repository.GetSubscriptionByUserId(request.UserId);
+                UserSubscription sub = _repository.GetSubscriptionByUserId(targetUserId);
 
                 return Ok(new
                 {
