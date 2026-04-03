@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { NavLink, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useSubscription } from '../../contexts/SubscriptionContext';
@@ -36,8 +36,6 @@ const Navigation = ({ showAuthControls = false, onAuthClick = () => {} }) => {
     await logout();
     navigate('/');
   };
-
-  const isActive = (path) => location.pathname === path;
 
   const authLinks = [
     { path: '/dashboard', label: t('nav.dashboard') },
@@ -93,15 +91,15 @@ const Navigation = ({ showAuthControls = false, onAuthClick = () => {} }) => {
         {/* Desktop Navigation Links */}
         <div className="nav-links-desktop">
           {navLinks.map(link => (
-            <Link
+            <NavLink
               key={link.path}
               to={link.path}
-              className={`nav-link ${isActive(link.path) ? 'active' : ''}`}
+              className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
               onClick={(event) => handleBundleGatedNavigation(event, link.path)}
             >
               {link.icon && <link.icon size={14} className="nav-link-icon" />}
               <span className="nav-link-label">{link.label}</span>
-            </Link>
+            </NavLink>
           ))}
         </div>
 

@@ -18,6 +18,7 @@
  * ============================================
  */
 import React from 'react';
+import PropTypes from 'prop-types';
 import './Input.css';
 
 const Input = ({
@@ -83,3 +84,21 @@ const Input = ({
 };
 
 export default Input;
+
+Input.propTypes = {
+  type: PropTypes.string,
+  label: PropTypes.node,
+  placeholder: PropTypes.string,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  onChange: PropTypes.func,
+  error: PropTypes.string,
+  helperText: PropTypes.node,
+  leftIcon: PropTypes.node,
+  rightIcon: PropTypes.node,
+  disabled: PropTypes.bool,
+  required: PropTypes.bool,
+  className: PropTypes.string,
+  id: PropTypes.string,
+  name: PropTypes.string,
+};
+

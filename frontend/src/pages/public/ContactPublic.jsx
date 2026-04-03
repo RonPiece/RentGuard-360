@@ -6,6 +6,7 @@ import { emitAppToast } from '../../utils/toast';
 import Card from '../../components/ui/Card';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
+import MapComponent from '../../components/ui/MapComponent';
 import './ContactPage.css';
 import { Link } from 'react-router-dom';
 
@@ -227,14 +228,10 @@ const ContactPublic = () => {
                         </ul>
                     </div>
 
-                    {/* Office Image Branding Box */}
-                    <div className="brand-image-card">
-                        <img
-                            src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80"
-                            alt="Office"
-                            className="office-bg"
-                        />
-                        <div className="brand-image-overlay">
+                    {/* Map Component Branding Box */}
+                    <div className="brand-image-card" style={{ height: 'auto', background: 'transparent' }}>
+                        <MapComponent latitude={32.0853} longitude={34.7818} popupText="RentGuard-360 TLV" />
+                        <div style={{ marginTop: '1rem', textAlign: 'center', opacity: 0.8 }}>
                             <p>
                                 {t('contact.joinText')}
                             </p>

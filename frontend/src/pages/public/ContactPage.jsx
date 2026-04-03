@@ -13,6 +13,7 @@ import { emitAppToast } from '../../utils/toast';
 import Card from '../../components/ui/Card';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
+import MapComponent from '../../components/ui/MapComponent';
 import './ContactPage.css';
 
 const ContactPage = () => {
@@ -201,14 +202,10 @@ const ContactPage = () => {
                         </ul>
                     </div>
 
-                    {/* Office Image Branding Box */}
-                    <div className="brand-image-card">
-                        <img
-                            src="https://th.bing.com/th/id/R.9e680f0c790498d5fc052ac7701771a2?rik=G%2bFlz%2feEtrssRg&riu=http%3a%2f%2fwww.highoncinemaa.com%2fwp-content%2fuploads%2f2022%2f07%2fBetter-Call-Saul-Season-6-Episode-9-Review-Sauls-Office-Breaking-Bad.jpg&ehk=M0NeG4gsEcXTGa%2fo%2baUn9l2uFo8qaQ9NiuL1q%2bYGfak%3d&risl=&pid=ImgRaw&r=0"
-                            alt="Office"
-                            className="office-bg"
-                        />
-                        <div className="brand-image-overlay">
+                    {/* Map Component Branding Box */}
+                    <div className="brand-image-card" style={{ height: 'auto', background: 'transparent' }}>
+                        <MapComponent latitude={32.0853} longitude={34.7818} popupText="RentGuard-360 TLV" />
+                        <div style={{ marginTop: '1rem', textAlign: 'center', opacity: 0.8 }}>
                             <p>
                                 {t('contact.joinText')}
                             </p>

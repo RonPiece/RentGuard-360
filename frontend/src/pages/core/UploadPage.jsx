@@ -25,6 +25,7 @@ import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { useSubscription } from '../../contexts/SubscriptionContext';
+import FileDropZone from '../../components/ui/FileDropZone';
 import { pollForAnalysis, uploadFile } from '../../services/api';
 import { emitAppToast } from '../../utils/toast';
 import Card from '../../components/ui/Card';
@@ -397,21 +398,16 @@ const UploadPage = () => {
                     <div className="upload-modern-shell animate-slideUp">
                         <div className="upload-modern-card">
                             <section className="upload-modern-dropzone-wrap">
-                                <div
-                                    className={`upload-modern-dropzone ${isDragging ? 'dragging' : ''} ${!canChooseFile ? 'blocked' : ''}`}
-                                    onDragEnter={handleDragEnter}
-                                    onDragLeave={handleDragLeave}
-                                    onDragOver={handleDragOver}
-                                    onDrop={handleDrop}
-                                    onClick={openFilePicker}
-                                >
-                                    <div className="upload-modern-icon-wrap">
-                                        <span className="material-symbols-outlined upload-modern-icon">cloud_upload</span>
-                                    </div>
-                                    <h3>{t('upload.dragDrop')}</h3>
-                                    <p>{t('upload.maxSize')}</p>
-                                    {!canChooseFile && <p className="drop-locked-note">{blockReason}</p>}
-                                </div>
+                                <FileDropZone 
+                                    isDragging={isDragging}
+                                    canChooseFile={canChooseFile}
+                                    handleDragEnter={handleDragEnter}
+                                    handleDragLeave={handleDragLeave}
+                                    handleDragOver={handleDragOver}
+                                    handleDrop={handleDrop}
+                                    openFilePicker={openFilePicker}
+                                    blockReason={blockReason}
+                                />
                             </section>
 
                             <section className="upload-modern-action-grid">

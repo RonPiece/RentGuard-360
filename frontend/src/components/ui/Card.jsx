@@ -13,6 +13,7 @@
  * ============================================
  */
 import React from 'react';
+import PropTypes from 'prop-types';
 import './Card.css';
 
 const Card = ({
@@ -47,3 +48,13 @@ const Card = ({
 };
 
 export default Card;
+
+Card.propTypes = {
+  children: PropTypes.node,
+  className: PropTypes.string,
+  onClick: PropTypes.func,
+  variant: PropTypes.oneOf(['elevated', 'outlined', 'glass']),
+  padding: PropTypes.oneOf(['sm', 'md', 'lg']),
+  hoverable: PropTypes.bool
+};
+

@@ -8,6 +8,7 @@ export default defineConfig(({ mode }) => {
   const stripeApiTarget = (env.VITE_STRIPE_API_URL || '').trim().replace(/\/+$/, '')
 
   return {
+    base: './',
     plugins: [react()],
     server: {
       host: true,

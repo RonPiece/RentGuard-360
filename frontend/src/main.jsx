@@ -17,7 +17,6 @@
  */
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { LanguageProvider } from './contexts/LanguageContext';
@@ -29,17 +28,15 @@ import App from './App.jsx';
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <GlobalErrorBoundary>
-      <BrowserRouter>
-        <ThemeProvider>
-          <LanguageProvider>
-            <AuthProvider>
-              <SubscriptionProvider>
-                <App />
-              </SubscriptionProvider>
-            </AuthProvider>
-          </LanguageProvider>
-        </ThemeProvider>
-      </BrowserRouter>
+      <ThemeProvider>
+        <LanguageProvider>
+          <AuthProvider>
+            <SubscriptionProvider>
+              <App />
+            </SubscriptionProvider>
+          </AuthProvider>
+        </LanguageProvider>
+      </ThemeProvider>
     </GlobalErrorBoundary>
   </StrictMode>,
 );

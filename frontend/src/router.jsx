@@ -1,0 +1,90 @@
+import React, { lazy } from 'react';
+import { createHashRouter, Navigate } from 'react-router-dom';
+import MainLayout from './components/layout/MainLayout';
+import { ProtectedRoute, RequireActivePlanRoute } from './components/layout/RouteGuards';
+import { useAuth } from './contexts/AuthContext';
+import { useSubscription } from './contexts/SubscriptionContext';
+
+// Lazy loaded pages
+const LandingPage = lazy(() => import('./pages/public/LandingPage'));
+const DashboardPage = lazy(() => import('./pages/core/DashboardPage'));
+const UploadPage = lazy(() => import('./pages/core/UploadPage'));
+const ContractsPage = lazy(() => import('./pages/core/ContractsPage'));
+const AnalysisPage = lazy(() => import('./pages/core/AnalysisPage'));
+const SharedContractView = lazy(() => import('./pages/core/SharedContractView'));
+const SettingsPage = lazy(() => import('./pages/core/SettingsPage'));
+const ContactPage = lazy(() => import('./pages/public/ContactPage'));
+const ContactPublic = lazy(() => import('./pages/public/ContactPublic'));
+const PricingPage = lazy(() => import('./pages/billing/PricingPage'));
+const PricingPublic = lazy(() => import('./pages/public/PricingPublic'));
+const CheckoutPage = lazy(() => import('./pages/billing/CheckoutPage'));
+const PaymentSuccessPage = lazy(() => import('./pages/billing/PaymentSuccessPage'));
+const BillingPage = lazy(() => import('./pages/billing/BillingPage'));
+const TermsPage = lazy(() => import('./pages/legal/TermsPage'));
+const PrivacyPage = lazy(() => import('./pages/legal/PrivacyPage'));
+const AdminLayout = lazy(() => import('./pages/admin/AdminLayout'));
+const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
+const AdminUsers = lazy(() => import('./pages/admin/AdminUsers'));
+const AdminAnalytics = lazy(() => import('./pages/admin/AdminAnalytics'));
+const AdminStripeInsights = lazy(() => import('./pages/admin/AdminStripeInsights'));
+const NotFoundPage = lazy(() => import('./pages/public/NotFoundPage'));
+
+// Helper components for conditional public/protected routes
+const ConditionalPricingRoute = () => {
+    const { isAuthenticated, isAdmin } = useAuth();
+    if (!isAuthenticated) return <PricingPublic />;
+    if (isAdmin) return <Navigate to="/dashboard" replace />;
+    return <ProtectedRoute><PricingPage /></ProtectedRoute>;
+};
+
+const ConditionalContactRoute = () => {
+    const { isAuthenticated } = useAuth();
+    if (!isAuthenticated) return <ContactPublic />;
+    return <ProtectedRoute><RequireActivePlanRoute><ContactPage /></RequireActivePlanRoute></ProtectedRoute>;
+};
+
+const FallbackRoute = () => {
+    const { isAuthenticated, isAdmin } = useAuth();
+    const { hasSubscription, isEntitlementKnown } = useSubscription();
+
+    const authenticatedFallbackRoute = isAdmin
+    ? '/dashboard'
+    : (!isEntitlementKnown ? '/dashboard' : (hasSubscription ? '/dashboard' : '/pricing'));
+
+    return <Navigate to={isAuthenticated ? authenticatedFallbackRoute : "/"} replace />;
+};
+
+export const router = createHashRouter([
+  {
+    path: "/",
+    element: <MainLayout />,
+    children: [
+      { index: true, element: <LandingPage /> },
+      { path: "index.html", element: <LandingPage /> },
+      { path: "dashboard", element: <ProtectedRoute><RequireActivePlanRoute><DashboardPage /></RequireActivePlanRoute></ProtectedRoute> },
+      { path: "upload", element: <ProtectedRoute><RequireActivePlanRoute><UploadPage /></RequireActivePlanRoute></ProtectedRoute> },
+      { path: "contracts", element: <ProtectedRoute><RequireActivePlanRoute><ContractsPage /></RequireActivePlanRoute></ProtectedRoute> },
+      { path: "analysis/:contractId", element: <ProtectedRoute><RequireActivePlanRoute><AnalysisPage /></RequireActivePlanRoute></ProtectedRoute> },
+      { path: "settings", element: <ProtectedRoute><RequireActivePlanRoute><SettingsPage /></RequireActivePlanRoute></ProtectedRoute> },
+      { path: "billing", element: <ProtectedRoute><RequireActivePlanRoute><BillingPage /></RequireActivePlanRoute></ProtectedRoute> },
+      { path: "contact", element: <ConditionalContactRoute /> },
+      { path: "pricing", element: <ConditionalPricingRoute /> },
+      { path: "checkout/:packageId", element: <ProtectedRoute><CheckoutPage /></ProtectedRoute> },
+      { path: "payment-success", element: <ProtectedRoute><PaymentSuccessPage /></ProtectedRoute> },
+      { path: "shared/:id", element: <SharedContractView /> },
+      { path: "terms", element: <TermsPage /> },
+      { path: "privacy", element: <PrivacyPage /> },
+      {
+        path: "admin",
+        element: <ProtectedRoute><AdminLayout /></ProtectedRoute>,
+        children: [
+          { index: true, element: <AdminDashboard /> },
+          { path: "users", element: <AdminUsers /> },
+          { path: "analytics", element: <AdminAnalytics /> },
+          { path: "stripe", element: <AdminStripeInsights /> }
+        ]
+      },
+      { path: "*", element: <NotFoundPage /> } // Changed from FallbackRoute to standard 404 page!
+    ]
+  }
+]);

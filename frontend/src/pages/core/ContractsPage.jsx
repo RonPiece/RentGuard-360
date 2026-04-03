@@ -582,10 +582,11 @@ const ContractsPage = () => {
             </section>
 
             {/* WAVE DIVIDER */}
-            <div className="wave-separator">
-                <svg className="wave-svg" fill="none" viewBox="0 0 1440 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-                    <path d="M0 64L60 58.7C120 53 240 43 360 48C480 53 600 75 720 85.3C840 96 960 96 1080 85.3C1200 75 1320 53 1380 42.7L1440 32V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0V64Z" className="wave-path-base"></path>
-                </svg>            </div>
+            <div className="lf-wave-divider">
+                <svg preserveAspectRatio="none" viewBox="0 0 1440 120">
+                    <path d="M0,64L80,69.3C160,75,320,85,480,80C640,75,800,53,960,48C1120,43,1280,53,1360,58.7L1440,64L1440,120L1360,120C1280,120,1120,120,960,120C800,120,640,120,480,120C320,120,160,120,80,120L0,120Z"></path>
+                </svg>
+            </div>
 
             {/* MAIN CONTENT AREA */}
             <section className="lf-content-section">

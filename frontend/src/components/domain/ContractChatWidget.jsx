@@ -910,7 +910,7 @@ const ContractChatWidget = () => {
                                             <div className="chat-msg-evidence-title">{t('chat.evidenceTitle')}</div>
                                             <ul className="chat-msg-evidence-list">
                                                 {evidenceItems.map((item, index) => (
-                                                    <li key={`${messageKey}-evidence-${index}`}>
+                                                    <li key={`${messageKey}-evidence-${item.source || index}`}>
                                                         {item.clauseRef && (
                                                             <span className="chat-msg-evidence-anchor">{item.clauseRef}</span>
                                                         )}

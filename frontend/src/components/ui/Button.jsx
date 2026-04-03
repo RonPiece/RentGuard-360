@@ -16,6 +16,7 @@
  * ============================================
  */
 import React from 'react';
+import PropTypes from 'prop-types';
 import './Button.css';
 
 const Button = ({
@@ -63,3 +64,17 @@ const Button = ({
 };
 
 export default Button;
+
+Button.propTypes = {
+  variant: PropTypes.oneOf(['primary', 'secondary', 'ghost', 'danger']),
+  size: PropTypes.oneOf(['sm', 'md', 'lg']),
+  fullWidth: PropTypes.bool,
+  loading: PropTypes.bool,
+  disabled: PropTypes.bool,
+  leftIcon: PropTypes.node,
+  rightIcon: PropTypes.node,
+  onClick: PropTypes.func,
+  children: PropTypes.node.isRequired,
+  className: PropTypes.string
+};
+

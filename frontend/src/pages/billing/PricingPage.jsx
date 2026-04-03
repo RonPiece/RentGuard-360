@@ -288,7 +288,7 @@ const PricingPage = () => {
 
                                         <ul className="pricing-features">
                                             {getFeatures(pkg).map((feature, i) => (
-                                                <li key={i} className="pricing-feature">
+                                                <li key={feature} className="pricing-feature">
                                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-success)" strokeWidth="2.5">
                                                         <polyline points="20,6 9,17 4,12" />
                                                     </svg>

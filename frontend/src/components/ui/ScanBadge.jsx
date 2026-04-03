@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useSubscription } from '../../contexts/SubscriptionContext';
@@ -40,3 +41,8 @@ const ScanBadge = () => {
 };
 
 export default ScanBadge;
+
+ScanBadge.propTypes = {
+  className: PropTypes.string
+};
+

@@ -18,6 +18,7 @@
  * ============================================
  */
 import React from 'react';
+import PropTypes from 'prop-types';
 import './Toggle.css';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useLanguage } from '../../contexts/LanguageContext';
@@ -93,4 +94,14 @@ export const ThemeToggle = ({ showLabel = true }) => {
 };
 
 export default Toggle;
+
+
+Toggle.propTypes = {
+  checked: PropTypes.bool,
+  onChange: PropTypes.func.isRequired,
+  label: PropTypes.string,
+  icon: PropTypes.node,
+  disabled: PropTypes.bool,
+  className: PropTypes.string
+};
 
