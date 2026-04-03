@@ -22,7 +22,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { SubscriptionProvider } from './contexts/SubscriptionContext';
-import GlobalErrorBoundary from './components/GlobalErrorBoundary';
+import GlobalErrorBoundary from './components/ui/GlobalErrorBoundary';
 import './styles/design-system.css';
 import App from './App.jsx';
 
