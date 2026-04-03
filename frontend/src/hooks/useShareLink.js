@@ -49,14 +49,13 @@ export const useShareLink = (contractId, analysis) => {
 
         try {
             const data = await createShareLink(shareContractId);
-            setShareLink(data.shareUrl);
+            const generatedUrl = `${window.location.origin}/#/shared/${data.shareToken}`;
+            setShareLink(generatedUrl);
             setShareLinkExpiresAt(data.expiresAt);
             setIsSharePanelVisible(true);
-            persistShareLink(shareContractId, data.shareUrl, data.expiresAt);
-            
-            await navigator.clipboard.writeText(data.shareUrl);
-            
-            setTimeout(() => {
+            persistShareLink(shareContractId, generatedUrl, data.expiresAt);
+
+            await navigator.clipboard.writeText(generatedUrl);
                 sharePanelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }, 100);
             

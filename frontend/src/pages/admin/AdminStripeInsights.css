@@ -1,3 +1,19 @@
+/*
+ * ============================================
+ * AdminStripeInsights.css - Sub-stylesheet
+ * ============================================
+ *
+ * TABLE OF CONTENTS
+ * ============================================
+ * 1. Page Container
+ * 2. Stats Cards
+ * 3. Transaction Table
+ * 4. Chart Cards
+ * 5. Dark Mode
+ * 6. Media Queries
+ * ============================================
+ */
+
 .stripe-insights-page {
     display: flex;
     flex-direction: column;

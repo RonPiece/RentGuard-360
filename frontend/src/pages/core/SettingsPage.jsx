@@ -121,9 +121,6 @@ const SettingsPage = () => {
                 <LogOut size={16} />
                 {t('nav.logout')}
             </button>
-            <button className="btn-primary" onClick={() => alert(isRTL ? 'בקרוב...' : 'Coming soon...')}>
-                {isRTL ? 'עריכת פרופיל' : 'Edit Profile'}
-            </button>
         </div>
     </div>
 </div>
@@ -226,7 +223,7 @@ const SettingsPage = () => {
                             </div>
                             <div className="about-item">
                                 <span>{isRTL ? 'צוות פיתוח' : 'Built by'}</span>
-                                <strong>Ron, Moty & Idan</strong>
+                                <strong>{isRTL ? 'רון, מוטי ועידן' : 'Ron, Moty & Idan'}</strong>
                             </div>
                         </div>
                     </div>

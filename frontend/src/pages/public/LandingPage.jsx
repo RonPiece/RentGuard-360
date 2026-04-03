@@ -1214,9 +1214,6 @@ const LandingPage = () => {
                 </motion.div>
             </section>
 
-            {/* ===== FOOTER ===== */}
-            <Footer />
-
             {/* Registration Prompt Modal */}
             <RegisterPromptModal
                 isOpen={showRegisterPrompt}

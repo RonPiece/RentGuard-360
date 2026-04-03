@@ -1,5 +1,20 @@
 /*
  * ============================================
+ * Input.css - Sub-stylesheet
+ * ============================================
+ *
+ * TABLE OF CONTENTS
+ * ============================================
+ * 1. Base/Root
+ * 2. Elements (label, helper text, icon)
+ * 3. Variants/Modifiers
+ * 4. States (focus, error, disabled)
+ * 5. Dark Mode
+ * ============================================
+ */
+
+/*
+ * ============================================
  *  Input.css
  *  iOS-Style Input Field Styles
  * ============================================

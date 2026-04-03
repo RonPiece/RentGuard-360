@@ -1,3 +1,20 @@
+/*
+ * ============================================
+ * BillingPage.css - Sub-stylesheet
+ * ============================================
+ *
+ * TABLE OF CONTENTS
+ * ============================================
+ * 1. Page Layout
+ * 2. Current Plan Card
+ * 3. Usage Stats
+ * 4. Billing History Table
+ * 5. Payment Methods
+ * 6. Dark Mode
+ * 7. Media Queries
+ * ============================================
+ */
+
 /* =========================================
    BILLING PAGE - STRIPE CUSTOMER PORTAL
    Matches the Settings page bento-box design

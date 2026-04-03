@@ -1,3 +1,25 @@
+/*
+ * ============================================
+ * UploadPage.css - Sub-stylesheet
+ * ============================================
+ *
+ * TABLE OF CONTENTS
+ * ============================================
+ * 1. Page Layout
+ * 2. Header
+ * 3. Drop Zone (base, hover, dragging, has-file)
+ * 4. Drop Zone Dark Mode
+ * 5. File Preview & Editing
+ * 6. Upload Progress
+ * 7. Success Card
+ * 8. Error Message
+ * 9. Terms Section
+ * 10. Terms Modal
+ * 11. Animations
+ * 12. Media Queries
+ * ============================================
+ */
+
 /* 
  * Upload Page - Clean & Modern Design
  * Teal-themed with smooth animations

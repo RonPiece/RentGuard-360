@@ -213,17 +213,17 @@ const Navigation = ({ showAuthControls = false, onAuthClick = () => {} }) => {
           )}
           
           {navLinks.map(link => (
-            <Link
+            <NavLink
               key={link.path}
               to={link.path}
-              className={`mobile-menu-link ${isActive(link.path) ? 'active' : ''}`}
+              className={({ isActive }) => `mobile-menu-link ${isActive ? 'active' : ''}`}
               onClick={(event) => {
                 handleBundleGatedNavigation(event, link.path);
                 if (!event.defaultPrevented) setShowMobileMenu(false);
               }}
             >
               <span>{link.label}</span>
-            </Link>
+            </NavLink>
           ))}
         </div>
       )}

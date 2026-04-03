@@ -1,5 +1,22 @@
 /*
  * ============================================
+ * ContactPage.css - Sub-stylesheet
+ * ============================================
+ *
+ * TABLE OF CONTENTS
+ * ============================================
+ * 1. Page Layout
+ * 2. Contact Header
+ * 3. Contact Form
+ * 4. Contact Info Cards
+ * 5. Map Section
+ * 6. Dark Mode
+ * 7. Media Queries
+ * ============================================
+ */
+
+/*
+ * ============================================
  * ContactPage.css - Contact Page Styles
  * Optimized for both Light and Dark Mode using Design System variables
  * ============================================

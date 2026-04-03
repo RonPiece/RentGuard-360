@@ -1,3 +1,20 @@
+/*
+ * ============================================
+ * CheckoutPage.css - Sub-stylesheet
+ * ============================================
+ *
+ * TABLE OF CONTENTS
+ * ============================================
+ * 1. Page Layout
+ * 2. Plan Summary Card
+ * 3. Payment Form
+ * 4. Order Summary
+ * 5. States (processing, error)
+ * 6. Dark Mode
+ * 7. Media Queries
+ * ============================================
+ */
+
 /* ============================================
    CheckoutPage Styles
    Stripe payment form + order summary

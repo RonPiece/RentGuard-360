@@ -1,4 +1,21 @@
 /*
+ * ============================================
+ * AdminSidebar.css - Sub-stylesheet
+ * ============================================
+ *
+ * TABLE OF CONTENTS
+ * ============================================
+ * 1. Sidebar Container
+ * 2. Sidebar Header
+ * 3. Navigation Items
+ * 4. Sidebar Footer
+ * 5. States (active, hover, collapsed)
+ * 6. Dark Mode
+ * 7. Media Queries
+ * ============================================
+ */
+
+/*
  * Admin Sidebar - Responsive Navigation
  * Professional SaaS Style with Collapsible Tablet Mode
  * 

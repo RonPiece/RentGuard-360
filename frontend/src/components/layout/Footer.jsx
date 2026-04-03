@@ -50,11 +50,11 @@ const Footer = () => {
                     <div className="footer-credits">
                         <span className="footer-built-by">{t('footer.builtBy')}</span>
                         <div className="footer-creators">
-                            <a href="https://github.com/RonPiece" target="_blank" rel="noopener noreferrer">Ron</a>
+                            <a href="https://github.com/RonPiece" target="_blank" rel="noopener noreferrer">{isRTL ? 'רון' : 'Ron'}</a>
                             <span>,</span>
-                            <a href="https://github.com/fakesociety" target="_blank" rel="noopener noreferrer">Moty</a>
-                            <span>&amp;</span>
-                            <a href="https://github.com/idan0508" target="_blank" rel="noopener noreferrer">Idan</a>
+                            <a href="https://github.com/fakesociety" target="_blank" rel="noopener noreferrer">{isRTL ? 'מוטי' : 'Moty'}</a>
+                            <span>{isRTL ? ' ו' : ' & '}</span>
+                            <a href="https://github.com/idan0508" target="_blank" rel="noopener noreferrer">{isRTL ? 'עידן' : 'Idan'}</a>
                         </div>
                         <a href="https://github.com/RonPiece/RentGuard-360" target="_blank" rel="noopener noreferrer" className="footer-github-link" aria-label="GitHub Repository">
                             <Github size={18} className="footer-github-icon" />

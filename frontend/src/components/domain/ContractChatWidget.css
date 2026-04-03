@@ -1,3 +1,25 @@
+/*
+ * ============================================
+ * ContractChatWidget.css - Sub-stylesheet
+ * ============================================
+ *
+ * TABLE OF CONTENTS
+ * ============================================
+ * 1. Widget Position & Tokens
+ * 2. Launcher Button (Frosted Glass)
+ * 3. Chat Panel & Header
+ * 4. Contract Picker
+ * 5. Messages Area
+ * 6. Message Bubbles (User & Assistant)
+ * 7. Quick Prompts & Chips
+ * 8. Evidence & Sources
+ * 9. Input Area
+ * 10. Error & Hint Bars
+ * 11. Dark Mode
+ * 12. Media Queries
+ * ============================================
+ */
+
 .chat-widget {
   /* Chat design tokens */
   --chat-primary: #64748b;

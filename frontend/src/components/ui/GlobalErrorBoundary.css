@@ -1,3 +1,16 @@
+/*
+ * ============================================
+ * GlobalErrorBoundary.css - Sub-stylesheet
+ * ============================================
+ *
+ * TABLE OF CONTENTS
+ * ============================================
+ * 1. Error Container
+ * 2. Error Content
+ * 3. Error Actions
+ * ============================================
+ */
+
 .global-error-boundary {
     display: flex;
     flex-direction: column;

@@ -1,3 +1,18 @@
+/*
+ * ============================================
+ * SharedContractView.css - Sub-stylesheet
+ * ============================================
+ *
+ * TABLE OF CONTENTS
+ * ============================================
+ * 1. Page Layout
+ * 2. Contract Header
+ * 3. Contract Body
+ * 4. Footer Actions
+ * 5. Dark Mode
+ * ============================================
+ */
+
 .shared-contract-shell {
     min-height: 100vh;
     padding: clamp(16px, 2.8vw, 32px);
@@ -210,5 +225,37 @@
 @keyframes sharedSpin {
     to {
         transform: rotate(360deg);
+    }
+}
+
+/*
+ * ============================================
+ * 6. Edited Clauses Highlight (Shared Link)
+ * ============================================
+ */
+
+/* Subtle hint for edited clauses in read-only mode */
+.shared-contract-shell .lf-cv-clause-box.read-only.is-edited {
+    position: relative;
+    border-inline-start: 3px solid rgba(245, 158, 11, 0.5); /* subtle amber/yellow */
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Yellow highlight ONLY on hover */
+.shared-contract-shell .lf-cv-clause-box.read-only.is-edited:hover {
+    background-color: rgba(245, 158, 11, 0.1); 
+    border-inline-start: 4px solid var(--accent-warning);
+}
+
+[data-theme="dark"] .shared-contract-shell .lf-cv-clause-box.read-only.is-edited:hover {
+    background-color: rgba(245, 158, 11, 0.15);
+}
+
+/* Ensure no visual artifacts upon export / printing */
+@media print {
+    .shared-contract-shell .lf-cv-clause-box.read-only.is-edited {
+        background-color: transparent !important;
+        border-inline-start-color: transparent !important;
+        border-inline-start-width: 0 !important;
     }
 }

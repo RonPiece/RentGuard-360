@@ -1,3 +1,19 @@
+@import './styles/utilities.css';
+/*
+ * ============================================
+ * App.css - Sub-stylesheet
+ * ============================================
+ *
+ * TABLE OF CONTENTS
+ * ============================================
+ * 1. App Container & Main
+ * 2. Global Toast
+ * 3. React Hot Toast (Custom)
+ * 4. Loading States
+ * 5. Animations
+ * ============================================
+ */
+
 /* 
  * App.css - Main Application Shell Styles
  * Navigation, Settings, Loading States
@@ -297,4 +313,4 @@
   }
 }
 
-@import './styles/utilities.css';
+

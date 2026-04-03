@@ -1,5 +1,23 @@
 /*
  * ============================================
+ * ContractView.css - Sub-stylesheet
+ * ============================================
+ *
+ * TABLE OF CONTENTS
+ * ============================================
+ * 1. Container & Layout
+ * 2. Header Section
+ * 3. Contract Content
+ * 4. Clause Cards
+ * 5. Action Buttons
+ * 6. States
+ * 7. Dark Mode
+ * 8. Media Queries
+ * ============================================
+ */
+
+/*
+ * ============================================
  * ContractView.css
  * Virtual PDF Contract Display (LexisFlow Modern UI)
  * ============================================
@@ -151,7 +169,7 @@
 }
 .lf-cv-issue-indicator.high { background: rgba(239, 68, 68, 0.1); color: var(--accent-danger); }
 .lf-cv-issue-indicator.medium { background: rgba(245, 158, 11, 0.1); color: var(--accent-warning); }
-.lf-cv-issue-indicator.low { background: rgba(16, 185, 129, 0.1); color: var(--accent-success); }
+.lf-cv-issue-indicator.low { background: rgba(59, 130, 246, 0.1); color: var(--accent-info); }
 
 .lf-cv-clause-box {
     position: relative;
@@ -430,4 +448,63 @@
     .lf-cv-clause-text-area { flex-direction: column; }
     .lf-cv-modal-footer { flex-direction: column; }
     .lf-cv-modal-footer button { width: 100%; justify-content: center; }
+}@media (max-width: 600px) {
+    /* Fix Collapse button overlapping text */
+    .lf-cv-actions {
+        position: relative;
+        top: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: center;
+        margin-bottom: 1rem;
+    }
+    
+    /* Fix Scroll FAB going off screen */
+    .lf-cv-scroll-fab {
+        margin-left: 0;
+        margin-right: 0;
+        transform: translateY(-2rem) translateX(-1rem);
+    }
+    
+    [dir="rtl"] .lf-cv-scroll-fab {
+        transform: translateY(-2rem) translateX(1rem);
+    }
+    
+    [dir="rtl"] .lf-cv-scroll-fab:hover {
+        transform: translateY(-36px) translateX(1rem);
+    }
+    [dir="ltr"] .lf-cv-scroll-fab:hover {
+        transform: translateY(-36px) translateX(-1rem);
+    }
+}
+@media (max-width: 600px) {
+    /* Fix Collapse button overlapping text */
+    .lf-cv-actions {
+        position: relative;
+        top: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: center;
+        margin-bottom: 1rem;
+    }
+    
+    /* Fix Scroll FAB going off screen */
+    .lf-cv-scroll-fab {
+        margin-left: 0;
+        margin-right: 0;
+        transform: translateY(-2rem) translateX(-1rem);
+    }
+    
+    [dir="rtl"] .lf-cv-scroll-fab {
+        transform: translateY(-2rem) translateX(1rem);
+    }
+    
+    [dir="rtl"] .lf-cv-scroll-fab:hover {
+        transform: translateY(-36px) translateX(1rem);
+    }
+    [dir="ltr"] .lf-cv-scroll-fab:hover {
+        transform: translateY(-36px) translateX(-1rem);
+    }
 }

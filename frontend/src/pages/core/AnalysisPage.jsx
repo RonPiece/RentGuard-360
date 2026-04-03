@@ -238,7 +238,7 @@ const AnalysisPage = () => {
             const token = shareResult?.shareToken;
             if (!token) throw new Error('Missing share token in response');
 
-            const url = `${window.location.origin}/shared/${encodeURIComponent(token)}`;
+            const url = `${window.location.origin}/#/shared/${encodeURIComponent(token)}`;
             setShareLink(url);
             setShareLinkExpiresAt(shareResult?.expiresAt || null);
             setIsSharePanelVisible(true);
@@ -384,7 +384,7 @@ const AnalysisPage = () => {
                 const shareData = await getShareLink(contractForShare);
                 if (cancelled) return;
                 if (shareData?.active && shareData?.shareToken) {
-                    const url = `${window.location.origin}/shared/${encodeURIComponent(shareData.shareToken)}`;
+                    const url = `${window.location.origin}/#/shared/${encodeURIComponent(shareData.shareToken)}`;
                     setShareLink(url); setShareLinkExpiresAt(shareData?.expiresAt || null); setIsSharePanelVisible(true);
                     persistShareLink(contractForShare, url, shareData?.expiresAt || null);
                 } else {

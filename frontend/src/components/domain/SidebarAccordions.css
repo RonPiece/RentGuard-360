@@ -1,5 +1,20 @@
 /*
  * ============================================
+ * SidebarAccordions.css - Sub-stylesheet
+ * ============================================
+ *
+ * TABLE OF CONTENTS
+ * ============================================
+ * 1. Accordion Container
+ * 2. Accordion Header
+ * 3. Accordion Content
+ * 4. States (open, hover)
+ * 5. Dark Mode
+ * ============================================
+ */
+
+/*
+ * ============================================
  * SidebarAccordions.css
  * Unified Accordion Styles for Score Components
  * ============================================
@@ -146,7 +161,7 @@
 .severity-dot { width: 8px; height: 8px; border-radius: 50%; }
 .severity-item.high .severity-dot { background: var(--accent-danger); }
 .severity-item.medium .severity-dot { background: var(--accent-warning); }
-.severity-item.low .severity-dot { background: var(--accent-success); }
+.severity-item.low .severity-dot { background: var(--accent-info); }
 .severity-points { font-size: 0.75rem; color: var(--text-tertiary); margin-top: 4px; }
 .categories-header h4 { text-align: center; margin: 0 0 1rem 0; padding: 0.5rem; background: var(--bg-tertiary); border-radius: var(--radius-md); font-size: 0.9rem; }
 .categories-grid { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem; }

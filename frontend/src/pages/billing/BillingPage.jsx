@@ -167,7 +167,7 @@ const BillingPage = () => {
         setPortalError('');
 
         try {
-            const returnUrl = `${window.location.origin}/billing`;
+            const returnUrl = `${window.location.origin}/#/billing`;
             const response = await createCustomerPortalSession(userId, userEmail, userName, returnUrl);
 
             if (response?.url) {

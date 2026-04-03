@@ -1,3 +1,23 @@
+/*
+ * ============================================
+ * Navigation.css - Sub-stylesheet
+ * ============================================
+ *
+ * TABLE OF CONTENTS
+ * ============================================
+ * 1. Desktop Navigation Container
+ * 2. Logo
+ * 3. Desktop Nav Links
+ * 4. Nav Right (Toggles & Profile)
+ * 5. Scan Credits Badge
+ * 6. Toggle Pill Design
+ * 7. Profile Dropdown
+ * 8. Mobile Navigation
+ * 9. Public Page Auth Buttons
+ * 10. Media Queries
+ * ============================================
+ */
+
 /* ============================================
    2. NAVIGATION (DESKTOP)
    ============================================ */
@@ -757,6 +777,17 @@
     align-self: center;
     justify-self: stretch;
     margin: 0.5rem 1rem;
+    position: static;
+  }
+
+  .profile-dropdown {
+    top: calc(100% + 5px);
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+    width: calc(100% - 32px);
+    max-width: 320px;
+    border-radius: var(--radius-md);
   }
 
   .nav-right .public-cta-btn {
@@ -825,6 +856,13 @@
     z-index: 2;
   }
 
+  [data-theme="dark"] .is-public .mobile-menu-button,
+  [data-theme="dark"] .is-authenticated .mobile-menu-button {
+    background: rgba(21, 38, 43, 0.92);
+    border-color: rgba(133, 188, 178, 0.28);
+    color: #d8e8e5;
+  }
+
   /* Mobile menu dropdown positioning */
   .mobile-menu {
     display: flex;
@@ -847,8 +885,10 @@
 }
 
 /* RTL Support for Profile Dropdown */
-[dir="rtl"] .profile-dropdown {
-    left: 0 !important;
-    right: auto !important;
-    transform-origin: top left !important;
+@media (min-width: 1051px) {
+  [dir="rtl"] .profile-dropdown {
+      left: 0 !important;
+      right: auto !important;
+      transform-origin: top left !important;
+  }
 }

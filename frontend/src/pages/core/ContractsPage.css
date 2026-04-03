@@ -1,3 +1,28 @@
+/*
+ * ============================================
+ * ContractsPage.css - Sub-stylesheet
+ * ============================================
+ *
+ * TABLE OF CONTENTS
+ * ============================================
+ * 1. Page Wrapper
+ * 2. Hero Section
+ * 3. Wave Divider
+ * 4. Main Content & Filter Bar
+ * 5. Contract Grid & Cards
+ * 6. Card Badges (Score Variants)
+ * 7. Gauge & Processing State
+ * 8. Card Metadata
+ * 9. Card Footer Actions
+ * 10. Dropdown Menus
+ * 11. Empty & Loading States
+ * 12. Delete Confirmation Modal
+ * 13. Dark Mode Overrides
+ * 14. RTL Overrides
+ * 15. Media Queries
+ * ============================================
+ */
+
 /* * ============================================
  * Contracts Page - LexisFlow Modern Design
  * ============================================

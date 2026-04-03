@@ -1,4 +1,18 @@
 /*
+ * ============================================
+ * AdminLayout.css - Sub-stylesheet
+ * ============================================
+ *
+ * TABLE OF CONTENTS
+ * ============================================
+ * 1. Layout Container
+ * 2. Content Area
+ * 3. Page Transitions
+ * 4. Media Queries
+ * ============================================
+ */
+
+/*
  * Admin Layout - Container for Sidebar + Content
  * Responsive grid layout with mobile overlay support
  * 
@@ -63,6 +77,7 @@
     width: 260px;
     /* Match sidebar width for transform to work */
     height: 100vh;
+    height: 100dvh;
     z-index: 200;
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }

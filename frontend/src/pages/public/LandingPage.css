@@ -1,3 +1,27 @@
+/*
+ * ============================================
+ * LandingPage.css - Sub-stylesheet
+ * ============================================
+ *
+ * TABLE OF CONTENTS
+ * ============================================
+ * 1. Page Container & Dark Mode
+ * 2. Navbar (.lr-nav)
+ * 3. Toggle Wrapper & Auth Buttons
+ * 4. Auth Modal
+ * 5. Hero Section (.lr-hero)
+ * 6. Dashboard Mockup
+ * 7. Benefits Carousel
+ * 8. Contracts Grid Section
+ * 9. Card Components (gauge, badges, actions)
+ * 10. Feature Section (.lr-feature)
+ * 11. Contract Viewer Mockup
+ * 12. Mock Paper & Clauses
+ * 13. Register Prompt Modal
+ * 14. Media Queries
+ * ============================================
+ */
+
 /* 
  * LandingPage.css - Landing Page Styles
  * Public landing page with auth, hero, and mockups
