@@ -1,0 +1,433 @@
+/*
+ * ============================================
+ * ContractView.css
+ * Virtual PDF Contract Display (LexisFlow Modern UI)
+ * ============================================
+ */
+
+.lf-cv-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 2rem;
+}
+
+/* ===== A4 Paper Page ===== */
+.lf-cv-paper {
+    background: #ffffff;
+    width: 100%;
+    max-width: 850px;
+    border-radius: var(--radius-xl);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--glass-border);
+    padding: 4rem 5rem;
+    position: relative;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    color: #1e293b;
+    min-height: 600px;
+    max-height: 75vh;
+    overflow-y: auto;
+}
+
+.lf-cv-paper.minimized {
+    min-height: 0;
+    max-height: 120px;
+    padding-bottom: 2rem;
+    overflow: hidden; 
+}
+
+[data-theme="dark"] .lf-cv-paper {
+    background: #1e293b;
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .lf-cv-paper .lf-cv-header h1,
+[data-theme="dark"] .lf-cv-paper .lf-cv-header p,
+[data-theme="dark"] .lf-cv-paper .lf-cv-clause-text,
+[data-theme="dark"] .lf-cv-paper .lf-cv-clause-text-input,
+[data-theme="dark"] .lf-cv-paper {
+    color: #ffffff;
+}
+
+/* Minimize / Maximize Actions */
+.lf-cv-actions {
+    position: absolute;
+    top: 1.5rem;
+}
+[dir="rtl"] .lf-cv-actions { right: 1.5rem; }
+[dir="ltr"] .lf-cv-actions { left: 1.5rem; }
+
+.lf-cv-minimize-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: var(--bg-inset);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-full);
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.lf-cv-minimize-btn:hover { background: var(--bg-tertiary); color: var(--text-primary); }
+
+/* ===== Header ===== */
+.lf-cv-header {
+    text-align: center;
+    margin-top: 1rem;
+    margin-bottom: 3rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid var(--glass-border);
+}
+.lf-cv-header h1 { font-size: 2rem; font-weight: 800; margin: 0 0 0.5rem 0; color: inherit; }
+.lf-cv-header p { font-size: 1rem; color: var(--text-secondary); margin: 0; }
+
+/* ===== Toolbar ===== */
+.lf-cv-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    background: var(--bg-inset);
+    border-radius: var(--radius-md);
+    margin-bottom: 2rem;
+}
+
+.lf-cv-filter-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+.lf-cv-filter-toggle input[type="checkbox"] { accent-color: var(--accent-primary); width: 16px; height: 16px; }
+
+.lf-cv-toolbar-stats { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.lf-cv-stat-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+}
+.lf-cv-stat-badge.neutral { background: var(--bg-tertiary); color: var(--text-secondary); }
+.lf-cv-stat-badge.warning { background: rgba(245, 158, 11, 0.1); color: var(--accent-warning); }
+.lf-cv-stat-badge.success { background: rgba(16, 185, 129, 0.1); color: var(--accent-success); }
+
+/* ===== Clauses ===== */
+.lf-cv-clauses-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.lf-cv-clause-row {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.lf-cv-issue-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--radius-md);
+    width: fit-content;
+}
+.lf-cv-issue-indicator.high { background: rgba(239, 68, 68, 0.1); color: var(--accent-danger); }
+.lf-cv-issue-indicator.medium { background: rgba(245, 158, 11, 0.1); color: var(--accent-warning); }
+.lf-cv-issue-indicator.low { background: rgba(16, 185, 129, 0.1); color: var(--accent-success); }
+
+.lf-cv-clause-box {
+    position: relative;
+    padding: 1.25rem;
+    border-radius: var(--radius-md);
+    background: transparent;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.lf-cv-clause-box:hover:not(.read-only) {
+    background: var(--bg-inset);
+    border-color: var(--glass-border);
+}
+
+/* Side borders for issues */
+.lf-cv-clause-box.has-issue { border-inline-start: 4px solid var(--accent-warning); background: rgba(245, 158, 11, 0.03); }
+.lf-cv-clause-box.has-issue.is-edited { border-inline-start-color: var(--accent-success); background: rgba(16, 185, 129, 0.03); }
+
+.lf-cv-clause-text-area { display: flex; align-items: flex-start; gap: 1rem; }
+.lf-cv-clause-text {
+    flex: 1;
+    font-size: 1.05rem;
+    line-height: 1.8;
+    margin: 0;
+}
+
+/* Actions inside clause */
+.lf-cv-clause-actions {
+    display: flex;
+    gap: 0.5rem;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+.lf-cv-clause-box:hover .lf-cv-clause-actions { opacity: 1; }
+
+.lf-cv-action-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.lf-cv-action-btn.consult-btn { background: rgba(14, 165, 233, 0.1); color: #0ea5e9; }
+.lf-cv-action-btn.consult-btn:hover:not(:disabled) { background: #0ea5e9; color: white; transform: scale(1.1); }
+.lf-cv-action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Hover Edit Hint */
+.lf-cv-hover-hint {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: -4rem; /* LTR fallback */
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--text-tertiary);
+    font-size: 0.75rem;
+    font-weight: 600;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+}
+[dir="rtl"] .lf-cv-hover-hint { right: auto; left: -4rem; }
+.lf-cv-clause-box:hover .lf-cv-hover-hint { opacity: 1; }
+
+/* ===== AI Explanation Box ===== */
+.lf-cv-ai-explanation {
+    margin-top: 0.5rem;
+    background: linear-gradient(135deg, rgba(14, 165, 233, 0.05) 0%, rgba(56, 189, 248, 0.05) 100%);
+    border: 1px solid rgba(14, 165, 233, 0.2);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+.lf-cv-ai-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    color: #0284c7;
+}
+[data-theme="dark"] .lf-cv-ai-header { color: #38bdf8; }
+
+.lf-cv-ai-title { display: flex; align-items: center; gap: 0.5rem; font-weight: 700; font-size: 0.85rem; }
+.lf-cv-toggle-btn { background: none; border: none; color: inherit; cursor: pointer; display: flex; align-items: center; }
+.lf-cv-ai-content { padding: 0 1rem 1rem 1rem; font-size: 0.95rem; line-height: 1.7; color: inherit; white-space: pre-wrap; }
+
+/* ===== Signatures Footer ===== */
+.lf-cv-signatures-footer {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 2px solid var(--glass-border);
+}
+.lf-cv-signatures-footer h3 { text-align: center; font-size: 1.25rem; font-weight: 800; margin-bottom: 2rem; }
+
+.lf-cv-signatures-grid {
+    display: flex;
+    justify-content: space-around;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+.lf-cv-signature-block { flex: 1; max-width: 250px; text-align: center; }
+.lf-cv-sig-line { height: 1px; background: currentColor; margin-bottom: 0.5rem; opacity: 0.5; }
+.lf-cv-sig-role { font-weight: 700; margin-bottom: 0.25rem; }
+.lf-cv-sig-placeholder { font-size: 0.8rem; color: var(--text-tertiary); margin: 0; }
+.lf-cv-sig-date { text-align: center; margin-top: 3rem; font-weight: 600; }
+
+/* ===== Floating Scroll FAB ===== */
+.lf-cv-scroll-fab-wrapper {
+    position: sticky;
+    bottom: 2rem;
+    height: 0;
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    pointer-events: none;
+    z-index: 100;
+}
+[dir="rtl"] .lf-cv-scroll-fab-wrapper {
+    justify-content: flex-end;
+}
+
+.lf-cv-scroll-fab {
+    pointer-events: auto;
+    width: 2.5rem;
+    height: 2.5rem;
+    margin-left: -3.5rem; /* Moves it outside the text area padding */
+    border-radius: 50%;
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+    border: 1px solid var(--glass-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    transform: translateY(-2rem); 
+    backdrop-filter: blur(8px);
+}
+[data-theme="dark"] .lf-cv-scroll-fab {
+    background: rgba(30, 41, 59, 1);
+    color: #ffffff; /* pure white text/icon in dark mode */
+    border-color: rgba(255, 255, 255, 0.2);
+}
+.lf-cv-scroll-fab:hover { 
+    transform: translateY(-36px); 
+    background: var(--accent-primary);
+    color: white;
+    box-shadow: 0 6px 15px rgba(5, 150, 105, 0.3); 
+    border-color: transparent;
+}
+
+/* ===== Modals ===== */
+.lf-cv-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 1.5rem;
+}
+.lf-cv-modal-content {
+    background: var(--bg-primary);
+    width: 100%;
+    max-width: 700px;
+    border-radius: var(--radius-xl);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+    display: flex;
+    flex-direction: column;
+    max-height: 90vh;
+    overflow: hidden;
+    animation: modalPop 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.small-modal { max-width: 400px; }
+
+@keyframes modalPop {
+    0% { opacity: 0; transform: scale(0.95) translateY(10px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.lf-cv-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--glass-border);
+}
+.lf-cv-modal-header h3 { display: flex; align-items: center; gap: 0.5rem; margin: 0; font-size: 1.25rem; font-weight: 800; }
+.lf-cv-modal-header.warning { color: var(--accent-danger); border-bottom: none; padding-bottom: 0; }
+.lf-cv-modal-close { background: none; border: none; color: var(--text-tertiary); cursor: pointer; padding: 0.25rem; border-radius: var(--radius-sm); }
+.lf-cv-modal-close:hover { background: var(--bg-inset); color: var(--text-primary); }
+
+.lf-cv-modal-body {
+    padding: 1.5rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+.lf-cv-modal-body.center-text { text-align: center; }
+
+.lf-cv-modal-section label { display: block; font-size: 0.85rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 0.5rem; }
+.lf-cv-original-text { padding: 1rem; background: var(--bg-inset); border-radius: var(--radius-md); font-size: 0.95rem; line-height: 1.6; }
+
+/* Modal Suggestion Box */
+.lf-cv-suggested-section {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(251, 191, 36, 0.05) 100%);
+    border-inline-start: 4px solid var(--accent-warning);
+    padding: 1.25rem;
+    border-radius: var(--radius-md);
+}
+.lf-cv-suggested-header { display: flex; align-items: center; gap: 0.5rem; color: #b45309; margin-bottom: 0.75rem; }
+.lf-cv-suggested-text { font-size: 1rem; line-height: 1.6; font-weight: 500; margin-bottom: 1rem; }
+.lf-cv-apply-btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--accent-warning); color: white; border: none; border-radius: var(--radius-sm); font-weight: 700; cursor: pointer; }
+
+/* Modal Textarea */
+.lf-cv-textarea {
+    width: 100%;
+    padding: 1rem;
+    border: 2px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 1rem;
+    line-height: 1.6;
+    resize: vertical;
+}
+.lf-cv-textarea:focus { outline: none; border-color: var(--accent-primary); }
+
+.lf-cv-modal-footer {
+    display: flex;
+    justify-content: flex-start;
+    gap: 0.75rem;
+    padding: 1.5rem;
+    border-top: 1px solid var(--glass-border);
+    background: var(--bg-inset);
+}
+.lf-cv-modal-footer.center-footer { justify-content: center; }
+
+.lf-cv-btn-primary { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.5rem; background: var(--accent-primary); color: white; border: none; border-radius: var(--radius-full); font-weight: 700; cursor: pointer; }
+.lf-cv-btn-revert { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.5rem; background: rgba(239, 68, 68, 0.1); color: var(--accent-danger); border: none; border-radius: var(--radius-full); font-weight: 700; cursor: pointer; }
+.lf-cv-btn-cancel { padding: 0.75rem 1.5rem; background: transparent; color: var(--text-secondary); border: 1px solid var(--glass-border); border-radius: var(--radius-full); font-weight: 600; cursor: pointer; }
+
+/* ===== Empty & Error States ===== */
+.lf-cv-no-clauses { padding: 4rem 2rem; text-align: center; color: var(--text-tertiary); font-style: italic; }
+.lf-cv-no-issues-msg { display: flex; align-items: center; justify-content: center; gap: 0.5rem; color: var(--accent-success); font-weight: 700; font-style: normal; font-size: 1.2rem; }
+.lf-cv-text-danger { color: var(--accent-danger); }
+
+/* ===== Responsive & Print ===== */
+@media print {
+    .no-print { display: none !important; }
+    .lf-cv-paper { box-shadow: none; border: none; padding: 0; }
+    .lf-cv-clause-box { border: none !important; background: none !important; padding: 0.5rem 0; }
+}
+
+@media (max-width: 900px) {
+    .lf-cv-paper { padding: 3rem 2.5rem; }
+    .lf-cv-hover-hint { display: none; }
+    .lf-cv-clause-actions { opacity: 1; }
+}
+
+@media (max-width: 600px) {
+    .lf-cv-paper { padding: 2rem 1.5rem; }
+    .lf-cv-toolbar { flex-direction: column; align-items: flex-start; }
+    .lf-cv-clause-text-area { flex-direction: column; }
+    .lf-cv-modal-footer { flex-direction: column; }
+    .lf-cv-modal-footer button { width: 100%; justify-content: center; }
+}

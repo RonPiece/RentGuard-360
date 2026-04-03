@@ -1,0 +1,1324 @@
+/* * ============================================
+ * Contracts Page - LexisFlow Modern Design
+ * ============================================
+ */
+
+.lf-page-wrapper {
+    min-height: 100vh;
+    font-family: 'Calibri', var(--font-sans);
+    color: var(--text-primary);
+    background-color: var(--bg-page);
+    background-image:
+        radial-gradient(at 0% 0%, var(--glow-primary) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(43, 76, 218, 0.05) 0px, transparent 50%),
+        radial-gradient(at 50% 100%, var(--glow-primary) 0px, transparent 50%);
+    position: relative;
+    z-index: 50; /* Ensure dropdowns overlay the footer which usually stacks naturally under or over */
+}
+
+/* WAVES */
+.wave-separator {
+    width: 100%;
+    height: 120px;
+    overflow: hidden;
+    margin-top: -1px;
+}
+.wave-svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+    transform: scaleY(1.05); /* Stretches the wave vertically just enough to kill the line */
+}
+.wave-path-base {
+    fill: var(--bg-inset);
+}
+.lf-content-section {
+    background-color: var(--bg-inset);
+}
+
+/* ============================================
+   HERO SECTION
+   ============================================ */
+.lf-hero-section {
+    position: relative;
+    padding: 3rem 2rem 5rem;
+    max-width: 1440px;
+    margin: 0 auto;
+    overflow: hidden;
+    z-index: 10;
+}
+
+.lf-hero-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 2rem;
+    position: relative;
+    z-index: 2;
+}
+
+@media (min-width: 768px) {
+    .lf-hero-content {
+        flex-direction: row;
+        align-items: flex-end;
+    }
+}
+
+.lf-hero-text {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.lf-hero-title {
+    font-size: clamp(3rem, 5vw, 4.5rem);
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    color: var(--accent-primary);
+    margin: 0 0 1rem 0;
+    line-height: 1.1;
+}
+
+.lf-hero-badges {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.lf-hero-count {
+    background: var(--bg-inset);
+    color: var(--accent-primary);
+    padding: 0.5rem 1.25rem;
+    border-radius: 999px;
+    font-weight: 800;
+    font-size: 1rem;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--glass-border);
+}
+
+.lf-hero-subtitle {
+    color: var(--text-secondary);
+    font-weight: 500;
+    font-size: 1.1rem;
+    margin: 0;
+    max-width: 400px;
+}
+
+.lf-btn-upload-hero {
+    background: var(--accent-primary);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 999px;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.lf-btn-upload-hero:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 30px rgba(5, 150, 105, 0.4);
+}
+
+/* Abstract Background Orbs */
+.lf-hero-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.orb-1 {
+    top: -5rem;
+    right: -5rem;
+    width: 20rem;
+    height: 20rem;
+    background: rgba(56, 189, 248, 0.08);
+}
+
+.orb-2 {
+    top: 50%;
+    left: -2rem;
+    width: 16rem;
+    height: 16rem;
+    background: rgba(148, 163, 184, 0.08);
+}
+
+[dir="rtl"] .orb-1 {
+    right: auto;
+    left: -5rem;
+}
+
+[dir="rtl"] .orb-2 {
+    left: auto;
+    right: -2rem;
+}
+
+/* ============================================
+   WAVE DIVIDER
+   ============================================ */
+.lf-wave-divider {
+    position: relative;
+    margin-top: -4rem;
+    z-index: 5;
+    color: var(--bg-page);
+}
+
+.lf-wave-divider svg {
+    width: 100%;
+    height: 4rem;
+    fill: currentColor;
+    display: block;
+}
+
+/* ============================================
+   MAIN CONTENT & FILTER BAR
+   ============================================ */
+.lf-mesh-bg {
+    background-color: var(--bg-inset);
+}
+
+.lf-content-section {
+    background: var(--bg-inset);
+    padding: 2rem;
+    padding-bottom: 5rem;
+    min-height: 50vh;
+}
+
+.lf-filter-bar {
+    max-width: 1440px;
+    margin: 0 auto 3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+@media (min-width: 900px) {
+    .lf-filter-bar {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+}
+
+.lf-search-box {
+    position: relative;
+    width: 100%;
+    max-width: 450px;
+}
+
+.lf-search-icon {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 1.25rem;
+    color: var(--text-tertiary);
+}
+
+[data-theme="dark"] .lf-search-icon {
+    color: #94a3b8 !important;
+}
+
+[dir="ltr"] .lf-search-icon {
+    right: auto;
+    left: 1.25rem;
+}
+
+.lf-search-input {
+    width: 100%;
+    padding: 0.875rem 1.25rem 0.875rem 3rem;
+    border: 1px solid var(--glass-border);
+    border-radius: 999px;
+    background: var(--glass-bg);
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+}
+
+/* 2. טקסט הרקע (Placeholder) - זה מה שיפתור לך את הבעיה! */
+[data-theme="dark"] .lf-search-input::placeholder {
+    color: #94a3b8 !important;
+    /* אפור בהיר וקריא */
+    opacity: 1 !important;
+    /* מבטל את השקיפות שהדפדפן כופה עליו */
+}
+
+[dir="rtl"] .lf-search-input {
+    padding: 0.875rem 3rem 0.875rem 1.25rem;
+}
+
+.lf-search-input:focus {
+    outline: none;
+    background: var(--bg-card);
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15);
+}
+
+.lf-filter-chips {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+}
+
+.lf-filter-chips::-webkit-scrollbar {
+    display: none;
+}
+
+.lf-chip {
+    padding: 0.5rem 1.25rem;
+    border-radius: 999px;
+    background: var(--bg-page);
+    border: 1px solid var(--glass-border);
+    color: var(--text-secondary);
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.lf-chip:hover {
+    background: var(--bg-inset);
+    color: var(--text-primary);
+}
+
+.lf-chip.active {
+    background: var(--accent-primary);
+    color: white;
+    border-color: var(--accent-primary);
+}
+
+.lf-chip.border-dashed {
+    border-style: dashed;
+    border-color: var(--text-tertiary);
+}
+
+.lf-sort-order {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.12rem 0.45rem;
+    border-radius: 999px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    background: color-mix(in oklab, var(--bg-card) 80%, transparent);
+    color: var(--text-tertiary);
+    border: 1px solid color-mix(in oklab, var(--glass-border) 85%, transparent);
+}
+
+.lf-chip.active .lf-sort-order {
+    background: rgba(255, 255, 255, 0.18);
+    border-color: rgba(255, 255, 255, 0.45);
+    color: #ffffff;
+}
+
+/* ============================================
+   CONTRACT GRID & CARDS
+   ============================================ */
+.lf-contracts-grid {
+    max-width: 1440px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+}
+
+.lf-contract-card {
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-xl);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    min-height: 280px;
+    justify-content: space-between;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+    position: relative;
+    /* Removed overflow:hidden to allow absolute menus to open downwards */
+}
+
+[data-theme="dark"] .lf-contract-card {
+    background: var(--glass-bg);
+}
+
+.lf-contract-card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-4px);
+}
+
+[data-theme="dark"] .lf-contract-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(400px circle at var(--mouse-x, 0) var(--mouse-y, 0), rgba(255,255,255,0.06), transparent 40%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: var(--radius-xl);
+    z-index: 10;
+}
+
+[data-theme="dark"] .lf-contract-card:hover::before {
+    opacity: 1;
+}
+
+/* Right border color strip (RTL) / Left border (LTR) */
+
+
+[dir="ltr"] 
+
+
+
+
+
+
+
+
+
+
+
+/* Card Header */
+.lf-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+}
+
+.lf-card-title-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.4rem;
+}
+
+.lf-card-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border: none;
+}
+
+.lf-badge-excellent {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--accent-success, #10b981);
+}
+
+.lf-badge-good {
+    background: rgba(34, 197, 94, 0.1);
+    color: var(--accent-success, #22c55e);
+}
+
+.lf-badge-warning {
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--accent-warning, #f59e0b);
+}
+
+.lf-badge-danger {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--accent-danger, #ef4444);
+}
+
+.lf-badge-pending {
+    background: rgba(100, 116, 139, 0.1);
+    color: #64748b;
+}
+
+[data-theme="dark"] .lf-badge-excellent {
+    background: rgba(16, 185, 129, 0.15);
+    color: var(--accent-success, #34d399);
+}
+
+[data-theme="dark"] .lf-badge-good {
+    background: rgba(34, 197, 94, 0.15);
+    color: var(--accent-success, #4ade80);
+}
+
+[data-theme="dark"] .lf-badge-warning {
+    background: rgba(245, 158, 11, 0.15);
+    color: var(--accent-warning, #fbbf24);
+}
+
+[data-theme="dark"] .lf-badge-danger {
+    background: rgba(239, 68, 68, 0.15);
+    color: var(--accent-danger, #f87171);
+}
+
+[data-theme="dark"] .lf-badge-pending {
+    background: rgba(148, 163, 184, 0.15);
+    color: #94a3b8;
+}
+
+.lf-card-title {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 0;
+    line-height: 1.2;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.lf-contract-card:hover .lf-card-title {
+    color: var(--accent-primary);
+}
+
+.lf-card-date {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+/* Card Menu */
+.lf-card-menu-wrap {
+    position: relative;
+}
+
+.lf-menu-trigger {
+    background: transparent;
+    border: none;
+    color: var(--text-tertiary);
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: background 0.2s;
+}
+
+.lf-menu-trigger:hover {
+    background: var(--bg-inset);
+    color: var(--text-primary);
+}
+
+.lf-dropdown-menu {
+    position: absolute;
+    top: 100%;
+    z-index: 100;
+    right: 0;
+    /* LTR right align, RTL will override below */
+    background: var(--bg-primary);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    padding: 0.5rem;
+    min-width: 180px;
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.lf-dropdown-menu.rtl {
+    right: auto;
+    left: 0;
+}
+
+.lf-dropdown-menu.export-menu {
+    top: calc(100% + 0.5rem);
+    bottom: auto;
+    /* Removed the negative bottom push so it opens downwards */
+}
+
+.lf-menu-title {
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: var(--text-tertiary);
+    padding: 0.5rem;
+    text-transform: uppercase;
+}
+
+.lf-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: start;
+}
+
+.lf-menu-item:hover:not(:disabled) {
+    background: var(--bg-inset);
+}
+
+.lf-menu-item:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.lf-menu-divider {
+    height: 1px;
+    background: var(--glass-border);
+    margin: 0.25rem 0;
+}
+
+.lf-danger-text {
+    color: var(--accent-danger) !important;
+}
+
+.lf-danger-text:hover {
+    background: rgba(239, 68, 68, 0.1) !important;
+}
+
+/* ============================================
+   GAUGE & PROCESSING STATE (Multi-Colored Fill)
+   ============================================ */
+.lf-card-gauge-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem 0;
+    margin-bottom: 1.5rem;
+}
+
+.lf-gauge-container {
+    position: relative;
+    width: 180px;
+    height: 90px;
+    overflow: hidden;
+}
+
+/* 1. פס הרקע העדין (ללא הפס האפור הכבד שהיה קודם) */
+.lf-gauge-track {
+    position: absolute;
+    inset: 0;
+    background: color-mix(in oklab, var(--bg-inset) 80%, transparent);
+    -webkit-mask: radial-gradient(circle at 50% 100%, transparent 66px, black 67px, black 82px, transparent 83px);
+    mask: radial-gradient(circle at 50% 100%, transparent 66px, black 67px, black 82px, transparent 83px);
+}
+
+/* 2. קופסת החשיפה (מתמלאת תמיד משמאל לימין - ללא תלות בשפה) */
+.lf-gauge-reveal {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    transform-origin: 50% 100%;
+    /* מתחיל מ--180 מעלות (מוסתר משמאל) ומסתובב לכיוון 0 (ימינה) לפי הציון */
+    transform: rotate(calc(-180deg + (var(--percentage, 0) * 1.8deg)));
+    transition: transform 1.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    border-radius: 90px 90px 0 0;
+}
+
+/* 3. הגרדיאנט הצבעוני (מקובע במקום לחלוטין) */
+.lf-gauge-gradient {
+    position: absolute;
+    inset: 0;
+    transform-origin: 50% 100%;
+    /* סיבוב נגדי כדי שהגרדיאנט יישאר סטטי על המסך בעוד קופסת החשיפה זזה */
+    transform: rotate(calc(180deg - (var(--percentage, 0) * 1.8deg)));
+    transition: transform 1.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    /* צבעים תמיד משמאל לימין: אדום (0) -> צהוב (50) -> ירוק (100) */
+    background: linear-gradient(90deg, #ef4444 0%, #facc15 50%, #10b981 100%);
+    -webkit-mask: radial-gradient(circle at 50% 100%, transparent 66px, black 67px, black 82px, transparent 83px);
+    mask: radial-gradient(circle at 50% 100%, transparent 66px, black 67px, black 82px, transparent 83px);
+}
+
+.lf-gauge-content {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    padding-bottom: 0; /* Lowered */
+}
+
+.lf-gauge-score {
+    font-size: 2.5rem; /* Decreased size */
+    font-weight: 800;
+    line-height: 1;
+    color: var(--text-primary, #0f172a);
+    letter-spacing: -0.02em;
+    margin-bottom: 2px; /* Brought slightly closer to label */
+}
+
+.lf-gauge-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-tertiary);
+}
+
+/* Processing State */
+.lf-gauge-processing {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 90px;
+}
+
+.lf-pulse-bar-wrap {
+    width: 140px;
+    height: 6px;
+    background: var(--bg-inset);
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.lf-pulse-bar {
+    height: 100%;
+    width: 60%;
+    background: #64748b;
+    border-radius: 999px;
+    animation: pulseSlide 1.5s infinite ease-in-out;
+}
+
+@keyframes pulseSlide {
+    0% {
+        transform: translateX(-100%);
+        opacity: 0.5;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateX(200%);
+        opacity: 0.5;
+    }
+}
+
+.lf-gauge-failed {
+    height: 90px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ============================================
+   CARD METADATA
+   ============================================ */
+.lf-card-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    flex-grow: 1;
+    margin-bottom: 1.5rem;
+}
+
+.lf-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.lf-meta-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--bg-inset);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+}
+
+.lf-meta-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.lf-meta-lbl {
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    letter-spacing: 0.05em;
+}
+
+.lf-meta-val {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+/* ============================================
+   CARD FOOTER ACTIONS
+   ============================================ */
+.lf-card-footer {
+    display: flex;
+    gap: 0.75rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--glass-border);
+    margin-top: auto;
+}
+
+.lf-card-footer-actions {
+    display: inline-flex;
+    gap: 0.65rem;
+    align-items: center;
+}
+
+.lf-btn-view {
+    flex: 1;
+    padding: 0.8rem;
+    background: var(--accent-primary);
+    color: white;
+    border-radius: 999px;
+    font-weight: 800;
+    font-size: 0.9rem;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow-sm);
+}
+
+.lf-btn-view:hover:not(.disabled) {
+    background: var(--accent-primary-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.lf-btn-view.disabled {
+    background: var(--bg-inset);
+    color: var(--text-tertiary);
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.lf-btn-download {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: transparent;
+    border: 1px solid var(--glass-border);
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.lf-btn-download:hover {
+    background: var(--bg-inset);
+    color: var(--text-primary);
+}
+
+.lf-btn-edit {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: transparent;
+    border: 1px solid var(--glass-border);
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.lf-btn-edit:hover {
+    background: var(--bg-inset);
+    color: var(--text-primary);
+}
+
+
+/* ============================================
+   EMPTY & LOADING STATES
+   ============================================ */
+.lf-loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 60vh;
+    gap: 1rem;
+    color: var(--text-secondary);
+    font-weight: 700;
+}
+
+.lf-spin-icon {
+    animation: spin 1s linear infinite;
+}
+
+.lf-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 5rem 2rem;
+    text-align: center;
+    background: var(--bg-card);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--glass-border);
+    max-width: 1440px;
+    margin: 0 auto;
+}
+
+.lf-empty-icon-wrap {
+    width: 80px;
+    height: 80px;
+    background: var(--bg-inset);
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-tertiary);
+    margin-bottom: 1.5rem;
+}
+
+.lf-empty-state h2 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 0 0 0.5rem;
+}
+
+.lf-empty-state p {
+    color: var(--text-secondary);
+    margin: 0 0 2rem;
+}
+
+.lf-btn-upload-empty {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: var(--bg-card);
+    border: 1px solid var(--glass-border);
+    border-radius: 999px;
+    color: var(--text-primary);
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.lf-btn-upload-empty:hover {
+    background: var(--bg-inset);
+}
+
+/* ============================================
+   PAGINATION
+   ============================================ */
+.lf-pagination-area {
+    display: flex;
+    justify-content: center;
+    margin-top: 3rem;
+}
+
+.lf-pagination-wrap {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: var(--bg-card);
+    padding: 0.5rem;
+    border-radius: 999px;
+    border: 1px solid var(--glass-border);
+}
+
+.lf-page-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: var(--bg-inset);
+    color: var(--text-primary);
+    cursor: pointer;
+    font-weight: 800;
+    transition: all 0.2s;
+}
+
+.lf-page-btn:hover:not(:disabled) {
+    background: var(--accent-primary);
+    color: white;
+}
+
+.lf-page-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.lf-page-info {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    padding: 0 0.5rem;
+}
+
+/* ============================================
+   NOTICES & MODALS
+   ============================================ */
+.lf-floating-notice {
+    position: fixed;
+    top: 6rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg-card);
+    border: 1px solid var(--glass-border);
+    padding: 0.75rem 1.5rem;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    box-shadow: var(--shadow-md);
+    z-index: 100;
+    animation: modalSlideDown 0.3s ease forwards;
+}
+
+.lf-floating-notice.success {
+    border-color: var(--accent-success);
+    color: var(--accent-success);
+}
+
+@keyframes modalSlideDown {
+    from {
+        transform: translate(-50%, -20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translate(-50%, 0);
+        opacity: 1;
+    }
+}
+
+/* Modals re-use base logic but styled cleanly */
+.lf-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 1.5rem;
+}
+
+.lf-modal-content {
+    background: var(--bg-primary);
+    width: 100%;
+    max-width: 400px;
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+}
+
+.lf-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.lf-modal-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.lf-modal-close {
+    background: none;
+    border: none;
+    color: var(--text-tertiary);
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: var(--radius-sm);
+}
+
+.lf-modal-close:hover {
+    background: var(--bg-inset);
+    color: var(--text-primary);
+}
+
+.lf-modal-body {
+    padding: 1.5rem;
+}
+
+.lf-form-group {
+    margin-bottom: 1rem;
+}
+
+.lf-form-group label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.lf-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    background: var(--bg-page);
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 0.95rem;
+}
+
+.lf-input:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+}
+
+.lf-modal-footer {
+    display: flex;
+    gap: 0.75rem;
+    padding: 1.5rem;
+    border-top: 1px solid var(--glass-border);
+    background: var(--bg-inset);
+}
+
+.center-footer {
+    justify-content: center;
+}
+
+.center-text {
+    text-align: center;
+}
+
+.lf-btn-primary {
+    flex: 1;
+    padding: 0.75rem;
+    background: var(--accent-primary);
+    color: white;
+    border: none;
+    border-radius: 999px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.lf-btn-primary:hover {
+    background: var(--accent-primary-hover);
+}
+
+.lf-btn-danger {
+    flex: 1;
+    padding: 0.75rem;
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--accent-danger);
+    border: none;
+    border-radius: 999px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.lf-btn-danger:hover {
+    background: rgba(239, 68, 68, 0.2);
+}
+
+.lf-btn-cancel {
+    padding: 0.75rem 1.5rem;
+    background: transparent;
+    border: 1px solid var(--glass-border);
+    color: var(--text-secondary);
+    border-radius: 999px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 1200px) {
+    .lf-hero-section {
+        padding: 2.5rem 1.75rem 4.5rem;
+    }
+
+    .lf-hero-title {
+        font-size: clamp(2.4rem, 4vw, 3.6rem);
+    }
+
+    .lf-content-section {
+        padding: 1.75rem;
+    }
+
+    .lf-contracts-grid {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 992px) {
+    .lf-hero-content {
+        gap: 1.5rem;
+    }
+
+    .lf-filter-bar {
+        margin-bottom: 2rem;
+    }
+
+    .lf-filter-chips {
+        flex-wrap: wrap;
+        overflow-x: visible;
+        padding-bottom: 0;
+        justify-content: center;
+    }
+
+    .lf-chip {
+        padding: 0.45rem 1rem;
+    }
+
+    .lf-sort-order {
+        font-size: 0.64rem;
+    }
+
+    .lf-contract-card {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .wave-separator {
+        height: 60px;
+    }
+
+    .lf-hero-section {
+        padding: 2rem 1.5rem 1rem;
+        text-align: center;
+    }
+
+    .lf-hero-badges {
+        justify-content: center;
+    }
+
+    .hidden-mobile {
+        display: none;
+    }
+
+    .lf-btn-upload-hero {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .lf-content-section {
+        padding: 1.5rem;
+    }
+
+    .lf-filter-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .lf-search-box {
+        max-width: 100%;
+    }
+
+    .lf-contracts-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .lf-contract-card {
+        padding: 1.5rem;
+    }
+
+    .lf-card-header {
+        gap: 0.75rem;
+    }
+
+    .lf-card-title {
+        font-size: 1.2rem;
+    }
+
+    .lf-card-date {
+        font-size: 0.72rem;
+    }
+
+    .lf-wave-divider svg {
+        height: 3rem;
+    }
+}
+
+@media (max-width: 560px) {
+    .lf-content-section {
+        padding: 1rem;
+    }
+
+    .lf-filter-chips {
+        gap: 0.4rem;
+    }
+
+    .lf-chip {
+        font-size: 0.78rem;
+    }
+
+    .lf-sort-order {
+        display: inline-flex !important;
+        font-size: 0.65rem;
+        padding: 0.1rem 0.4rem;
+    }
+
+    .lf-card-footer {
+        flex-wrap: wrap;
+        gap: 0.6rem;
+    }
+
+    .lf-card-footer-actions {
+        order: 1;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .lf-btn-view {
+        order: 2;
+        width: 100%;
+    }
+
+    .lf-modal-overlay {
+        padding: 0.75rem;
+    }
+
+    .lf-modal-body,
+    .lf-modal-header,
+    .lf-modal-footer {
+        padding: 1rem;
+    }
+}
+.lf-contract-card:hover, .lf-contract-card:focus-within { z-index: 50; }
+
