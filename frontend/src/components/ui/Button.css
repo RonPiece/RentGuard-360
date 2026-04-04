@@ -1,20 +1,17 @@
-/*
- * ============================================
- *  Button.css
- *  iOS 26 Liquid-Style Button Styles
- * ============================================
- *
- * SECTIONS:
- * - Base styles
- * - Sizes (sm, md, lg)
- * - Variants (primary, secondary, ghost, danger)
- * - States (disabled, loading, full-width)
- * - Icons & Spinner
- * - Dark mode overrides
- *
- * ============================================
- */
+/* ==========================================================================
+ * TABLE OF CONTENTS
+ * ==========================================================================
+ * 1. Base Styles
+ * 2. Sizes
+ * 3. Variants
+ * 4. States
+ * 5. Icons & Spinner
+ * 6. Effects & Accessibility
+ * ========================================================================== */
 
+/* ==========================================================================
+ * 1. Base Styles
+ * ========================================================================== */
 .btn {
     display: inline-flex;
     align-items: center;
@@ -32,7 +29,9 @@
     user-select: none;
 }
 
-/* ========== SIZES ========== */
+/* ==========================================================================
+ * 2. Sizes
+ * ========================================================================== */
 .btn-sm,
 .btn-small {
     height: 36px;
@@ -55,9 +54,9 @@
     border-radius: var(--radius-md);
 }
 
-/* ========== VARIANTS ========== */
-
-/* Primary Button */
+/* ==========================================================================
+ * 3. Variants
+ * ========================================================================== */
 .btn-primary {
     background: var(--accent-primary);
     color: #FFFFFF;
@@ -75,7 +74,6 @@
     box-shadow: var(--shadow-sm);
 }
 
-/* Secondary Button */
 .btn-secondary {
     background: var(--bg-tertiary);
     color: var(--text-primary);
@@ -95,7 +93,6 @@
     color: var(--text-primary);
 }
 
-/* Dark mode specific overrides for secondary button */
 [data-theme="dark"] .btn-secondary {
     background: rgba(255, 255, 255, 0.1);
     color: #ffffff;
@@ -113,7 +110,6 @@
     color: #ffffff;
 }
 
-/* Ghost Button */
 .btn-ghost {
     background: transparent;
     color: var(--accent-primary);
@@ -134,7 +130,6 @@
     background: rgba(10, 132, 255, 0.15);
 }
 
-/* Danger Button */
 .btn-danger {
     background: var(--accent-danger);
     color: #FFFFFF;
@@ -152,7 +147,6 @@
     box-shadow: var(--shadow-sm);
 }
 
-/* Success Button */
 .btn-success {
     background: #22c55e;
     color: #FFFFFF;
@@ -170,14 +164,13 @@
     box-shadow: var(--shadow-sm);
 }
 
-/* ========== STATES ========== */
-
-/* Full Width */
+/* ==========================================================================
+ * 4. States
+ * ========================================================================== */
 .btn-full {
     width: 100%;
 }
 
-/* Disabled */
 .btn-disabled,
 .btn:disabled {
     opacity: 0.4;
@@ -186,7 +179,6 @@
     box-shadow: none !important;
 }
 
-/* Loading */
 .btn-loading {
     cursor: wait;
     pointer-events: none;
@@ -196,7 +188,9 @@
     opacity: 0;
 }
 
-/* ========== ICONS ========== */
+/* ==========================================================================
+ * 5. Icons & Spinner
+ * ========================================================================== */
 .btn-icon {
     display: inline-flex;
     align-items: center;
@@ -218,7 +212,6 @@
     height: 20px;
 }
 
-/* ========== LOADING SPINNER ========== */
 .btn-spinner {
     position: absolute;
     width: 16px;
@@ -235,7 +228,9 @@
     }
 }
 
-/* ========== RIPPLE EFFECT ========== */
+/* ==========================================================================
+ * 6. Effects & Accessibility
+ * ========================================================================== */
 .btn::after {
     content: '';
     position: absolute;
@@ -254,7 +249,6 @@
     height: 100%;
 }
 
-/* ========== FOCUS VISIBLE ========== */
 .btn:focus-visible {
     outline: 2px solid var(--accent-primary);
     outline-offset: 2px;

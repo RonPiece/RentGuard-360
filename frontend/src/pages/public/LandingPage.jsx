@@ -146,7 +146,7 @@ const LandingPage = () => {
     return (
         <div className="landing-real" dir={isRTL ? 'rtl' : 'ltr'}>
             {/* ===== NAVBAR (use shared Navigation component) ===== */}
-            <Navigation showAuthControls={!isAuthenticated} onAuthClick={toggleAuth} />
+            <Navigation className="nav-landing" showAuthControls={!isAuthenticated} onAuthClick={toggleAuth} />
 
             <AuthModal 
                 view={authModal} 
@@ -173,7 +173,7 @@ const LandingPage = () => {
                         {t('landing.heroDescription')}
                     </motion.p>
                     <motion.div variants={fadeInUp} className="hero-cta">
-                        <button className="cta-btn large" onClick={() => toggleAuth('register')}>
+                        <button className="landing-cta-btn landing-cta-btn-large" onClick={() => toggleAuth('register')}>
                             {t('landing.startFreeAnalysis')}
                         </button>
                         <span className="cta-note highlight">
@@ -237,6 +237,15 @@ const LandingPage = () => {
                 </div>
             </section>
 
+            <div className="wave-separator wave-contracts" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                    <path
+                        d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"
+                        className="shape-fill"
+                    />
+                </svg>
+            </div>
+
             {/* ===== LIVE DEMO PREVIEW ===== */}
             <section className="lr-contracts" ref={contractsRef}>
                 <motion.div
@@ -256,6 +265,15 @@ const LandingPage = () => {
                     <ContractsGridMockup onViewClick={() => setShowRegisterPrompt(true)} />
                 </motion.div>
             </section>
+
+            <div className="wave-separator wave-feature" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                    <path
+                        d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"
+                        className="shape-fill"
+                    />
+                </svg>
+            </div>
 
             {/* ===== FEATURE: CONTRACT VIEWER ===== */}
             <section className="lr-feature" ref={featureRef}>
@@ -305,7 +323,6 @@ const LandingPage = () => {
                     setShowRegisterPrompt(false);
                     toggleAuth('register');
                 }}
-                isRTL={isRTL}
             />
 
         </div>

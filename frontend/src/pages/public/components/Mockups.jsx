@@ -72,7 +72,7 @@ export const ContractsGridMockup = ({ onViewClick }) => {
                         <div>
                             <span className="card-title">{t('mockups.contracts.fileNameSafe')}</span>
                             <span className="card-date">
-                                {t('mockups.contracts.analyzedPrefix')} 22.12.2025
+                                {t('mockups.contracts.analyzedPrefix')} {t('mockups.contracts.dateSafe')}
                             </span>
                         </div>
                     </div>
@@ -113,7 +113,7 @@ export const ContractsGridMockup = ({ onViewClick }) => {
                         <div>
                             <span className="card-title">{t('mockups.contracts.fileNameRisky')}</span>
                             <span className="card-date">
-                                {t('mockups.contracts.analyzedPrefix')} 20.12.2025
+                                {t('mockups.contracts.analyzedPrefix')} {t('mockups.contracts.dateRisky')}
                             </span>
                         </div>
                     </div>
@@ -154,7 +154,7 @@ export const ContractsGridMockup = ({ onViewClick }) => {
                         <div>
                             <span className="card-title">{t('mockups.contracts.fileNameMedium')}</span>
                             <span className="card-date">
-                                {t('mockups.contracts.analyzedPrefix')} 18.12.2025
+                                {t('mockups.contracts.analyzedPrefix')} {t('mockups.contracts.dateMedium')}
                             </span>
                         </div>
                     </div>

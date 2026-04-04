@@ -1,21 +1,22 @@
-/**
- * ============================================
- *  Card
- *  iOS 26 Glassmorphic Card Component
- * ============================================
- * 
- * PROPS:
- * - variant: 'elevated' | 'outlined' | 'glass'
- * - padding: 'sm' | 'md' | 'lg'
- * - hoverable: boolean
- * - onClick: function (makes card clickable)
- * 
- * ============================================
- */
+/* ==========================================================================
+ * TABLE OF CONTENTS
+ * ==========================================================================
+ * 1. Imports
+ * 2. Component Definition
+ * 3. Render / JSX
+ * 4. PropTypes
+ * ========================================================================== */
+
+/* ==========================================================================
+ * 1. Imports
+ * ========================================================================== */
 import React from 'react';
 import PropTypes from 'prop-types';
 import './Card.css';
 
+/* ==========================================================================
+ * 2. Component Definition
+ * ========================================================================== */
 const Card = ({
     variant = 'elevated',
     padding = 'md',
@@ -34,6 +35,9 @@ const Card = ({
         className
     ].filter(Boolean).join(' ');
 
+    /* ======================================================================
+     * 3. Render / JSX
+     * ====================================================================== */
     return (
         <div
             className={classes}
@@ -49,12 +53,14 @@ const Card = ({
 
 export default Card;
 
+/* ==========================================================================
+ * 4. PropTypes
+ * ========================================================================== */
 Card.propTypes = {
-  children: PropTypes.node,
-  className: PropTypes.string,
-  onClick: PropTypes.func,
-  variant: PropTypes.oneOf(['elevated', 'outlined', 'glass']),
-  padding: PropTypes.oneOf(['sm', 'md', 'lg']),
-  hoverable: PropTypes.bool
+    children: PropTypes.node,
+    className: PropTypes.string,
+    onClick: PropTypes.func,
+    variant: PropTypes.oneOf(['elevated', 'outlined', 'glass']),
+    padding: PropTypes.oneOf(['sm', 'md', 'lg']),
+    hoverable: PropTypes.bool
 };
-

@@ -27,7 +27,7 @@ import './Navigation.css';
 /* ==========================================================================
  * 2. Component Setup & State
  * ========================================================================== */
-const Navigation = ({ showAuthControls = false, onAuthClick = () => {} }) => {
+const Navigation = ({ showAuthControls = false, onAuthClick = () => {}, className = '' }) => {
     const { logout, userAttributes, isAdmin, isAuthenticated } = useAuth();
     const { t, isRTL } = useLanguage();
     const { hasSubscription } = useSubscription();
@@ -136,12 +136,13 @@ const Navigation = ({ showAuthControls = false, onAuthClick = () => {} }) => {
 
     const navLinks = isAuthenticated ? authLinks : publicLinks;
     const authenticatedHomePath = isAdmin || hasSubscription ? '/dashboard' : '/pricing';
+    const navClasses = ['nav-container', isAuthenticated ? 'is-authenticated' : 'is-public', className].filter(Boolean).join(' ');
 
     /* ======================================================================
      * 6. Render / JSX
      * ====================================================================== */
     return (
-        <nav ref={navRef} className={`nav-container ${isAuthenticated ? 'is-authenticated' : 'is-public'}`} dir={isRTL ? 'rtl' : 'ltr'}>
+        <nav ref={navRef} className={navClasses} dir={isRTL ? 'rtl' : 'ltr'}>
             <div className="nav-inner">
                 <Link to={isAuthenticated ? authenticatedHomePath : '/'} className="nav-logo">
                     <Shield size={32} className="logo-icon" />

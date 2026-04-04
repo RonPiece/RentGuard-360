@@ -38,7 +38,7 @@ const ContactPublic = () => {
         try {
             const response = await sendContactMessage({
                 ...formData,
-                subject: t('contact.defaultSubject') || 'Public Contact'
+                subject: t('contact.defaultSubject')
             }, { isPublic: true });
 
             if (response.ticketId || response.message === 'Ticket created') {
@@ -50,11 +50,11 @@ const ContactPublic = () => {
                     message: t('notifications.contactSentMessage'),
                 });
             } else {
-                throw new Error(response.error || 'Failed to send message');
+                throw new Error(response.error || t('notifications.contactFailedMessage'));
             }
         } catch (err) {
             console.error('Contact public error:', err);
-            setError(err.message || (isRTL ? 'שליחת ההודעה נכשלה. נסו שוב.' : 'Failed to send message. Please try again.'));
+            setError(err.message || t('notifications.contactFailedMessage'));
             setSubmitStatus('error');
             emitAppToast({
                 type: 'error',
@@ -221,7 +221,7 @@ const ContactPublic = () => {
 
                     {/* Map Component Branding Box */}
                     <div className="brand-image-card" style={{ height: 'auto', background: 'transparent' }}>
-                        <MapComponent latitude={32.0853} longitude={34.7818} popupText="RentGuard-360 TLV" />
+                        <MapComponent latitude={32.0853} longitude={34.7818} popupText={t('contact.mapPopupText')} />
                         <div style={{ marginTop: '1rem', textAlign: 'center', opacity: 0.8 }}>
                             <p>
                                 {t('contact.joinText')}

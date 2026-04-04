@@ -1,25 +1,25 @@
-/*
- * ============================================
- *  Card.css
- *  Glassmorphic Card Styles
- * ============================================
- *
- * SECTIONS:
- * - Base & padding sizes
- * - Variants (elevated, outlined, glass)
- * - States (hoverable, clickable)
- * - Dark mode enhancements
- *
- * ============================================
- */
+/* ==========================================================================
+ * TABLE OF CONTENTS
+ * ==========================================================================
+ * 1. Base Styles
+ * 2. Padding Sizes
+ * 3. Variants
+ * 4. States
+ * 5. Dark Mode Enhancements
+ * ========================================================================== */
 
+/* ==========================================================================
+ * 1. Base Styles
+ * ========================================================================== */
 .card {
     border-radius: var(--radius-lg);
     transition: all var(--transition-normal);
     position: relative;
 }
 
-/* ========== PADDING SIZES ========== */
+/* ==========================================================================
+ * 2. Padding Sizes
+ * ========================================================================== */
 .card-padding-sm {
     padding: var(--space-md);
 }
@@ -32,22 +32,20 @@
     padding: var(--space-xl);
 }
 
-/* ========== VARIANTS ========== */
-
-/* Elevated Card - Level 2 surface (bg-card) */
+/* ==========================================================================
+ * 3. Variants
+ * ========================================================================== */
 .card-elevated {
     background: var(--bg-card);
     box-shadow: var(--shadow-md);
     border: 1px solid var(--glass-border);
 }
 
-/* Outlined Card - Border emphasis */
 .card-outlined {
     background: var(--bg-card);
     border: 1.5px solid var(--glass-border);
 }
 
-/* Glass Card - Glassmorphism */
 .card-glass {
     background: var(--glass-bg);
     border: 1px solid var(--glass-border);
@@ -56,15 +54,14 @@
     box-shadow: var(--shadow-sm);
 }
 
-/* ========== STATES ========== */
-
-/* Hoverable */
+/* ==========================================================================
+ * 4. States
+ * ========================================================================== */
 .card-hoverable:hover {
     box-shadow: var(--shadow-lg);
     transform: translateY(-4px);
 }
 
-/* Clickable */
 .card-clickable {
     cursor: pointer;
     user-select: none;
@@ -80,7 +77,9 @@
     outline-offset: 2px;
 }
 
-/* ========== DARK MODE ENHANCEMENTS ========== */
+/* ==========================================================================
+ * 5. Dark Mode Enhancements
+ * ========================================================================== */
 [data-theme="dark"] .card-elevated {
     box-shadow: var(--shadow-lg);
     background: var(--glass-bg);

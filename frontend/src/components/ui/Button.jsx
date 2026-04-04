@@ -1,24 +1,22 @@
-/**
- * ============================================
- *  Button
- *  iOS 26 Liquid-Style Button Component
- * ============================================
- * 
- * PROPS:
- * - variant: 'primary' | 'secondary' | 'ghost' | 'danger'
- * - size: 'sm' | 'md' | 'lg'
- * - fullWidth: boolean
- * - loading: boolean (shows spinner)
- * - disabled: boolean
- * - leftIcon/rightIcon: React.ReactNode
- * - onClick: function
- * 
- * ============================================
- */
+/* ==========================================================================
+ * TABLE OF CONTENTS
+ * ==========================================================================
+ * 1. Imports
+ * 2. Component Definition
+ * 3. Render / JSX
+ * 4. PropTypes
+ * ========================================================================== */
+
+/* ==========================================================================
+ * 1. Imports
+ * ========================================================================== */
 import React from 'react';
 import PropTypes from 'prop-types';
 import './Button.css';
 
+/* ==========================================================================
+ * 2. Component Definition
+ * ========================================================================== */
 const Button = ({
     variant = 'primary',
     size = 'md',
@@ -42,6 +40,9 @@ const Button = ({
         className
     ].filter(Boolean).join(' ');
 
+    /* ======================================================================
+     * 3. Render / JSX
+     * ====================================================================== */
     return (
         <button
             className={classes}
@@ -65,16 +66,18 @@ const Button = ({
 
 export default Button;
 
+/* ==========================================================================
+ * 4. PropTypes
+ * ========================================================================== */
 Button.propTypes = {
-  variant: PropTypes.oneOf(['primary', 'secondary', 'ghost', 'danger']),
-  size: PropTypes.oneOf(['sm', 'md', 'lg']),
-  fullWidth: PropTypes.bool,
-  loading: PropTypes.bool,
-  disabled: PropTypes.bool,
-  leftIcon: PropTypes.node,
-  rightIcon: PropTypes.node,
-  onClick: PropTypes.func,
-  children: PropTypes.node.isRequired,
-  className: PropTypes.string
+    variant: PropTypes.oneOf(['primary', 'secondary', 'ghost', 'danger']),
+    size: PropTypes.oneOf(['sm', 'md', 'lg']),
+    fullWidth: PropTypes.bool,
+    loading: PropTypes.bool,
+    disabled: PropTypes.bool,
+    leftIcon: PropTypes.node,
+    rightIcon: PropTypes.node,
+    onClick: PropTypes.func,
+    children: PropTypes.node.isRequired,
+    className: PropTypes.string
 };
-

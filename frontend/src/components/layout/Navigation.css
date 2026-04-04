@@ -20,6 +20,7 @@
     position: fixed;
     inset: 0 0 auto;
     z-index: 140;
+    font-family: var(--font-sans);
     width: calc(100% - 2rem);
     max-width: 1440px;
     margin: 0.5rem auto 2rem auto;
@@ -563,6 +564,7 @@
     color: var(--text-primary);
     font-weight: 600;
     cursor: pointer;
+    transition: color 0.25s ease, border-color 0.25s ease, background-position 0.45s ease, box-shadow 0.25s ease, transform 0.25s ease;
 }
 
 [data-theme="dark"] .auth-btn {
@@ -579,6 +581,23 @@
     font-weight: 700;
     cursor: pointer;
     white-space: nowrap;
+}
+
+.nav-container.nav-landing.is-public .auth-btn {
+    background: linear-gradient(120deg, rgba(5, 150, 105, 0.08) 0%, rgba(13, 148, 136, 0.14) 55%, rgba(22, 163, 74, 0.08) 100%);
+    background-size: 220% 100%;
+    background-position: 0% 50%;
+    border-color: rgba(5, 150, 105, 0.35);
+}
+
+.nav-container.nav-landing.is-public .auth-btn:hover {
+    color: #ffffff;
+    border-color: transparent;
+    background: linear-gradient(120deg, #0d9488 0%, #059669 55%, #16a34a 100%);
+    background-size: 220% 100%;
+    background-position: 100% 50%;
+    box-shadow: 0 8px 20px rgba(5, 150, 105, 0.22);
+    transform: translateY(-1px);
 }
 
 .mobile-auth-btn {
@@ -724,6 +743,12 @@
         background: rgba(81, 120, 121, 0.2);
         transform: translateX(-50%);
         z-index: 1;
+    }
+
+    /* Remove the vertical divider on mobile nav cards */
+    .nav-right::after,
+    .is-authenticated .nav-right::after {
+        display: none;
     }
 
     .nav-right .toggle-wrapper {

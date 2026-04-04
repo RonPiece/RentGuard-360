@@ -6,19 +6,17 @@
  * TABLE OF CONTENTS
  * ============================================
  * 1. Page Container & Dark Mode
- * 2. Navbar (.lr-nav)
- * 3. Toggle Wrapper & Auth Buttons
- * 4. Auth Modal
- * 5. Hero Section (.lr-hero)
- * 6. Dashboard Mockup
- * 7. Benefits Carousel
- * 8. Contracts Grid Section
- * 9. Card Components (gauge, badges, actions)
- * 10. Feature Section (.lr-feature)
- * 11. Contract Viewer Mockup
- * 12. Mock Paper & Clauses
- * 13. Register Prompt Modal
- * 14. Media Queries
+ * 2. Auth Modal
+ * 3. Hero Section (.lr-hero)
+ * 4. Dashboard Mockup
+ * 5. Benefits Carousel
+ * 6. Contracts Grid Section
+ * 7. Card Components (gauge, badges, actions)
+ * 8. Feature Section (.lr-feature)
+ * 9. Contract Viewer Mockup
+ * 10. Mock Paper & Clauses
+ * 11. Register Prompt Modal
+ * 12. Media Queries
  * ============================================
  */
 
@@ -28,19 +26,17 @@
  * 
  * STRUCTURE:
  * 1. Page Container & Dark Mode
- * 2. Navbar (.lr-nav)
- * 3. Toggle Wrapper & Auth Buttons
- * 4. Auth Modal
- * 5. Hero Section (.lr-hero)
- * 6. Dashboard Mockup (.mockup-dashboard-real)
- * 7. Benefits Carousel (.benefits-carousel)
- * 8. Contracts Grid Section (.lr-contracts)
- * 9. Card Components (gauge, badges, actions)
- * 10. Feature Section (.lr-feature)
- * 11. Contract Viewer Mockup (.mockup-viewer-real)
- * 12. Mock Paper & Clauses
- * 13. Register Prompt Modal
- * 14. Media Queries (1024px, 900px, 768px, 600px, 480px)
+ * 2. Auth Modal
+ * 3. Hero Section (.lr-hero)
+ * 4. Dashboard Mockup (.mockup-dashboard-real)
+ * 5. Benefits Carousel (.benefits-carousel)
+ * 6. Contracts Grid Section (.lr-contracts)
+ * 7. Card Components (gauge, badges, actions)
+ * 8. Feature Section (.lr-feature)
+ * 9. Contract Viewer Mockup (.mockup-viewer-real)
+ * 10. Mock Paper & Clauses
+ * 11. Register Prompt Modal
+ * 12. Media Queries (1024px, 900px, 768px, 600px, 480px)
  */
 
 /* Using the app's CSS variables from design-system.css */
@@ -50,121 +46,44 @@
     background: var(--bg-page);
     color: var(--text-primary);
     font-family: 'Calibri', var(--font-sans);
-    background-image:
-        radial-gradient(at 0% 0%, rgba(5, 150, 105, 0.04) 0px, transparent 50%),
-        radial-gradient(at 100% 0%, rgba(43, 76, 218, 0.05) 0px, transparent 50%),
-        radial-gradient(at 50% 100%, rgba(5, 150, 105, 0.04) 0px, transparent 50%);
 }
 
 /* Dark mode: use deep black for page background */
 [data-theme="dark"] .landing-real {
     background-color: #0B0E13;
-    background-image:
-        radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.06) 0px, transparent 50%),
-        radial-gradient(at 100% 0%, rgba(43, 76, 218, 0.04) 0px, transparent 50%),
-        radial-gradient(at 50% 100%, rgba(16, 185, 129, 0.06) 0px, transparent 50%);
 }
 
-/* ===== NAVBAR ===== */
-.lr-nav {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
-    padding: 0.875rem 2rem;
-    background: var(--glass-bg);
-    border-bottom: 1px solid var(--glass-border);
-    backdrop-filter: blur(var(--glass-blur));
-    -webkit-backdrop-filter: blur(var(--glass-blur));
-    box-shadow: var(--shadow-sm);
-}
-
-.lr-nav-inner {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.lr-logo {
-    display: flex;
-    align-items: center;
-    gap: 0.625rem;
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--text-primary);
-    text-decoration: none;
-}
-
-.lr-logo .logo-icon {
-    color: var(--accent-primary);
-}
-
-.lr-nav-right {
-    display: flex;
-    align-items: center;
-    gap: 1.25rem;
-}
-
-/* Global Toggle Style - Button First */
-.toggle-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    flex-direction: row-reverse;
-}
-
-.auth-btn {
-    padding: 0.5rem 1.25rem;
-    border-radius: var(--radius-full);
-    border: 1px solid var(--glass-border);
-    background: var(--bg-tertiary);
-    color: var(--text-primary);
-    font-size: 0.9375rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all var(--transition-fast);
-}
-
-.auth-btn:hover {
-    background: var(--bg-inset);
-    border-color: var(--accent-primary);
-    color: var(--accent-primary);
-}
-
-[data-theme="dark"] .auth-btn {
-    background: rgba(255, 255, 255, 0.05);
-}
-
-.cta-btn {
+/* Landing-only CTA styles (do not style shared navbar classes here) */
+.landing-cta-btn {
     padding: 0.5rem 1.25rem;
     border-radius: var(--radius-full);
     border: none;
-    background: var(--accent-primary);
+    background: linear-gradient(120deg, #059669 0%, #0d9488 55%, #16a34a 100%);
+    background-size: 220% 100%;
+    background-position: 0% 50%;
     color: white;
     font-size: 0.875rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all var(--transition-fast);
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast), background-position 0.45s ease, filter 0.3s ease;
     text-decoration: none;
 }
 
-.cta-btn:hover {
-    background: var(--accent-primary-hover);
+.landing-cta-btn:hover {
+    background-position: 100% 50%;
+    filter: saturate(1.08);
     transform: translateY(-2px);
     box-shadow: 0 8px 18px rgba(5, 150, 105, 0.25);
 }
 
-.cta-btn.large {
+.landing-cta-btn-large {
     padding: 0.875rem 2rem;
     font-size: 1rem;
     box-shadow: 0 4px 14px rgba(5, 150, 105, 0.3);
     font-weight: 700;
 }
 
-.cta-btn.large:hover {
+.landing-cta-btn-large:hover {
     box-shadow: 0 12px 28px rgba(5, 150, 105, 0.35);
     transform: translateY(-3px);
 }
@@ -762,12 +681,61 @@
     border-radius: var(--radius-full);
 }
 
+/* ===== WAVE SEPARATORS ===== */
+.wave-separator {
+    position: relative;
+    width: 100%;
+    line-height: 0;
+    overflow: hidden;
+    margin-top: -2px;
+    margin-bottom: -2px;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.wave-separator svg {
+    display: block;
+    width: calc(100% + 4px);
+    margin-inline-start: -2px;
+    height: 72px;
+transform: rotate(180deg) scale(1.02); /* הפתרון הקטלני! ה-Scale מותח את הגל ב-2% וכופה עליו לחצות את קו התפר */}
+
+.wave-separator.wave-contracts {
+    background: transparent;
+}
+
+.wave-separator.wave-contracts .shape-fill {
+    fill: var(--bg-card);
+}
+
+.wave-separator.wave-feature {
+    background: var(--bg-card);
+}
+
+.wave-separator.wave-feature .shape-fill {
+    fill: var(--bg-page);
+}
+
+.wave-separator.wave-feature::after {
+    display: none;
+}
+
+[data-theme="dark"] .wave-separator.wave-contracts .shape-fill {
+    fill: rgba(21, 26, 35, 0.95);
+}
+
+[data-theme="dark"] .wave-separator.wave-feature {
+    background: rgba(21, 26, 35, 0.95);
+}
+
+[data-theme="dark"] .wave-separator.wave-feature .shape-fill {
+    fill: #0B0E13; 
+}
+
 /* ===== CONTRACTS GRID SECTION ===== */
 .lr-contracts {
     padding: 5rem 2rem;
     background: var(--bg-card);
-    border-top: 1px solid var(--glass-border);
-    border-bottom: 1px solid var(--glass-border);
 }
 
 [data-theme="dark"] .lr-contracts {
@@ -1569,6 +1537,10 @@
     }
 
     .feature-visual {
+        order: 0;
+    }
+
+    .feature-text {
         order: -1;
     }
 
@@ -1591,10 +1563,6 @@
 
 /* Tablet (iPad Mini/Air) */
 @media (max-width: 768px) {
-    .lr-nav {
-        padding: 0.75rem 1.5rem;
-    }
-
     .hero-text h1 {
         font-size: clamp(1.75rem, 4vw, 2.5rem);
     }
@@ -1651,17 +1619,7 @@
         max-height: 95vh;
     }
 
-    .lr-nav-inner {
-        flex-wrap: wrap;
-        gap: 0.75rem;
-    }
-
-    .lr-nav-right {
-        width: 100%;
-        justify-content: center;
-    }
-
-    .cta-btn.large {
+    .landing-cta-btn-large {
         padding: 0.75rem 1.5rem;
         font-size: 0.875rem;
     }
@@ -1669,101 +1627,6 @@
 
 /* Small Mobile (iPhone SE, iPhone 12 Pro - 390px) */
 @media (max-width: 480px) {
-
-    /* Navbar - Two rows: Logo top, controls below */
-    .lr-nav {
-        padding: 0.5rem 0.75rem;
-    }
-
-    .lr-nav-inner {
-        flex-direction: column;
-        gap: 0.5rem;
-        align-items: center;
-    }
-
-    /* Grid layout for nav controls: 2 columns, opaque background */
-    .lr-nav-right {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0;
-        width: 100%;
-        max-width: 320px;
-        background: var(--bg-page);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-lg);
-        position: relative;
-        overflow: hidden;
-        padding: 0;
-        margin-top: 0.5rem;
-    }
-
-    /* Vertical Separator Line */
-    .lr-nav-right::after {
-        content: '';
-        position: absolute;
-        top: 15%;
-        bottom: 15%;
-        left: 50%;
-        width: 1px;
-        background: var(--border-subtle);
-        transform: translateX(-50%);
-    }
-
-    /* Column 1: Settings (Theme + Language) */
-    .lr-nav-right .toggle-wrapper {
-        grid-column: 1;
-        grid-row: 1;
-        justify-self: stretch;
-        margin: 0.5rem 1rem;
-        flex-direction: row-reverse;
-        justify-content: center;
-        gap: 0.5rem;
-    }
-
-    .lr-nav-right .language-toggle {
-        grid-column: 1;
-        grid-row: 2;
-        justify-self: stretch;
-        /* Align Start/End */
-        margin: 0.5rem 1rem;
-        /* Consistent spacing */
-        justify-content: center;
-        width: auto;
-    }
-
-    /* Column 2: User Actions (Login + Start) */
-    .lr-nav-right .auth-btn {
-        grid-column: 2;
-        grid-row: 1;
-        align-self: center;
-        justify-self: stretch;
-        margin: 0.5rem 1rem;
-        font-size: 0.8rem;
-        padding: 0.4rem 0.8rem;
-        background: var(--bg-tertiary);
-        border: 1px solid var(--glass-border);
-        border-radius: var(--radius-full);
-    }
-
-    .lr-nav-right .cta-btn {
-        grid-column: 2;
-        grid-row: 2;
-        align-self: center;
-        justify-self: stretch;
-        margin: 0.5rem 1rem;
-
-        font-size: 0.8rem;
-        padding: 0.4rem 0.8rem;
-    }
-
-    .lr-logo {
-        font-size: 1.125rem;
-    }
-
-    .lr-logo .logo-icon {
-        width: 24px;
-        height: 24px;
-    }
 
     /* Hero - Center everything and prevent overlap */
     .lr-hero {

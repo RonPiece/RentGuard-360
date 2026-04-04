@@ -1,7 +1,10 @@
 import React from 'react';
 import { X, Shield } from 'lucide-react';
+import { useLanguage } from '../../../contexts/LanguageContext/LanguageContext';
 
-const RegisterPromptModal = ({ isOpen, onClose, onRegister, isRTL }) => {
+const RegisterPromptModal = ({ isOpen, onClose, onRegister }) => {
+    const { t } = useLanguage();
+
     if (!isOpen) return null;
     return (
         <div className="register-prompt-backdrop" onClick={onClose}>
@@ -12,17 +15,13 @@ const RegisterPromptModal = ({ isOpen, onClose, onRegister, isRTL }) => {
                 <div className="modal-icon">
                     <Shield size={48} />
                 </div>
-                <h3>{isRTL ? 'הרשמה נדרשת' : 'Registration Required'}</h3>
-                <p>
-                    {isRTL
-                        ? 'כדי להעלות ולנתח חוזים, יש להירשם לאתר בחינם.'
-                        : 'To upload and analyze contracts, please register for free.'}
-                </p>
-                <button className="cta-btn large" onClick={onRegister}>
-                    {isRTL ? 'הרשמה חינם' : 'Register Free'}
+                <h3>{t('landing.registerPromptTitle')}</h3>
+                <p>{t('landing.registerPromptDescription')}</p>
+                <button className="landing-cta-btn landing-cta-btn-large" onClick={onRegister}>
+                    {t('landing.registerPromptButton')}
                 </button>
                 <p className="modal-note">
-                    {isRTL ? 'ללא צורך בכרטיס אשראי' : 'No credit card required'}
+                    {t('landing.registerPromptNoCard')}
                 </p>
             </div>
         </div>
