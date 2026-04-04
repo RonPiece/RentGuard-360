@@ -427,7 +427,7 @@ export const he = {
         "sendMessage": "שלח הודעה",
         "contactDetails": "פרטי התקשרות",
         "address": "כתובתנו",
-        "addressValue": "אור עקיבא, המרכז המשפטי, ישראל",
+        "addressValue": "רחוב רוטשילד 22, תל אביב, משרד עורכי דין",
         "emailLabel": "דואר אלקטרוני",
         "emailValue": "rentguard360@gmail.com",
         "phoneLabel": "טלפון",

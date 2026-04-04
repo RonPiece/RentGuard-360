@@ -216,15 +216,6 @@ const ContactPublic = () => {
                                     <p className="info-value" dir="ltr">{t('contact.emailValue')}</p>
                                 </div>
                             </li>
-                            <li>
-                                <div className="info-icon">
-                                    <Phone size={20} />
-                                </div>
-                                <div className="info-text">
-                                    <p className="info-label">{t('contact.phoneLabel')}</p>
-                                    <p className="info-value" dir="ltr">{t('contact.phoneValue')}</p>
-                                </div>
-                            </li>
                         </ul>
                     </div>
 

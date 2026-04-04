@@ -428,7 +428,7 @@ export const en = {
         "sendMessage": "Send Message",
         "contactDetails": "Contact Details",
         "address": "Address",
-        "addressValue": "Or Akiva, The Legal Center, Israel",
+        "addressValue": "Rothschild Blvd 22, Tel Aviv, Law Office",
         "emailLabel": "Email",
         "emailValue": "rentguard360@gmail.com",
         "phoneLabel": "Phone",

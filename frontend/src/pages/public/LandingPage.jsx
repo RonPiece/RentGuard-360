@@ -28,7 +28,7 @@
  * ============================================
  */
 import React, { useState, useEffect, useRef } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { motion, useInView } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import { useSubscription } from '../../contexts/SubscriptionContext';
@@ -78,6 +78,8 @@ const LandingPage = () => {
     const { isAuthenticated } = useAuth();
     const { hasSubscription, isLoading: isSubscriptionLoading, isEntitlementKnown } = useSubscription();
     const { isRTL } = useLanguage();
+    const location = useLocation();
+    const navigate = useNavigate();
 
     const staggerChildren = {
         hidden: { opacity: 0 },
@@ -117,6 +119,16 @@ const LandingPage = () => {
     const toggleAuth = (type) => {
         setAuthModal(authModal === type ? null : type);
     };
+
+    // Open auth modal if `?auth=login|register` is present (used by global nav and external links)
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const auth = params.get('auth');
+        if (auth === 'login' || auth === 'register' || auth === 'confirm') {
+            setAuthModal(auth);
+            navigate(location.pathname, { replace: true });
+        }
+    }, [location.search, location.pathname, navigate]);
 
     const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % benefits.length);
     const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + benefits.length) % benefits.length);
