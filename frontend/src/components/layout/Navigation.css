@@ -45,8 +45,12 @@
 }
 
 .app-container>.app-main.with-nav {
-  padding-top: 4rem;
+  padding-top: calc(var(--rg-nav-main-offset, 6rem) + var(--rg-page-nav-offset, 0rem));
   background-color: var(--bg-page);
+}
+
+.app-container>.app-main.with-nav.contracts-route-active {
+  background-color: var(--bg-inset);
 }
 
 .nav-inner {
@@ -82,9 +86,6 @@
   order: 3;
 }
 
-/* Removed flex-direction: row-reverse to keep internal icons fixed */
-
-/* Logo - Shield icon always stays to the right of "RentGuard 360" */
 .nav-logo {
   display: flex;
   align-items: center;
@@ -111,7 +112,6 @@
   color: var(--text-primary);
 }
 
-/* Desktop Nav Links */
 .nav-links-desktop {
   display: flex;
   align-items: center;
@@ -125,7 +125,6 @@
   transform: translateX(-50%);
 }
 
-/* Dark mode: subtle transparency for nav container */
 [data-theme="dark"] .nav-links-desktop {
   background: transparent;
   border-color: transparent;
@@ -205,7 +204,6 @@
   font-size: var(--font-size-base);
   cursor: pointer;
   transition: transform 0.2s ease, background 0.2s ease;
-  /* Keep icon always to the LEFT of the number regardless of RTL/LTR */
   direction: ltr;
 }
 
@@ -242,7 +240,6 @@
    Forces LanguageToggle and ThemeToggle to look like the screenshot
    ============================================ */
 
-/* 1. SHARED STYLES (Alignment, Text, Height) */
 .nav-right .language-toggle,
 .nav-right .toggle-wrapper {
   display: inline-flex;
@@ -254,7 +251,6 @@
   font-size: 14px;
 }
 
-/* 2. LANGUAGE TOGGLE ONLY (Gets the Pill Design) */
 .nav-right .language-toggle {
   background-color: #f1f5f9;
   border: 1px solid #cbd5e1;
@@ -270,7 +266,6 @@
   color: #e2e8f0;
 }
 
-/* 3. THEME TOGGLE ONLY (Transparent & No Border) */
 .nav-right .toggle-wrapper {
   background-color: transparent;
   border: none;
@@ -285,7 +280,6 @@
   color: #e2e8f0;
 }
 
-/* Ensure the buttons inside the toggles don't fight our design */
 .nav-right .language-toggle button,
 .nav-right .toggle-wrapper button {
   background: transparent;
@@ -426,6 +420,7 @@
 .profile-menu-item {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: var(--space-sm);
   width: 100%;
   padding: var(--space-md) var(--space-lg);
@@ -475,7 +470,6 @@
   color: #d8e8e5;
 }
 
-/* 1. ׳”׳§׳•׳₪׳¡׳” ׳©׳ ׳”׳×׳₪׳¨׳™׳˜ - ׳×׳׳™׳“ ׳׳§׳•׳‘׳¢׳× ׳™׳׳™׳ ׳” ׳׳×׳—׳× ׳׳”׳׳‘׳•׳¨׳’׳¨ */
 .mobile-menu {
   display: none;
   flex-direction: column;
@@ -483,7 +477,6 @@
   top: 100%;
   margin-top: var(--space-sm);
   right: 1.5rem;
-  /* ׳׳§׳‘׳¢ ׳׳× ׳”׳×׳₪׳¨׳™׳˜ ׳׳™׳׳™׳ */
   left: auto;
   width: 280px;
   max-width: calc(100vw - 32px);
@@ -496,7 +489,6 @@
   animation: slideDown 0.2s ease-out;
 }
 
-/* ׳“׳•׳׳’ ׳©׳’׳ ׳‘׳¢׳‘׳¨׳™׳× ׳–׳” ׳ ׳©׳׳¨ ׳׳§׳•׳‘׳¢ ׳׳™׳׳™׳ ׳‘׳“׳™׳•׳§ ׳›׳׳• ׳‘׳׳ ׳’׳׳™׳× */
 [dir="rtl"] .mobile-menu {
   right: 1rem !important;
   left: auto !important;
@@ -505,14 +497,11 @@
 
 [dir="ltr"] .mobile-menu {
   direction: ltr;
-  /* ׳׳™׳™׳©׳¨ ׳׳× ׳”׳˜׳§׳¡׳˜ ׳׳©׳׳׳ (׳׳×׳§׳ ׳׳× ׳”׳׳ ׳’׳׳™׳×!) */
 }
 
-/* 2. ׳¢׳˜׳™׳₪׳× ׳›׳₪׳×׳•׳¨ ׳”׳׳™׳ ׳¡׳•׳£ ׳‘׳×׳₪׳¨׳™׳˜ */
 .mobile-menu-badge-wrapper {
   display: flex;
   justify-content: center !important;
-  /* ׳—׳–׳¨ ׳׳׳¨׳›׳–! */
   padding-bottom: 0.5rem;
   margin-bottom: 0.5rem;
   border-bottom: 1px solid var(--glass-border);
@@ -527,7 +516,6 @@
   border-color: rgba(117, 170, 164, 0.3);
 }
 
-/* ׳”׳׳™׳ ׳§׳™׳ ׳¢׳¦׳׳ */
 .mobile-menu-link {
   display: flex;
   align-items: center;
@@ -617,10 +605,6 @@
     padding: 0.5rem 0.7rem 0.7rem;
   }
 
-  .app-container>.app-main.with-nav {
-    padding-top: 6rem;
-  }
-
   .nav-links-desktop {
     display: none;
   }
@@ -651,7 +635,6 @@
   }
 }
 
-/* Tablet breakpoint (iPad Pro, etc.) */
 @media (max-width: 1024px) {
   .profile-dropdown {
     width: 260px;
@@ -667,7 +650,6 @@
   }
 }
 
-/* Small tablet / Large phone breakpoint */
 @media (max-width: 768px) {
   .nav-inner {
     padding: 0.15rem 0.2rem;
@@ -679,15 +661,10 @@
   }
 }
 
-/* Small mobile - Match Landing Page navbar layout */
 @media (max-width: 480px) {
   .nav-container {
     border-radius: 0 0 1.2rem 1.2rem;
     padding: 0.42rem 0.45rem 0.5rem;
-  }
-
-  .app-container>.app-main.with-nav {
-    padding-top: 18rem;
   }
 
   .nav-inner {
@@ -713,7 +690,6 @@
     height: 24px;
   }
 
-  /* Grid layout for nav controls: 2 columns like Landing Page */
   .nav-right {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -727,10 +703,8 @@
     margin-top: 0.5rem;
     position: relative;
     overflow: visible;
-    /* Allow dropdowns to display outside */
   }
 
-  /* Vertical Separator Line */
   .is-authenticated .nav-right::after {
     top: 15%;
     bottom: 15%;
@@ -748,7 +722,6 @@
     z-index: 1;
   }
 
-  /* Column 1: Theme Toggle */
   .nav-right .toggle-wrapper {
     grid-column: 1;
     grid-row: 1;
@@ -759,7 +732,6 @@
     gap: 0.5rem;
   }
 
-  /* Column 1: Language Toggle */
   .nav-right .language-toggle {
     grid-column: 1;
     grid-row: 2;
@@ -769,7 +741,6 @@
     width: auto;
   }
 
-  /* Column 2: Profile Button (row 1) */
   .profile-container {
     display: flex !important;
     grid-column: 2;
@@ -812,7 +783,6 @@
     font-size: 8px;
   }
 
-  /* Login Button (row 2, col 2) - Below Get Started */
   .nav-right .auth-btn {
     grid-column: 2;
     grid-row: 2;
@@ -825,7 +795,6 @@
     border-radius: var(--radius-full);
   }
 
-  /* Column 2: Hamburger Menu Button (row 2 -> row 3 span) */
   .is-public .mobile-menu-button {
     grid-column: 1 / 3;
     grid-row: 3;
@@ -863,7 +832,6 @@
     color: #d8e8e5;
   }
 
-  /* Mobile menu dropdown positioning */
   .mobile-menu {
     display: flex;
     position: absolute;
@@ -876,7 +844,6 @@
   }
 }
 
-/* Extra small mobile (iPhone SE) */
 @media (max-width: 375px) {
   .logo-text {
     font-size: 1rem;
@@ -884,11 +851,10 @@
 
 }
 
-/* RTL Support for Profile Dropdown */
 @media (min-width: 1051px) {
   [dir="rtl"] .profile-dropdown {
-      left: 0 !important;
-      right: auto !important;
-      transform-origin: top left !important;
+      left: auto !important;
+      right: 0 !important;
+      transform-origin: top right !important;
   }
 }

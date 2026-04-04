@@ -445,6 +445,35 @@
   background-color: rgba(59, 130, 246, 0.1);
 }
 
+.action-coming-soon {
+  background-color: var(--bg-card);
+  border: 1px dashed color-mix(in oklab, var(--accent-secondary) 40%, var(--glass-border));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.coming-soon-effect {
+  background-color: rgba(8, 145, 178, 0.1);
+}
+
+.coming-soon-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  background: rgba(8, 145, 178, 0.12);
+  color: var(--accent-secondary);
+  border: 1px solid color-mix(in oklab, var(--accent-secondary) 35%, transparent);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
 .action-large-icon {
   font-size: 3rem !important;
   margin-bottom: 1.5rem;

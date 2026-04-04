@@ -67,6 +67,7 @@
 }
 
 .upload-modern-card {
+    font-family: 'Calibri', var(--font-sans);
     background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(20px);
     border-radius: 1.5rem;
@@ -156,7 +157,7 @@
     .upload-modern-action-btn.scan {
         display: flex !important;
         flex: 1;
-        max-width: 350px; /* Optional constraint so it isn't full width */
+        max-width: 350px;
     }
 }
 
@@ -208,6 +209,7 @@
 }
 
 .upload-modern-action-btn.scan {
+    font-family: 'Calibri', var(--font-sans);
     background: rgba(0, 147, 107, 0.08);
 }
 
@@ -429,7 +431,7 @@
 }
 
 [data-theme="dark"] .upload-modern-dropzone {
-    background: rgba(0, 190, 130, 0.12); /* Lighter glowing green in dark mode */
+    background: rgba(0, 190, 130, 0.12);
     border-color: rgba(0, 190, 130, 0.7);
 }
 
@@ -439,15 +441,15 @@
 
 [data-theme="dark"] .upload-modern-file-size,
 [data-theme="dark"] .upload-modern-status.uploading {
-    color: #e2e8f0; /* Softer readable modern color */
+    color: #e2e8f0;
 }
 
 [data-theme="dark"] .upload-modern-icon {
-    color: #00be82; /* Lighter vivid icon */
+    color: #00be82;
 }
 
 [data-theme="dark"] .upload-modern-dropzone:hover {
-    background: rgba(0, 190, 130, 0.18); /* Slightly more vivid on hover */
+    background: rgba(0, 190, 130, 0.18);
     border-color: #00be82;
 }
 
@@ -644,7 +646,6 @@
     justify-content: center;
 }
 
-/* Upload Button */
 .upload-button {
     margin-top: var(--space-md);
 }
@@ -742,7 +743,6 @@
     }
 }
 
-/* iPad Pro / Small laptop */
 @media (max-width: 1024px) {
     .upload-page {
         padding: var(--space-lg) var(--space-md);
@@ -753,7 +753,6 @@
     }
 }
 
-/* Tablet (iPad Mini/Air) */
 @media (max-width: 768px) {
     .terms-modal {
         max-width: 90%;
@@ -765,7 +764,6 @@
     }
 }
 
-/* Mobile (iPhone Pro) */
 @media (max-width: 600px) {
     .upload-page {
         padding: var(--space-md) var(--space-sm);
@@ -797,7 +795,6 @@
     }
 }
 
-/* Small Mobile (iPhone SE) */
 @media (max-width: 480px) {
     .terms-modal-header h2 {
         font-size: var(--font-size-lg);

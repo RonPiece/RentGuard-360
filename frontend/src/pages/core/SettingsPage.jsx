@@ -218,12 +218,12 @@ const SettingsPage = () => {
                         <h3>{isRTL ? 'אודות המערכת' : 'System Info'}</h3>
                         <div className="about-list">
                             <div className="about-item">
-                                <span>{isRTL ? 'גרסה' : 'Version'}</span>
-                                <strong>1.0.0</strong>
+                                <span className="about-label">{isRTL ? 'גרסה' : 'Version'}</span>
+                                <strong className="about-value">1.0.0</strong>
                             </div>
                             <div className="about-item">
-                                <span>{isRTL ? 'צוות פיתוח' : 'Built by'}</span>
-                                <strong>{isRTL ? 'רון, מוטי ועידן' : 'Ron, Moty & Idan'}</strong>
+                                <span className="about-label">{isRTL ? 'צוות פיתוח' : 'Built by'}</span>
+                                <strong className="about-value">{isRTL ? 'רון, מוטי ועידן' : 'Ron, Moty & Idan'}</strong>
                             </div>
                         </div>
                     </div>

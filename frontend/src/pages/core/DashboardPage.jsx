@@ -172,6 +172,21 @@ const DashboardPage = () => {
                                 </div>
                             </Link>
                         )}
+
+                        {!isAdmin && (
+                            <div className="action-card-new action-coming-soon">
+                                <div className="action-bg-effect coming-soon-effect"></div>
+                                <span className="material-symbols-outlined action-large-icon text-secondary">rocket_launch</span>
+                                <span className="coming-soon-pill">{t('common.comingSoon')}</span>
+                                <h3>{isRTL ? 'פיצ׳רים חדשים' : 'New Features'}</h3>
+                                <p>
+                                    {isRTL
+                                        ? 'כלים ויכולות נוספות לניהול חוזים יתווספו כאן בקרוב.'
+                                        : 'More contract management tools and features will appear here soon.'}
+                                </p>
+                                <div className="action-link-text text-secondary">{t('common.comingSoon')}</div>
+                            </div>
+                        )}
                     </div>
                 </div>
             </section>

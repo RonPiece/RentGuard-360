@@ -15,6 +15,7 @@ const MainLayout = () => {
   const navigate = useNavigate();
 
   const isAdminRoute = location.pathname.startsWith('/admin');
+  const isContractsRoute = location.pathname === '/contracts';
   const isContractChatRoute =
     location.pathname === '/dashboard' ||
     location.pathname === '/contracts' ||
@@ -78,7 +79,7 @@ const MainLayout = () => {
         />
       )}
 
-      <main className={`app-main ${isAdminRoute ? 'admin-page' : ''} ${navVisible ? 'with-nav' : ''}`}>
+      <main className={`app-main ${isAdminRoute ? 'admin-page' : ''} ${navVisible ? 'with-nav' : ''} ${isContractsRoute ? 'contracts-route-active' : ''}`}>
         <Suspense fallback={<div className="app-loading"><div className="loading-spinner"></div></div>}>
           <Outlet />
         </Suspense>

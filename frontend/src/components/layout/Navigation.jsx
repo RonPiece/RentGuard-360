@@ -19,6 +19,7 @@ const Navigation = ({ showAuthControls = false, onAuthClick = () => {} }) => {
   const location = useLocation();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const navRef = useRef(null);
   const profileRef = useRef(null);
 
   // Close dropdown when clicking outside
@@ -31,6 +32,38 @@ const Navigation = ({ showAuthControls = false, onAuthClick = () => {} }) => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    const navElement = navRef.current;
+    if (!navElement) return undefined;
+
+    const rootElement = document.documentElement;
+    const updateMainOffset = () => {
+      const navRect = navElement.getBoundingClientRect();
+      const nextOffsetPx = Math.max(64, Math.ceil(navRect.bottom + 12));
+      rootElement.style.setProperty('--rg-nav-main-offset', `${nextOffsetPx}px`);
+    };
+
+    updateMainOffset();
+
+    let resizeObserver;
+    if (typeof ResizeObserver !== 'undefined') {
+      resizeObserver = new ResizeObserver(() => updateMainOffset());
+      resizeObserver.observe(navElement);
+    }
+
+    window.addEventListener('resize', updateMainOffset);
+    window.addEventListener('orientationchange', updateMainOffset);
+
+    return () => {
+      window.removeEventListener('resize', updateMainOffset);
+      window.removeEventListener('orientationchange', updateMainOffset);
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+      }
+      rootElement.style.removeProperty('--rg-nav-main-offset');
+    };
+  }, [isAuthenticated, isRTL, location.pathname]);
 
   const handleLogout = async () => {
     await logout();
@@ -80,7 +113,7 @@ const Navigation = ({ showAuthControls = false, onAuthClick = () => {} }) => {
   };
 
   return (
-    <nav className={`nav-container ${isAuthenticated ? 'is-authenticated' : 'is-public'}`} dir={isRTL ? 'rtl' : 'ltr'}>
+    <nav ref={navRef} className={`nav-container ${isAuthenticated ? 'is-authenticated' : 'is-public'}`} dir={isRTL ? 'rtl' : 'ltr'}>
       <div className="nav-inner">
         {/* Logo - navigates to dashboard when authenticated, landing when public */}
         <Link to={isAuthenticated ? authenticatedHomePath : '/'} className="nav-logo">

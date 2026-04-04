@@ -17,18 +17,6 @@
     min-height: 100vh;
     padding: clamp(16px, 2.8vw, 32px);
     font-family: 'Calibri', var(--font-sans);
-    background-color: var(--bg-page);
-    background-image:
-        radial-gradient(at 0% 0%, rgba(5, 150, 105, 0.08) 0px, transparent 45%),
-        radial-gradient(at 100% 0%, rgba(56, 189, 248, 0.08) 0px, transparent 45%),
-        radial-gradient(at 100% 100%, rgba(5, 150, 105, 0.07) 0px, transparent 45%);
-}
-
-[data-theme="dark"] .shared-contract-shell {
-    background-image:
-        radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.12) 0px, transparent 45%),
-        radial-gradient(at 100% 0%, rgba(37, 99, 235, 0.14) 0px, transparent 45%),
-        radial-gradient(at 100% 100%, rgba(14, 165, 233, 0.08) 0px, transparent 45%);
 }
 
 .shared-hero,
