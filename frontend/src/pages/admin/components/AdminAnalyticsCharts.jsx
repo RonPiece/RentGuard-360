@@ -9,13 +9,14 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { FileText } from 'lucide-react';
 
 export const AdminAnalyticsCharts = ({ commonIssues, loading }) => {
-    const { t } = useLanguage();
+    const { t, isRTL } = useLanguage();
     const { isDark } = useTheme();
     const isMobile = useMediaQuery('(max-width:480px)');
     
     const chartContainerRef = useRef(null);
     const [chartWidth, setChartWidth] = useState(500);
-    const labelColor = isDark ? '#94a3b8' : '#475569';
+    // Use consistent typography colors using standard hex codes from design-system
+    const labelColor = isDark ? '#E8EBEF' : '#4b5563';
 
     // Responsive chart width
     useEffect(() => {
@@ -31,12 +32,12 @@ export const AdminAnalyticsCharts = ({ commonIssues, loading }) => {
     }, [loading]);
 
     return (
-        <div className="analytics-card analytics-card-full" ref={chartContainerRef}>
-            <h3>
-                <FileText size={16} />
-                {t('admin.commonIssues')}
-            </h3>
-            {commonIssues.length > 0 ? (
+            <div className="analytics-card analytics-card-full" ref={chartContainerRef}>
+                <h3>
+                    <FileText size={20} className="icon-filled" />
+                    {t('admin.commonIssues')}
+                </h3>
+                {commonIssues.length > 0 ? (
                 <div className="bar-chart-section">
                     {/* Chart with short labels */}
                     <div className="bar-chart-wrapper" dir="ltr">
@@ -119,7 +120,6 @@ function BarShadedBackground(props) {
         skipAnimation: _skipAnimation,
         ...svgProps
     } = props;
-    const { isDark } = useTheme();
 
     const animatedProps = useAnimateBar(props);
     const {
@@ -136,8 +136,7 @@ function BarShadedBackground(props) {
         <React.Fragment>
             <rect
                 {...svgProps}
-                fill={isDark ? '#f8fafc' : '#1a1a2e'}
-                opacity={0.05}
+                className="bar-chart-shaded-bg"
                 x={svgProps.x}
                 width={drawingWidth}
                 style={{ rx: 4 }}

@@ -121,7 +121,7 @@ const DashboardPage = () => {
             </section>
 
             {/* Wave Divider 1 */}
-            <div className="wave-separator">
+            <div className="dp-wave-separator">
                 <svg className="wave-svg" fill="none" viewBox="0 0 1440 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
                     <path d="M0 64L60 58.7C120 53 240 43 360 48C480 53 600 75 720 85.3C840 96 960 96 1080 85.3C1200 75 1320 53 1380 42.7L1440 32V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0V64Z" className="wave-path-base"></path>
                 </svg>
@@ -188,7 +188,7 @@ const DashboardPage = () => {
             </section>
 
             {/* Wave Divider 2 */}
-            <div className="wave-separator reverse-wave">
+            <div className="dp-wave-separator reverse-wave">
                 <svg className="wave-svg" fill="none" viewBox="0 0 1440 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
                     <path d="M0 64L60 58.7C120 53 240 43 360 48C480 53 600 75 720 85.3C840 96 960 96 1080 85.3C1200 75 1320 53 1380 42.7L1440 32V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0V64Z" className="wave-path-base"></path>
                 </svg>
@@ -226,7 +226,7 @@ const DashboardPage = () => {
             </section>
 
             {/* Asymmetrical Curved Wave Divider */}
-            <div className="wave-separator dark-wave-top relative-z10">
+            <div className="dp-wave-separator dark-wave-top relative-z10">
                 <svg className="wave-svg" fill="none" viewBox="0 0 1200 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M985.66,92.83C906.67,72,823.78,31,743.84,14.19c-82.26-17.34-168.06-16.33-250.45.39-57.84,11.73-114,31.07-172,41.86A600.21,600.21,0,0,1,0,27.35V120H1200V95.83C1132.19,118.92,1055.71,111.31,985.66,92.83Z" className="wave-path-dark"></path>
                 </svg>

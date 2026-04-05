@@ -52,6 +52,7 @@
     width: 100%;
     height: 4rem;
     display: block;
+    transform: translateY(1px); /* Prevent 1px pixel gap instead of complicated scalings, or scaleX(1.02) */
 }
 
 .lf-wave-path {

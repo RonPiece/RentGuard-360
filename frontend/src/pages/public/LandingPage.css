@@ -682,7 +682,7 @@
 }
 
 /* ===== WAVE SEPARATORS ===== */
-.wave-separator {
+.lp-wave-separator {
     position: relative;
     width: 100%;
     line-height: 0;
@@ -693,42 +693,42 @@
     z-index: 5;
 }
 
-.wave-separator svg {
+.lp-wave-separator svg {
     display: block;
-    width: calc(100% + 4px);
-    margin-inline-start: -2px;
+    width: 100%;
     height: 72px;
-transform: rotate(180deg) scale(1.02); /* הפתרון הקטלני! ה-Scale מותח את הגל ב-2% וכופה עליו לחצות את קו התפר */}
+    transform: rotate(180deg) scaleX(1.02);
+}
 
-.wave-separator.wave-contracts {
+.lp-wave-separator.wave-contracts {
     background: transparent;
 }
 
-.wave-separator.wave-contracts .shape-fill {
+.lp-wave-separator.wave-contracts .shape-fill {
     fill: var(--bg-card);
 }
 
-.wave-separator.wave-feature {
+.lp-wave-separator.wave-feature {
     background: var(--bg-card);
 }
 
-.wave-separator.wave-feature .shape-fill {
+.lp-wave-separator.wave-feature .shape-fill {
     fill: var(--bg-page);
 }
 
-.wave-separator.wave-feature::after {
+.lp-wave-separator.wave-feature::after {
     display: none;
 }
 
-[data-theme="dark"] .wave-separator.wave-contracts .shape-fill {
+[data-theme="dark"] .lp-wave-separator.wave-contracts .shape-fill {
     fill: rgba(21, 26, 35, 0.95);
 }
 
-[data-theme="dark"] .wave-separator.wave-feature {
+[data-theme="dark"] .lp-wave-separator.wave-feature {
     background: rgba(21, 26, 35, 0.95);
 }
 
-[data-theme="dark"] .wave-separator.wave-feature .shape-fill {
+[data-theme="dark"] .lp-wave-separator.wave-feature .shape-fill {
     fill: #0B0E13; 
 }
 
