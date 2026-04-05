@@ -346,7 +346,8 @@
     top: calc(100% + 8px);
     right: 0;
     left: auto;
-    width: 280px;
+    min-width: 280px;
+    width: max-content;
     max-width: calc(100vw - 32px);
     max-height: calc(100vh - 100px);
     overflow-y: auto;
@@ -403,9 +404,9 @@
 .profile-email {
     font-size: var(--font-size-sm);
     color: var(--text-secondary);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    word-break: break-all;
+    white-space: normal;
+    line-height: 1.4;
 }
 
 .profile-divider {
@@ -659,7 +660,8 @@
 
 @media (max-width: 1024px) {
     .profile-dropdown {
-        width: 260px;
+        min-width: 260px;
+        width: max-content;
     }
 
     .nav-inner {

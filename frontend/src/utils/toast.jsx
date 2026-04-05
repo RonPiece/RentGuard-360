@@ -1,5 +1,6 @@
 import React from 'react';
 import toast from 'react-hot-toast';
+import './toast.css';
 
 const TOAST_TYPES = new Set(['success', 'error', 'warning', 'info']);
 
@@ -35,28 +36,36 @@ export function showAppToast(payload) {
     const direction = getDocumentDirection();
 
     return toast.custom(
-        (instance) => (
-            <div className={`rg-hot-toast rg-hot-toast--${type}`} dir={direction} role="status" aria-live={type === 'error' ? 'assertive' : 'polite'}>
-                <span className="rg-hot-toast__icon" aria-hidden="true">{icon ?? getIcon(type)}</span>
-                <div className="rg-hot-toast__content">
-                    {title && <div className="rg-hot-toast__title">{title}</div>}
-                    {message && <div className="rg-hot-toast__message">{message}</div>}
-                </div>
-                <button
-                    type="button"
-                    className="rg-hot-toast__dismiss"
-                    onClick={(event) => {
-                        event.preventDefault();
-                        event.stopPropagation();
-                        toast.dismiss(instance.id);
-                    }}
-                    aria-label={getCloseLabel()}
-                    title={getCloseLabel()}
+        (instance) => {
+            const isVisible = instance.visible;
+            return (
+                <div 
+                    className={`rg-hot-toast rg-hot-toast--${type} ${isVisible ? 'rg-hot-toast--visible' : 'rg-hot-toast--hidden'}`} 
+                    dir={direction} 
+                    role="status" 
+                    aria-live={type === 'error' ? 'assertive' : 'polite'}
                 >
-                    ×
-                </button>
-            </div>
-        ),
+                    <span className="rg-hot-toast__icon" aria-hidden="true">{icon ?? getIcon(type)}</span>
+                    <div className="rg-hot-toast__content">
+                        {title && <div className="rg-hot-toast__title">{title}</div>}
+                        {message && <div className="rg-hot-toast__message">{message}</div>}
+                    </div>
+                    <button
+                        type="button"
+                        className="rg-hot-toast__dismiss"
+                        onClick={(event) => {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            toast.dismiss(instance.id);
+                        }}
+                        aria-label={getCloseLabel()}
+                        title={getCloseLabel()}
+                    >
+                        ×
+                    </button>
+                </div>
+            );
+        },
         {
             id: detail.id,
             duration,

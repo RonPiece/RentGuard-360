@@ -250,6 +250,8 @@ main:has(.settings-container) {
     color: var(--text-secondary);
     margin-bottom: 1.5rem;
     font-weight: 500;
+    word-break: break-all;
+    white-space: normal;
 }
 
 /* --- 2. Appearance Toggle Row --- */
