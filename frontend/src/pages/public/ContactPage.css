@@ -480,6 +480,26 @@
     align-items: center;
 }
 
+.public-cta-success-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--accent-primary);
+    color: #ffffff !important;
+    font-weight: 600;
+    border-radius: var(--radius-md, 0.5rem);
+    text-decoration: none;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    box-shadow: var(--shadow-sm);
+}
+
+.public-cta-success-link:hover {
+    background-color: var(--accent-primary-hover);
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+
 /* ============================================
    8. MEDIA QUERIES
    ============================================ */

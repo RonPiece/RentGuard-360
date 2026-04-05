@@ -3,7 +3,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useLanguage } from '../../contexts/LanguageContext/LanguageContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useAdminStripeInsights } from '../../hooks/useAdminStripeInsights';
-import { AlertTriangle, CreditCard } from 'lucide-react';
+import { AlertTriangle, CreditCard, RefreshCw } from 'lucide-react';
 import { AdminStripeCards } from './components/AdminStripeCards';
 import { AdminStripePanels } from './components/AdminStripePanels';
 import { AdminStripeTable } from './components/AdminStripeTable';
@@ -96,7 +96,7 @@ const AdminStripeInsights = () => {
 
                 {loading ? (
                     <div className="loading-state stripe-insights-loading">
-                        <div className="loading-spinner"></div>
+                        <RefreshCw size={40} className="admin-spin-icon" style={{ color: 'var(--accent-primary)' }} />
                         <p>{t('common.loading')}</p>
                     </div>
                 ) : (

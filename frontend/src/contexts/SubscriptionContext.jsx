@@ -46,9 +46,22 @@ export const useSubscription = () => {
 export const SubscriptionProvider = ({ children }) => {
     const { user, userAttributes, isAuthenticated, isAdmin, isLoading: isAuthLoading } = useAuth();
     const [subscription, setSubscription] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const [isEntitlementKnown, setIsEntitlementKnown] = useState(false);
+    const [isLoadingState, setIsLoadingState] = useState(true);
+    const [isEntitlementKnownState, setIsEntitlementKnownState] = useState(false);
     const [error, setError] = useState(null);
+    const [lastAuthState, setLastAuthState] = useState(isAuthenticated);
+
+    // Sync auth state immediately when it changes to prevent stale reads
+    if (isAuthenticated !== lastAuthState) {
+        setLastAuthState(isAuthenticated);
+        if (isAuthenticated) {
+            setIsLoadingState(true);
+            setIsEntitlementKnownState(false);
+        }
+    }
+
+    const isLoading = isAuthLoading || isLoadingState || (isAuthenticated !== lastAuthState);
+    const isEntitlementKnown = isEntitlementKnownState && (isAuthenticated === lastAuthState);
 
     const getUserId = useCallback(async () => {
         // Backend authorization expects Cognito "sub" as the canonical user id.
@@ -76,14 +89,14 @@ export const SubscriptionProvider = ({ children }) => {
     const refreshSubscription = useCallback(async () => {
         if (!isAuthenticated) {
             setSubscription(null);
-            setIsLoading(false);
-            setIsEntitlementKnown(true);
+            setIsLoadingState(false);
+            setIsEntitlementKnownState(true);
             return;
         }
 
         // Critical: set these BEFORE the first await to avoid a one-render redirect race.
-        setIsLoading(true);
-        setIsEntitlementKnown(false);
+        setIsLoadingState(true);
+        setIsEntitlementKnownState(false);
         setError(null);
 
         let hasDefinitiveEntitlement = false;
@@ -130,8 +143,8 @@ export const SubscriptionProvider = ({ children }) => {
                 }
             }
         } finally {
-            setIsEntitlementKnown(hasDefinitiveEntitlement);
-            setIsLoading(false);
+            setIsEntitlementKnownState(hasDefinitiveEntitlement);
+            setIsLoadingState(false);
         }
     }, [getUserId, isAdmin, isAuthenticated, isNoSubscriptionError]);
 
@@ -144,8 +157,8 @@ export const SubscriptionProvider = ({ children }) => {
         } else {
             setSubscription(null);
             setError(null);
-            setIsLoading(false);
-            setIsEntitlementKnown(true);
+            setIsLoadingState(false);
+            setIsEntitlementKnownState(true);
         }
     }, [isAuthenticated, isAuthLoading, refreshSubscription]);
 

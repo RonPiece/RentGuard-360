@@ -10,14 +10,16 @@ export const AdminAnalyticsCards = ({ pieData, avgRiskScore, riskColor }) => {
     const { t } = useLanguage();
     const { isDark } = useTheme();
     const isMobile = useMediaQuery('(max-width:480px)');
-    const valueTextColor = isDark ? '#f8fafc' : '#1a1a2e';
+    
+    // Better dynamic color for gauge text based on theme
+    const valueTextColor = isDark ? '#ffffff' : '#0B0E13';
 
     return (
         <div className="analytics-cards-row">
             {/* Risk Distribution Pie Chart */}
             <div className="analytics-card">
                 <h3>
-                    <AlertTriangle size={16} />
+                    <AlertTriangle size={20} className="icon-filled" />
                     {t('admin.riskDistribution')}
                 </h3>
                 <div className="chart-content">
@@ -54,7 +56,7 @@ export const AdminAnalyticsCards = ({ pieData, avgRiskScore, riskColor }) => {
             {/* Average Risk Score Gauge */}
             <div className="analytics-card">
                 <h3>
-                    <AlertTriangle size={16} />
+                    <AlertTriangle size={20} className="icon-filled" />
                     {t('admin.avgRiskScore')}
                 </h3>
                 <div className="chart-content gauge-content">
@@ -68,14 +70,15 @@ export const AdminAnalyticsCards = ({ pieData, avgRiskScore, riskColor }) => {
                         sx={{
                             [`& .${gaugeClasses.valueText}`]: {
                                 fontSize: isMobile ? 28 : 36,
-                                fontWeight: 'bold',
+                                fontWeight: '700',
                                 fill: valueTextColor,
+                                fontFamily: 'var(--font-sans, system-ui)'
                             },
                             [`& .${gaugeClasses.valueArc}`]: {
                                 fill: riskColor,
                             },
                             [`& .${gaugeClasses.referenceArc}`]: {
-                                fill: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
+                                fill: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)',
                             },
                         }}
                         text={({ value }) => `${Math.round(value)}/100`}

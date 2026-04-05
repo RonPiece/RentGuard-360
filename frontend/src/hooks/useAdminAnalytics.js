@@ -51,14 +51,26 @@ export const useAdminAnalytics = () => {
         highRisk: 0
     };
 
+    // Calculate risk distributions - match UI dashboard colors
     const pieData = [
-        { id: 0, value: riskDistribution.lowRisk, label: t('score.lowRisk') || 'Low Risk', color: '#22c55e' },
-        { id: 1, value: riskDistribution.lowMediumRisk, label: t('score.lowMediumRisk') || 'Low-Medium', color: '#14b8a6' },
-        { id: 2, value: riskDistribution.mediumRisk, label: t('score.mediumRisk') || 'Medium Risk', color: '#f59e0b' },
-        { id: 3, value: riskDistribution.highRisk, label: t('score.highRisk') || 'High Risk', color: '#ef4444' },
+        { id: 0, value: riskDistribution.lowRisk, label: t('score.lowRisk') || 'Low Risk', color: '#10b981' }, // success (green)
+        { id: 1, value: riskDistribution.lowMediumRisk, label: t('score.lowMediumRisk') || 'Low-Medium', color: '#f59e0b' }, // warning (amber)
+        { id: 2, value: riskDistribution.mediumRisk, label: t('score.mediumRisk') || 'Medium Risk', color: '#f97316' }, // orange
+        { id: 3, value: riskDistribution.highRisk, label: t('score.highRisk') || 'High Risk', color: '#ef4444' }, // danger (red)
     ];
 
-    const colors = ['#3b82f6', '#8b5cf6', '#ec4899', '#f43f5e', '#f59e0b', '#10b981', '#06b6d4', '#6366f1'];
+    // Professional, brand-aligned color palette (Teals, Emeralds, Blues) rather than rainbow
+    const colors = [
+        '#059669', // Emerald 600
+        '#10B981', // Emerald 500
+        '#34D399', // Emerald 400
+        '#14B8A6', // Teal 500
+        '#0D9488', // Teal 600
+        '#0EA5E9', // Sky 500
+        '#0284C7', // Sky 600
+        '#3B82F6', // Blue 500
+        '#64748B'  // Slate 500
+    ];
     const rawCommonIssues = stats?.commonIssues || [];
     const commonIssues = rawCommonIssues.map((issue, index) => ({
         ...issue,

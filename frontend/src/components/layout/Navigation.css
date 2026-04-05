@@ -584,7 +584,6 @@
 }
 
 .nav-container.nav-landing.is-public .auth-btn {
-    background: linear-gradient(120deg, rgba(5, 150, 105, 0.08) 0%, rgba(13, 148, 136, 0.14) 55%, rgba(22, 163, 74, 0.08) 100%);
     background-size: 220% 100%;
     background-position: 0% 50%;
     border-color: rgba(5, 150, 105, 0.35);

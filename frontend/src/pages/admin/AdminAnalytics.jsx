@@ -47,7 +47,7 @@ const AdminAnalytics = () => {
 
                 {loading ? (
                     <div className="loading-state">
-                        <div className="loading-spinner"></div>
+                        <RefreshCw size={40} className="admin-spin-icon" style={{ color: 'var(--accent-primary)' }} />
                         <p>{t('common.loading')}</p>
                     </div>
                 ) : (

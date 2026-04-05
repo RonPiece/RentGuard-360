@@ -15,7 +15,6 @@ const ContactPublic = () => {
     const [formData, setFormData] = useState({
         name: '',
         email: '',
-        phone: '',
         message: '',
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -43,7 +42,7 @@ const ContactPublic = () => {
 
             if (response.ticketId || response.message === 'Ticket created') {
                 setSubmitStatus('success');
-                setFormData({ name: '', email: '', phone: '', message: '' });
+                setFormData({ name: '', email: '', message: '' });
                 emitAppToast({
                     type: 'success',
                     title: t('notifications.contactSentTitle'),
@@ -109,25 +108,14 @@ const ContactPublic = () => {
                             </div>
                         ) : (
                             <form onSubmit={handleSubmit} className="contact-form">
-                                <div className="form-row-2col">
-                                    <Input
-                                        label={t('contact.fullName')}
-                                        name="name"
-                                        value={formData.name}
-                                        onChange={handleChange}
-                                        required
-                                        placeholder={t('contact.fullNamePlaceholder')}
-                                    />
-                                    <Input
-                                        label={t('contact.phone')}
-                                        name="phone"
-                                        type="tel"
-                                        value={formData.phone}
-                                        onChange={handleChange}
-                                        dir="ltr"
-                                        placeholder={t('contact.phonePlaceholder')}
-                                    />
-                                </div>
+                                <Input
+                                    label={t('contact.fullName')}
+                                    name="name"
+                                    value={formData.name}
+                                    onChange={handleChange}
+                                    required
+                                    placeholder={t('contact.fullNamePlaceholder')}
+                                />
 
                                 <Input
                                     label={t('contact.email')}
