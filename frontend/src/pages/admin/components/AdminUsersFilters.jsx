@@ -72,10 +72,6 @@ const AdminUsersFilters = ({
                         <span className="provider-filter-icon google">{getProviderMeta({ authProvider: 'Google' }).icon}</span>
                         Google
                     </button>
-                    <button type="button" className={`profile-menu-item users-filter-item ${isAdvancedFilterActive('provider_facebook') ? 'active' : ''}`} onClick={() => toggleAdvancedFilter('provider_facebook')}>
-                        <span className="provider-filter-icon facebook">{getProviderMeta({ authProvider: 'Facebook' }).icon}</span>
-                        Facebook
-                    </button>
 
                     <div className="users-filter-subtitle">{t('admin.package') || 'Package'}</div>
                     <button type="button" className={`profile-menu-item users-filter-item ${isAdvancedFilterActive('package_free') ? 'active' : ''}`} onClick={() => toggleAdvancedFilter('package_free')}>Free</button>
