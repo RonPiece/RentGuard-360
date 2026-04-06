@@ -193,11 +193,6 @@
     cursor: not-allowed;
 }
 
-.auth-social-btn.facebook {
-    opacity: 0.8;
-}
-
-
 .auth-divider {
     display: flex;
     align-items: center;
