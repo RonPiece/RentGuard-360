@@ -251,6 +251,9 @@ export const he = {
             }
         },
     "contracts": {
+        "deleteSuccessTitle": "מחיקת חוזה הושלמה",
+        "deleteSuccess": "החוזה נמחק מהמערכת בהצלחה.",
+
         "title": "החוזים שלי",
         "subtitle": "ניהול וצפייה בכל חוזי השכירות שלך",
         "activeContracts": "חוזים פעילים",
@@ -1162,4 +1165,6 @@ export const he = {
             }
         ]
     }
+,
+    "checkingYourPlan": "בודק את פרטי החבילה שלך..."
 };

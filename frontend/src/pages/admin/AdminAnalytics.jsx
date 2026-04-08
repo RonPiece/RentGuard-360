@@ -7,6 +7,8 @@ import { useAdminAnalytics } from '../../hooks/useAdminAnalytics';
 import { AdminAnalyticsCards } from './components/AdminAnalyticsCards';
 import { AdminAnalyticsCharts } from './components/AdminAnalyticsCharts';
 import './AdminDashboard.css';
+import { GlobalSpinner } from '../../components/ui/GlobalSpinner';
+
 
 const AdminAnalytics = () => {
     const { t, isRTL } = useLanguage();
@@ -47,7 +49,7 @@ const AdminAnalytics = () => {
 
                 {loading ? (
                     <div className="loading-state">
-                        <RefreshCw size={40} className="admin-spin-icon" style={{ color: 'var(--accent-primary)' }} />
+                        <GlobalSpinner size={40} />
                         <p>{t('common.loading')}</p>
                     </div>
                 ) : (
@@ -71,3 +73,4 @@ const AdminAnalytics = () => {
 };
 
 export default AdminAnalytics;
+

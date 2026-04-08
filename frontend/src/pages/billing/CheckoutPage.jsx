@@ -31,6 +31,8 @@ import { getPackageById, createPaymentIntent, confirmPayment } from '../../servi
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import './CheckoutPage.css';
+import { GlobalSpinner } from '../../components/ui/GlobalSpinner';
+
 
 // Initialize Stripe outside component to avoid re-renders
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
@@ -261,7 +263,7 @@ const CheckoutPage = () => {
         return (
             <div className="checkout-page page-container" dir={isRTL ? 'rtl' : 'ltr'}>
                 <div className="checkout-loading">
-                    <div className="checkout-spinner" />
+                    <GlobalSpinner size={30} />
                     <p>{t('common.loading')}</p>
                 </div>
             </div>
@@ -372,3 +374,4 @@ const CheckoutPage = () => {
 };
 
 export default CheckoutPage;
+

@@ -200,6 +200,7 @@ def lambda_handler(event, context):
                 'body': json.dumps({'error': 'Authentication required'})
             }
 
+        deduction_bypassed = False
         is_admin = user_in_admin_group(groups_value)
         if not is_admin:
             if STRIPE_API_URL and not PAYMENT_INTERNAL_API_KEY:
@@ -221,6 +222,8 @@ def lambda_handler(event, context):
                             'code': 'NO_ACTIVE_PLAN_OR_SCANS'
                         })
                     }
+                if reason and 'outage' in str(reason).lower():
+                    deduction_bypassed = True
             except RuntimeError as e:
                 print(f"Configuration error: {e}")
                 return {
@@ -314,6 +317,7 @@ def lambda_handler(event, context):
                 'contractId': contract_id,
                 'fileName': original_name,
                 'userId': user_id,
+                'deductionBypassed': deduction_bypassed,
                 'metadata': {
                     'originalFileName': original_file_name,
                     'propertyAddress': property_address,

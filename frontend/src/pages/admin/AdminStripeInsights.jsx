@@ -8,6 +8,8 @@ import { AdminStripeCards } from './components/AdminStripeCards';
 import { AdminStripePanels } from './components/AdminStripePanels';
 import { AdminStripeTable } from './components/AdminStripeTable';
 import './AdminStripeInsights.css';
+import { GlobalSpinner } from '../../components/ui/GlobalSpinner';
+
 
 const formatMoney = (value, currency = 'USD', locale = 'en-US') => {
     const safe = Number(value || 0);
@@ -96,7 +98,7 @@ const AdminStripeInsights = () => {
 
                 {loading ? (
                     <div className="loading-state stripe-insights-loading">
-                        <RefreshCw size={40} className="admin-spin-icon" style={{ color: 'var(--accent-primary)' }} />
+                        <GlobalSpinner size={40} />
                         <p>{t('common.loading')}</p>
                     </div>
                 ) : (
@@ -143,3 +145,4 @@ const AdminStripeInsights = () => {
 };
 
 export default AdminStripeInsights;
+

@@ -2,11 +2,13 @@ import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useSubscription } from '../../contexts/SubscriptionContext';
+import { useLanguage } from '../../contexts/LanguageContext/LanguageContext';
 import './RouteGuards.css';
+import { GlobalSpinner } from '../ui/GlobalSpinner';
 
 export const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth();
-  if (isLoading) return <div className="app-loading"><div className="loading-spinner"></div></div>;
+  if (isLoading) return <GlobalSpinner fullPage />;
   return isAuthenticated ? children : <Navigate to="/" replace />;
 };
 
@@ -14,15 +16,13 @@ export const RequireActivePlanRoute = ({ children }) => {
   const { isAdmin } = useAuth();
   const { hasSubscription, isLoading: isSubscriptionLoading, isEntitlementKnown, error, refreshSubscription } = useSubscription();
   const location = useLocation();
+  const { t } = useLanguage();
 
   if (isAdmin) return children;
 
   if (isSubscriptionLoading || !isEntitlementKnown) {
     return (
-      <div className="app-loading">
-        <div className="loading-spinner"></div>
-        <p>Checking your plan...</p>
-      </div>
+      <GlobalSpinner fullPage text={t('checkingYourPlan') || "Checking your plan..."} />
     );
   }
 
@@ -47,3 +47,4 @@ export const RequireActivePlanRoute = ({ children }) => {
 
   return children;
 };
+

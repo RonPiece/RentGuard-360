@@ -26,6 +26,8 @@ import { getPackages } from '../../services/stripeApi';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import './PricingPage.css';
+import { GlobalSpinner } from '../../components/ui/GlobalSpinner';
+
 
 const PricingPage = () => {
     const { t, isRTL } = useLanguage();
@@ -181,7 +183,7 @@ const PricingPage = () => {
         return (
             <div className="pricing-page page-container" dir={isRTL ? 'rtl' : 'ltr'}>
                 <div className="pricing-loading">
-                    <div className="pricing-spinner" />
+                    <GlobalSpinner size={30} />
                     <p>{t('common.loading')}</p>
                 </div>
             </div>
@@ -329,3 +331,4 @@ const PricingPage = () => {
 };
 
 export default PricingPage;
+

@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+﻿import { useState, useCallback, useEffect } from 'react';
 import { getContracts, deleteContract, getAnalysis, updateContract } from '../services/api';
 import { exportReportToWord, exportReportToWordBlob } from '../services/ReportExportService';
 import { showAppToast } from '../utils/toast';
@@ -114,6 +114,18 @@ export const useContracts = (userId, t, isRTL) => {
             await deleteContract(deleteConfirm, userId);
             setContracts(contracts.filter(c => c.contractId !== deleteConfirm));
             setDeleteConfirm(null);
+            
+            // Show a visual popup confirming deletion
+            import('../utils/toast').then(({ emitAppToast }) => {
+                emitAppToast({
+                    type: 'success',
+                    title: t('contracts.deleteSuccessTitle'),
+                    message: t('contracts.deleteSuccess')
+                });
+            }).catch(() => {
+                alert(t('contracts.deleteSuccess'));
+            });
+            
         } catch {
             alert(t('contracts.deleteFailed'));
         } finally {
@@ -269,3 +281,5 @@ export const useContracts = (userId, t, isRTL) => {
         handleSortClick
     };
 };
+
+

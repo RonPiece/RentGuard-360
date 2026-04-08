@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ============================================
  *  AdminUsers
  *  User Management for Administrators
@@ -15,6 +15,8 @@ import './AdminDashboard.css';
 import AdminUsersFilters from './components/AdminUsersFilters';
 import AdminUsersTable from './components/AdminUsersTable';
 import AdminUsersModals from './components/AdminUsersModals';
+import { GlobalSpinner } from '../../components/ui/GlobalSpinner';
+
 
 const AdminUsers = () => {
     const { t, isRTL } = useLanguage();
@@ -56,7 +58,7 @@ const AdminUsers = () => {
         const isActive = sortConfig.key === columnKey;
         return (
             <span className={`sort-icon ${isActive ? sortConfig.direction : 'inactive'}`}>
-                {isActive ? (sortConfig.direction === 'asc' ? '▲' : '▼') : '⇅'}
+                {isActive ? (sortConfig.direction === 'asc' ? '?' : '?') : '?'}
             </span>
         );
     };
@@ -168,7 +170,7 @@ const AdminUsers = () => {
 
                 {loading ? (
                     <div className="loading-state">
-                        <RefreshCw size={40} className="admin-spin-icon" style={{ color: 'var(--accent-primary)' }} />
+                        <GlobalSpinner size={40} />
                         <p>{t('common.loading')}</p>
                     </div>
                 ) : (
@@ -224,3 +226,4 @@ const AdminUsers = () => {
 };
 
 export default AdminUsers;
+

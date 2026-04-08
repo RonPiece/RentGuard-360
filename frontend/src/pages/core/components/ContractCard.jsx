@@ -207,7 +207,29 @@ const ContractCard = ({ contract, onDelete, onEdit, onExport, onShare, formatDat
                     </button>
                 )}
 
-                <div className="lf-card-footer-actions">
+                <div className="lf-card-footer-actions" style={{ gap: '0.3rem', flexWrap: 'nowrap' }}>
+                    <button
+                        type="button"
+                        className="lf-btn-delete"
+                        onClick={(e) => { onDelete(contract.contractId, e); setActiveMenu(null); }}
+                        title={t('contracts.deleteButtonTitle')}
+                        aria-label={t('contracts.deleteButtonTitle')}
+                    >
+                        <Trash2 size={16} />
+                    </button>
+
+                    <button
+                        type="button"
+                        className="lf-btn-edit"
+                        onClick={() => { onShare(contract); setActiveMenu(null); }}
+                        disabled={!isAnalyzed}
+                        title={t('contracts.menuShareTrigger')}
+                        aria-label={t('contracts.menuShareTrigger')}
+                        style={{ opacity: !isAnalyzed ? 0.5 : 1 }}
+                    >
+                        <Share2 size={16} />
+                    </button>
+
                     <button
                         type="button"
                         className="lf-btn-edit"
@@ -215,7 +237,7 @@ const ContractCard = ({ contract, onDelete, onEdit, onExport, onShare, formatDat
                         title={t('contracts.editButtonTitle')}
                         aria-label={t('contracts.editButtonTitle')}
                     >
-                        <Pencil size={18} />
+                        <Pencil size={16} />
                     </button>
 
                     <ActionMenu
@@ -224,7 +246,7 @@ const ContractCard = ({ contract, onDelete, onEdit, onExport, onShare, formatDat
                         onClose={() => setActiveMenu(null)}
                         containerClassName="lf-card-menu-wrap"
                         triggerClassName="lf-btn-download"
-                        triggerContent={<Download size={20} />}
+                        triggerContent={<Download size={16} />}
                         panelClassName={`lf-dropdown-menu export-menu ${isRTL ? 'rtl' : 'ltr'}`}
                     >
                         <div className="lf-menu-title">{t('contracts.menuDownloadTitle')}</div>
