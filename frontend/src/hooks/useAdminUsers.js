@@ -9,7 +9,6 @@ const STATUS_FILTER_KEYS = ['status_enabled', 'status_disabled', 'status_pending
 const normalizeProviderKey = (user) => {
     const provider = String(user?.authProvider || '').trim().toLowerCase();
     if (provider.includes('google')) return 'google';
-    if (provider.includes('facebook')) return 'facebook';
     return 'email';
 };
 
@@ -72,7 +71,6 @@ export const useAdminUsers = () => {
         const providerFilters = [];
         if (has('provider_email')) providerFilters.push('email');
         if (has('provider_google')) providerFilters.push('google');
-        if (has('provider_facebook')) providerFilters.push('facebook');
         if (providerFilters.length > 0) {
             filtered = filtered.filter(user => providerFilters.includes(normalizeProviderKey(user)));
         }

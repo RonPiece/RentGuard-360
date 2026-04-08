@@ -89,7 +89,6 @@ def _parse_provider_from_username(username):
     provider_prefix, provider_user_id = value.split('_', 1)
     mapping = {
         'google': 'Google',
-        'facebook': 'Facebook',
         'loginwithamazon': 'LoginWithAmazon',
         'signinwithapple': 'SignInWithApple',
     }

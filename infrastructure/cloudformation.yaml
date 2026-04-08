@@ -42,22 +42,13 @@ Parameters:
     Description: Google OAuth Client Secret
     NoEcho: true
 
-  FacebookAppId:
-    Type: String
-    Description: Facebook App ID
-
-  FacebookAppSecret:
-    Type: String
-    Description: Facebook App Secret
-    NoEcho: true
-
   CognitoHostedUIDomainPrefix:
     Type: String
     Description: Cognito Hosted UI domain prefix (must be unique per region)
 
   OAuthRedirectUri:
     Type: String
-    Description: OAuth redirect URI configured in Google/Facebook apps and Cognito
+    Description: OAuth redirect URI configured in Google app and Cognito
 
   OAuthLogoutUri:
     Type: String
@@ -341,20 +332,6 @@ Resources:
         email: email
         name: name
 
-  UserPoolFacebookIdentityProvider:
-    Type: AWS::Cognito::UserPoolIdentityProvider
-    Properties:
-      UserPoolId: !Ref UserPool
-      ProviderName: Facebook
-      ProviderType: Facebook
-      ProviderDetails:
-        client_id: !Ref FacebookAppId
-        client_secret: !Ref FacebookAppSecret
-        authorize_scopes: email public_profile
-      AttributeMapping:
-        email: email
-        name: name
-
   UserPoolDomain:
     Type: AWS::Cognito::UserPoolDomain
     Properties:
@@ -365,7 +342,6 @@ Resources:
     Type: AWS::Cognito::UserPoolClient
     DependsOn:
       - UserPoolGoogleIdentityProvider
-      - UserPoolFacebookIdentityProvider
       - UserPoolDomain
     Properties:
       ClientName: !Sub '${ProjectName}-WebClient${NameSuffix}'
@@ -382,7 +358,6 @@ Resources:
       SupportedIdentityProviders:
         - COGNITO
         - Google
-        - Facebook
       CallbackURLs:
         - !Ref OAuthRedirectUri
       LogoutURLs:

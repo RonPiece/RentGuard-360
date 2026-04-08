@@ -3026,8 +3026,7 @@
     color: var(--admin-text-secondary);
 }
 
-.provider-icon-badge.google,
-.provider-icon-badge.facebook {
+.provider-icon-badge.google {
     border: none;
     background: transparent;
 }

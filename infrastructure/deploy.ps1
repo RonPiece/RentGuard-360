@@ -29,12 +29,6 @@ param(
     [string]$GoogleClientSecret,
 
     [Parameter(Mandatory=$false)]
-    [string]$FacebookAppId,
-
-    [Parameter(Mandatory=$false)]
-    [string]$FacebookAppSecret,
-
-    [Parameter(Mandatory=$false)]
     [string]$CognitoHostedUIDomainPrefix,
 
     [Parameter(Mandatory=$false)]
@@ -181,8 +175,6 @@ if (Test-Path -LiteralPath $ConfigFile) {
     if (-not $AzureKey) { $AzureKey = Get-EnvValue -Map $config -Key 'AZURE_DOC_KEY' }
     if (-not $GoogleClientId) { $GoogleClientId = Get-EnvValue -Map $config -Key 'GOOGLE_CLIENT_ID' }
     if (-not $GoogleClientSecret) { $GoogleClientSecret = Get-EnvValue -Map $config -Key 'GOOGLE_CLIENT_SECRET' }
-    if (-not $FacebookAppId) { $FacebookAppId = Get-EnvValue -Map $config -Key 'FACEBOOK_APP_ID' }
-    if (-not $FacebookAppSecret) { $FacebookAppSecret = Get-EnvValue -Map $config -Key 'FACEBOOK_APP_SECRET' }
     if (-not $CognitoHostedUIDomainPrefix) { $CognitoHostedUIDomainPrefix = Get-EnvValue -Map $config -Key 'COGNITO_HOSTED_UI_DOMAIN_PREFIX' }
     if (-not $OAuthRedirectUri) { $OAuthRedirectUri = Get-EnvValue -Map $config -Key 'OAUTH_REDIRECT_URI' }
     if (-not $OAuthLogoutUri) { $OAuthLogoutUri = Get-EnvValue -Map $config -Key 'OAUTH_LOGOUT_URI' }
@@ -238,14 +230,6 @@ if (-not $GoogleClientId) {
 }
 if (-not $GoogleClientSecret) {
     Write-Error "Google client secret is missing. Set GOOGLE_CLIENT_SECRET in config.env or pass -GoogleClientSecret."
-    exit 1
-}
-if (-not $FacebookAppId) {
-    Write-Error "Facebook app ID is missing. Set FACEBOOK_APP_ID in config.env or pass -FacebookAppId."
-    exit 1
-}
-if (-not $FacebookAppSecret) {
-    Write-Error "Facebook app secret is missing. Set FACEBOOK_APP_SECRET in config.env or pass -FacebookAppSecret."
     exit 1
 }
 if (-not $CognitoHostedUIDomainPrefix) {
@@ -377,8 +361,6 @@ $deployCmd = @(
     "ParameterKey=AzureDocKey,ParameterValue=$AzureKey",
     "ParameterKey=GoogleClientId,ParameterValue=$GoogleClientId",
     "ParameterKey=GoogleClientSecret,ParameterValue=$GoogleClientSecret",
-    "ParameterKey=FacebookAppId,ParameterValue=$FacebookAppId",
-    "ParameterKey=FacebookAppSecret,ParameterValue=$FacebookAppSecret",
     "ParameterKey=CognitoHostedUIDomainPrefix,ParameterValue=$CognitoHostedUIDomainPrefix",
     "ParameterKey=OAuthRedirectUri,ParameterValue=$OAuthRedirectUri",
     "ParameterKey=OAuthLogoutUri,ParameterValue=$OAuthLogoutUri",
