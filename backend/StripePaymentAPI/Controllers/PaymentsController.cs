@@ -225,7 +225,10 @@ namespace StripePaymentAPI.Controllers
                 Invoice invoice = invoiceService.Create(new InvoiceCreateOptions
                 {
                     Customer = customerId,
+                    Currency = currency.ToLower(),
                     AutoAdvance = false, // We'll finalize manually
+                    CollectionMethod = "send_invoice",
+                    DaysUntilDue = 0,
                     Metadata = new Dictionary<string, string>
                     {
                         { "payment_intent_id", paymentIntentId }
@@ -238,7 +241,7 @@ namespace StripePaymentAPI.Controllers
                 {
                     Customer = customerId,
                     Invoice = invoice.Id,
-                    Amount = amountInSmallestUnit,
+                    UnitAmount = amountInSmallestUnit,
                     Currency = currency.ToLower(),
                     Description = $"RentGuard 360 — {packageName}"
                 });
@@ -635,12 +638,31 @@ namespace StripePaymentAPI.Controllers
                     return accessResult;
                 }
 
-                List<Models.Transaction> transactions = _repository.GetTransactionsByUserId(userId);
+                // Check all possible aliases for the authenticated user to ensure transactions 
+                // made before identity linking are still shown.
+                IEnumerable<string> candidates = new[] { userId }
+                    .Concat(GetAuthenticatedUserAliases())
+                    .Where(id => !string.IsNullOrWhiteSpace(id))
+                    .Select(id => id.Trim())
+                    .Distinct(StringComparer.OrdinalIgnoreCase);
+
+                List<Models.Transaction> allTransactions = new List<Models.Transaction>();
+                foreach (string candidate in candidates)
+                {
+                    allTransactions.AddRange(_repository.GetTransactionsByUserId(candidate));
+                }
+
+                // Deduplicate by Transaction Id (if local DB returned same rows somehow) and sort by date
+                List<Models.Transaction> finalTransactions = allTransactions
+                    .GroupBy(t => t.Id)
+                    .Select(g => g.First())
+                    .OrderByDescending(t => t.CreatedAt)
+                    .ToList();
 
                 return Ok(new
                 {
-                    transactions,
-                    count = transactions.Count
+                    transactions = finalTransactions,
+                    count = finalTransactions.Count
                 });
             }
             catch (Exception ex)

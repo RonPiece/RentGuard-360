@@ -10,7 +10,7 @@ export const useUpload = () => {
     const { t } = useLanguage();
     const navigate = useNavigate();
     const { isAdmin } = useAuth();
-    const { scansRemaining, isUnlimited, hasSubscription, refreshSubscription } = useSubscription();
+    const { scansRemaining, isUnlimited, hasSubscription, refreshSubscription, deductScan } = useSubscription();
 
     const [file, setFile] = useState(null);
     const [isDragging, setIsDragging] = useState(false);
@@ -53,7 +53,7 @@ export const useUpload = () => {
         let cancelled = false;
         (async () => {
             try {
-                const result = await pollForAnalysis(uploadedContractId, 24, 5000);
+                const result = await pollForAnalysis(uploadedContractId, 40, 3000);
                 if (cancelled) return;
                 if (result) {
                     emitAppToast({
@@ -61,7 +61,7 @@ export const useUpload = () => {
                         title: t('notifications.analysisReadyTitle'),
                         message: t('notifications.analysisReadyMessage'),
                     });
-                    navigate(`/analysis/${encodeURIComponent(uploadedContractId)}`);
+                    navigate(`/analysis/${encodeURIComponent(uploadedContractId)}`, { replace: true });
                 }
             } catch (e) {
                 if (!cancelled) {
@@ -278,9 +278,21 @@ export const useUpload = () => {
                 setUploadVisualStatus('ready');
                 await delay(250);
 
-                await refreshSubscription();
+                // Sync the local scan credit count with the server.
+                // If the AWS backend bypassed the deduction due to an RDS outage, manually deduct using the local backend.
+                if (result.deductionBypassed) {
+                    console.log('Backend bypassed deduction due to RDS outage. Deducting locally from LocalDB.');
+                    try {
+                        await deductScan();
+                    } catch (deductErr) {
+                        console.warn('Local deductScan also failed (RDS fully down). Refreshing subscription state.', deductErr);
+                        await refreshSubscription();
+                    }
+                } else {
+                    await refreshSubscription();
+                }
 
-                setUploadedContractId(result.contractId || '');
+                setUploadedContractId(result.contractId || result.key || '');
                 setUploadSuccess(true);
                 emitAppToast({
                     type: 'success',
@@ -313,6 +325,9 @@ export const useUpload = () => {
 
         // All attempts failed
         console.error('Upload failed after all attempts:', lastErr);
+        // Refresh subscription in case failure was due to zero scans hitting the backend directly
+        await refreshSubscription();
+        
         const friendlyMessage = isRetryableError(lastErr)
             ? t('upload.serverTemporaryError')
             : (lastErr?.message || t('upload.uploadFailed'));

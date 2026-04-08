@@ -13,7 +13,8 @@ import {
     XCircle,
     AlertCircle,
     Eraser,
-    FileText
+    FileText,
+    RefreshCw
 } from 'lucide-react';
 import './AnalysisPage.css';
 
@@ -25,6 +26,8 @@ import AnalysisSidebar from './components/AnalysisSidebar';
 import { SharePanel } from './components/AnalysisModals';
 import { exportEditedContract } from '../../services/ContractExportService';
 import { showAppToast as emitAppToast } from '../../utils/toast';
+import { GlobalSpinner } from '../../components/ui/GlobalSpinner';
+
 
 const AnalysisPage = () => {
     const hookState = useAnalysisPage();
@@ -156,7 +159,7 @@ const AnalysisPage = () => {
         return (
             <div className="lf-page-wrapper" dir={isRTL ? 'rtl' : 'ltr'}>
                 <div className="lf-loading-state">
-                    <div className="loading-spinner"></div>
+                    <GlobalSpinner size={40} />
                     <p>{t('analysis.loading')}</p>
                 </div>
             </div>

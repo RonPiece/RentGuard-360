@@ -251,6 +251,9 @@ export const en = {
             }
         },
     "contracts": {
+        "deleteSuccessTitle": "Contract Deleted",
+        "deleteSuccess": "The contract was successfully deleted from the system.",
+
         "title": "My Contracts",
         "subtitle": "Manage and view all your rental contracts",
         "activeContracts": "active contracts",
@@ -1163,4 +1166,6 @@ export const en = {
             }
         ]
     }
+,
+    "checkingYourPlan": "Checking your plan..."
 };

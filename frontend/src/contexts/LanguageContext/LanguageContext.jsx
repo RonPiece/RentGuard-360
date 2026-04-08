@@ -22,7 +22,7 @@
  * ============================================
  */
 /* eslint-disable react-refresh/only-export-components */
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 
 // ============================================
 // TRANSLATIONS
@@ -70,11 +70,11 @@ export const LanguageProvider = ({ children }) => {
         document.documentElement.lang = language;
     }, [language]);
 
-    const t = (key) => translateFromLanguage(language, key);
+    const t = useCallback((key) => translateFromLanguage(language, key), [language]);
 
-    const toggleLanguage = () => {
+    const toggleLanguage = useCallback(() => {
         setLanguage(prev => prev === 'he' ? 'en' : 'he');
-    };
+    }, []);
 
     const isRTL = language === 'he';
 

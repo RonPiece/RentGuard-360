@@ -134,7 +134,9 @@ const apiCall = async (endpoint, options = {}) => {
             } catch {
                 serverMessage = errorText;
             }
-            throw new Error(serverMessage || `API Error: ${response.status}`);
+            const error = new Error(serverMessage || `API Error: ${response.status}`);
+            error.status = response.status;
+            throw error;
         }
 
         const text = await response.text();
@@ -232,9 +234,30 @@ export const uploadFile = async (file, onProgress, metadata = {}) => {
 
     if (onProgress) onProgress(5); // Starting...
 
-    const { uploadUrl, key, userId, contractId } = await apiCall(`/upload?${params.toString()}`);
+    let { uploadUrl, key, userId, contractId, deductionBypassed } = await apiCall(`/upload?${params.toString()}`);
 
-    console.log(`Got presigned URL for key: ${key}, userId: ${userId}`);
+    console.log(`Got presigned URL for key: ${key}, userId: ${userId}, deductionBypassed: ${deductionBypassed}`);
+
+    if (deductionBypassed) {
+        console.log("Deduction was bypassed by lambda, attempting direct local deduction...");
+        try {
+            const stripeApi = await import('./stripeApi.js');
+            await stripeApi.deductScan(userId);
+            console.log("Local scan deduction successful!");
+            // We handled it locally, so tell the caller it's no longer bypassed.
+            deductionBypassed = false;
+        } catch (e) {
+            console.error("Local scan deduction failed (no scans remaining or db error). Aborting upload to prevent AI costs:", e);
+            // We must cleanup the contract record since we are aborting!
+            try {
+                const cleanupParams = new URLSearchParams({ contractId, userId });
+                await apiCall(`/contracts?${cleanupParams.toString()}`, { method: 'DELETE' });
+            } catch (cleanupErr) {
+                console.warn('Failed to cleanup after cancelled upload:', cleanupErr);
+            }
+            throw new Error(e.message || "Failed to deduct scan. No scans remaining or backend error.");
+        }
+    }
 
     const cleanupContractRecord = async () => {
         if (!contractId || !userId) return;
@@ -281,6 +304,7 @@ export const uploadFile = async (file, onProgress, metadata = {}) => {
                     key,
                     userId,
                     contractId,
+                    deductionBypassed,
                     fileName: file.name,
                     uploadedAt: new Date().toISOString(),
                     metadata,
@@ -460,7 +484,7 @@ export const pollForAnalysis = async (contractId, maxAttempts = 20, intervalMs =
                 throw new Error('Analysis failed: ' + (result.error || 'Unknown error'));
             }
         } catch (error) {
-            if (!error.message.includes('404')) {
+            if (error.status !== 404 && !error.message.includes('404') && !error.message.includes('processing')) {
                 throw error;
             }
         }

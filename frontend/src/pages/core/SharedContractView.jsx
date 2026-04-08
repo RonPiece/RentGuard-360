@@ -5,6 +5,8 @@ import { getSharedAnalysis } from '../../services/api';
 import ContractView from '../../components/domain/ContractView';
 import { useLanguage } from '../../contexts/LanguageContext/LanguageContext';
 import './SharedContractView.css';
+import { GlobalSpinner } from '../../components/ui/GlobalSpinner';
+
 
 const SharedContractView = () => {
     const { t, isRTL } = useLanguage();
@@ -85,7 +87,7 @@ const SharedContractView = () => {
         return (
             <div className="shared-contract-shell" dir={isRTL ? 'rtl' : 'ltr'}>
                 <div className="shared-state-card shared-state-loading">
-                    <div className="shared-loading-spinner"></div>
+                    <GlobalSpinner fullPage />
                     <h2>{t('sharedContract.loadingTitle')}</h2>
                     <p>{t('sharedContract.loadingSubtitle')}</p>
                 </div>
@@ -153,3 +155,4 @@ const SharedContractView = () => {
 };
 
 export default SharedContractView;
+

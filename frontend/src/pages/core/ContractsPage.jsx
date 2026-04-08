@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ============================================
  * ContractsPage
  * User's Contract List & Management (LexisFlow Modern UI)
@@ -14,9 +14,12 @@ import ContractCard from './components/ContractCard';
 import {
     Plus, RefreshCw, FileText, X, Check,
     AlertTriangle,
-    Search, Filter, CheckCircle2, Pencil
+    Search, Filter, CheckCircle2, Pencil,
+    ChevronLeft, ChevronRight
 } from 'lucide-react';
 import './ContractsPage.css';
+import { GlobalSpinner } from '../../components/ui/GlobalSpinner';
+
 
 // ============================================
 // Main Contracts Page
@@ -62,7 +65,7 @@ const ContractsPage = () => {
         return (
             <div className="contracts-page-wrapper" dir={isRTL ? 'rtl' : 'ltr'}>
                 <div className="contracts-loading-state">
-                    <RefreshCw size={40} className="lf-spin-icon text-primary" />
+                    <GlobalSpinner size={40} />
                     <p>{t('contracts.loading')}</p>
                 </div>
             </div>
@@ -75,7 +78,7 @@ const ContractsPage = () => {
             {/* Action Notices */}
             {isRefreshing && (
                 <div className="lf-floating-notice">
-                    <RefreshCw size={16} className="lf-spin-icon" />
+                    <GlobalSpinner size={40} />
                     <span>{t('contracts.refreshing')}</span>
                 </div>
             )}
@@ -261,13 +264,13 @@ const ContractsPage = () => {
                     <div className="lf-pagination-area">
                         <div className="lf-pagination-wrap">
                             <button className="lf-page-btn" onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}>
-                                {isRTL ? '→' : '←'}
+                                {isRTL ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
                             </button>
                             <span className="lf-page-info">
                                 {t('contracts.pageOf').replace('{current}', String(currentPage)).replace('{total}', String(totalPages))}
                             </span>
                             <button className="lf-page-btn" onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}>
-                                {isRTL ? '←' : '→'}
+                                {isRTL ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
                             </button>
                         </div>
                     </div>

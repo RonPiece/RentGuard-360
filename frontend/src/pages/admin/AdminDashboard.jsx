@@ -15,6 +15,8 @@ import { useAdminStats } from '../../hooks/useAdminStats';
 import AdminDashboardCards from './components/AdminDashboardCards';
 import AdminDashboardCharts from './components/AdminDashboardCharts';
 import './AdminDashboard.css';
+import { GlobalSpinner } from '../../components/ui/GlobalSpinner';
+
 
 const AdminDashboard = () => {
     const { isAdmin, userAttributes } = useAuth();
@@ -58,7 +60,7 @@ const AdminDashboard = () => {
         <div className={"admin-dashboard page-container " + (isDark ? 'dark' : 'light')} dir={isRTL ? 'rtl' : 'ltr'}>
             <header className="admin-header">
                 <h1>{t('admin.title')}</h1>
-                <p>{isRTL ? 'שלום' : 'Hello'}, {userAttributes?.name || 'Admin'}</p>
+                <p>{isRTL ? 'שלום' : 'Hello'}, <bdi>{userAttributes?.name || 'Admin'}</bdi></p>
             </header>
 
             <div className="admin-content">
@@ -83,7 +85,7 @@ const AdminDashboard = () => {
 
                 {!accessDenied && loading ? (
                     <div className="loading-state">
-                        <RefreshCw size={40} className="admin-spin-icon" style={{ color: 'var(--accent-primary)' }} />
+                        <GlobalSpinner size={40} />
                         <p>{t('common.loading')}</p>
                     </div>
                 ) : !accessDenied && stats && (
@@ -116,3 +118,4 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
+
