@@ -111,8 +111,6 @@ def parse_auth_provider(user):
                 provider = str((identities[0] or {}).get('providerName') or '').strip()
                 if provider.lower() == 'google':
                     return 'Google'
-                if provider.lower() == 'facebook':
-                    return 'Facebook'
                 return 'Email'
         except Exception:
             pass
@@ -122,8 +120,6 @@ def parse_auth_provider(user):
         prefix = username.split('_', 1)[0].lower()
         if prefix == 'google':
             return 'Google'
-        if prefix == 'facebook':
-            return 'Facebook'
 
     return 'Email'
 
@@ -139,7 +135,7 @@ def fetch_social_group_users(user_pool_id):
         for group in groups:
             name = str(group.get('GroupName') or '')
             lowered = name.lower()
-            if lowered.endswith('_google') or lowered.endswith('_facebook'):
+            if lowered.endswith('_google'):
                 social_group_names.append(name)
 
         for group_name in social_group_names:
