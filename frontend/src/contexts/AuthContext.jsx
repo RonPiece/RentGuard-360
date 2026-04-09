@@ -39,7 +39,7 @@ import {
     confirmResetPassword,
     deleteUser,
 } from 'aws-amplify/auth';
-import api from '@/services/apiClient';
+import { checkUserStatus as apiCheckUserStatus } from '@/features/auth/services/authApi';
 
 const oauthDomain = import.meta.env.VITE_COGNITO_DOMAIN;
 const currentOriginWithSlash = typeof window !== 'undefined'
@@ -259,7 +259,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     const checkUserStatus = async (email) => {
-        return await api.checkUserStatus(email);
+        return await apiCheckUserStatus(email);
     };
 
     return (

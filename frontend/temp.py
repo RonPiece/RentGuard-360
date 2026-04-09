@@ -1,4 +1,5 @@
-import { fetchAuthSession } from 'aws-amplify/auth';
+import sys
+content = '''import { fetchAuthSession } from 'aws-amplify/auth';
 
 export const API_URL = import.meta.env.VITE_API_ENDPOINT;
 const CHECK_USER_API_KEY = import.meta.env.VITE_CHECK_USER_API_KEY;
@@ -24,8 +25,8 @@ export const getAuthToken = async () => {
 
 export const apiCall = async (endpoint, options = {}) => {
     const token = await getAuthToken();
-    const url = `${EFFECTIVE_API_BASE_URL}${endpoint}`;
-    console.log(`API Call: ${url}`);
+    const url = \\\\;
+    console.log(\API Call: \\);
 
     const method = String(options.method || 'GET').toUpperCase();
     const defaultHeaders = { 'Authorization': token };
@@ -54,7 +55,7 @@ export const apiCall = async (endpoint, options = {}) => {
         if (!response.ok) {
             const errorText = await response.text();
             if (!(response.status == 404 && options.silent404)) {
-                console.error(`API Error ${response.status}:`, errorText);
+                console.error(\API Error \:\, errorText);
             }
             let serverMessage = '';
             try {
@@ -63,7 +64,7 @@ export const apiCall = async (endpoint, options = {}) => {
             } catch (e) {
                 serverMessage = errorText;
             }
-            const error = new Error(serverMessage || `API Error: ${response.status}`);
+            const error = new Error(serverMessage || \API Error: \\);
             error.status = response.status;
             throw error;
         }
@@ -80,7 +81,7 @@ export const apiCall = async (endpoint, options = {}) => {
     } catch (error) {
         clearTimeout(timeoutId);
         if (error.name == 'AbortError') {
-            throw new Error('×”×‘×§×©×” × ×›×©×œ×” - ×”×–×ž×Ÿ ×”×§×¦×•×‘ ×¢×‘×¨. × ×¡×” ×©×•×‘.');
+            throw new Error('äá÷ùä ðëùìä - äæîï ä÷öåá òáø. ðñä ùåá.');
         }
         throw error;
     }
@@ -88,7 +89,7 @@ export const apiCall = async (endpoint, options = {}) => {
 
 export const publicApiCall = async (endpoint, options = {}, config = {}) => {
     const { requireApiKey = true } = config;
-    const url = `${EFFECTIVE_API_BASE_URL}${endpoint}`;
+    const url = \\\\;
     const method = (options.method || 'GET').toUpperCase();
     const baseHeaders = {};
 
@@ -114,8 +115,8 @@ export const publicApiCall = async (endpoint, options = {}, config = {}) => {
 
         if (!response.ok) {
             const errorText = await response.text();
-            console.error(`Public API Error ${response.status}:`, errorText);
-            throw new Error(`API Error: ${response.status}`);
+            console.error(\Public API Error \:\, errorText);
+            throw new Error(\API Error: \\);
         }
 
         const text = await response.text();
@@ -165,4 +166,6 @@ export default {
     publicApiCall,
     sendContactMessage,
     normalizeAnalysis
-}
+};'''
+with open('src/services/apiClient.js', 'w', encoding='utf-8') as f:
+    f.write(content)

@@ -21,7 +21,8 @@
  * ============================================
  */
 import { useState, useCallback, useEffect } from 'react';
-import { getContracts, deleteContract, getAnalysis, updateContract } from '@/services/apiClient';
+import { getContracts, deleteContract, updateContract } from '@/features/contracts/services/contractsApi';
+import { getAnalysis } from '@/features/analysis/services/analysisApi';
 import { exportReportToWord, exportReportToWordBlob } from '@/features/analysis/services/ReportExportService';
 import { showAppToast } from '@/utils/toast';
 import useShareFile from '@/features/analysis/hooks/useShareFile';

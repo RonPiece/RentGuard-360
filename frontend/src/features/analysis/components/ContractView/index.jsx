@@ -24,7 +24,7 @@ import {
     PartyPopper
 } from 'lucide-react';
 import { processContractClauses } from '@/features/analysis/utils/contractTextProcessor';
-import { consultClause } from '@/services/apiClient';
+import { consultClause } from '@/features/analysis/services/analysisApi';
 import { exportEditedContractToWord, exportEditedContractToWordBlob } from '@/features/analysis/services/ContractExportService';
 import { showAppToast } from '@/utils/toast';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';

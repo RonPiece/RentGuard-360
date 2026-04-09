@@ -19,7 +19,8 @@ import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
-import { pollForAnalysis, uploadFile } from '@/services/apiClient';
+import { pollForAnalysis } from '@/features/analysis/services/analysisApi';
+import { uploadFile } from '@/features/upload/services/uploadApi';
 import { emitAppToast } from '@/utils/toast';
 
 export const useUpload = () => {

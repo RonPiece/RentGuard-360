@@ -15,7 +15,7 @@
  */
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
-import { getUsers, disableUser, enableUser, deleteUser } from '@/services/apiClient';
+import { getUsers, disableUser, enableUser, deleteUser } from '@/features/admin/services/adminApi';
 import { emitAppToast } from '@/utils/toast';
 import { Mail } from 'lucide-react';
 

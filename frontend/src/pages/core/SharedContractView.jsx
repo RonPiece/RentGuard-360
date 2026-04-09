@@ -17,7 +17,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Download, AlertTriangle, ShieldCheck } from 'lucide-react';
-import { getSharedAnalysis } from '@/services/apiClient';
+import { getSharedAnalysis } from '@/features/analysis/services/analysisApi';
 import ContractView from '@/features/analysis/components/ContractView';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
 import './SharedContractView.css';

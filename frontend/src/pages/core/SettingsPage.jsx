@@ -36,7 +36,7 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
-import { deleteAllUserContracts } from '@/services/apiClient';
+import { deleteAllUserContracts } from '@/features/admin/services/adminApi';
 import Toggle from '@/components/ui/Toggle';
 import './SettingsPage.css';
 

@@ -22,7 +22,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
-import { askContractQuestion, clearContractChatHistory, getContractChatHistory, getContracts } from '@/services/apiClient';
+import { askContractQuestion, clearContractChatHistory, getContractChatHistory } from '@/features/chat/services/chatApi';
+import { getContracts } from '@/features/contracts/services/contractsApi';
 import { isContractChatAutoOpenEnabled, getAnalysisContractIdFromPath, normalizeAssistantText, looksLikeMachineId } from '@/features/chat/utils/chatTextFormatting';
 
 const CHAT_PANEL_CLOSE_MS = 260;

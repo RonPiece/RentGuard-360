@@ -17,7 +17,7 @@
  */
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
-import { getAnalysis, createShareLink, getShareLink, revokeShareLink, saveEditedContract } from '@/services/apiClient';
+import { getAnalysis, createShareLink, getShareLink, revokeShareLink, saveEditedContract } from '@/features/analysis/services/analysisApi';
 import { exportReportToWord } from '@/features/analysis/services/ReportExportService';
 import { showAppToast as emitAppToast } from '@/utils/toast';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';

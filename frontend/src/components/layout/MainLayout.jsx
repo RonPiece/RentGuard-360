@@ -27,7 +27,7 @@ import { showAppToast } from '@/utils/toast';
 import Navigation from './Navigation';
 import Footer from './Footer';
 
-const ContractChatWidget = React.lazy(() => import('@/features/chat/components/ContractChatWidget'));
+const ContractChatWidget = React.lazy(() => import('@/features/chat/components/ContractChatWidget.jsx'));
 
 /* ==========================================================================
  * 2. Component Definition & Hooks

@@ -19,7 +19,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
-import { getContracts } from '@/services/apiClient';
+import { getContracts } from '@/features/contracts/services/contractsApi';
 import './DashboardPage.css';
 
 const DashboardPage = () => {
