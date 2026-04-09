@@ -36,6 +36,9 @@ const Input = ({
     className = '',
     ...props
 }) => {
+    const hasLeftAdornment = Boolean(leftIcon || leftAction);
+    const hasRightAdornment = Boolean(rightIcon || rightAction);
+
     const inputClasses = [
         'input',
         error ? 'input-error' : '',
