@@ -1,0 +1,269 @@
+/* AdminUsersTable.css */
+.users-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+
+.users-table-wrapper {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: auto;
+    max-height: 600px;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 16px;
+    border: 1px solid var(--admin-card-border);
+    background: var(--admin-card-bg);
+    backdrop-filter: blur(24px);
+    box-shadow: var(--admin-card-highlight);
+}
+
+.users-table {
+    width: 100%;
+    min-width: 1200px;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.users-table th:nth-child(1),
+.users-table td:nth-child(1) {
+    width: 280px;
+}
+
+.users-table th:nth-child(2),
+.users-table td:nth-child(2) {
+    width: 200px;
+}
+
+.users-table th:nth-child(3),
+.users-table td:nth-child(3) {
+    width: 180px;
+}
+
+.users-table th:nth-child(4),
+.users-table td:nth-child(4) {
+    width: 150px;
+}
+
+.users-table th:nth-child(5),
+.users-table td:nth-child(5) {
+    width: 100px;
+}
+
+.users-table th:nth-child(6),
+.users-table td:nth-child(6) {
+    width: 130px;
+}
+
+.users-table th:nth-child(7),
+.users-table td:nth-child(7) {
+    width: 130px;
+}
+
+.users-table th,
+.users-table td {
+    padding: 14px 18px;
+    text-align: right;
+    color: var(--admin-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+[dir="ltr"] .users-table th,
+[dir="ltr"] .users-table td {
+    text-align: left;
+}
+
+.users-table th {
+    background: transparent;
+    font-weight: 600;
+    font-size: 10px;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.users-table tbody tr {
+    transition: all 0.3s ease;
+}
+
+.users-table td {
+    font-size: 0.8125rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+}
+
+.users-table .email-cell {
+    user-select: text;
+    -webkit-user-select: text;
+    cursor: text;
+}
+
+.users-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.users-table .disabled-user td:not(.actions-cell) {
+    opacity: 0.35;
+}
+
+.users-table .no-data {
+    text-align: center !important;
+    padding: 48px !important;
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8125rem;
+    font-weight: 400;
+    color: #d1d5db;
+    background: transparent;
+}
+
+.status-badge.active .status-dot {
+    background: #10b981;
+}
+
+.status-badge.pending .status-dot {
+    background: #f59e0b;
+}
+
+.status-badge.disabled .status-dot {
+    background: #f43f5e;
+}
+
+.admin-dashboard.light .status-badge.active {
+    color: #059669;
+    filter: none;
+}
+
+.admin-dashboard.light .status-badge.active .status-dot {
+    background: #10b981;
+    box-shadow: none;
+}
+
+.admin-dashboard.light .status-badge.disabled {
+    color: #dc2626;
+    filter: none;
+}
+
+.admin-dashboard.light .status-badge.disabled .status-dot {
+    background: #ef4444;
+    box-shadow: none;
+}
+
+@media (max-width: 600px) {
+  .users-table th,
+    .users-table td {
+        padding: 12px 14px;
+    }
+}
+
+@media (max-width: 768px) {
+  .users-controls {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 1024px) {
+  .users-controls {
+        flex-direction: column;
+        gap: 12px;
+    }
+}
+
+@media (max-width: 768px) {
+  .users-table-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+  .users-table {
+        min-width: 900px;
+        table-layout: fixed;
+        font-size: 0.8125rem;
+    }
+  .users-table th,
+    .users-table td {
+        padding: 10px 12px;
+        white-space: nowrap;
+    }
+}
+
+@media (max-width: 480px) {
+  .users-table-wrapper {
+        max-width: calc(100vw - 32px);
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        box-sizing: border-box;
+    }
+  .users-table {
+        min-width: 900px;
+        table-layout: fixed;
+    }
+  .users-table th,
+    .users-table td {
+        padding: 8px 10px;
+        font-size: 0.75rem;
+        white-space: nowrap;
+    }
+}
+
+@media (max-width: 1024px) {
+  .users-table-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+  .users-table {
+        min-width: 900px;
+        table-layout: fixed;
+    }
+}
+
+@media (max-width: 768px) {
+  .users-table {
+        min-width: 900px;
+        table-layout: fixed;
+    }
+  .users-table th,
+    .users-table td {
+        padding: 10px 12px;
+        font-size: 12px;
+        white-space: nowrap;
+    }
+}
+
+@media (max-width: 600px) {
+  .users-table {
+        width: 1100px !important;
+        min-width: 1100px !important;
+        table-layout: fixed;
+    }
+}
+
+@media (max-width: 480px) {
+  .users-table {
+        width: 1100px !important;
+        min-width: 1100px !important;
+        table-layout: fixed;
+    }
+  .users-table th,
+    .users-table td {
+        padding: 8px 10px;
+        font-size: 11px;
+        white-space: nowrap;
+    }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .users-table tbody tr:hover {
+        background: rgba(255, 255, 255, 0.02);
+    }
+}

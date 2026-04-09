@@ -14,6 +14,7 @@
  */
 import React from 'react';
 import { Copy, Check, Ban, Trash2 } from 'lucide-react';
+import './AdminUsersTable.css';
 
 const AdminUsersTable = ({
     t,

@@ -14,6 +14,7 @@
  */
 import React from 'react';
 import { AlertTriangle, Edit3 } from 'lucide-react';
+import './ContractToolbar.css';
 
 const ContractToolbar = ({
     readOnly,

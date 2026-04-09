@@ -14,6 +14,7 @@
  */
 import React from 'react';
 import { CheckCircle2, XCircle, Activity, ShieldAlert, Percent, Landmark } from 'lucide-react';
+import './AdminStripePanels.css';
 
 export const AdminStripePanels = ({
     sql,

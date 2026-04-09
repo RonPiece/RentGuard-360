@@ -16,6 +16,7 @@
  */
 import React from 'react';
 import { Edit3, X, Sparkles, Check, Undo2 } from 'lucide-react';
+import './EditClauseModal.css';
 
 const EditClauseModal = ({
     t,

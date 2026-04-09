@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import './CheckoutForm.css';
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { useLanguage } from "@/contexts/LanguageContext/LanguageContext";
 import { useTheme } from "@/contexts/ThemeContext";

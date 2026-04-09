@@ -16,6 +16,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
 import { LineChart } from '@mui/x-charts/LineChart';
 import { TrendingUp, UserPlus } from 'lucide-react';
+import './AdminDashboardCharts.css';
 
 const AdminDashboardCharts = ({ 
     dateRange, 

@@ -15,6 +15,7 @@
 import React from 'react';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
 import { FileText, CheckCircle, Users, Clock } from 'lucide-react';
+import './AdminDashboardCards.css';
 
 const AdminDashboardCards = ({ stats }) => {
     const { t } = useLanguage();

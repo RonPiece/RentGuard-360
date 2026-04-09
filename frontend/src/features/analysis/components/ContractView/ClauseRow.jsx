@@ -27,6 +27,7 @@ import {
     Undo2
 } from 'lucide-react';
 import RecommendationCard from '../RecommendationCard';
+import './ClauseRow.css';
 
 const ClauseRow = ({
     clause,

@@ -55,46 +55,6 @@
     gap: 8px;
 }
 
-.stripe-kpi-grid {
-    display: grid;
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-    gap: 14px;
-}
-
-.stripe-kpi-card {
-    border: 1px solid var(--admin-card-border);
-    background: var(--admin-card-bg);
-    border-radius: 16px;
-    padding: 16px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    min-height: 94px;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
-    transition: transform 0.2s ease, border-color 0.2s ease;
-}
-
-.stripe-kpi-card > div:last-child {
-    flex: 1;
-    min-width: 0;
-}
-
-.stripe-kpi-card.revenue {
-    background: linear-gradient(180deg, var(--admin-card-bg), rgba(16, 185, 129, 0.06));
-}
-
-.kpi-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 12px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(148, 163, 184, 0.16);
-    color: var(--admin-text-secondary);
-    border: 1px solid var(--admin-card-border);
-}
-
 .kpi-label {
     margin: 0;
     color: var(--admin-text-muted);
@@ -105,30 +65,9 @@
     line-height: 1.25;
 }
 
-.kpi-value {
-    margin: 2px 0 0;
-    font-size: clamp(1.05rem, 1.6vw, 1.35rem);
-    font-weight: 700;
-    color: var(--admin-text);
-}
-
 [dir='rtl'] .kpi-label {
     text-transform: none;
     letter-spacing: 0.01em;
-}
-
-.stripe-content-grid {
-    display: grid;
-    grid-template-columns: 1.2fr 1fr;
-    gap: 14px;
-}
-
-.stripe-content-grid.compact-grid {
-    align-items: start;
-}
-
-.stripe-content-grid.map-grid {
-    grid-template-columns: 1.4fr 1fr;
 }
 
 .stripe-single-panel {
@@ -141,37 +80,8 @@
     align-items: stretch;
 }
 
-.stripe-panel {
-    border: 1px solid var(--admin-card-border);
-    background: linear-gradient(180deg, var(--admin-card-bg), rgba(255, 255, 255, 0.01));
-    border-radius: 16px;
-    padding: 18px;
-    box-shadow: none;
-    min-height: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-}
-
 .bundle-panel {
     min-height: auto;
-}
-
-.stripe-panel h3 {
-    margin: 0;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.93rem;
-    font-weight: 700;
-    color: var(--admin-text);
-}
-
-.bundle-bars {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-top: 2px;
 }
 
 .bundle-row-head {
@@ -202,29 +112,6 @@
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px 14px;
-}
-
-.feature-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 8px;
-    border-bottom: 1px dashed var(--admin-card-border);
-    padding-bottom: 8px;
-}
-
-.feature-row strong {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-}
-
-.feature-row .ok {
-    color: #22c55e;
-}
-
-.feature-row .bad {
-    color: #f87171;
 }
 
 .stripe-runtime-error {
@@ -260,35 +147,6 @@
 
 .custom-fill {
     transition: width 0.25s ease;
-}
-
-.payment-mix-summary-list {
-    display: grid;
-    gap: 10px;
-}
-
-.payment-mix-summary-row {
-    border: 1px solid var(--admin-card-border);
-    border-radius: 10px;
-    padding: 10px;
-    display: grid;
-    gap: 6px;
-}
-
-.payment-mix-summary-head,
-.payment-mix-summary-foot {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.84rem;
-    color: var(--admin-text-secondary);
-}
-
-.payment-mix-summary-head span:last-child,
-.payment-mix-summary-foot span:last-child {
-    font-weight: 700;
-    color: var(--admin-text);
 }
 
 .stripe-extra-signals {
@@ -511,43 +369,14 @@
     color: var(--admin-text-muted);
 }
 
-@media (max-width: 1200px) {
-    .stripe-kpi-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-
-    .stripe-content-grid {
-        grid-template-columns: 1fr;
-    }
-
-}
-
 @media (max-width: 640px) {
-    .stripe-kpi-grid {
+  .features-grid {
         grid-template-columns: 1fr;
     }
-
-    .features-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .kpi-value {
-        font-size: 1.05rem;
-    }
-
-    .stripe-panel {
-        padding: 14px;
-    }
-
 }
 
 @media (hover: hover) and (pointer: fine) {
-    .stripe-kpi-card:hover {
-        border-color: var(--admin-card-border-hover);
-        transform: translateY(-1px);
-    }
-
-    .table-wrap tbody tr:hover {
+  .table-wrap tbody tr:hover {
         background: rgba(56, 189, 248, 0.06);
     }
 }

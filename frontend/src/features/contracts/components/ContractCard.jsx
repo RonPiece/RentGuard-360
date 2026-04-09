@@ -13,6 +13,7 @@
  * ============================================
  */
 import React, { useState, useEffect } from 'react';
+import './ContractCard.css';
 import { Link } from 'react-router-dom';
 import ActionMenu from '@/components/ui/ActionMenu';
 import {
@@ -23,6 +24,7 @@ import {
 const DEFAULT_ANALYSIS_TIMEOUT_MS = 3 * 60 * 1000;
 const ANALYSIS_TIMEOUT_MS = (() => {
     const raw = import.meta.env.VITE_ANALYSIS_TIMEOUT_MS;
+
     const parsed = raw ? Number(raw) : NaN;
     return Number.isFinite(parsed) && parsed > 0 ? parsed : DEFAULT_ANALYSIS_TIMEOUT_MS;
 })();

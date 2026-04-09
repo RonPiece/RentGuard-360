@@ -1,24 +1,3 @@
-}
-
-[data-theme="dark"] .success-upload-another-btn.btn-secondary {
-    background: rgba(0, 190, 130, 0.2);
-    color: #d9fff0;
-    border: 1px solid rgba(0, 190, 130, 0.46);
-}
-
-/* ============================================
-    10. ERROR MESSAGE
-    ============================================ */
-
-.error-message {
-    padding: var(--space-md);
-    background: rgba(255, 59, 48, 0.1);
-    border: 1px solid var(--accent-danger);
-    border-radius: var(--radius-md);
-    color: var(--accent-danger);
-    text-align: center;
-}
-
 /* ============================================
    11. TERMS SECTION
    ============================================ */
@@ -48,3 +27,35 @@
 }
 
 /* Ensure pointer appears when hovering the checkbox area even if parent sets default */
+.terms-checkbox input[type="checkbox"]:hover {
+    cursor: pointer !important;
+}
+
+.terms-text {
+    color: var(--text-primary);
+    font-size: var(--font-size-md);
+}
+
+.terms-link {
+    background: none;
+    border: none;
+    color: var(--accent-primary);
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: inherit;
+    padding: 0;
+    font-family: inherit;
+}
+
+.sr-only {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0 0 0 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+

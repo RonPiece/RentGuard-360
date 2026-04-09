@@ -13,6 +13,7 @@
  * ============================================
  */
 import React from 'react';
+import './AdminStripeCards.css';
 import {
     DollarSign,
     Landmark,
