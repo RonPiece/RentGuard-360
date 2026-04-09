@@ -131,6 +131,22 @@
     right: var(--space-md);
 }
 
+.input-action {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+}
+
+.input-action-left {
+    left: var(--space-md);
+}
+
+.input-action-right {
+    right: var(--space-md);
+}
+
 .input-with-left-icon {
     padding-left: calc(var(--space-md) * 3);
 }
@@ -159,4 +175,46 @@
     -webkit-box-shadow: 0 0 0 30px var(--bg-secondary) inset !important;
     -webkit-text-fill-color: var(--text-primary) !important;
     border-color: var(--accent-primary);
+}
+
+.input-password-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
+    color: var(--text-tertiary);
+    border-radius: 999px;
+    transition: color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.input-password-toggle:hover {
+    color: var(--text-primary);
+    background: rgba(0, 0, 0, 0.06);
+}
+
+.input-password-toggle:focus-visible {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 2px;
+}
+
+/* ========== ACTION BUTTONS ========== */
+.input-action {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+}
+
+.input-action-left {
+    left: var(--space-md);
+}
+
+.input-action-right {
+    right: var(--space-md);
 }

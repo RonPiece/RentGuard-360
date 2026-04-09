@@ -190,6 +190,55 @@
     margin-top: 0.75rem;
 }
 
+.forgot-password-link {
+    background: none;
+    border: none;
+    color: var(--primary);
+    cursor: pointer;
+    font-size: 0.9rem;
+    margin-top: -0.5rem;
+    margin-bottom: 0.5rem;
+    text-decoration: underline;
+}
+
+.forgot-password-link-ltr {
+    align-self: flex-end;
+}
+
+.forgot-password-link-rtl {
+    align-self: flex-start;
+}
+
+.auth-centered-text {
+    text-align: center;
+}
+
+.auth-modal-success {
+    text-align: center;
+    max-width: 420px;
+}
+
+.auth-success-icon-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+}
+
+.auth-success-title {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.auth-success-description {
+    font-size: var(--font-size-md);
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
 .auth-error {
     color: var(--accent-danger);
     font-size: 0.875rem;

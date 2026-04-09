@@ -1,10 +1,9 @@
 /**
  * ============================================
- *  Input
- *  iOS-Style Input Field Component
+ * Input
+ * iOS-Style Input Field Component
  * ============================================
- * 
- * PROPS:
+ * * PROPS:
  * - type: string (text, email, password, etc.)
  * - label: string
  * - value: string
@@ -14,8 +13,7 @@
  * - leftIcon/rightIcon: React.ReactNode
  * - disabled: boolean
  * - required: boolean
- * 
- * ============================================
+ * * ============================================
  */
 import React from 'react';
 import PropTypes from 'prop-types';
@@ -31,6 +29,8 @@ const Input = ({
     helperText,
     leftIcon,
     rightIcon,
+    leftAction,
+    rightAction,
     disabled = false,
     required = false,
     className = '',
@@ -38,10 +38,10 @@ const Input = ({
 }) => {
     const inputClasses = [
         'input',
-        error && 'input-error',
-        leftIcon && 'input-with-left-icon',
-        rightIcon && 'input-with-right-icon',
-        disabled && 'input-disabled'
+        error ? 'input-error' : '',
+        hasLeftAdornment ? 'input-with-left-icon' : '',
+        hasRightAdornment ? 'input-with-right-icon' : '',
+        disabled ? 'input-disabled' : ''
     ].filter(Boolean).join(' ');
 
     return (
@@ -54,9 +54,8 @@ const Input = ({
             )}
 
             <div className="input-container">
-                {leftIcon && (
-                    <span className="input-icon input-icon-left">{leftIcon}</span>
-                )}
+                {leftIcon && <span className="input-icon input-icon-left">{leftIcon}</span>}
+                {leftAction && <span className="input-action input-action-left">{leftAction}</span>}
 
                 <input
                     type={type}
@@ -69,9 +68,8 @@ const Input = ({
                     {...props}
                 />
 
-                {rightIcon && (
-                    <span className="input-icon input-icon-right">{rightIcon}</span>
-                )}
+                {rightIcon && <span className="input-icon input-icon-right">{rightIcon}</span>}
+                {rightAction && <span className="input-action input-action-right">{rightAction}</span>}
             </div>
 
             {(error || helperText) && (
@@ -95,10 +93,11 @@ Input.propTypes = {
   helperText: PropTypes.node,
   leftIcon: PropTypes.node,
   rightIcon: PropTypes.node,
+  leftAction: PropTypes.node,
+  rightAction: PropTypes.node,
   disabled: PropTypes.bool,
   required: PropTypes.bool,
   className: PropTypes.string,
   id: PropTypes.string,
   name: PropTypes.string,
 };
-
