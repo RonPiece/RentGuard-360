@@ -1,8 +1,18 @@
-import React, { useEffect, useRef } from 'react';
-
 /**
- * Generic dropdown action menu with outside-click and ESC close handling.
+ * ============================================
+ *  ActionMenu Component
+ *  Generic Dropdown Menu with Click-Outside
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Manages focus and escape key closing
+ * - Handles outside click detection
+ * 
+ * DEPENDENCIES:
+ * - React useRef, useEffect
+ * ============================================
  */
+import React, { useEffect, useRef } from 'react';
 const ActionMenu = ({
     isOpen,
     onToggle,

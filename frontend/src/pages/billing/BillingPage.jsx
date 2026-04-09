@@ -1,7 +1,17 @@
 /**
  * ============================================
- * BillingPage
- * Stripe Customer Portal – Billing Management
+ *  BillingPage
+ *  Stripe Customer Portal – Billing Management
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Current plan summary
+ * - Stripe Portal redirection CTA
+ * - Transaction history list
+ * 
+ * DEPENDENCIES:
+ * - stripeApi (createCustomerPortalSession, getTransactions)
+ * - SubscriptionContext
  * ============================================
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react';

@@ -1,3 +1,19 @@
+/**
+ * ============================================
+ *  EditClauseModal Component
+ *  Modal window for manual clause editing
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Original text display
+ * - AI fix suggestion preview (if available)
+ * - Textarea for manual editing
+ * - Action buttons (Save, Revert, Cancel)
+ * 
+ * DEPENDENCIES:
+ * - None
+ * ============================================
+ */
 import React from 'react';
 import { Edit3, X, Sparkles, Check, Undo2 } from 'lucide-react';
 

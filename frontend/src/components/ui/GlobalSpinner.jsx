@@ -1,3 +1,17 @@
+/**
+ * ============================================
+ *  GlobalSpinner Component
+ *  Centered loading indicator
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Optional full-page centering
+ * - Optional text label
+ * 
+ * DEPENDENCIES:
+ * - lucide-react (RefreshCw)
+ * ============================================
+ */
 import React from 'react';
 import { RefreshCw } from 'lucide-react';
 

@@ -1,3 +1,20 @@
+/**
+ * ============================================
+ *  ThemeContext
+ *  Global Theme Provider (Light/Dark Mode)
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - useTheme: Hook for consuming theme state
+ * - ThemeProvider: Manages theme context and persistence
+ * 
+ * DEPENDENCIES:
+ * - React Context API
+ * - localStorage: 'theme' persistence
+ * - document.documentElement 'data-theme' attribute
+ * 
+ * ============================================
+ */
 /* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useState, useEffect } from 'react';
 

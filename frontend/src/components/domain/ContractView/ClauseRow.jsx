@@ -1,3 +1,19 @@
+/**
+ * ============================================
+ *  ClauseRow Component
+ *  Individual clause display in the Contract View
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Clause text display (RTL support)
+ * - AI Explanation toggle
+ * - Issue indicators (Risk level icons)
+ * - Recommendation card for AI fixes
+ * 
+ * DEPENDENCIES:
+ * - RecommendationCard component
+ * ============================================
+ */
 import React from 'react';
 import { 
     AlertTriangle,

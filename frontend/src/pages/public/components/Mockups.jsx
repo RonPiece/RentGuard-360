@@ -1,3 +1,18 @@
+/**
+ * ============================================
+ *  Mockups Components
+ *  Showcase components for the Landing Page
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - DashboardMockup
+ * - ContractsGridMockup
+ * - ContractViewerMockup
+ * 
+ * DEPENDENCIES:
+ * - framer-motion
+ * ============================================
+ */
 import React from 'react';
 import { Upload, FileText, Download, Edit2, Trash2, Wallet, House, ChevronDown, ChevronUp, AlertTriangle, CheckCircle, Shield } from 'lucide-react';
 import { useLanguage } from '../../../contexts/LanguageContext/LanguageContext';

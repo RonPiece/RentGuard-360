@@ -1,3 +1,18 @@
+/**
+ * ============================================
+ *  Image Processing Service
+ *  Webcam capture processing and compression
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Downscaling and Canvas operations
+ * - JPEG compression
+ * - Cropping logic
+ * 
+ * DEPENDENCIES:
+ * - None (Browser native APIs: Image, Canvas, Blob)
+ * ============================================
+ */
 const DEFAULT_MAX_WIDTH = 1600;
 const DEFAULT_JPEG_QUALITY = 0.76;
 

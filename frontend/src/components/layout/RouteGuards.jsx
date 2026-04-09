@@ -1,3 +1,18 @@
+/**
+ * ============================================
+ *  Route Guards
+ *  Higher Order Components for Route Protection
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - ProtectedRoute: Requires login
+ * - RequireActivePlanRoute: Requires subscription
+ * 
+ * DEPENDENCIES:
+ * - AuthContext, SubscriptionContext
+ * - react-router-dom (Navigate)
+ * ============================================
+ */
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';

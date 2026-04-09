@@ -1,3 +1,17 @@
+/**
+ * ============================================
+ *  ScannerThumbnailGallery Component
+ *  Displays scanned pages before PDF build
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Horizontal scrolling list of pages
+ * - Page selection and deletion
+ * 
+ * DEPENDENCIES:
+ * - None (Stateless presentational component)
+ * ============================================
+ */
 import React from 'react';
 
 const ScannerThumbnailGallery = ({

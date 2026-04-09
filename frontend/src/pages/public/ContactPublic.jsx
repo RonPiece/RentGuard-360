@@ -1,3 +1,18 @@
+/**
+ * ============================================
+ *  ContactPublic Component
+ *  Public Support Form (Unauthenticated)
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Form for sending messages
+ * - Location and Contact Info (HQ)
+ * 
+ * DEPENDENCIES:
+ * - sendContactMessage API
+ * - MapComponent
+ * ============================================
+ */
 import React, { useState } from 'react';
 import { Mail, CheckCircle2, MapPin, Phone, Send, Shield, Clock, ArrowRight } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext/LanguageContext';

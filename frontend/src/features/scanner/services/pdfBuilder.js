@@ -1,3 +1,18 @@
+/**
+ * ============================================
+ *  PDF Builder Service
+ *  Generates a multi-page PDF from scanned images
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Image sizing and fitting math
+ * - jspdf document creation
+ * - Output as File Blob
+ * 
+ * DEPENDENCIES:
+ * - jspdf
+ * ============================================
+ */
 import { jsPDF } from 'jspdf';
 
 const blobToDataUrl = (blob) => new Promise((resolve, reject) => {

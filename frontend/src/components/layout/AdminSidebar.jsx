@@ -1,11 +1,19 @@
-/* ==========================================================================
- * TABLE OF CONTENTS
- * ==========================================================================
- * 1. Imports
- * 2. Component Definition & Hooks
- * 3. Navigation Configuration
- * 4. Render / JSX
- * ========================================================================== */
+/**
+ * ============================================
+ *  AdminSidebar Component
+ *  Navigation panel for admin section
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Nav links definition
+ * - Theme/Language toggles embed
+ * - Logout logic
+ * 
+ * DEPENDENCIES:
+ * - AuthContext, ThemeContext, LanguageContext
+ * - react-router-dom
+ * ============================================
+ */
 
 /* ==========================================================================
  * 1. Imports

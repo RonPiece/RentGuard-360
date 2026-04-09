@@ -1,3 +1,19 @@
+/**
+ * ============================================
+ *  AdminStripeInsights
+ *  Revenue and Payment Analytics
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Core Stripe metrics (MRR, refunds, conversions)
+ * - Package distributions
+ * - Raw transactions table
+ * 
+ * DEPENDENCIES:
+ * - useAdminStripeInsights hook
+ * - admin components (AdminStripeCards, AdminStripePanels)
+ * ============================================
+ */
 import React from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLanguage } from '../../contexts/LanguageContext/LanguageContext';

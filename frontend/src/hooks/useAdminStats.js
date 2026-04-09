@@ -1,3 +1,18 @@
+/**
+ * ============================================
+ *  useAdminStats Hook
+ *  Fetch and date-filter system statistics
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - calculateDateRange: Range handling
+ * - contractsChartDataset: For contract graphs
+ * - userChartDataset: For user signup graphs
+ * 
+ * DEPENDENCIES:
+ * - API (getSystemStats)
+ * ============================================
+ */
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { getSystemStats } from '../services/api';
 import { useLanguage } from '../contexts/LanguageContext/LanguageContext';

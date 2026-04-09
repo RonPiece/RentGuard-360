@@ -1,3 +1,17 @@
+/**
+ * ============================================
+ *  AnalysisBentoGrid Component
+ *  Dashboard-style overview of contract details
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Risk score gauge
+ * - Key insights and party info
+ * 
+ * DEPENDENCIES:
+ * - components/domain/ScoreBreakdown
+ * ============================================
+ */
 import React from 'react';
 import { 
     AlertTriangle, 

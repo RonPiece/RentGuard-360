@@ -1,3 +1,23 @@
+/**
+ * ============================================
+ *  useContractChat Hook
+ *  Custom Hook for AI Contract Assistant Chat
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - State for messages, open status, contract selection, rating limits
+ * - fetch/load logic for chat history and contracts list
+ * - sendQuestion: Sends query to Bedrock AI and handles response
+ * - clearHistory: Purges chat history
+ * - Automatic chat opening mechanism for specific paths
+ * 
+ * DEPENDENCIES:
+ * - API Service (askContractQuestion, clearContractChatHistory)
+ * - AuthContext & LanguageContext
+ * - React Router (useLocation)
+ * 
+ * ============================================
+ */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';

@@ -1,3 +1,20 @@
+/**
+ * ============================================
+ *  useAnalysisPage Hook
+ *  Core logic for viewing contract analysis
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - fetchAnalysis: Loads contract data (polls if pending)
+ * - handleExportWord: Docs generation
+ * - Share link generation and revoking
+ * - saving/editing contract state tracking 
+ * 
+ * DEPENDENCIES:
+ * - API Calls
+ * - ReportExportService
+ * ============================================
+ */
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import { getAnalysis, createShareLink, getShareLink, revokeShareLink, saveEditedContract } from '../services/api';

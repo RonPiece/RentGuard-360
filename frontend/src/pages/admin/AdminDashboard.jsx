@@ -1,7 +1,16 @@
-﻿/**
+/**
  * ============================================
  *  AdminDashboard
  *  System Statistics & Analytics for Admins
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - AdminDashboardCards: Summary widgets
+ * - AdminDashboardCharts: Visual chart data
+ * 
+ * DEPENDENCIES:
+ * - useAdminStats
+ * - AuthContext (Checks isAdmin)
  * ============================================
  */
 import React, { useMemo } from 'react';

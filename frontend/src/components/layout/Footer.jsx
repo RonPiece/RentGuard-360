@@ -1,10 +1,18 @@
-﻿/* ==========================================================================
- * TABLE OF CONTENTS
- * ==========================================================================
- * 1. Imports
- * 2. Component Definition & Hooks
- * 3. Render / JSX
- * ========================================================================== */
+/**
+ * ============================================
+ *  Footer Component
+ *  Global Application Footer
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Links logic based on authentication & permissions
+ * - Authorship and legal texts
+ * 
+ * DEPENDENCIES:
+ * - AuthContext, ThemeContext, LanguageContext
+ * - react-router-dom
+ * ============================================
+ */
 
 /* ==========================================================================
  * 1. Imports

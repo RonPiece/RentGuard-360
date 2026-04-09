@@ -1,3 +1,18 @@
+/**
+ * ============================================
+ *  Chat Text Formatting Tools
+ *  Utilities for processing AI messages
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - isContractChatAutoOpenEnabled: Preferences
+ * - parseJsonObjectFromText: Extracts JSON from markdown
+ * - normalizeAssistantText: Cleans output
+ * 
+ * DEPENDENCIES:
+ * - None
+ * ============================================
+ */
 export const CHAT_AUTO_OPEN_PREF_KEY = 'rentguard_chat_auto_open_contract';
 
 export const isContractChatAutoOpenEnabled = () => {

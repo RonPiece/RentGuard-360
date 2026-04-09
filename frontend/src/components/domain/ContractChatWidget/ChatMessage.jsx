@@ -1,3 +1,18 @@
+/**
+ * ============================================
+ *  ChatMessage Component
+ *  Single message bubble in the Contract AI Chat
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Avatar (Bot/User)
+ * - Message content (Text, Source, Evidence)
+ * - Copy message button
+ * 
+ * DEPENDENCIES:
+ * - chatTextFormatting utils
+ * ============================================
+ */
 import React from 'react';
 import { Check, Copy, Bot } from 'lucide-react';
 import { extractClauseReference, formatMessageTime } from '../../../utils/chatTextFormatting';

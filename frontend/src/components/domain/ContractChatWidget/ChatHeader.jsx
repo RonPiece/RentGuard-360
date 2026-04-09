@@ -1,3 +1,17 @@
+/**
+ * ============================================
+ *  ChatHeader Component
+ *  Header for the Contract AI Chat Widget
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Title and scope description
+ * - Close button
+ * 
+ * DEPENDENCIES:
+ * - None
+ * ============================================
+ */
 import React from 'react';
 import { X } from 'lucide-react';
 

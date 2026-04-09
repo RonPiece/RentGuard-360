@@ -1,3 +1,22 @@
+/**
+ * ============================================
+ *  Hebrew Translations Dictionary
+ *  Language strings for RentGuard-360 frontend (RTL)
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - nav: Navigation and layout strings
+ * - auth: Authentication screens and messages
+ * - dashboard / landing: Application overviews
+ * - contracts / upload / analysis: Core flow
+ * - score / methodology: Scoring logic
+ * - admin / settings: Administration tools
+ * 
+ * DEPENDENCIES:
+ * - Used exclusively by LanguageContext
+ * 
+ * ============================================
+ */
 export const he = {
     "nav": {
         "home": "דף הבית",

@@ -1,3 +1,17 @@
+/**
+ * ============================================
+ *  RouterErrorElement
+ *  React Router v6 Error Boundary Component
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Captures route-level errors (404, 500, js errors)
+ * - Reloads app or shows stack trace in dev
+ * 
+ * DEPENDENCIES:
+ * - react-router-dom
+ * ============================================
+ */
 import React from 'react';
 import { useRouteError, isRouteErrorResponse } from 'react-router-dom';
 import { AlertTriangle, RefreshCw } from 'lucide-react';

@@ -1,3 +1,17 @@
+/**
+ * ============================================
+ *  AdminAnalyticsCharts Component
+ *  Deep-dive charts for analytics
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Usage analytics
+ * - User engagement graphs
+ * 
+ * DEPENDENCIES:
+ * - chart.js / react-chartjs-2
+ * ============================================
+ */
 import React, { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '../../../contexts/LanguageContext/LanguageContext';
 import { useTheme } from '../../../contexts/ThemeContext';

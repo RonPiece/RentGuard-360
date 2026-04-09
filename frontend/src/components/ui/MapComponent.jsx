@@ -1,3 +1,17 @@
+/**
+ * ============================================
+ *  MapComponent
+ *  Leaflet map wrapper
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Renders a map centered on RentGuard HQ
+ * - Fixes default leaflet icon issues
+ * 
+ * DEPENDENCIES:
+ * - react-leaflet, leaflet
+ * ============================================
+ */
 import React from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';

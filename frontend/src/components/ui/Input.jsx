@@ -1,20 +1,16 @@
 /**
  * ============================================
- *  Input
- *  iOS-Style Input Field Component
+ *  Input Component
+ *  iOS-Style Input Field
  * ============================================
  * 
- * PROPS:
- * - type: string (text, email, password, etc.)
- * - label: string
- * - value: string
- * - onChange: function
- * - error: string (error message)
- * - helperText: string
- * - leftIcon/rightIcon: React.ReactNode
- * - disabled: boolean
- * - required: boolean
+ * STRUCTURE:
+ * - Supports text, email, password, etc.
+ * - Handles left/right icons
+ * - Displays error or helper text
  * 
+ * DEPENDENCIES:
+ * - Input.css
  * ============================================
  */
 import React from 'react';

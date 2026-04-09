@@ -1,3 +1,17 @@
+/**
+ * ============================================
+ *  useAdminStripeInsights Hook
+ *  Fetches and processes Stripe transaction data
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Caches data in sessionStorage
+ * - Analyzes success rates, payment mixes, disputes
+ * 
+ * DEPENDENCIES:
+ * - getAdminStripeStats API
+ * ============================================
+ */
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { getAdminStripeStats } from '../services/stripeApi';
 

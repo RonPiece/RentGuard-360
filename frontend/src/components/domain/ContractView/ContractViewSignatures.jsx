@@ -1,3 +1,17 @@
+/**
+ * ============================================
+ *  ContractViewSignatures Component
+ *  Signature blocks for the end of the contract
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Landlord and Tenant signature areas
+ * - Date placeholder
+ * 
+ * DEPENDENCIES:
+ * - None
+ * ============================================
+ */
 import React from 'react';
 
 const ContractViewSignatures = ({ t }) => {

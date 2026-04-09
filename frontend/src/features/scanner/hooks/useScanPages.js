@@ -1,3 +1,18 @@
+/**
+ * ============================================
+ *  useScanPages Hook
+ *  State management for the document scanner
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Pages list state
+ * - Active page selection
+ * - Helpers: addPage, removePage, clearPages
+ * 
+ * DEPENDENCIES:
+ * - imageProcessing.js (revokeImageUrl)
+ * ============================================
+ */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { revokeImageUrl, totalBytesForPages } from '../services/imageProcessing';
 

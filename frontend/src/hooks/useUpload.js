@@ -1,3 +1,19 @@
+/**
+ * ============================================
+ *  useUpload Hook
+ *  Contract PDF Upload Logic and UI State
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Drag-and-drop constraints & progress loop
+ * - Validates file, size, and scanning allowance
+ * - Uploads and polls until processing complete
+ * 
+ * DEPENDENCIES:
+ * - API (uploadFile, pollForAnalysis)
+ * - SubscriptionContext
+ * ============================================
+ */
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext/LanguageContext';

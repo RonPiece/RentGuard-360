@@ -1,7 +1,17 @@
 /**
  * ============================================
- * AnalysisPage
- * Contract Analysis Results Display (LexisFlow Modern UI)
+ *  AnalysisPage
+ *  Contract Analysis Results Display (LexisFlow Modern UI)
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Tabbed interface for Contract issues vs full view
+ * - Sidebar for sharing & summary
+ * - Export to Word capability
+ * 
+ * DEPENDENCIES:
+ * - useAnalysisPage (logic hook)
+ * - Component sub-files (AnalysisHeader, AnalysisBentoGrid, etc.)
  * ============================================
  */
 import React, { useCallback } from 'react';

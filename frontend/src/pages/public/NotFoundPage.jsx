@@ -1,3 +1,14 @@
+/**
+ * ============================================
+ *  NotFoundPage Component
+ *  404 Error Page
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Simple error message
+ * - Return home link
+ * ============================================
+ */
 import React from 'react';
 import { Link } from 'react-router-dom';
 

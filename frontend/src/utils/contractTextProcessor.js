@@ -1,6 +1,16 @@
 /**
- * Contract Text Processor
- * Cleans OCR-extracted text and fixes number positioning
+ * ============================================
+ *  Contract Text Processor
+ *  Cleans OCR-extracted text and fixes number positioning
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - isNoiseLine: Detects OCR garbage
+ * - fixClauseNumbering: Re-orders RTL numbering 
+ * - processContractClauses: Main exported cleaner
+ * - detectLanguage: Text language detector
+ * 
+ * ============================================
  */
 
 // Noise patterns to filter out

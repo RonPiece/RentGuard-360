@@ -1,3 +1,21 @@
+/**
+ * ============================================
+ *  SettingsPage
+ *  User Account & Application Settings
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Profile and logout
+ * - Appearance toggle
+ * - Billing shortcut
+ * - Chat behavior settings
+ * - Danger zone (Account deletion)
+ * 
+ * DEPENDENCIES:
+ * - AuthContext, ThemeContext
+ * - api (deleteAllUserContracts)
+ * ============================================
+ */
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import { useNavigate } from 'react-router-dom';

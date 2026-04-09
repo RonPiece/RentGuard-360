@@ -1,3 +1,17 @@
+/**
+ * ============================================
+ *  AnalysisSidebar Component
+ *  Sidebar navigation for the analysis view
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Score methodology toggle
+ * - Issues summary
+ * 
+ * DEPENDENCIES:
+ * - components/domain/ScoreMethodology
+ * ============================================
+ */
 import React, { useState } from 'react';
 import { Info, ChevronDown } from 'lucide-react';
 import ScoreBreakdown from '../../../components/domain/ScoreBreakdown';

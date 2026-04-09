@@ -1,3 +1,17 @@
+/**
+ * ============================================
+ *  ContractCard Component
+ *  Thumbnail view of a contract in the grid
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Summary metadata (date, parties)
+ * - Quick action buttons
+ * 
+ * DEPENDENCIES:
+ * - None
+ * ============================================
+ */
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import ActionMenu from '../../../components/ui/ActionMenu';
