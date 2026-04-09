@@ -1,7 +1,17 @@
 /**
  * ============================================
- * ContractsPage
- * User's Contract List & Management (LexisFlow Modern UI)
+ *  ContractsPage
+ *  User's Contract List & Management (LexisFlow Modern UI)
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Search & Filter inputs
+ * - Renders ContractCards in a grid
+ * - Modals for Delete / Edit
+ * 
+ * DEPENDENCIES:
+ * - useContracts (Hook for data/logic)
+ * - ContractCard
  * ============================================
  */
 import React from 'react';

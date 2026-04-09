@@ -1,3 +1,18 @@
+/**
+ * ============================================
+ *  useAdminUsers Hook
+ *  Manages User Administration Panel State
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Fetches users list
+ * - Applies search, status, and package sorting/filtering
+ * - Functions for enable/disable/delete user statuses
+ * 
+ * DEPENDENCIES:
+ * - API (getUsers, disableUser, enableUser, deleteUser)
+ * ============================================
+ */
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useLanguage } from '../contexts/LanguageContext/LanguageContext';
 import { getUsers, disableUser, enableUser, deleteUser } from '../services/api';

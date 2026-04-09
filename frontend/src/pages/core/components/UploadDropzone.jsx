@@ -1,3 +1,17 @@
+/**
+ * ============================================
+ *  UploadDropzone Component
+ *  Drag and drop area for uploading contracts
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - react-dropzone wrapper
+ * - File validation and previews
+ * 
+ * DEPENDENCIES:
+ * - react-dropzone
+ * ============================================
+ */
 import React from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Camera, CheckCircle2, FilePenLine, FileText, Files, Loader2, Trash2, Upload } from 'lucide-react';

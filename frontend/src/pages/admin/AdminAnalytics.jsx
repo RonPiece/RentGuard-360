@@ -1,3 +1,18 @@
+/**
+ * ============================================
+ *  AdminAnalytics
+ *  Contract Intelligence Dashboard
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Aggregated statistics
+ * - Visualizations (pie chart, common issues)
+ * 
+ * DEPENDENCIES:
+ * - useAdminAnalytics hook
+ * - components/AdminAnalyticsCards, AdminAnalyticsCharts
+ * ============================================
+ */
 import React from 'react';
 import { useLanguage } from '../../contexts/LanguageContext/LanguageContext';
 import Button from '../../components/ui/Button';

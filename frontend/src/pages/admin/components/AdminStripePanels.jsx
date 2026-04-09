@@ -1,3 +1,17 @@
+/**
+ * ============================================
+ *  AdminStripePanels Component
+ *  Detailed panels for Stripe data
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Recent transactions
+ * - Subscription status
+ * 
+ * DEPENDENCIES:
+ * - None
+ * ============================================
+ */
 import React from 'react';
 import { CheckCircle2, XCircle, Activity, ShieldAlert, Percent, Landmark } from 'lucide-react';
 

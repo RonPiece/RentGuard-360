@@ -1,4 +1,26 @@
-﻿import { useState, useCallback, useEffect } from 'react';
+/**
+ * ============================================
+ *  useContracts Hook
+ *  Custom Hook for Managing Contracts State
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - fetchContracts: Retrieves contracts from API
+ * - handleDelete / confirmDelete: Contract deletion flow
+ * - handleEdit / saveEdit: Contract metadata editing flow
+ * - handleExport / handleShare: Exporting to Word and sharing functionality
+ * - filteredContracts: Applies search and category filters
+ * - sortedContracts: Applies date/score sorting
+ * - paginatedContracts: Handles pagination logic
+ * 
+ * DEPENDENCIES:
+ * - API Service (getContracts, deleteContract, getAnalysis, updateContract)
+ * - ReportExportService (exportReportToWord)
+ * - useShareFile
+ * 
+ * ============================================
+ */
+import { useState, useCallback, useEffect } from 'react';
 import { getContracts, deleteContract, getAnalysis, updateContract } from '../services/api';
 import { exportReportToWord, exportReportToWordBlob } from '../services/ReportExportService';
 import { showAppToast } from '../utils/toast';

@@ -1,3 +1,17 @@
+/**
+ * ============================================
+ *  AdminStripeTable Component
+ *  Table view for Stripe transactions
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Transaction history
+ * - Status indicators
+ * 
+ * DEPENDENCIES:
+ * - None
+ * ============================================
+ */
 import React from 'react';
 
 export const AdminStripeTable = ({

@@ -1,3 +1,17 @@
+/**
+ * ============================================
+ *  ChatInputForm Component
+ *  Input area for the Contract AI Chat Widget
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Textarea for user input (auto-resize)
+ * - Submit button
+ * 
+ * DEPENDENCIES:
+ * - None
+ * ============================================
+ */
 import React from 'react';
 import { Send } from 'lucide-react';
 

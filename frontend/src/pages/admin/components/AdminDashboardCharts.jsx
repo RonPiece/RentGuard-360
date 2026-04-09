@@ -1,3 +1,17 @@
+/**
+ * ============================================
+ *  AdminDashboardCharts Component
+ *  Charts and graphs for the main dashboard
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Chart.js integrations
+ * - Time-series data
+ * 
+ * DEPENDENCIES:
+ * - chart.js / react-chartjs-2
+ * ============================================
+ */
 import React, { useRef, useState, useEffect } from 'react';
 import { useLanguage } from '../../../contexts/LanguageContext/LanguageContext';
 import { LineChart } from '@mui/x-charts/LineChart';

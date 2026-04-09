@@ -1,3 +1,19 @@
+/**
+ * ============================================
+ *  DashboardPage
+ *  User Dashboard with stats and quick actions
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - User stats (total, pending, analyzed, risks)
+ * - Quick actions grid
+ * - Marketing/tutorial sections
+ * 
+ * DEPENDENCIES:
+ * - api (getContracts)
+ * - AuthContext, SubscriptionContext
+ * ============================================
+ */
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';

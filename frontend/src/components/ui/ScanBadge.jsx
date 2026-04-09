@@ -1,3 +1,17 @@
+/**
+ * ============================================
+ *  ScanBadge Component
+ *  Displays remaining contract Scans
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Links to pricing/admin pages based on role
+ * - Shows infinity icon or number
+ * 
+ * DEPENDENCIES:
+ * - AuthContext, SubscriptionContext
+ * ============================================
+ */
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';

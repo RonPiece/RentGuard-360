@@ -1,3 +1,18 @@
+/**
+ * ============================================
+ *  Toast Notifications
+ *  Application-wide toast notification system
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - showAppToast: Displays single toast
+ * - emitAppToast: Event-driven toast
+ * - Rate-limiting and burst window logic
+ * 
+ * DEPENDENCIES:
+ * - react-hot-toast
+ * ============================================
+ */
 import React from 'react';
 import toast from 'react-hot-toast';
 import './toast.css';

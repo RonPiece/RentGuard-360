@@ -1,3 +1,18 @@
+/**
+ * ============================================
+ *  App Router Configuration
+ *  Central application routing and lazy loading
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Public routes (Landing, Auth, Contact, Legal)
+ * - Protected routes (Dashboard, Upload, Contracts, Settings, Admin)
+ * 
+ * DEPENDENCIES:
+ * - react-router-dom
+ * - Suspense for lazy loading
+ * ============================================
+ */
 import React, { lazy } from 'react';
 import { createHashRouter, Navigate } from 'react-router-dom';
 import MainLayout from './components/layout/MainLayout';

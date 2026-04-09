@@ -1,3 +1,17 @@
+/**
+ * ============================================
+ *  AdminUsersModals Component
+ *  Modals for user management actions
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Delete confirmation modal
+ * - Edit user modal
+ * 
+ * DEPENDENCIES:
+ * - ReactDOM for Portals
+ * ============================================
+ */
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Button from '../../../components/ui/Button';

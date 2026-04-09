@@ -1,3 +1,17 @@
+/**
+ * ============================================
+ *  AnalysisHeader Component
+ *  Page header for contract analysis
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Title and Breadcrumbs
+ * - High-level metrics
+ * 
+ * DEPENDENCIES:
+ * - None
+ * ============================================
+ */
 import React from 'react';
 import BackButton from '../../../components/ui/BackButton';
 

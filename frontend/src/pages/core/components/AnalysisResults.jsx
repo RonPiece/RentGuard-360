@@ -1,3 +1,17 @@
+/**
+ * ============================================
+ *  AnalysisResults Component
+ *  Detailed analysis view and recommendations
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - AI suggestions list
+ * - Issue severity breakdown
+ * 
+ * DEPENDENCIES:
+ * - None
+ * ============================================
+ */
 import React from 'react';
 import { ChevronDown, AlertTriangle, Wand2, Copy, Check, Lightbulb } from 'lucide-react';
 import ContractView from '../../../components/domain/ContractView';

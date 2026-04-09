@@ -1,3 +1,17 @@
+/**
+ * ============================================
+ *  AdminDashboardCards Component
+ *  Overview cards for the main admin dashboard
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - High-level metrics
+ * - Trend indicators
+ * 
+ * DEPENDENCIES:
+ * - None
+ * ============================================
+ */
 import React from 'react';
 import { useLanguage } from '../../../contexts/LanguageContext/LanguageContext';
 import { FileText, CheckCircle, Users, Clock } from 'lucide-react';

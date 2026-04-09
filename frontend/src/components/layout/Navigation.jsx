@@ -1,13 +1,20 @@
-/* ==========================================================================
- * TABLE OF CONTENTS
- * ==========================================================================
- * 1. Imports
- * 2. Component Setup & State
- * 3. Lifecycle / Effects
- * 4. Helper Functions
- * 5. Navigation Configuration
- * 6. Render / JSX
- * ========================================================================== */
+/**
+ * ============================================
+ *  Navigation Menu
+ *  Top navbar handling public & authenticated states
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Component Setup & State
+ * - Route-based Link rendering
+ * - Bundle-gated navigation handling
+ * - User Profile menu / Auth controls
+ * 
+ * DEPENDENCIES:
+ * - react-router-dom
+ * - AuthContext, SubscriptionContext
+ * ============================================
+ */
 
 /* ==========================================================================
  * 1. Imports

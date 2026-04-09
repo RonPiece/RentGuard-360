@@ -1,3 +1,19 @@
+/**
+ * ============================================
+ *  AdminLayout Component
+ *  Admin Pages Layout Wrapper
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Mobile Top Bar
+ * - AdminSidebar for Navigation
+ * - Outlet for routed content
+ * 
+ * DEPENDENCIES:
+ * - AdminSidebar component
+ * - react-router-dom (Outlet)
+ * ============================================
+ */
 import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import AdminSidebar from '../../components/layout/AdminSidebar';

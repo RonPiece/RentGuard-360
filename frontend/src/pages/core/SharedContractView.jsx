@@ -1,3 +1,19 @@
+/**
+ * ============================================
+ *  SharedContractView
+ *  Public read-only view for shared contracts
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Uses public token to load contract
+ * - Renders ContractView in read-only mode
+ * - Handles invalid/expired tokens
+ * 
+ * DEPENDENCIES:
+ * - api (getSharedAnalysis)
+ * - ContractView
+ * ============================================
+ */
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Download, AlertTriangle, ShieldCheck } from 'lucide-react';

@@ -1,3 +1,17 @@
+/**
+ * ============================================
+ *  FileDropZone Component
+ *  Drag and drop area for file upload
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Handles drag enter/leave/drop states
+ * - Displays block reason if upload is disabled
+ * 
+ * DEPENDENCIES:
+ * - none (stateless component)
+ * ============================================
+ */
 import React from 'react';
 import PropTypes from 'prop-types';
 import { CloudUpload } from 'lucide-react';

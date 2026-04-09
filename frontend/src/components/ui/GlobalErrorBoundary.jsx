@@ -1,3 +1,17 @@
+/**
+ * ============================================
+ *  GlobalErrorBoundary
+ *  Top-level app crash prevention
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Renders ErrorFallback when unhandled exceptions occur
+ * - Provides reload functionality
+ * 
+ * DEPENDENCIES:
+ * - react-error-boundary
+ * ============================================
+ */
 import React from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { Shield, RefreshCw } from 'lucide-react';

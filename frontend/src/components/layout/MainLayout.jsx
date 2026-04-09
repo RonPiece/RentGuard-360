@@ -1,12 +1,19 @@
-/* ==========================================================================
- * TABLE OF CONTENTS
- * ==========================================================================
- * 1. Imports
- * 2. Component Definition & Hooks
- * 3. Route & View State Logic
- * 4. Lifecycle / Effects
- * 5. Render / JSX
- * ========================================================================== */
+/**
+ * ============================================
+ *  MainLayout
+ *  Core Application Wrapper & Router Outlet
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Route & View State Logic
+ * - Lifecycle / Effects
+ * - Suspense boundary for children
+ * 
+ * DEPENDENCIES:
+ * - AuthContext, LanguageContext
+ * - react-router-dom, react-hot-toast
+ * ============================================
+ */
 
 /* ==========================================================================
  * 1. Imports

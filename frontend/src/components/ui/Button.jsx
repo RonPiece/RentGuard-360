@@ -1,11 +1,18 @@
-/* ==========================================================================
- * TABLE OF CONTENTS
- * ==========================================================================
- * 1. Imports
- * 2. Component Definition
- * 3. Render / JSX
- * 4. PropTypes
- * ========================================================================== */
+/**
+ * ============================================
+ *  Button Component
+ *  Standardized UI Button
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Handles variants (primary, secondary, ghost, danger)
+ * - Supports loading states with spinners
+ * - Handles left/right icons
+ * 
+ * DEPENDENCIES:
+ * - Button.css for styling
+ * ============================================
+ */
 
 /* ==========================================================================
  * 1. Imports

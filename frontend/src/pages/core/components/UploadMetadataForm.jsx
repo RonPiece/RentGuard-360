@@ -1,3 +1,17 @@
+/**
+ * ============================================
+ *  UploadMetadataForm Component
+ *  Form for capturing contract metadata before analysis
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Party names inputs
+ * - Contract value/currency inputs
+ * 
+ * DEPENDENCIES:
+ * - None
+ * ============================================
+ */
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../../../contexts/LanguageContext/LanguageContext';

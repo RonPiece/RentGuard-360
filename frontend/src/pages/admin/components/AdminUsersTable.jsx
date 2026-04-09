@@ -1,3 +1,17 @@
+/**
+ * ============================================
+ *  AdminUsersTable Component
+ *  Data table for user management
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Table headers
+ * - User rows with actions
+ * 
+ * DEPENDENCIES:
+ * - None
+ * ============================================
+ */
 import React from 'react';
 import { Copy, Check, Ban, Trash2 } from 'lucide-react';
 

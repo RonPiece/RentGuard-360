@@ -1,3 +1,17 @@
+/**
+ * ============================================
+ *  AnalysisModals Component
+ *  Dialogs for the analysis page (Edit, Delete, Export)
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Confirmation dialogues
+ * - Document export forms
+ * 
+ * DEPENDENCIES:
+ * - None
+ * ============================================
+ */
 import React from 'react';
 import { Copy, Share2, ExternalLink, Trash2, ChevronDown } from 'lucide-react';
 

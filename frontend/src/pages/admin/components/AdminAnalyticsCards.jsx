@@ -1,3 +1,17 @@
+/**
+ * ============================================
+ *  AdminAnalyticsCards Component
+ *  Metric cards for the admin analytics dashboard
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Stats grid
+ * - Individual stat cards
+ * 
+ * DEPENDENCIES:
+ * - None
+ * ============================================
+ */
 import React from 'react';
 import { useLanguage } from '../../../contexts/LanguageContext/LanguageContext';
 import { useTheme } from '../../../contexts/ThemeContext';

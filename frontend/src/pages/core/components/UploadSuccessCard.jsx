@@ -1,3 +1,17 @@
+/**
+ * ============================================
+ *  UploadSuccessCard Component
+ *  Success state after contract upload
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Success message and metrics
+ * - Navigation options
+ * 
+ * DEPENDENCIES:
+ * - None
+ * ============================================
+ */
 import React from 'react';
 import { ArrowLeft, ArrowRight, CheckCircle2, CheckSquare, LoaderCircle } from 'lucide-react';
 import { useLanguage } from '../../../contexts/LanguageContext/LanguageContext';

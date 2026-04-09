@@ -1,21 +1,17 @@
 /**
  * ============================================
- *  PricingPage
- *  Netflix-style Subscription Plans
+ *  PricingPage Component
+ *  Subscription plan presentation (Netflix-style)
  * ============================================
  * 
  * STRUCTURE:
- * - Hero section with page title
- * - 3 pricing cards (Free / Basic / Pro)
- * - Current plan indicator
- * - Feature comparison
- * - CTA buttons leading to /checkout/:packageId
+ * - Free / Single / Basic / Pro packages
+ * - Displays active/last purchased bundle
+ * - Dynamic conversion to $ for English loc
  * 
  * DEPENDENCIES:
- * - stripeApi.js: getPackages
- * - SubscriptionContext: current plan
- * - LanguageContext: translations
- * 
+ * - stripeApi (getPackages)
+ * - SubscriptionContext
  * ============================================
  */
 import React, { useState, useEffect } from 'react';

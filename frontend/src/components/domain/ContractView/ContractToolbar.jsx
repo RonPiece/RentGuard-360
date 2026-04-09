@@ -1,3 +1,17 @@
+/**
+ * ============================================
+ *  ContractToolbar Component
+ *  Controls for the Contract View
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Filter toggle (Show only issues)
+ * - Statistics badges (Total, Issues, Edited)
+ * 
+ * DEPENDENCIES:
+ * - None
+ * ============================================
+ */
 import React from 'react';
 import { AlertTriangle, Edit3 } from 'lucide-react';
 

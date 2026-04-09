@@ -1,3 +1,20 @@
+/**
+ * ============================================
+ *  CameraScannerModal Component
+ *  Mobile/Webcam document scanning wizard
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Webcam capture
+ * - Cropping overlay (ReactCrop)
+ * - ScannerThumbnailGallery for pages
+ * - Build PDF on complete
+ * 
+ * DEPENDENCIES:
+ * - react-webcam, react-image-crop
+ * - useScanPages hook
+ * ============================================
+ */
 import React, { useMemo, useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
 import Webcam from 'react-webcam';

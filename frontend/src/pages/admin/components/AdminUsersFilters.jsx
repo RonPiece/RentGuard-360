@@ -1,3 +1,17 @@
+/**
+ * ============================================
+ *  AdminUsersFilters Component
+ *  Filter and search bar for the users table
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Search input
+ * - Role/Status filters
+ * 
+ * DEPENDENCIES:
+ * - None
+ * ============================================
+ */
 import React from 'react';
 import ActionMenu from '../../../components/ui/ActionMenu';
 import { Search, Filter, ChevronDown, Mail } from 'lucide-react';

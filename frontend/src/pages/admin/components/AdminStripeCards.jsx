@@ -1,3 +1,17 @@
+/**
+ * ============================================
+ *  AdminStripeCards Component
+ *  Stripe performance metric cards
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Revenue metrics
+ * - Subscription counts
+ * 
+ * DEPENDENCIES:
+ * - None
+ * ============================================
+ */
 import React from 'react';
 import {
     DollarSign,

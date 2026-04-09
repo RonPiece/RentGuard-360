@@ -1,3 +1,17 @@
+/**
+ * ============================================
+ *  RegisterPromptModal Component
+ *  Prompt for guests trying to access premium features
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Modal overlay
+ * - CTA to register
+ * 
+ * DEPENDENCIES:
+ * - None
+ * ============================================
+ */
 import React from 'react';
 import { X, Shield } from 'lucide-react';
 import { useLanguage } from '../../../contexts/LanguageContext/LanguageContext';

@@ -1,3 +1,17 @@
+/**
+ * ============================================
+ *  AuthModal Component
+ *  Unified authentication modal (Login/Register/Confirm)
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Tabbed navigation
+ * - Login form / Register form / Confirmation form
+ * 
+ * DEPENDENCIES:
+ * - AuthContext, api services
+ * ============================================
+ */
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useLanguage } from '../../../contexts/LanguageContext/LanguageContext';

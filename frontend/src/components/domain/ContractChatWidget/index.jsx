@@ -1,3 +1,20 @@
+/**
+ * ============================================
+ *  ContractChatWidget
+ *  Floating AI Chat Assistant for Contracts
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Floating launcher button
+ * - Main chat panel (Header, Messages, Input)
+ * - Contract selector
+ * - Quick prompts
+ * 
+ * DEPENDENCIES:
+ * - useContractChat hook
+ * - ActionMenu, ChatMessage, ChatHeader, ChatInputForm
+ * ============================================
+ */
 import React from 'react';
 import { MessageCircle, X, Bot, ChevronDown } from 'lucide-react';
 import ActionMenu from '../../ui/ActionMenu';

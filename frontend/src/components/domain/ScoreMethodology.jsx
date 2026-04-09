@@ -1,3 +1,18 @@
+/**
+ * ============================================
+ *  ScoreMethodology Component
+ *  Explaination of how the risk score is calculated
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - Accordion toggle
+ * - Severity legend
+ * - Categories description
+ * 
+ * DEPENDENCIES:
+ * - lucide-react icons
+ * ============================================
+ */
 import React, { useState } from 'react';
 import { useLanguage } from '../../contexts/LanguageContext/LanguageContext';
 import { Info, ChevronDown, BadgeDollarSign, House, FileText, Wrench, Scale, ScrollText } from 'lucide-react';

@@ -1,3 +1,18 @@
+/**
+ * ============================================
+ *  useAdminAnalytics Hook
+ *  Fetches and formats system statistical data
+ * ============================================
+ * 
+ * STRUCTURE:
+ * - fetchStats: Gets data from API
+ * - chartTheme: MUI Theme config for charts
+ * - pieData, commonIssues, avgRiskScore: Formatted data
+ * 
+ * DEPENDENCIES:
+ * - getSystemStats API
+ * ============================================
+ */
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { getSystemStats } from '../services/api';
 import { useLanguage } from '../contexts/LanguageContext/LanguageContext';
