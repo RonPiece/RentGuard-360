@@ -227,7 +227,7 @@ const AnalysisResults = ({
             <div className="lf-contract-view-wrapper">
                 <ContractView
                     ref={contractViewRef}
-                    contractText={analysis?.sanitizedText || analysis?.full_text || analysis?.contractText || analysis?.extracted_text || ''}
+                    contractText={analysis?.normalizedContractText || ''}
                     backendClauses={analysis?.clauses_list || analysis?.clauses || []}
                     issues={issues}
                     contractId={analysis?.contractId || contractId}
@@ -237,7 +237,7 @@ const AnalysisResults = ({
                     }}
                     onEditedClausesChange={setEditedClauses}
                     onExportEdited={async (editedClausesMap) => {
-                        const contractText = analysis?.sanitizedText || analysis?.full_text || analysis?.contractText || '';
+                        const contractText = analysis?.normalizedContractText || '';
                         const backendClauses = analysis?.clauses_list || analysis?.clauses || [];
                         await exportEditedContract(contractText, editedClausesMap, issues, 'Edited_Contract', backendClauses);
                     }}

@@ -127,12 +127,7 @@ const AnalysisPage = () => {
 
         const exportResult = analysis?.analysis_result || analysis;
         const exportIssues = exportResult?.issues || [];
-        const contractText =
-            analysis?.sanitizedText ||
-            analysis?.full_text ||
-            analysis?.contractText ||
-            analysis?.extracted_text ||
-            '';
+        const contractText = analysis?.normalizedContractText || '';
         const backendClauses = analysis?.clauses_list || analysis?.clauses || [];
 
         if (!String(contractText).trim() && backendClauses.length === 0) {

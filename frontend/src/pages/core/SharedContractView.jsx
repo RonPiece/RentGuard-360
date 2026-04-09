@@ -62,13 +62,7 @@ const SharedContractView = () => {
     const isContract = result?.is_contract !== false;
     const issues = [];
 
-    const contractText =
-        analysis?.fullEditedText ||
-        analysis?.sanitizedText ||
-        analysis?.full_text ||
-        analysis?.contractText ||
-        analysis?.extracted_text ||
-        '';
+    const contractText = analysis?.normalizedContractText || '';
 
     const sharedEditedClauses = useMemo(() => {
         if (analysis?.editedClauses && typeof analysis.editedClauses === 'object') {

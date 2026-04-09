@@ -339,7 +339,8 @@ export const uploadFile = async (file, onProgress, metadata = {}) => {
  */
 export const getSharedAnalysis = async (shareToken) => {
     const cacheBuster = Date.now();
-    return publicApiCall(`/shared-analysis?shareToken=${encodeURIComponent(shareToken)}&_t=${cacheBuster}`, {}, { requireApiKey: false });
+    const data = await publicApiCall(`/shared-analysis?shareToken=${encodeURIComponent(shareToken)}&_t=${cacheBuster}`, {}, { requireApiKey: false });
+    return normalizeAnalysis(data);
 };
 
 /**
@@ -454,6 +455,21 @@ export const getContracts = async (userId) => {
     }
 };
 
+export function normalizeAnalysis(data) {
+    if (!data) return data;
+    
+    // Create a unified field for contract text
+    data.normalizedContractText = 
+        data.fullEditedText || 
+        data.sanitizedText || 
+        data.full_text || 
+        data.contractText || 
+        data.extracted_text || 
+        '';
+        
+    return data;
+}
+
 /**
  * Get analysis results for a specific contract
  * @param {string} contractId - Contract ID
@@ -461,7 +477,7 @@ export const getContracts = async (userId) => {
  */
 export const getAnalysis = async (contractId, silent404 = false) => {
     const data = await apiCall(`/analysis?contractId=${encodeURIComponent(contractId)}`, { silent404 });
-    return data;
+    return normalizeAnalysis(data);
 };
 
 /**
