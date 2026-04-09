@@ -17,10 +17,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
-import { useLanguage } from '../../contexts/LanguageContext/LanguageContext';
-import { useContracts } from '../../hooks/useContracts';
-import ContractCard from './components/ContractCard';
+import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
+import { useContracts } from '@/features/contracts/hooks/useContracts';
+import ContractCard from '@/features/contracts/components/ContractCard';
 import {
     Plus, RefreshCw, FileText, X, Check,
     AlertTriangle,
@@ -28,7 +28,7 @@ import {
     ChevronLeft, ChevronRight
 } from 'lucide-react';
 import './ContractsPage.css';
-import { GlobalSpinner } from '../../components/ui/GlobalSpinner';
+import { GlobalSpinner } from '@/components/ui/GlobalSpinner';
 
 
 // ============================================

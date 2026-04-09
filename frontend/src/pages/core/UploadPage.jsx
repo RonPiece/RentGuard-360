@@ -20,16 +20,16 @@
  */
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useLanguage } from '../../contexts/LanguageContext/LanguageContext';
-import Card from '../../components/ui/Card';
-import Button from '../../components/ui/Button';
-import CameraScannerModal from '../../features/scanner/components/CameraScannerModal';
-import { useUpload } from '../../hooks/useUpload';
+import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
+import Card from '@/components/ui/Card';
+import Button from '@/components/ui/Button';
+import CameraScannerModal from '@/features/scanner/components/CameraScannerModal';
+import { useUpload } from '@/features/upload/hooks/useUpload';
 
 // Extracted Components
-import UploadDropzone from './components/UploadDropzone';
-import UploadMetadataForm from './components/UploadMetadataForm';
-import UploadSuccessCard from './components/UploadSuccessCard';
+import UploadDropzone from '@/features/upload/components/UploadDropzone';
+import UploadMetadataForm from '@/features/upload/components/UploadMetadataForm';
+import UploadSuccessCard from '@/features/upload/components/UploadSuccessCard';
 
 import './UploadPage.css';
 

@@ -15,35 +15,35 @@
  */
 import React, { lazy } from 'react';
 import { createHashRouter, Navigate } from 'react-router-dom';
-import MainLayout from './components/layout/MainLayout';
-import { ProtectedRoute, RequireActivePlanRoute } from './components/layout/RouteGuards';
-import RouterErrorElement from './components/ui/RouterErrorElement';
-import { useAuth } from './contexts/AuthContext';
-import { useSubscription } from './contexts/SubscriptionContext';
+import MainLayout from '@/components/layout/MainLayout';
+import { ProtectedRoute, RequireActivePlanRoute } from '@/components/layout/RouteGuards';
+import RouterErrorElement from '@/components/ui/RouterErrorElement';
+import { useAuth } from '@/contexts/AuthContext';
+import { useSubscription } from '@/contexts/SubscriptionContext';
 
 // Lazy loaded pages
-const LandingPage = lazy(() => import('./pages/public/LandingPage'));
-const DashboardPage = lazy(() => import('./pages/core/DashboardPage'));
-const UploadPage = lazy(() => import('./pages/core/UploadPage'));
-const ContractsPage = lazy(() => import('./pages/core/ContractsPage'));
-const AnalysisPage = lazy(() => import('./pages/core/AnalysisPage'));
-const SharedContractView = lazy(() => import('./pages/core/SharedContractView'));
-const SettingsPage = lazy(() => import('./pages/core/SettingsPage'));
-const ContactPage = lazy(() => import('./pages/public/ContactPage'));
-const ContactPublic = lazy(() => import('./pages/public/ContactPublic'));
-const PricingPage = lazy(() => import('./pages/billing/PricingPage'));
-const PricingPublic = lazy(() => import('./pages/public/PricingPublic'));
-const CheckoutPage = lazy(() => import('./pages/billing/CheckoutPage'));
-const PaymentSuccessPage = lazy(() => import('./pages/billing/PaymentSuccessPage'));
-const BillingPage = lazy(() => import('./pages/billing/BillingPage'));
-const TermsPage = lazy(() => import('./pages/legal/TermsPage'));
-const PrivacyPage = lazy(() => import('./pages/legal/PrivacyPage'));
-const AdminLayout = lazy(() => import('./pages/admin/AdminLayout'));
-const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
-const AdminUsers = lazy(() => import('./pages/admin/AdminUsers'));
-const AdminAnalytics = lazy(() => import('./pages/admin/AdminAnalytics'));
-const AdminStripeInsights = lazy(() => import('./pages/admin/AdminStripeInsights'));
-const NotFoundPage = lazy(() => import('./pages/public/NotFoundPage'));
+const LandingPage = lazy(() => import('@/pages/public/LandingPage'));
+const DashboardPage = lazy(() => import('@/pages/core/DashboardPage'));
+const UploadPage = lazy(() => import('@/pages/core/UploadPage'));
+const ContractsPage = lazy(() => import('@/pages/core/ContractsPage'));
+const AnalysisPage = lazy(() => import('@/pages/core/AnalysisPage'));
+const SharedContractView = lazy(() => import('@/pages/core/SharedContractView'));
+const SettingsPage = lazy(() => import('@/pages/core/SettingsPage'));
+const ContactPage = lazy(() => import('@/pages/public/ContactPage'));
+const ContactPublic = lazy(() => import('@/pages/public/ContactPublic'));
+const PricingPage = lazy(() => import('@/pages/billing/PricingPage'));
+const PricingPublic = lazy(() => import('@/pages/public/PricingPublic'));
+const CheckoutPage = lazy(() => import('@/pages/billing/CheckoutPage'));
+const PaymentSuccessPage = lazy(() => import('@/pages/billing/PaymentSuccessPage'));
+const BillingPage = lazy(() => import('@/pages/billing/BillingPage'));
+const TermsPage = lazy(() => import('@/pages/legal/TermsPage'));
+const PrivacyPage = lazy(() => import('@/pages/legal/PrivacyPage'));
+const AdminLayout = lazy(() => import('@/pages/admin/AdminLayoutPage'));
+const AdminDashboard = lazy(() => import('@/pages/admin/AdminDashboardPage'));
+const AdminUsers = lazy(() => import('@/pages/admin/AdminUsersPage'));
+const AdminAnalytics = lazy(() => import('@/pages/admin/AdminAnalyticsPage'));
+const AdminStripeInsights = lazy(() => import('@/pages/admin/AdminStripeInsightsPage'));
+const NotFoundPage = lazy(() => import('@/pages/public/NotFoundPage'));
 
 // Helper components for conditional public/protected routes
 const ConditionalPricingRoute = () => {

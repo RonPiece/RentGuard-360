@@ -6,8 +6,8 @@
  */
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useLanguage } from '../../contexts/LanguageContext/LanguageContext';
-import BackButton from '../../components/ui/BackButton';
+import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
+import BackButton from '@/components/ui/BackButton';
 import {
     Calendar,
     ChevronDown,

@@ -15,13 +15,13 @@
  */
 import React, { useState } from 'react';
 import { Mail, CheckCircle2, MapPin, Phone, Send, Shield, Clock, ArrowRight } from 'lucide-react';
-import { useLanguage } from '../../contexts/LanguageContext/LanguageContext';
-import { sendContactMessage } from '../../services/api';
-import { emitAppToast } from '../../utils/toast';
-import Card from '../../components/ui/Card';
-import Input from '../../components/ui/Input';
-import Button from '../../components/ui/Button';
-import MapComponent from '../../components/ui/MapComponent';
+import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
+import { sendContactMessage } from '@/services/apiClient';
+import { emitAppToast } from '@/utils/toast';
+import Card from '@/components/ui/Card';
+import Input from '@/components/ui/Input';
+import Button from '@/components/ui/Button';
+import MapComponent from '@/components/ui/MapComponent';
 import './ContactPage.css';
 import { Link } from 'react-router-dom';
 

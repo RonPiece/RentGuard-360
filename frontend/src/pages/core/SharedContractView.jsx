@@ -17,11 +17,11 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Download, AlertTriangle, ShieldCheck } from 'lucide-react';
-import { getSharedAnalysis } from '../../services/api';
-import ContractView from '../../components/domain/ContractView';
-import { useLanguage } from '../../contexts/LanguageContext/LanguageContext';
+import { getSharedAnalysis } from '@/services/apiClient';
+import ContractView from '@/features/analysis/components/ContractView';
+import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
 import './SharedContractView.css';
-import { GlobalSpinner } from '../../components/ui/GlobalSpinner';
+import { GlobalSpinner } from '@/components/ui/GlobalSpinner';
 
 
 const SharedContractView = () => {

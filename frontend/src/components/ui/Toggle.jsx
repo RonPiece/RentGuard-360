@@ -16,8 +16,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import './Toggle.css';
-import { useTheme } from '../../contexts/ThemeContext';
-import { useLanguage } from '../../contexts/LanguageContext/LanguageContext';
+import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
 import { Sun, Moon } from 'lucide-react';
 
 const Toggle = ({

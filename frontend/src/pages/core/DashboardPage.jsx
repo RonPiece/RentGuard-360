@@ -16,10 +16,10 @@
  */
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
-import { useLanguage } from '../../contexts/LanguageContext/LanguageContext';
-import { useSubscription } from '../../contexts/SubscriptionContext';
-import { getContracts } from '../../services/api';
+import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
+import { useSubscription } from '@/contexts/SubscriptionContext';
+import { getContracts } from '@/services/apiClient';
 import './DashboardPage.css';
 
 const DashboardPage = () => {

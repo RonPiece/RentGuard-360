@@ -21,14 +21,14 @@
  * ========================================================================== */
 import React, { useState, useRef, useEffect } from 'react';
 import { NavLink, Link, useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
-import { useLanguage } from '../../contexts/LanguageContext/LanguageContext';
-import { useSubscription } from '../../contexts/SubscriptionContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
+import { useSubscription } from '@/contexts/SubscriptionContext';
 import { ThemeToggle } from '../ui/Toggle';
 import LanguageToggle from '../ui/LanguageToggle';
 import ScanBadge from '../ui/ScanBadge';
 import { Shield, Settings } from 'lucide-react';
-import { showAppToast } from '../../utils/toast';
+import { showAppToast } from '@/utils/toast';
 import './Navigation.css';
 
 /* ==========================================================================

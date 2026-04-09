@@ -33,11 +33,11 @@ import {
     LogOut,
     Trash2
 } from 'lucide-react';
-import { useAuth } from '../../contexts/AuthContext';
-import { useTheme } from '../../contexts/ThemeContext';
-import { useLanguage } from '../../contexts/LanguageContext/LanguageContext';
-import { deleteAllUserContracts } from '../../services/api';
-import Toggle from '../../components/ui/Toggle';
+import { useAuth } from '@/contexts/AuthContext';
+import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
+import { deleteAllUserContracts } from '@/services/apiClient';
+import Toggle from '@/components/ui/Toggle';
 import './SettingsPage.css';
 
 const SettingsPage = () => {

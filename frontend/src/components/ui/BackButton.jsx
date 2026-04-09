@@ -18,7 +18,7 @@
  * ========================================================================== */
 import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useLanguage } from '../../contexts/LanguageContext/LanguageContext';
+import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import './BackButton.css';
 

@@ -23,15 +23,15 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
-import { useLanguage } from '../../contexts/LanguageContext/LanguageContext';
-import { useAuth } from '../../contexts/AuthContext';
-import { useSubscription } from '../../contexts/SubscriptionContext';
-import { useTheme } from '../../contexts/ThemeContext';
-import { getPackageById, createPaymentIntent, confirmPayment } from '../../services/stripeApi';
-import Card from '../../components/ui/Card';
-import Button from '../../components/ui/Button';
+import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { useSubscription } from '@/contexts/SubscriptionContext';
+import { useTheme } from '@/contexts/ThemeContext';
+import { getPackageById, createPaymentIntent, confirmPayment } from '@/features/billing/services/stripeApi';
+import Card from '@/components/ui/Card';
+import Button from '@/components/ui/Button';
 import './CheckoutPage.css';
-import { GlobalSpinner } from '../../components/ui/GlobalSpinner';
+import { GlobalSpinner } from '@/components/ui/GlobalSpinner';
 
 
 // Initialize Stripe outside component to avoid re-renders

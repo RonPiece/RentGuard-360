@@ -16,13 +16,13 @@
  */
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useLanguage } from '../../contexts/LanguageContext/LanguageContext';
-import { useSubscription } from '../../contexts/SubscriptionContext';
-import { getPackages } from '../../services/stripeApi';
-import Card from '../../components/ui/Card';
-import Button from '../../components/ui/Button';
+import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
+import { useSubscription } from '@/contexts/SubscriptionContext';
+import { getPackages } from '@/features/billing/services/stripeApi';
+import Card from '@/components/ui/Card';
+import Button from '@/components/ui/Button';
 import './PricingPage.css';
-import { GlobalSpinner } from '../../components/ui/GlobalSpinner';
+import { GlobalSpinner } from '@/components/ui/GlobalSpinner';
 
 
 const PricingPage = () => {

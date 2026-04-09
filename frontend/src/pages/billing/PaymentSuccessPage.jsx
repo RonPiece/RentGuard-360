@@ -17,9 +17,9 @@
  */
 import React from 'react';
 import { useLocation, useNavigate, Navigate } from 'react-router-dom';
-import { useLanguage } from '../../contexts/LanguageContext/LanguageContext';
-import Card from '../../components/ui/Card';
-import Button from '../../components/ui/Button';
+import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
+import Card from '@/components/ui/Card';
+import Button from '@/components/ui/Button';
 import './PaymentSuccessPage.css';
 
 const PaymentSuccessPage = () => {

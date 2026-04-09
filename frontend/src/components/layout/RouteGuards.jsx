@@ -15,9 +15,9 @@
  */
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
-import { useSubscription } from '../../contexts/SubscriptionContext';
-import { useLanguage } from '../../contexts/LanguageContext/LanguageContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { useSubscription } from '@/contexts/SubscriptionContext';
+import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
 import './RouteGuards.css';
 import { GlobalSpinner } from '../ui/GlobalSpinner';
 

@@ -29,12 +29,12 @@ import {
     Filter,
     ChevronDown
 } from 'lucide-react';
-import { useAuth } from '../../contexts/AuthContext';
-import { useLanguage } from '../../contexts/LanguageContext/LanguageContext';
-import { useSubscription } from '../../contexts/SubscriptionContext';
-import { createCustomerPortalSession, getTransactions } from '../../services/stripeApi';
-import { emitAppToast } from '../../utils/toast';
-import BackButton from '../../components/ui/BackButton';
+import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
+import { useSubscription } from '@/contexts/SubscriptionContext';
+import { createCustomerPortalSession, getTransactions } from '@/features/billing/services/stripeApi';
+import { emitAppToast } from '@/utils/toast';
+import BackButton from '@/components/ui/BackButton';
 import './BillingPage.css';
 
 const BillingPage = () => {

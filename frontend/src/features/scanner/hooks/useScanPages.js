@@ -14,7 +14,7 @@
  * ============================================
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { revokeImageUrl, totalBytesForPages } from '../services/imageProcessing';
+import { revokeImageUrl, totalBytesForPages } from '@/features/scanner/services/imageProcessing';
 
 export const useScanPages = () => {
     const [pages, setPages] = useState([]);

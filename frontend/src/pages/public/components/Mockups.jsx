@@ -15,7 +15,7 @@
  */
 import React from 'react';
 import { Upload, FileText, Download, Edit2, Trash2, Wallet, House, ChevronDown, ChevronUp, AlertTriangle, CheckCircle, Shield } from 'lucide-react';
-import { useLanguage } from '../../../contexts/LanguageContext/LanguageContext';
+import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
 
 // ===== CSS MOCKUPS - Matching actual app design =====
 

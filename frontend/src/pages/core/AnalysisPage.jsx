@@ -16,7 +16,7 @@
  */
 import React, { useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import Button from '../../components/ui/Button';
+import Button from '@/components/ui/Button';
 import {
     Hourglass,
     Timer,
@@ -28,15 +28,15 @@ import {
 } from 'lucide-react';
 import './AnalysisPage.css';
 
-import { useAnalysisPage } from '../../hooks/useAnalysisPage';
-import AnalysisHeader from './components/AnalysisHeader';
-import AnalysisBentoGrid from './components/AnalysisBentoGrid';
-import AnalysisResults from './components/AnalysisResults';
-import AnalysisSidebar from './components/AnalysisSidebar';
-import { SharePanel } from './components/AnalysisModals';
-import { exportEditedContract } from '../../services/ContractExportService';
-import { showAppToast as emitAppToast } from '../../utils/toast';
-import { GlobalSpinner } from '../../components/ui/GlobalSpinner';
+import { useAnalysisPage } from '@/features/analysis/hooks/useAnalysisPage';
+import AnalysisHeader from '@/features/analysis/components/AnalysisHeader';
+import AnalysisBentoGrid from '@/features/analysis/components/AnalysisBentoGrid';
+import AnalysisResults from '@/features/analysis/components/AnalysisResults';
+import AnalysisSidebar from '@/features/analysis/components/AnalysisSidebar';
+import { SharePanel } from '@/features/analysis/components/AnalysisModals';
+import { exportEditedContract } from '@/features/analysis/services/ContractExportService';
+import { showAppToast as emitAppToast } from '@/utils/toast';
+import { GlobalSpinner } from '@/components/ui/GlobalSpinner';
 
 
 const AnalysisPage = () => {

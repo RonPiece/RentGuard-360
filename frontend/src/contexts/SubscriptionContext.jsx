@@ -19,7 +19,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { fetchAuthSession } from 'aws-amplify/auth';
 import { useAuth } from './AuthContext';
-import { getSubscription, deductScan as apiDeductScan } from '../services/stripeApi';
+import { getSubscription, deductScan as apiDeductScan } from '@/features/billing/services/stripeApi';
 
 const defaultSubscriptionContext = {
     subscription: null,

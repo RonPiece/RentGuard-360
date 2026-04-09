@@ -39,7 +39,7 @@ import {
     confirmResetPassword,
     deleteUser,
 } from 'aws-amplify/auth';
-import api from '../services/api';
+import api from '@/services/apiClient';
 
 const oauthDomain = import.meta.env.VITE_COGNITO_DOMAIN;
 const currentOriginWithSlash = typeof window !== 'undefined'

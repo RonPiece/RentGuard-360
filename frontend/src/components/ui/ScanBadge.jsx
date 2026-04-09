@@ -15,9 +15,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
-import { useSubscription } from '../../contexts/SubscriptionContext';
-import { useLanguage } from '../../contexts/LanguageContext/LanguageContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { useSubscription } from '@/contexts/SubscriptionContext';
+import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
 import { Search } from 'lucide-react';
 
 const ScanBadge = () => {

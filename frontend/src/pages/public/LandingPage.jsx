@@ -30,10 +30,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { motion, useInView } from 'framer-motion';
-import { useAuth } from '../../contexts/AuthContext';
-import { useSubscription } from '../../contexts/SubscriptionContext';
-import { useLanguage } from '../../contexts/LanguageContext/LanguageContext';
-import Navigation from '../../components/layout/Navigation';
+import { useAuth } from '@/contexts/AuthContext';
+import { useSubscription } from '@/contexts/SubscriptionContext';
+import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
+import Navigation from '@/components/layout/Navigation';
 import { Upload, Brain, FileText, ChevronDown, ChevronUp, AlertTriangle, CheckCircle, Shield, Download, Edit2, Trash2, X, Cloud, Bot, Lock, Zap, Pause, Wallet, House } from 'lucide-react';
 import './LandingPage.css';
 
@@ -43,9 +43,9 @@ void motion;
 
 // ===== MAIN LANDING PAGE =====
 
-import AuthModal from './components/AuthModal';
+import AuthModal from '@/features/auth/components/AuthModal';
 import { DashboardMockup, ContractsGridMockup, ContractViewerMockup } from './components/Mockups';
-import RegisterPromptModal from './components/RegisterPromptModal';
+import RegisterPromptModal from '@/features/auth/components/RegisterPromptModal';
 
 const benefits = [
     {

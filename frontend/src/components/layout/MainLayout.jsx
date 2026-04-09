@@ -21,13 +21,13 @@
 import React, { Suspense, useEffect } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
-import { useAuth } from '../../contexts/AuthContext';
-import { useLanguage } from '../../contexts/LanguageContext/LanguageContext';
-import { showAppToast } from '../../utils/toast';
+import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
+import { showAppToast } from '@/utils/toast';
 import Navigation from './Navigation';
 import Footer from './Footer';
 
-const ContractChatWidget = React.lazy(() => import('../domain/ContractChatWidget'));
+const ContractChatWidget = React.lazy(() => import('@/features/chat/components/ContractChatWidget'));
 
 /* ==========================================================================
  * 2. Component Definition & Hooks

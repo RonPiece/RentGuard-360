@@ -20,9 +20,9 @@ import ReactDOM from 'react-dom';
 import Webcam from 'react-webcam';
 import ReactCrop from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
-import { useScanPages } from '../hooks/useScanPages';
-import { compressCaptureDataUrl, getCroppedImg } from '../services/imageProcessing';
-import { buildPdfFileFromPages } from '../services/pdfBuilder';
+import { useScanPages } from '@/features/scanner/hooks/useScanPages';
+import { compressCaptureDataUrl, getCroppedImg } from '@/features/scanner/services/imageProcessing';
+import { buildPdfFileFromPages } from '@/features/scanner/services/pdfBuilder';
 import ScannerThumbnailGallery from './ScannerThumbnailGallery';
 import './CameraScannerModal.css';
 

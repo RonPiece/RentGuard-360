@@ -15,7 +15,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { CloudUpload } from 'lucide-react';
-import { useLanguage } from '../../contexts/LanguageContext/LanguageContext';
+import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
 
 const FileDropZone = ({
     isDragging,

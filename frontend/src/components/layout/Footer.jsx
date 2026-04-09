@@ -18,9 +18,9 @@
  * 1. Imports
  * ========================================================================== */
 import React from 'react';
-import { useLanguage } from '../../contexts/LanguageContext/LanguageContext';
-import { useTheme } from '../../contexts/ThemeContext';
-import { useAuth } from '../../contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
+import { useTheme } from '@/contexts/ThemeContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { Link } from 'react-router-dom';
 import { Github } from 'lucide-react';
 import './Footer.css';
