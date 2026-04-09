@@ -52,14 +52,32 @@ const AnalysisBentoGrid = ({
                     <h2>{t('analysis.overallHealth')}</h2>
                 </div>
                 <div className="lf-score-body">
-                    <span className="lf-score-big">{riskScore}</span>
-                    <span className="lf-score-small">/100</span>
-                </div>
-                <div className="lf-score-footer">
-                    <div className="lf-progress-track">
-                        <div className="lf-progress-fill" style={{ width: `${riskScore}%` }}></div>
+                    <svg className="lf-score-ring" viewBox="0 0 120 120">
+                        <circle
+                            cx="60"
+                            cy="60"
+                            r="54"
+                            fill="none"
+                            stroke="rgba(255, 255, 255, 0.2)"
+                            strokeWidth="8"
+                        />
+                        <circle
+                            cx="60"
+                            cy="60"
+                            r="54"
+                            fill="none"
+                            stroke="rgba(255, 255, 255, 0.9)"
+                            strokeWidth="8"
+                            strokeDasharray={2 * Math.PI * 54}
+                            strokeDashoffset={2 * Math.PI * 54 - (riskScore / 100) * (2 * Math.PI * 54)}
+                            strokeLinecap="round"
+                            transform="rotate(-90 60 60)"
+                        />
+                    </svg>
+                    <div className="lf-score-text">
+                        <span className="lf-score-big">{riskScore}</span>
+                        <span className="lf-score-small">/100</span>
                     </div>
-                    <p>{t('analysis.overallRiskScore')}</p>
                 </div>
             </div>
 
