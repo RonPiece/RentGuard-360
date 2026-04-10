@@ -197,7 +197,6 @@ export function useContractChat() {
         const updatePaletteBySection = () => {
             const isMobile = window.innerWidth <= 768;
             if (isMobile) {
-                // Keep a stable palette on mobile to avoid visible flicker while scrolling.
                 setUseWhyPalette(false);
                 return;
             }
@@ -333,6 +332,10 @@ export function useContractChat() {
         loadHistory();
     }, [selectedContractId, open, historyReloadSeq]);
 
+    useEffect(() => {
+        setQuestion('');
+    }, [selectedContractId]);
+
     const scrollMessagesToBottom = (behavior = 'smooth') => {
         const container = messagesContainerRef.current;
         if (!container) return;
@@ -397,8 +400,6 @@ export function useContractChat() {
         const trimmed = question.trim();
         if (!trimmed || isAsking) return;
 
-        // Block sending when an error banner is active (e.g., failed history load)
-        // to avoid spending tokens while chat context is in an invalid state.
         if (errorKey) {
             return;
         }
