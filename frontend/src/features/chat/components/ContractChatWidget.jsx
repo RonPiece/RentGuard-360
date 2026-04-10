@@ -251,6 +251,7 @@ const ContractChatWidget = () => {
                         onInputKeyDown={onInputKeyDown}
                         inputRef={inputRef}
                         isAsking={isAsking}
+                        hasBlockingError={Boolean(errorKey)}
                         rateLimitSecondsLeft={rateLimitSecondsLeft}
                     />
 

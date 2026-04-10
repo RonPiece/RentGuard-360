@@ -24,8 +24,11 @@ const ChatInputForm = ({
     onInputKeyDown,
     inputRef,
     isAsking,
+    hasBlockingError,
     rateLimitSecondsLeft
 }) => {
+    const isInputDisabled = isAsking || hasBlockingError || rateLimitSecondsLeft > 0;
+
     return (
         <form onSubmit={onSubmit} className="chat-widget-input-row">
             <textarea
@@ -35,11 +38,11 @@ const ChatInputForm = ({
                 onKeyDown={onInputKeyDown}
                 placeholder={t('chat.inputPlaceholder')}
                 maxLength={1200}
-                disabled={isAsking || rateLimitSecondsLeft > 0}
+                disabled={isInputDisabled}
                 rows={1}
                 dir="auto"
             />
-            <button type="submit" disabled={isAsking || rateLimitSecondsLeft > 0 || !question.trim()} aria-label={t('chat.send')}>
+            <button type="submit" disabled={isInputDisabled || !question.trim()} aria-label={t('chat.send')}>
                 <Send size={16} />
             </button>
         </form>

@@ -39,6 +39,7 @@ export function useContractChat() {
     const [selectedContractId, setSelectedContractId] = useState('');
     const [messages, setMessages] = useState([]);
     const [isHistoryLoading, setIsHistoryLoading] = useState(false);
+    const [historyReloadSeq, setHistoryReloadSeq] = useState(0);
     const [question, setQuestion] = useState('');
     const [isAsking, setIsAsking] = useState(false);
     const [errorKey, setErrorKey] = useState('');
@@ -294,6 +295,7 @@ export function useContractChat() {
         }
 
         const loadHistory = async () => {
+            setErrorKey('');
             setIsHistoryLoading(true);
             try {
                 const items = await getContractChatHistory(selectedContractId, 30);
@@ -329,7 +331,7 @@ export function useContractChat() {
         };
 
         loadHistory();
-    }, [selectedContractId, open]);
+    }, [selectedContractId, open, historyReloadSeq]);
 
     const scrollMessagesToBottom = (behavior = 'smooth') => {
         const container = messagesContainerRef.current;
@@ -394,6 +396,12 @@ export function useContractChat() {
     const sendQuestion = async () => {
         const trimmed = question.trim();
         if (!trimmed || isAsking) return;
+
+        // Block sending when an error banner is active (e.g., failed history load)
+        // to avoid spending tokens while chat context is in an invalid state.
+        if (errorKey) {
+            return;
+        }
 
         if (rateLimitSecondsLeft > 0) {
             setResponseHintKey('rateLimit');
@@ -527,6 +535,8 @@ export function useContractChat() {
 
     const handleContractSelect = (nextContractId) => {
         setSelectedContractId(nextContractId);
+        setHistoryReloadSeq((prev) => prev + 1);
+        setErrorKey('');
         setResponseHintKey('');
         setIsContractMenuOpen(false);
         trackChatEvent('chat_contract_selected', { contractId: nextContractId || null });
