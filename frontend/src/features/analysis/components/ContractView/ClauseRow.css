@@ -48,7 +48,43 @@
 /* Side borders for issues */
 .lf-cv-clause-box.has-issue { border-inline-start: 4px solid var(--accent-warning); background: rgba(245, 158, 11, 0.03); }
 
-.lf-cv-clause-box.has-issue.is-edited { border-inline-start-color: var(--accent-success); background: rgba(16, 185, 129, 0.03); }
+/* Edited clauses (applies mainly for manual edits or when user accepts AI diff) */
+.lf-cv-clause-box.is-edited { 
+    border-inline-start: 4px solid #eab308; 
+    background: rgba(234, 179, 8, 0.08); 
+    position: relative;
+}
+
+.lf-cv-clause-box.has-issue.is-edited { 
+    border-inline-start-color: var(--accent-success); 
+    background: rgba(16, 185, 129, 0.03); 
+}
+
+/* Highlight yellow on hover for read-only edited clauses */
+.lf-cv-clause-box.is-edited.read-only:hover {
+    background: rgba(234, 179, 8, 0.15) !important;
+}
+
+/* Add a visual "Edited" badge indicator in readOnly mode */
+.lf-cv-clause-box.is-edited.read-only::before {
+    content: "ערוך";
+    position: absolute;
+    top: 0.35rem;
+    inset-inline-end: 0.75rem;
+    background: #eab308;
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: bold;
+    line-height: 1;
+    padding: 4px 9px;
+    border-radius: 12px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+    z-index: 2;
+    pointer-events: none;
+}
+[dir="ltr"] .lf-cv-clause-box.is-edited.read-only::before {
+    content: "Edited";
+}
 
 .lf-cv-clause-text-area { display: flex; align-items: flex-start; gap: 1rem; }
 

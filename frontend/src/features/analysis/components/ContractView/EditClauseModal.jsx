@@ -44,17 +44,21 @@ const EditClauseModal = ({
                         <div className="lf-cv-original-text">{selectedClause.text}</div>
                     </div>
 
-                    {selectedClause.issue?.suggested_fix && (
-                        <div className="lf-cv-modal-section lf-cv-suggested-section">
-                            <div className="lf-cv-suggested-header">
-                                <Sparkles size={16} /> <label>{t('contractView.aiFixSuggestionLabel')}</label>
+                    {selectedClause.issues?.length > 0 && selectedClause.issues.map((issue, idx) => {
+                        const fixText = issue?.suggested_fix || issue?.recommendation || issue?.suggestedFix || issue?.solution || issue?.fix;
+                        if (!fixText) return null;
+                        return (
+                            <div key={idx} className="lf-cv-modal-section lf-cv-suggested-section">
+                                <div className="lf-cv-suggested-header">
+                                    <Sparkles size={16} /> <label>{t('contractView.aiFixSuggestionLabel')}</label>
+                                </div>
+                                <div className="lf-cv-suggested-text">{fixText}</div>
+                                <button className="lf-cv-apply-btn" onClick={() => applySuggestedFix(issue)}>
+                                    <Check size={16} /> {t('contractView.applySuggestion')}
+                                </button>
                             </div>
-                            <div className="lf-cv-suggested-text">{selectedClause.issue.suggested_fix}</div>
-                            <button className="lf-cv-apply-btn" onClick={applySuggestedFix}>
-                                <Check size={16} /> {t('contractView.applySuggestion')}
-                            </button>
-                        </div>
-                    )}
+                        );
+                    })}
 
                     <div className="lf-cv-modal-section">
                         <label>{t('contractView.editLabel')}</label>

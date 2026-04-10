@@ -167,7 +167,14 @@ def _hydrate_edited_contract(item, contract_id, owner_user_id=None):
         edited_clauses = contract_record.get('editedClauses') or {}
 
         if not edited_key:
-            return item
+            # We still want to attach editedClauses so the frontend can overlay edits, even if a full S3 version wasn't saved yet
+            merged = dict(item)
+            original_snapshot = item.get('original_clauses_list') if isinstance(item.get('original_clauses_list'), list) else item.get('clauses_list')
+            if isinstance(original_snapshot, list):
+                merged['originalClausesList'] = original_snapshot
+            if isinstance(edited_clauses, dict) and edited_clauses:
+                merged['editedClauses'] = edited_clauses
+            return merged
 
         edited_obj = s3.get_object(Bucket=CONTRACTS_BUCKET, Key=edited_key)
         edited_text = edited_obj['Body'].read().decode('utf-8')

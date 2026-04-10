@@ -22,7 +22,7 @@ import ContractView from '@/features/analysis/components/ContractView';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
 import './SharedContractView.css';
 import { GlobalSpinner } from '@/components/ui/GlobalSpinner';
-
+import { processContractClauses } from '@/features/analysis/utils/contractTextProcessor';
 
 const SharedContractView = () => {
     const { t, isRTL } = useLanguage();
@@ -69,12 +69,15 @@ const SharedContractView = () => {
             return analysis.editedClauses;
         }
 
-        const originalClauses = Array.isArray(analysis?.originalClausesList)
+        const originalRaw = Array.isArray(analysis?.originalClausesList)
             ? analysis.originalClausesList
             : (Array.isArray(analysis?.original_clauses_list) ? analysis.original_clauses_list : []);
-        const currentClauses = Array.isArray(analysis?.clauses_list)
+        const currentRaw = Array.isArray(analysis?.clauses_list)
             ? analysis.clauses_list
             : (Array.isArray(analysis?.clauses) ? analysis.clauses : []);
+
+        const originalClauses = originalRaw;
+        const currentClauses = currentRaw;
 
         if (!originalClauses.length || !currentClauses.length) {
             return {};

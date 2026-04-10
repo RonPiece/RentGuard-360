@@ -207,7 +207,7 @@ export const exportEditedContractToWord = async (clauseTexts, editedClauses, fil
 
             const clauseId = `clause-${index}`;
             const edit = editedClauses ? editedClauses[clauseId] : null;        
-            const wasEdited = edit && (edit.action === 'accepted' || edit.action === 'edited');
+            const wasEdited = edit && (edit.action === 'accepted' || edit.action === 'edited' || edit.action === 'shared-diff');
 
             sections.push(createClauseParagraph(text, wasEdited, edit?.originalNumber, dict));
         });

@@ -34,7 +34,7 @@ import ClauseRow from './ClauseRow';
 import ContractToolbar from './ContractToolbar';
 import './ContractView.css';
 
-const FUZZY_MATCH_STRIP_PATTERN = /[\s\t\r\n.,\-:]+/g;
+const FUZZY_MATCH_STRIP_PATTERN = /[\s\t\r\n.,\-:;"']+/g;
 const MIN_FUZZY_MATCH_LENGTH = 15;
 
 const normalizeForFuzzyClauseMatch = (text) => {
@@ -50,11 +50,32 @@ const isFuzzyClauseMatch = (issueText, clauseText) => {
     if (!normalizedIssue || !normalizedClause) return false;
     if (normalizedIssue.length < MIN_FUZZY_MATCH_LENGTH || normalizedClause.length < MIN_FUZZY_MATCH_LENGTH) return false;
 
-    return (
+    // Strict overlap check
+    if (
         normalizedClause === normalizedIssue ||
         normalizedClause.includes(normalizedIssue) ||
         normalizedIssue.includes(normalizedClause)
-    );
+    ) {
+        return true;
+    }
+
+    // Word intersection for OCR resilience
+    const getWords = (t) => String(t || '').toLowerCase().replace(/[.,\-:;"'()[\]{}*&^%$#@!\\|?><]/g, ' ').split(/\s+/).filter(w => w.length > 2);
+    const issueWords = getWords(issueText);
+    const clauseWords = getWords(clauseText);
+    
+    if (issueWords.length < 3 || clauseWords.length < 3) return false;
+    
+    let matchCount = 0;
+    for (const w of issueWords) {
+        if (clauseWords.includes(w)) {
+            matchCount++;
+        }
+    }
+    
+    const matchRatio = matchCount / issueWords.length;
+    const requiredRatio = issueWords.length < 5 ? 0.9 : 0.75;
+    return matchRatio >= requiredRatio;
 };
 
 const ContractView = forwardRef(({
@@ -100,33 +121,84 @@ const ContractView = forwardRef(({
 
         const processedClauses = processContractClauses(rawClauses);
 
-        return processedClauses.map((text, index) => {
-            const clauseObj = {
-                id: `clause-${index}`,
-                text: text.trim(),
-                hasIssue: false,
-                issue: null,
-                isEdited: !!editedClauses[`clause-${index}`]
+        // 1. Initialize all clauses
+        const clauseObjects = processedClauses.map((text, index) => ({
+            id: `clause-${index}`,
+            text: text.trim(),
+            hasIssue: false,
+            issue: null,
+            isEdited: !!editedClauses[`clause-${index}`],
+            issues: []
+        }));
+
+        // 2. Map issues to best clause using bi-grams
+        issues.forEach(issue => {
+            const issueTextCandidate = [
+                issue.original_text,
+                issue.original,
+                issue.clause_text,
+                issue.clause,
+                issue.finding_text
+            ].find(Boolean) || '';
+            
+            const issueText = String(issueTextCandidate).toLowerCase().trim();
+            if (!issueText) return;
+
+            let bestClause = null;
+            let bestScore = -1;
+
+            const getBigrams = (str) => {
+                const s = str.replace(/\s+/g, ' ');
+                const bigrams = new Set();
+                for (let i = 0; i < s.length - 1; i++) {
+                    bigrams.add(s.substring(i, i + 2));
+                }
+                return bigrams;
             };
+            
+            const issueBigrams = getBigrams(issueText);
 
-            const matchedIssue = issues.find(issue => {
-                const issueTextCandidate =
-                    issue.original_text ||
-                    issue.original ||
-                    issue.clause_text ||
-                    issue.clause ||
-                    '';
+            clauseObjects.forEach(clause => {
+                const clauseTextLower = clause.text.toLowerCase().trim();
+                let score = 0;
 
-                return isFuzzyClauseMatch(issueTextCandidate, clauseObj.text);
+                // Strict substring match: only consider it 1.0 if the clause is not a tiny number 
+                // OR if it's the exact match. 
+                if (clauseTextLower === issueText || clauseTextLower.includes(issueText) || (clauseTextLower.length > 15 && issueText.includes(clauseTextLower))) {
+                    score = 1.0;
+                } else if (issueBigrams.size > 0) {
+                    const clauseBigrams = getBigrams(clauseTextLower);
+                    let intersection = 0;
+                    issueBigrams.forEach(bg => {
+                        if (clauseBigrams.has(bg)) intersection++;
+                    });
+                    score = intersection / issueBigrams.size;
+                }
+
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestClause = clause;
+                }
             });
 
-            if (matchedIssue) {
-                clauseObj.hasIssue = true;
-                clauseObj.issue = matchedIssue;
+            // Even a very low threshold (15%) is better than dropping the issue.
+            // If OCR is completely unreadable (0%), attach to first clause
+            if (bestClause && bestScore >= 0.15) {
+                bestClause.issues.push(issue);
+            } else if (clauseObjects.length > 0) {
+                clauseObjects[0].issues.push(issue);
             }
-
-            return clauseObj;
         });
+
+        // 3. Mark hasIssue for UI
+        clauseObjects.forEach(clause => {
+            if (clause.issues && clause.issues.length > 0) {
+                clause.hasIssue = true;
+                clause.issue = { ...clause.issues[0] }; // Backward compatibility for other components
+            }
+        });
+
+        return clauseObjects;
     }, [contractText, backendClauses, issues, editedClauses]);
 
     const getClauseTextFromEdits = useCallback((clause, editsMap) => {
@@ -136,8 +208,8 @@ const ContractView = forwardRef(({
             if (!originalNumber) {
                 originalNumber = clause.text?.match(/^(\d+\.)\s*/)?.[1];
             }
-            if (!originalNumber && clause.issue?.original_text) {
-                originalNumber = clause.issue.original_text?.match(/^(\d+\.)\s*/)?.[1];
+            if (!originalNumber && clause.issues?.length > 0 && clause.issues[0].original_text) {
+                originalNumber = clause.issues[0].original_text?.match(/^(\d+\.)\s*/)?.[1];
             }
 
             if (originalNumber && !edit.text.match(/^\d+\.\s*/)) {
@@ -341,8 +413,8 @@ const containerRef = useRef(null);
     const saveEdit = () => {
         if (selectedClause && editingText.trim()) {
             let originalNumber = extractClauseNumber(selectedClause.text);
-            if (!originalNumber && selectedClause.issue?.original_text) {
-                originalNumber = extractClauseNumber(selectedClause.issue.original_text);
+            if (!originalNumber && selectedClause.issues?.length > 0 && selectedClause.issues[0].original_text) {
+                originalNumber = extractClauseNumber(selectedClause.issues[0].original_text);
             }
 
             updateEditedClauses(prev => ({
@@ -359,9 +431,10 @@ const containerRef = useRef(null);
         closeEditor();
     };
 
-    const applySuggestedFix = () => {
-        if (selectedClause?.issue?.suggested_fix) {
-            setEditingText(selectedClause.issue.suggested_fix);
+    const applySuggestedFix = (issue) => {
+        const fixText = issue?.suggested_fix || issue?.recommendation || issue?.suggestedFix || issue?.solution || issue?.fix;
+        if (fixText) {
+            setEditingText(fixText);
         }
     };
 

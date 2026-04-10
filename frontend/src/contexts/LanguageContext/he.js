@@ -321,7 +321,7 @@ export const he = {
         "uploadDate": "הועלה ב-",
         "riskScore": "מדד סיכון",
         "analysisFailed": "הניתוח נכשל",
-        "processingData": "מעבד סעיפי התקשרות...",
+        "processingData": "מעבד סעיפי תקשרות...",
         "untitledContract": "חוזה ללא שם",
         "analyzedPrefix": "נותח:",
         "statusTimedOutRetry": "תם הזמן - נסה שוב",

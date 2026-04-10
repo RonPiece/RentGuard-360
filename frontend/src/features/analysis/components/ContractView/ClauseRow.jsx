@@ -55,15 +55,23 @@ const ClauseRow = ({
     };
 
     const isRecommendationApplied = !!editedClauses[clause.id] && 
-        (editedClauses[clause.id].action === 'accepted' || editedClauses[clause.id].text === clause.issue?.suggested_fix);
+        (editedClauses[clause.id].action === 'accepted' || 
+         (clause.issues && clause.issues.some(issue => {
+             const fixT = issue?.suggested_fix || issue?.recommendation || issue?.suggestedFix || issue?.solution || issue?.fix;
+             return fixT && editedClauses[clause.id].text === fixT;
+         })));
 
     return (
         <div className="lf-cv-clause-row">
-            {/* Issue indicator */}
-            {clause.hasIssue && clause.issue && (
-                <div className={`lf-cv-issue-indicator ${clause.issue.risk_level?.toLowerCase()}`}>
-                    {renderRiskIcon(clause.issue.risk_level)}
-                    <span className="lf-cv-issue-topic">{clause.issue.clause_topic}</span>
+            {/* Issue indicators */}
+            {clause.hasIssue && clause.issues && clause.issues.length > 0 && (
+                <div className="lf-cv-issues-container">
+                    {clause.issues.map((issue, idx) => (
+                        <div key={idx} className={`lf-cv-issue-indicator ${issue.risk_level?.toLowerCase()}`}>
+                            {renderRiskIcon(issue.risk_level)}
+                            <span className="lf-cv-issue-topic">{issue.clause_topic}</span>
+                        </div>
+                    ))}
                 </div>
             )}
 
@@ -71,6 +79,7 @@ const ClauseRow = ({
             <div
                 className={`lf-cv-clause-box ${clause.hasIssue ? 'has-issue' : ''} ${clause.isEdited ? 'is-edited' : ''} ${readOnly ? 'read-only' : ''}`}
                 onClick={readOnly ? undefined : () => openEditor(clause)}
+                title={readOnly && clause.isEdited ? `${t('contractView.originalClauseLabel')} \n${clause.text}` : undefined}
             >
                 <div className="lf-cv-clause-text-area" dir="rtl">
                     <p className="lf-cv-clause-text" dir="rtl">
@@ -134,24 +143,35 @@ const ClauseRow = ({
                 </div>
             )}
 
-            {/* Suggested Fix Card (External Component) */}
-            {!readOnly && clause.hasIssue && clause.issue?.suggested_fix && (
-                <div className="lf-cv-recommendation-wrapper">
-                    <RecommendationCard
-                        title={t('contractView.fixSuggestion')}
-                        suggestion={clause.issue.suggested_fix}
-                        isApplied={isRecommendationApplied}
-                        onApply={() => {
-                            updateEditedClauses(prev => ({
-                                ...prev,
-                                [clause.id]: { text: clause.issue.suggested_fix, action: 'accepted' }
-                            }));
-                            onClauseChange?.(clause.id, clause.issue.suggested_fix, 'accepted');
-                        }}
-                        onRevert={(e) => requestRevert(clause.id, e)}
-                    />
-                </div>
-            )}
+            {/* Suggested Fix Cards (External Component) */}
+            {!readOnly && clause.hasIssue && clause.issues && clause.issues.length > 0 && clause.issues.map((issue, idx) => {
+                const fixText = issue?.suggested_fix || issue?.recommendation || issue?.suggestedFix || issue?.solution || issue?.fix;
+                if (!fixText) return null;
+                
+                const isRecommendationApplied = !!editedClauses[clause.id] && 
+                    (editedClauses[clause.id].action === 'accepted' || editedClauses[clause.id].text === fixText);
+
+                // Only show unapplied recommendations or the one that was specifically applied
+                if (clause.isEdited && editedClauses[clause.id].text !== fixText && editedClauses[clause.id].action === 'accepted') return null;
+
+                return (
+                    <div key={idx} className="lf-cv-recommendation-wrapper">
+                        <RecommendationCard
+                            title={t('contractView.fixSuggestion')}
+                            suggestion={fixText}
+                            isApplied={isRecommendationApplied}
+                            onApply={() => {
+                                updateEditedClauses(prev => ({
+                                    ...prev,
+                                    [clause.id]: { text: fixText, action: 'accepted' }
+                                }));
+                                onClauseChange?.(clause.id, fixText, 'accepted');
+                            }}
+                            onRevert={(e) => requestRevert(clause.id, e)}
+                        />
+                    </div>
+                );
+            })}
         </div>
     );
 };
