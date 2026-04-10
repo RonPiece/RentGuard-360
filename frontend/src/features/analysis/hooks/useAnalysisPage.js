@@ -403,6 +403,26 @@ export const useAnalysisPage = () => {
         await saveEditedContract(contractIdClean, userId, clauses, fullEditedText);
     }, [analysis?.contractId, contractId, userAttributes?.sub]);
 
+    const applyMetadataUpdate = useCallback((updatedContract) => {
+        if (!updatedContract?.contractId) return;
+
+        setAnalysis(prevAnalysis => {
+            if (!prevAnalysis) return prevAnalysis;
+
+            const currentContractId = prevAnalysis.contractId || contractId;
+            if (currentContractId && currentContractId !== updatedContract.contractId) {
+                return prevAnalysis;
+            }
+
+            return {
+                ...prevAnalysis,
+                fileName: updatedContract.fileName,
+                propertyAddress: updatedContract.propertyAddress,
+                landlordName: updatedContract.landlordName,
+            };
+        });
+    }, [contractId]);
+
     return {
         // State variables
         contractId,
@@ -444,6 +464,7 @@ export const useAnalysisPage = () => {
         handleShareLinkViaApps,
         handleRevokeShareLink,
         handleSaveToCloud,
+        applyMetadataUpdate,
         copyTextToClipboard,
         showExportNotice,
         showAppToast,

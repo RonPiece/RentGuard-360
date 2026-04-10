@@ -301,6 +301,9 @@ export const en = {
         "landlordName": "Landlord Name",
         "save": "Save",
         "saving": "Saving...",
+        "editSaveSuccessTitle": "Details Updated",
+        "editSaveSuccessMessage": "Contract details were saved successfully.",
+        "editSaveFailedTitle": "Failed to Save Contract Details",
         "loading": "Loading contracts...",
         "lowRisk": "Low Risk",
         "lowMediumRisk": "Low-Medium Risk",
@@ -521,6 +524,7 @@ export const en = {
         "noTextFound": "No text found.",
         "getClauseExplanation": "Get clause explanation",
         "edit": "Edit",
+        "editedBadge": "Edited",
         "aiExplanation": "AI Explanation",
         "fixSuggestion": "Suggested fix",
         "signaturesTitle": "Signatures",
@@ -929,36 +933,35 @@ export const en = {
         "month": "month",
         "scans": "scans",
         "unlimitedScans": "15 scans",
-        "freeDesc": "Try RentGuard for free",
-        "singleDesc": "Analyze one contract in depth",
-        "basicDesc": "Perfect for occasional use",
-        "proDesc": "Best value for frequent users",
+        "freeDesc": "A quick first taste before upgrading",
+        "singleDesc": "One-off scan for occasional users",
+        "basicDesc": "The most popular and best-value bundle for most users",
+        "proDesc": "The full package for heavy and professional users",
         "featuresFree": [
-            "1 contract scan",
-            "Full AI analysis",
-            "Detailed risk score",
-            "No commitment trial"
+            "1 free contract scan",
+            "Basic AI analysis (highlights and risk summary)",
+            "Option to buy one additional scan for 10 ILS afterward (limited to 1 per month)"
         ],
         "featuresSingle": [
-            "1 contract scan",
-            "Full AI analysis",
-            "Detailed risk score",
-            "PDF & Word export"
+            "1 contract scan for 10 ILS",
+            "Available once per month",
+            "Basic AI analysis (highlights and risk summary)"
         ],
         "featuresBasic": [
             "5 contract scans",
-            "Full AI analysis",
-            "Detailed risk score",
-            "Negotiation tips",
-            "PDF & Word export"
+            "Full contract view",
+            "Full AI analysis + detailed risk score",
+            "Contract Q&A chat (up to 3 questions per day)",
+            "Shareable contract link",
+            "Word export for editing",
+            "Advanced negotiation guidance"
         ],
         "featuresPro": [
+            "Everything in Basic",
             "15 contract scans",
-            "Full AI analysis",
-            "Detailed risk score",
-            "Negotiation tips",
-            "PDF & Word export",
-            "Priority support"
+            "Unlimited contract Q&A chat",
+            "Priority processing during peak times",
+            "Priority human/technical support"
         ]
     },
     "checkout": {

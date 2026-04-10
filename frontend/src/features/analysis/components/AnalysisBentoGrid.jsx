@@ -12,11 +12,10 @@
  * - components/domain/ScoreBreakdown
  * ============================================
  */
-import React, { useState } from 'react';
+import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { updateContract } from '@/features/contracts/services/contractsApi';
-import { showAppToast } from '@/utils/toast';
 import EditContractModal from '@/features/contracts/components/EditContractModal';
+import { useContractMetadataEditor } from '@/features/contracts/hooks/useContractMetadataEditor';
 import { 
     AlertTriangle, 
     MapPin, 
@@ -43,45 +42,28 @@ const AnalysisBentoGrid = ({
     isExporting,
     issuesCount,
     analysis,
+    onMetadataUpdated,
     isRTL,
     t
-}) => {    const { user, userAttributes } = useAuth();
+}) => {
+    const { user, userAttributes } = useAuth();
     const userId = userAttributes?.sub || user?.userId || user?.sub || user?.username;
 
-    const [editModal, setEditModal] = useState(null);
-    const [isSaving, setIsSaving] = useState(false);
+    const {
+        editModal,
+        setEditModal,
+        isSaving,
+        handleEdit,
+        saveEdit,
+    } = useContractMetadataEditor({
+        userId,
+        t,
+        onApplyLocalUpdate: onMetadataUpdated,
+    });
 
-    const handleEditClick = () => {
+    const handleEditClick = (e) => {
         if (!analysis) return;
-        setEditModal({
-            contractId: analysis.contractId,
-            fileName: analysis.fileName || '',
-            propertyAddress: analysis.propertyAddress || '',
-            landlordName: analysis.landlordName || ''
-        });
-    };
-
-    const saveEdit = async () => {
-        if (!editModal || !userId) return;
-        setIsSaving(true);
-        try {
-            const updates = {
-                fileName: editModal.fileName.trim() || t('contracts.defaultFileName'),
-                propertyAddress: editModal.propertyAddress.trim(),
-                landlordName: editModal.landlordName.trim()
-            };
-            await updateContract(editModal.contractId, userId, updates);
-            setEditModal(null);
-            showAppToast(t('contracts.editSuccess'), 'success', isRTL);
-            if (fetchAnalysis) {
-                fetchAnalysis();
-            }
-        } catch (error) {
-            console.error('Error updating contract metadata:', error);
-            showAppToast(t('contracts.editError'), 'error', isRTL);
-        } finally {
-            setIsSaving(false);
-        }
+        handleEdit(analysis, e);
     };
     if (activeTab !== 'issues') return null;
 
@@ -164,31 +146,23 @@ const AnalysisBentoGrid = ({
                     <p className="lf-tile-big-text">{issuesCount}</p>
                 </div>
 
-                <div className="lf-tile lf-tile-glass" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '1.25rem', position: 'relative' }}>
+                <div className="lf-tile lf-tile-glass lf-contract-meta-tile">
                     <div className="lf-tile-wide-content">
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                            <h3 style={{ margin: 0 }}>{t('analysis.contractMetadata')}</h3>
+                        <div className="lf-contract-meta-header">
+                            <h3 className="lf-contract-meta-title">{t('analysis.contractMetadata')}</h3>
                             <button 
+                                type="button"
                                 onClick={handleEditClick}
-                                style={{
-                                    background: 'transparent',
-                                    border: 'none',
-                                    color: 'var(--text-secondary)',
-                                    cursor: 'pointer',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '4px',
-                                    fontSize: '0.85rem',
-                                    fontWeight: '600'
-                                }}
+                                className="lf-contract-meta-edit-btn"
                                 title={t('contracts.editTitle')}
+                                aria-label={t('contracts.editTitle')}
                             >
-                                <Pencil size={14} />
+                                <Pencil size={16} />
                             </button>
                         </div>
-                        <div className="lf-meta-rows" style={{ margin: 0 }}>
+                        <div className="lf-meta-rows lf-contract-meta-rows">
                             {analysis?.propertyAddress && (
-                                <div className="lf-meta-row" style={{ marginBottom: '10px' }}>
+                                <div className="lf-meta-row lf-contract-meta-row">
                                     <MapPin size={16} /> <span>{analysis.propertyAddress}</span>
                                 </div>
                             )}
@@ -199,9 +173,9 @@ const AnalysisBentoGrid = ({
                             )}
                         </div>
                     </div>
-                    <div className="lf-tile-wide-side" style={{ textAlign: 'start', marginTop: '1.5rem', justifyContent: 'flex-start' }}>
+                    <div className="lf-tile-wide-side lf-contract-meta-side">
                         <p className="lf-side-label">{t('contracts.uploadDate')}</p>
-                        <p className="lf-side-value" style={{ margin: 0 }}>
+                        <p className="lf-side-value lf-contract-meta-date">
                                 {analysis?.uploadDate ? new Date(analysis.uploadDate).toLocaleDateString(isRTL ? 'he-IL' : 'en-US') : '--'}
                         </p>
                     </div>
@@ -222,6 +196,7 @@ const AnalysisBentoGrid = ({
                 saveEdit={saveEdit}
                 isSaving={isSaving}
                 t={t}
+                isRTL={isRTL}
             />
         </div>
     );

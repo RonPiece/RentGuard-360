@@ -46,7 +46,7 @@ const AnalysisResults = ({
     if (activeTab === 'issues') {
         if (issues.length === 0) {
             return (
-                <div className="lf-no-issues">
+                <div className={`lf-no-issues ${result?.is_contract === false ? 'warning' : 'success'}`}>
                     {result?.is_contract === false ? (
                         <>
                             <AlertTriangle size={48} className="warning-icon" />
@@ -216,7 +216,7 @@ const AnalysisResults = ({
     if (activeTab === 'contract') {
         if (result?.is_contract === false) {
             return (
-                <div className="lf-no-issues">
+                <div className="lf-no-issues warning">
                     <AlertTriangle size={48} className="warning-icon" />
                     <h3>{t('analysis.notRentalTitle')}</h3>
                     <p>{t('analysis.notRentalContentDescription')}</p>

@@ -494,57 +494,74 @@
 .lf-modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(4px);
+    background: rgba(15, 23, 42, 0.58);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 1000;
     padding: 1.5rem;
+    animation: lf-modal-fade-in 0.2s ease-out;
 }
 
 .lf-modal-content {
     font-family: 'Calibri', var(--font-sans);
-    background: var(--bg-primary);
+    background: var(--bg-card);
     width: 100%;
-    max-width: 400px;
+    max-width: 460px;
     border-radius: var(--radius-xl);
+    border: 1px solid var(--glass-border);
     overflow: hidden;
-    box-shadow: var(--shadow-lg);
+    box-shadow: var(--shadow-xl);
+    animation: lf-modal-pop-in 0.24s cubic-bezier(0.2, 0.9, 0.35, 1.06);
 }
 
 .lf-modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1.5rem;
+    padding: 1.25rem 1.5rem;
     border-bottom: 1px solid var(--glass-border);
+    background: linear-gradient(180deg, rgba(5, 150, 105, 0.06) 0%, transparent 65%);
 }
 
 .lf-modal-header h3 {
     margin: 0;
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     font-weight: 800;
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    color: var(--text-primary);
+    text-align: start;
 }
 
 .lf-modal-close {
-    background: none;
-    border: none;
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-inset);
+    border: 1px solid var(--glass-border);
     color: var(--text-tertiary);
     cursor: pointer;
-    padding: 0.25rem;
-    border-radius: var(--radius-sm);
+    padding: 0;
+    border-radius: var(--radius-full);
+    transition: all var(--transition-fast);
 }
 
 .lf-modal-body {
-    padding: 1.5rem;
+    padding: 1.35rem 1.5rem;
 }
 
 .lf-form-group {
-    margin-bottom: 1rem;
+    margin-bottom: 1.15rem;
+}
+
+.lf-form-group:last-child {
+    margin-bottom: 0;
 }
 
 .lf-form-group label {
@@ -552,31 +569,39 @@
     font-size: 0.85rem;
     font-weight: 700;
     color: var(--text-secondary);
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.45rem;
+    text-align: start;
 }
 
 .lf-input {
     width: 100%;
-    padding: 0.75rem 1rem;
-    border: 2px solid var(--glass-border);
+    padding: 0.8rem 1rem;
+    border: 1.5px solid var(--glass-border);
     border-radius: var(--radius-md);
-    background: var(--bg-page);
+    background: var(--bg-inset);
     color: var(--text-primary);
     font-family: inherit;
     font-size: 0.95rem;
+    text-align: start;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
 }
 
 .lf-input:focus {
     outline: none;
     border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.16);
+    background: var(--bg-card);
 }
 
 .lf-modal-footer {
     display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
     gap: 0.75rem;
-    padding: 1.5rem;
+    padding: 1rem 1.5rem 1.25rem;
     border-top: 1px solid var(--glass-border);
-    background: var(--bg-inset);
+    background: var(--bg-page);
 }
 
 .center-footer {
@@ -587,42 +612,99 @@
     text-align: center;
 }
 
-.lf-btn-primary {
-    flex: 1;
-    padding: 0.75rem;
-    background: var(--accent-primary);
-    color: white;
-    border: none;
-    border-radius: 999px;
+.lf-btn-primary,
+.lf-btn-danger,
+.lf-btn-cancel {
+    min-height: 44px;
+    padding: 0 1.35rem;
+    border-radius: var(--radius-full);
     font-weight: 700;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: all var(--transition-fast);
+    border: 1px solid transparent;
+    font-family: inherit;
+}
+
+.lf-btn-primary {
+    min-width: 140px;
+    background: var(--accent-primary);
+    color: white;
+    box-shadow: var(--shadow-sm);
 }
 
 .lf-btn-danger {
-    flex: 1;
-    padding: 0.75rem;
+    min-width: 140px;
     background: rgba(239, 68, 68, 0.1);
     color: var(--accent-danger);
-    border: none;
-    border-radius: 999px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: background 0.2s;
+    border-color: rgba(239, 68, 68, 0.2);
 }
 
 .lf-btn-cancel {
-    padding: 0.75rem 1.5rem;
-    background: transparent;
+    background: var(--bg-card);
     border: 1px solid var(--glass-border);
     color: var(--text-secondary);
-    border-radius: 999px;
-    font-weight: 700;
-    cursor: pointer;
+}
+
+.lf-btn-primary:disabled,
+.lf-btn-danger:disabled,
+.lf-btn-cancel:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.lf-btn-primary:focus-visible,
+.lf-btn-danger:focus-visible,
+.lf-btn-cancel:focus-visible,
+.lf-modal-close:focus-visible,
+.lf-input:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.18);
+}
+
+[data-theme="dark"] .lf-modal-overlay {
+    background: rgba(2, 6, 23, 0.72);
+}
+
+[data-theme="dark"] .lf-modal-header {
+    background: linear-gradient(180deg, rgba(16, 185, 129, 0.1) 0%, transparent 65%);
+}
+
+[data-theme="dark"] .lf-input:focus {
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.28);
+}
+
+[data-theme="dark"] .lf-btn-cancel {
+    background: rgba(148, 163, 184, 0.06);
+    border-color: rgba(148, 163, 184, 0.25);
+    color: var(--text-primary);
+}
+
+@keyframes lf-modal-fade-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes lf-modal-pop-in {
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.97);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
 }
 
 
@@ -777,15 +859,31 @@
         padding: 0.75rem;
     }
 
+    .lf-modal-content {
+        max-width: 100%;
+        border-radius: var(--radius-lg);
+    }
+
     .lf-modal-body,
     .lf-modal-header,
     .lf-modal-footer {
         padding: 1rem;
     }
+
+    .lf-modal-footer {
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+
+    .lf-btn-primary,
+    .lf-btn-danger,
+    .lf-btn-cancel {
+        width: 100%;
+    }
 }
 .lf-contract-card:focus-within { z-index: 50; }
 
-@media (hover: hover) and (pointer: fine) {
+@media (hover: hover) and (pointer: fine) { /* Desktop only hover */
     .lf-btn-upload-hero:hover {
         transform: translateY(-2px);
         box-shadow: 0 14px 30px rgba(5, 150, 105, 0.4);
@@ -850,16 +948,29 @@
     }
 
     .lf-modal-close:hover {
+        background: var(--bg-page);
+        border-color: var(--accent-primary);
+        color: var(--text-primary);
+        transform: translateY(-1px);
+    }
+
+    .lf-btn-primary:hover:not(:disabled) {
+        background: var(--accent-primary-hover);
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .lf-btn-danger:hover:not(:disabled) {
+        background: rgba(239, 68, 68, 0.16);
+        border-color: rgba(239, 68, 68, 0.36);
+        transform: translateY(-1px);
+    }
+
+    .lf-btn-cancel:hover:not(:disabled) {
         background: var(--bg-inset);
         color: var(--text-primary);
-    }
-
-    .lf-btn-primary:hover {
-        background: var(--accent-primary-hover);
-    }
-
-    .lf-btn-danger:hover {
-        background: rgba(239, 68, 68, 0.2);
+        border-color: var(--text-tertiary);
+        transform: translateY(-1px);
     }
 }
 

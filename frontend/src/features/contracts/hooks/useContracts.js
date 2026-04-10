@@ -21,11 +21,12 @@
  * ============================================
  */
 import { useState, useCallback, useEffect } from 'react';
-import { getContracts, deleteContract, updateContract } from '@/features/contracts/services/contractsApi';
+import { getContracts, deleteContract } from '@/features/contracts/services/contractsApi';
 import { getAnalysis } from '@/features/analysis/services/analysisApi';
 import { exportReportToWord, exportReportToWordBlob } from '@/features/analysis/services/ReportExportService';
 import { showAppToast } from '@/utils/toast';
 import useShareFile from '@/features/analysis/hooks/useShareFile';
+import { useContractMetadataEditor } from '@/features/contracts/hooks/useContractMetadataEditor';
 
 const DEFAULT_ANALYSIS_TIMEOUT_MS = 3 * 60 * 1000;
 const ANALYSIS_TIMEOUT_MS = (() => {
@@ -55,10 +56,31 @@ export const useContracts = (userId, t, isRTL) => {
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [deleteConfirm, setDeleteConfirm] = useState(null);
     const [isDeleting, setIsDeleting] = useState(false);
-    const [editModal, setEditModal] = useState(null);
-    const [isSaving, setIsSaving] = useState(false);
     const [actionNotice, setActionNotice] = useState(null);
     const { shareFile } = useShareFile();
+
+    const {
+        editModal,
+        setEditModal,
+        isSaving,
+        handleEdit,
+        saveEdit,
+    } = useContractMetadataEditor({
+        userId,
+        t,
+        onApplyLocalUpdate: (updatedContract) => {
+            setContracts(prevContracts => prevContracts.map(contract => (
+                contract.contractId === updatedContract.contractId
+                    ? {
+                        ...contract,
+                        fileName: updatedContract.fileName,
+                        propertyAddress: updatedContract.propertyAddress,
+                        landlordName: updatedContract.landlordName,
+                    }
+                    : contract
+            )));
+        },
+    });
 
     // Modern Search & Filter State
     const [searchQuery, setSearchQuery] = useState('');
@@ -153,41 +175,6 @@ export const useContracts = (userId, t, isRTL) => {
             alert(t('contracts.deleteFailed'));
         } finally {
             setIsDeleting(false);
-        }
-    };
-
-    const handleEdit = (contract, e) => {
-        e?.preventDefault();
-        e?.stopPropagation();
-        setEditModal({
-            contractId: contract.contractId,
-            fileName: (contract.fileName || '').replace(/\.pdf$/i, ''),
-            propertyAddress: contract.propertyAddress || '',
-            landlordName: contract.landlordName || ''
-        });
-    };
-
-    const saveEdit = async () => {
-        if (!editModal || !userId) return;
-        setIsSaving(true);
-        try {
-            const updates = {
-                fileName: editModal.fileName.trim() || t('contracts.defaultFileName'),
-                propertyAddress: editModal.propertyAddress.trim(),
-                landlordName: editModal.landlordName.trim()
-            };
-            await updateContract(editModal.contractId, userId, updates);
-            const finalFileName = updates.fileName.endsWith('.pdf') ? updates.fileName : `${updates.fileName}.pdf`;
-            setContracts(contracts.map(c =>
-                c.contractId === editModal.contractId
-                    ? { ...c, fileName: finalFileName, propertyAddress: updates.propertyAddress, landlordName: updates.landlordName }
-                    : c
-            ));
-            setEditModal(null);
-        } catch {
-            alert(t('contracts.saveFailed'));
-        } finally {
-            setIsSaving(false);
         }
     };
 

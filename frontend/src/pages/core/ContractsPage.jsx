@@ -102,7 +102,7 @@ const ContractsPage = () => {
             {/* Modals - Same logic, wrapped in standard portal */}
             {deleteConfirm && ReactDOM.createPortal(
                 <div className="lf-modal-overlay" onClick={() => setDeleteConfirm(null)}>
-                    <div className="lf-modal-content" onClick={e => e.stopPropagation()}>
+                    <div className="lf-modal-content" onClick={e => e.stopPropagation()} dir={isRTL ? 'rtl' : 'ltr'}>
                         <div className="lf-modal-header lf-danger-text">
                             <h3><AlertTriangle size={20} /> {t('contracts.deleteTitle')}</h3>
                         </div>
@@ -126,6 +126,7 @@ const ContractsPage = () => {
                 saveEdit={saveEdit}
                 isSaving={isSaving}
                 t={t}
+                isRTL={isRTL}
             />
 
             {/* HERO SECTION */}

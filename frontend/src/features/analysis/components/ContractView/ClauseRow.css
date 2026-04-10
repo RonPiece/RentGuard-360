@@ -40,11 +40,6 @@
 
 .lf-cv-clause-box { border: none !important; background: none !important; padding: 0.5rem 0; }
 
-.lf-cv-clause-box:hover:not(.read-only) {
-    background: var(--bg-inset);
-    border-color: var(--glass-border);
-}
-
 /* Side borders for issues */
 .lf-cv-clause-box.has-issue { border-inline-start: 4px solid var(--accent-warning); background: rgba(245, 158, 11, 0.03); }
 
@@ -60,30 +55,33 @@
     background: rgba(16, 185, 129, 0.03); 
 }
 
-/* Highlight yellow on hover for read-only edited clauses */
-.lf-cv-clause-box.is-edited.read-only:hover {
-    background: rgba(234, 179, 8, 0.15) !important;
+.lf-cv-clause-box.is-edited.read-only {
+    border-radius: var(--radius-md);
+    padding: 0.75rem 1rem;
+    margin: 0.2rem 0;
 }
 
-/* Add a visual "Edited" badge indicator in readOnly mode */
-.lf-cv-clause-box.is-edited.read-only::before {
-    content: "ערוך";
-    position: absolute;
-    top: 0.35rem;
-    inset-inline-end: 0.75rem;
+.lf-cv-edited-badge-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 0.4rem;
+}
+
+[dir="ltr"] .lf-cv-edited-badge-row {
+    justify-content: flex-start;
+}
+
+.lf-cv-edited-badge {
+    display: inline-flex;
+    align-items: center;
     background: #eab308;
     color: #fff;
     font-size: 0.7rem;
-    font-weight: bold;
+    font-weight: 700;
     line-height: 1;
     padding: 4px 9px;
     border-radius: 12px;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
-    z-index: 2;
-    pointer-events: none;
-}
-[dir="ltr"] .lf-cv-clause-box.is-edited.read-only::before {
-    content: "Edited";
 }
 
 .lf-cv-clause-text-area { display: flex; align-items: flex-start; gap: 1rem; }
@@ -121,8 +119,6 @@
 
 .lf-cv-action-btn.consult-btn { background: rgba(14, 165, 233, 0.1); color: #0ea5e9; }
 
-.lf-cv-action-btn.consult-btn:hover:not(:disabled) { background: #0ea5e9; color: white; transform: scale(1.1); }
-
 .lf-cv-action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .lf-cv-action-btn.revert-btn {
@@ -134,12 +130,6 @@
     color: var(--accent-danger, #ef4444);
     font-size: 0.8rem;
     font-weight: 600;
-}
-
-.lf-cv-action-btn.revert-btn:hover:not(:disabled) {
-    background: var(--accent-danger, #ef4444);
-    color: white;
-    transform: scale(1.05);
 }
 
 .lf-cv-clause-edit-footer {
@@ -170,8 +160,31 @@
 
 [dir="rtl"] .lf-cv-hover-hint { right: auto; left: -4rem; }
 
-@media (hover: hover) and (pointer: fine) {
-    .lf-cv-clause-box:hover .lf-cv-hover-hint { opacity: 1; }
+@media (hover: hover) and (pointer: fine) { /* Desktop only hover */
+    .lf-cv-clause-box:hover:not(.read-only) { /* Desktop only hover */
+        background: var(--bg-inset);
+        border-color: var(--glass-border);
+    }
+
+    .lf-cv-clause-box.is-edited.read-only:hover { /* Desktop only hover */
+        background: rgba(234, 179, 8, 0.15) !important;
+    }
+
+    .lf-cv-action-btn.consult-btn:hover:not(:disabled) { /* Desktop only hover */
+        background: #0ea5e9;
+        color: white;
+        transform: scale(1.1);
+    }
+
+    .lf-cv-action-btn.revert-btn:hover:not(:disabled) { /* Desktop only hover */
+        background: var(--accent-danger, #ef4444);
+        color: white;
+        transform: scale(1.05);
+    }
+
+    .lf-cv-clause-box:hover .lf-cv-hover-hint { /* Desktop only hover */
+        opacity: 1;
+    }
 }
 
 /* ===== AI Explanation Box ===== */

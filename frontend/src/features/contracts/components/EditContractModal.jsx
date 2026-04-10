@@ -2,15 +2,21 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Pencil, X, Check } from 'lucide-react';
 
-const EditContractModal = ({ editModal, setEditModal, saveEdit, isSaving, t }) => {
+const EditContractModal = ({ editModal, setEditModal, saveEdit, isSaving, t, isRTL }) => {
     if (!editModal) return null;
 
     return ReactDOM.createPortal(
         <div className="lf-modal-overlay" onClick={() => setEditModal(null)}>
-            <div className="lf-modal-content" onClick={e => e.stopPropagation()}>
+            <div
+                className="lf-modal-content"
+                onClick={e => e.stopPropagation()}
+                dir={isRTL ? 'rtl' : 'ltr'}
+                role="dialog"
+                aria-modal="true"
+            >
                 <div className="lf-modal-header">
                     <h3><Pencil size={20} /> {t('contracts.editTitle')}</h3>
-                    <button className="lf-modal-close" onClick={() => setEditModal(null)}><X size={20} /></button>
+                    <button type="button" className="lf-modal-close" onClick={() => setEditModal(null)}><X size={20} /></button>
                 </div>
                 <div className="lf-modal-body">
                     <div className="lf-form-group">
@@ -27,10 +33,10 @@ const EditContractModal = ({ editModal, setEditModal, saveEdit, isSaving, t }) =
                     </div>
                 </div>
                 <div className="lf-modal-footer">
-                    <button className="lf-btn-primary" onClick={saveEdit} disabled={isSaving}>
+                    <button type="button" className="lf-btn-primary" onClick={saveEdit} disabled={isSaving}>
                         <Check size={16} /> {isSaving ? t('contracts.saving') : t('contracts.save')}
                     </button>
-                    <button className="lf-btn-cancel" onClick={() => setEditModal(null)}>{t('contracts.cancel')}</button>
+                    <button type="button" className="lf-btn-cancel" onClick={() => setEditModal(null)}>{t('contracts.cancel')}</button>
                 </div>
             </div>
         </div>,

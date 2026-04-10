@@ -622,6 +622,7 @@ const containerRef = useRef(null);
             {!readOnly && selectedClause && (
                 <EditClauseModal
                     t={t}
+                    isRTL={isRTL}
                     selectedClause={selectedClause}
                     editingText={editingText}
                     setEditingText={setEditingText}

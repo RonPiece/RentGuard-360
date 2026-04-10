@@ -314,3 +314,98 @@
     overflow-wrap: anywhere;
 }
 
+/* Empty states (No issues / Not rental) */
+.lf-no-issues {
+    background: var(--bg-card);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
+    padding: clamp(1.8rem, 4vw, 3.2rem);
+    min-height: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 0.9rem;
+}
+
+.lf-no-issues.success {
+    background: linear-gradient(180deg, color-mix(in oklab, var(--accent-success) 6%, var(--bg-card)) 0%, var(--bg-card) 70%);
+    border-color: color-mix(in oklab, var(--accent-success) 25%, var(--glass-border));
+}
+
+.lf-no-issues.warning {
+    background: linear-gradient(180deg, color-mix(in oklab, var(--accent-danger) 6%, var(--bg-card)) 0%, var(--bg-card) 70%);
+    border-color: color-mix(in oklab, var(--accent-danger) 25%, var(--glass-border));
+}
+
+.lf-no-issues .success-icon,
+.lf-no-issues .warning-icon {
+    width: 74px;
+    height: 74px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.35rem;
+}
+
+.lf-no-issues .success-icon {
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    color: var(--accent-success);
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.lf-no-issues .warning-icon {
+    background: rgba(239, 68, 68, 0.09);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    color: var(--accent-danger);
+    padding: 1rem;
+}
+
+.lf-no-issues h3 {
+    margin: 0;
+    font-size: clamp(1.35rem, 3vw, 2rem);
+    font-weight: 800;
+    color: var(--text-primary);
+}
+
+.lf-no-issues p {
+    margin: 0;
+    max-width: 760px;
+    color: var(--text-secondary);
+    font-size: 1.06rem;
+    line-height: 1.7;
+}
+
+[data-theme="dark"] .lf-no-issues.success {
+    background: linear-gradient(180deg, rgba(16, 185, 129, 0.08) 0%, var(--bg-card) 72%);
+}
+
+[data-theme="dark"] .lf-no-issues.warning {
+    background: linear-gradient(180deg, rgba(239, 68, 68, 0.08) 0%, var(--bg-card) 72%);
+}
+
+@media (max-width: 768px) {
+    .lf-no-issues {
+        min-height: 220px;
+        padding: 1.5rem 1rem;
+        border-radius: var(--radius-lg);
+        gap: 0.7rem;
+    }
+
+    .lf-no-issues .success-icon,
+    .lf-no-issues .warning-icon {
+        width: 62px;
+        height: 62px;
+    }
+
+    .lf-no-issues p {
+        font-size: 0.97rem;
+    }
+}
+

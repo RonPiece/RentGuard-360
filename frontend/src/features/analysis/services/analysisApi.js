@@ -59,7 +59,8 @@ export const revokeShareLink = async (contractId) => {
  */
 
 export const getAnalysis = async (contractId, silent404 = false) => {
-    const data = await apiCall(`/analysis?contractId=${encodeURIComponent(contractId)}`, { silent404 });
+    const cacheBuster = Date.now();
+    const data = await apiCall(`/analysis?contractId=${encodeURIComponent(contractId)}&_t=${cacheBuster}`, { silent404 });
     return normalizeAnalysis(data);
 };
 

@@ -81,6 +81,12 @@ const ClauseRow = ({
                 onClick={readOnly ? undefined : () => openEditor(clause)}
                 title={readOnly && clause.isEdited ? `${t('contractView.originalClauseLabel')} \n${clause.text}` : undefined}
             >
+                {readOnly && clause.isEdited && (
+                    <div className="lf-cv-edited-badge-row">
+                        <span className="lf-cv-edited-badge">{t('contractView.editedBadge')}</span>
+                    </div>
+                )}
+
                 <div className="lf-cv-clause-text-area" dir="rtl">
                     <p className="lf-cv-clause-text" dir="rtl">
                         {getClauseText(clause)}

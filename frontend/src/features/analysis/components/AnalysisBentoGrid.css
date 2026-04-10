@@ -206,16 +206,6 @@
     box-shadow: var(--shadow-sm);
 }
 
-.lf-tile-glass {
-    background: rgba(255, 255, 255, 0.6);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-}
-
-[data-theme="dark"] .lf-tile-glass {
-    background: rgba(30, 41, 59, 0.4);
-}
-
 .lf-tile-header {
     display: flex;
     justify-content: space-between;
@@ -313,6 +303,67 @@
     font-size: 1.5rem;
     font-weight: 800;
     color: var(--accent-primary);
+    margin: 0;
+}
+
+.lf-contract-meta-tile {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 1.25rem;
+    position: relative;
+}
+
+.lf-contract-meta-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.lf-contract-meta-title {
+    margin: 0;
+}
+
+.lf-contract-meta-edit-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: transparent;
+    border: 1px solid var(--glass-border);
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.lf-contract-meta-edit-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.lf-contract-meta-rows {
+    margin: 0;
+}
+
+.lf-contract-meta-row {
+    margin-bottom: 10px;
+}
+
+.lf-contract-meta-row:last-child {
+    margin-bottom: 0;
+}
+
+.lf-contract-meta-side {
+    text-align: start;
+    margin-top: 1.5rem;
+    justify-content: flex-start;
+}
+
+.lf-contract-meta-date {
     margin: 0;
 }
 
@@ -425,7 +476,7 @@
     word-break: break-word;
 }
 
-@media (hover: hover) and (pointer: fine) {
+@media (hover: hover) and (pointer: fine) { /* Desktop only hover */
     .lf-tab-btn:hover {
         color: var(--text-primary);
     }
@@ -448,6 +499,11 @@
     .lf-action-btn:hover {
         background: var(--bg-tertiary);
         border-color: var(--accent-primary);
+    }
+
+    .lf-contract-meta-edit-btn:hover:not(:disabled) {
+        background: var(--bg-inset);
+        color: var(--text-primary);
     }
 
     .lf-contract-export-btn:hover {

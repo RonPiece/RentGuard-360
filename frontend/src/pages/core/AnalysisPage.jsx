@@ -76,6 +76,7 @@ const AnalysisPage = () => {
         handleShareLinkViaApps,
         handleRevokeShareLink,
         handleSaveToCloud,
+        applyMetadataUpdate,
         copyTextToClipboard,
         showExportNotice,
         t,
@@ -234,6 +235,7 @@ const AnalysisPage = () => {
                     isExporting={isExporting}
                     issuesCount={issues.length}
                     analysis={analysis}
+                    onMetadataUpdated={applyMetadataUpdate}
                     isRTL={isRTL}
                     t={t}
                 />
