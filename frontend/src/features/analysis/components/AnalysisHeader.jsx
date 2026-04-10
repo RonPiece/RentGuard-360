@@ -13,7 +13,6 @@
  * ============================================
  */
 import React from 'react';
-import BackButton from '@/components/ui/BackButton';
 import './AnalysisHeader.css';
 
 const AnalysisHeader = ({
@@ -32,9 +31,6 @@ const AnalysisHeader = ({
                     <span className="lf-pre-title">{t('analysis.title')}</span>
                     <h1 className="lf-main-title">{analysis?.fileName || t('analysis.contractDocument')}</h1>
                     <p className="lf-subtitle">{result?.summary || t('analysis.analysisComplete')}</p>
-                </div>
-                <div className="lf-header-actions">
-                    <BackButton to="/contracts" label={t('analysis.backToContracts')} />
                 </div>
             </div>
 

@@ -72,11 +72,14 @@
 
 /* Minimize / Maximize Actions */
 .lf-cv-actions {
-    position: absolute;
-    top: 1.5rem;
+    width: 100%;
+    max-width: 850px;
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 0.75rem;
 }
-[dir="rtl"] .lf-cv-actions { right: 1.5rem; }
-[dir="ltr"] .lf-cv-actions { left: 1.5rem; }
+[dir="rtl"] .lf-cv-actions { justify-content: flex-start; }
+[dir="ltr"] .lf-cv-actions { justify-content: flex-start; }
 
 .lf-cv-minimize-btn {
     display: inline-flex;
@@ -238,51 +241,17 @@
 @media (max-width: 600px) {
     .lf-cv-paper { padding: 2rem 1.5rem; }
     .lf-cv-toolbar { flex-direction: column; align-items: flex-start; }
-    
+    .lf-cv-actions {
+        margin-bottom: 0.65rem;
+    }
+    [dir="rtl"] .lf-cv-actions { justify-content: flex-start; }
+    [dir="ltr"] .lf-cv-actions { justify-content: flex-start; }
     
     .lf-cv-modal-footer button { width: 100%; justify-content: center; }
-}@media (max-width: 600px) {
-    /* Fix Collapse button overlapping text */
-    .lf-cv-actions {
-        position: relative;
-        top: 0;
-        left: 0;
-        right: 0;
-        display: flex;
-        justify-content: center;
-        margin-bottom: 1rem;
-    }
-    
-    /* Fix Scroll FAB going off screen */
-    .lf-cv-scroll-fab {
-        margin-left: 0;
-        margin-right: 0;
-        transform: translateY(-2rem) translateX(-1rem);
-    }
-    
-    [dir="rtl"] .lf-cv-scroll-fab {
-        transform: translateY(-2rem) translateX(1rem);
-    }
-    
-    [dir="rtl"] .lf-cv-scroll-fab:hover {
-        transform: translateY(-36px) translateX(1rem);
-    }
-    [dir="ltr"] .lf-cv-scroll-fab:hover {
-        transform: translateY(-36px) translateX(-1rem);
-    }
 }
+
 @media (max-width: 600px) {
-    /* Fix Collapse button overlapping text */
-    .lf-cv-actions {
-        position: relative;
-        top: 0;
-        left: 0;
-        right: 0;
-        display: flex;
-        justify-content: center;
-        margin-bottom: 1rem;
-    }
-    
+    /* Fix Scroll FAB going off screen */
     .lf-cv-scroll-fab {
         margin-left: 0;
         margin-right: 0;

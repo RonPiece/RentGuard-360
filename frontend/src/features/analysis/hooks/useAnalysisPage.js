@@ -16,7 +16,7 @@
  * ============================================
  */
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { getAnalysis, createShareLink, getShareLink, revokeShareLink, saveEditedContract } from '@/features/analysis/services/analysisApi';
 import { exportReportToWord } from '@/features/analysis/services/ReportExportService';
 import { showAppToast as emitAppToast } from '@/utils/toast';
@@ -25,7 +25,9 @@ import { useAuth } from '@/contexts/AuthContext';
 
 export const useAnalysisPage = () => {
     const { contractId } = useParams();
-    const { state } = useLocation(); 
+    const location = useLocation();
+    const navigate = useNavigate();
+    const { state } = location;
     const { t, isRTL } = useLanguage();
     const { userAttributes } = useAuth();
     const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
@@ -85,6 +87,42 @@ export const useAnalysisPage = () => {
         setTimeout(() => setExportNotice(null), 3000);
     }, []);
 
+    const getMetadataCacheKey = useCallback((id) => `rentguard_contract_meta_${id}`, []);
+
+    const readMetadataCache = useCallback((id) => {
+        if (!id) return null;
+        try {
+            const raw = localStorage.getItem(getMetadataCacheKey(id));
+            if (!raw) return null;
+            const parsed = JSON.parse(raw);
+            if (!parsed || typeof parsed !== 'object') return null;
+            return {
+                fileName: parsed.fileName || '',
+                propertyAddress: parsed.propertyAddress || '',
+                landlordName: parsed.landlordName || '',
+                uploadDate: parsed.uploadDate || '',
+            };
+        } catch {
+            return null;
+        }
+    }, [getMetadataCacheKey]);
+
+    const persistMetadataCache = useCallback((contractMeta) => {
+        const id = contractMeta?.contractId;
+        if (!id) return;
+        try {
+            localStorage.setItem(getMetadataCacheKey(id), JSON.stringify({
+                fileName: contractMeta.fileName || '',
+                propertyAddress: contractMeta.propertyAddress || '',
+                landlordName: contractMeta.landlordName || '',
+                uploadDate: contractMeta.uploadDate || '',
+                updatedAt: Date.now(),
+            }));
+        } catch (error) {
+            console.warn('Failed to persist contract metadata cache', error);
+        }
+    }, [getMetadataCacheKey]);
+
     const copyTextToClipboard = useCallback(async (text) => {
         if (!text) return false;
         if (navigator?.clipboard?.writeText) {
@@ -140,12 +178,15 @@ export const useAnalysisPage = () => {
             if (pollCount === 0) setIsLoading(true);
             const decodedId = decodeURIComponent(contractId);
             const data = await getAnalysis(decodedId);
+            const cachedMetadata = readMetadataCache(decodedId);
+
             setAnalysis(prev => ({
                 ...prev, ...data,
-                fileName: data.fileName || prev?.fileName || data.fileName,
-                propertyAddress: data.propertyAddress || prev?.propertyAddress || data.propertyAddress,
-                landlordName: data.landlordName || prev?.landlordName || data.landlordName,
-                uploadDate: data.uploadDate || prev?.uploadDate || data.uploadDate,
+                contractId: data?.contractId || prev?.contractId || decodedId,
+                fileName: cachedMetadata?.fileName || data?.fileName || prev?.fileName || '',
+                propertyAddress: cachedMetadata?.propertyAddress || data?.propertyAddress || prev?.propertyAddress || '',
+                landlordName: cachedMetadata?.landlordName || data?.landlordName || prev?.landlordName || '',
+                uploadDate: cachedMetadata?.uploadDate || data?.uploadDate || prev?.uploadDate || '',
             }));
             setError(null);
         } catch (err) {
@@ -162,9 +203,34 @@ export const useAnalysisPage = () => {
         } finally {
             setIsLoading(false);
         }
-    }, [contractId, pollCount, t]);
+    }, [contractId, pollCount, readMetadataCache, t]);
 
     useEffect(() => { fetchAnalysis(); }, [fetchAnalysis]);
+
+    useEffect(() => {
+        const resolvedId = analysis?.contractId || contractId;
+        if (!resolvedId) return;
+
+        const cachedMetadata = readMetadataCache(resolvedId);
+        if (!cachedMetadata) return;
+
+        setAnalysis(prev => {
+            if (!prev) {
+                return {
+                    contractId: resolvedId,
+                    ...cachedMetadata,
+                };
+            }
+
+            return {
+                ...prev,
+                fileName: cachedMetadata.fileName || prev.fileName,
+                propertyAddress: cachedMetadata.propertyAddress || prev.propertyAddress,
+                landlordName: cachedMetadata.landlordName || prev.landlordName,
+                uploadDate: cachedMetadata.uploadDate || prev.uploadDate,
+            };
+        });
+    }, [analysis?.contractId, contractId, readMetadataCache]);
 
     useEffect(() => {
         const currentRouteContractId = contractId || null;
@@ -406,6 +472,8 @@ export const useAnalysisPage = () => {
     const applyMetadataUpdate = useCallback((updatedContract) => {
         if (!updatedContract?.contractId) return;
 
+        persistMetadataCache(updatedContract);
+
         setAnalysis(prevAnalysis => {
             if (!prevAnalysis) return prevAnalysis;
 
@@ -421,7 +489,23 @@ export const useAnalysisPage = () => {
                 landlordName: updatedContract.landlordName,
             };
         });
-    }, [contractId]);
+
+        const nextState = {
+            ...(location.state || {}),
+            contract: {
+                ...(location.state?.contract || {}),
+                contractId: updatedContract.contractId,
+                fileName: updatedContract.fileName,
+                propertyAddress: updatedContract.propertyAddress,
+                landlordName: updatedContract.landlordName,
+            },
+        };
+
+        navigate(`${location.pathname}${location.search}${location.hash}`, {
+            replace: true,
+            state: nextState,
+        });
+    }, [contractId, location.hash, location.pathname, location.search, location.state, navigate, persistMetadataCache]);
 
     return {
         // State variables

@@ -35,6 +35,7 @@ import './Navigation.css';
  * 2. Component Setup & State
  * ========================================================================== */
 const Navigation = ({ showAuthControls = false, onAuthClick = () => {}, className = '' }) => {
+    const MOBILE_NAV_COMPACT_PREF_KEY = 'rentguard_mobile_nav_compact';
     const { logout, userAttributes, isAdmin, isAuthenticated } = useAuth();
     const { t, isRTL } = useLanguage();
     const { hasSubscription } = useSubscription();
@@ -43,6 +44,13 @@ const Navigation = ({ showAuthControls = false, onAuthClick = () => {}, classNam
     
     const [showProfileMenu, setShowProfileMenu] = useState(false);
     const [showMobileMenu, setShowMobileMenu] = useState(false);
+    const [compactMobileNavEnabled, setCompactMobileNavEnabled] = useState(() => {
+        try {
+            return localStorage.getItem(MOBILE_NAV_COMPACT_PREF_KEY) === 'true';
+        } catch {
+            return false;
+        }
+    });
     
     const navRef = useRef(null);
     const profileRef = useRef(null);
@@ -58,6 +66,37 @@ const Navigation = ({ showAuthControls = false, onAuthClick = () => {}, classNam
         };
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    useEffect(() => {
+        const updateCompactMode = () => {
+            try {
+                setCompactMobileNavEnabled(localStorage.getItem(MOBILE_NAV_COMPACT_PREF_KEY) === 'true');
+            } catch {
+                setCompactMobileNavEnabled(false);
+            }
+        };
+
+        const onCustomToggle = (event) => {
+            if (typeof event?.detail?.enabled === 'boolean') {
+                setCompactMobileNavEnabled(event.detail.enabled);
+                return;
+            }
+            updateCompactMode();
+        };
+
+        const onStorage = (event) => {
+            if (event.key && event.key !== MOBILE_NAV_COMPACT_PREF_KEY) return;
+            updateCompactMode();
+        };
+
+        window.addEventListener('rg:mobile-nav-compact-changed', onCustomToggle);
+        window.addEventListener('storage', onStorage);
+
+        return () => {
+            window.removeEventListener('rg:mobile-nav-compact-changed', onCustomToggle);
+            window.removeEventListener('storage', onStorage);
+        };
     }, []);
 
     useEffect(() => {
@@ -143,7 +182,13 @@ const Navigation = ({ showAuthControls = false, onAuthClick = () => {}, classNam
 
     const navLinks = isAuthenticated ? authLinks : publicLinks;
     const authenticatedHomePath = isAdmin || hasSubscription ? '/dashboard' : '/pricing';
-    const navClasses = ['nav-container', isAuthenticated ? 'is-authenticated' : 'is-public', className].filter(Boolean).join(' ');
+    const compactModeActive = isAuthenticated && compactMobileNavEnabled;
+    const navClasses = [
+        'nav-container',
+        isAuthenticated ? 'is-authenticated' : 'is-public',
+        compactModeActive ? 'mobile-nav-compact' : '',
+        className
+    ].filter(Boolean).join(' ');
 
     /* ======================================================================
      * 6. Render / JSX
@@ -269,7 +314,7 @@ const Navigation = ({ showAuthControls = false, onAuthClick = () => {}, classNam
 
             {showMobileMenu && (
                 <div className="mobile-menu">
-                    {isAuthenticated && (
+                    {isAuthenticated && !compactModeActive && (
                         <div className="mobile-menu-badge-wrapper">
                             <ScanBadge />
                         </div>

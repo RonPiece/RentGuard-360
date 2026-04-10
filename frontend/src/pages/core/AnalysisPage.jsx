@@ -15,7 +15,6 @@
  * ============================================
  */
 import React, { useCallback } from 'react';
-import { Link } from 'react-router-dom';
 import Button from '@/components/ui/Button';
 import {
     Hourglass,
@@ -193,7 +192,6 @@ const AnalysisPage = () => {
                     )}
                     <div className="lf-error-actions">
                         <Button variant="primary" onClick={fetchAnalysis}>{t('analysis.tryAgain')}</Button>
-                        <Link to="/contracts"><Button variant="secondary">{t('analysis.backToContracts')}</Button></Link>
                     </div>
                 </div>
             </div>
@@ -266,7 +264,7 @@ const AnalysisPage = () => {
                                 <div className="lf-contract-export-bar">
                                     <div className="lf-contract-export-row">
                                         <button className="lf-contract-export-btn" onClick={() => contractViewRef.current?.handleExport()}>
-                                            <FileText size={16} />
+                                            <FileText size={20} />
                                             <span>{t('analysis.exportEditedWord')}</span>
                                         </button>
                                         <button
@@ -275,7 +273,7 @@ const AnalysisPage = () => {
                                             onClick={() => contractViewRef.current?.requestClearAll()}
                                             disabled={contractEditState.editedCount === 0}
                                         >
-                                            <Eraser size={16} />
+                                            <Eraser size={20} />
                                             <span>{t('analysis.resetEdits')}</span>
                                             <span className="lf-contract-reset-counter">{contractEditState.editedCount}</span>
                                         </button>

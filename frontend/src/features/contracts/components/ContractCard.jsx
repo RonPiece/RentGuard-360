@@ -152,7 +152,7 @@ const ContractCard = ({ contract, onDelete, onEdit, onExport, onShare, formatDat
                         <button className="lf-menu-item" onClick={(e) => { onEdit(contract, e); setActiveMenu(null); }}>
                             <Pencil size={16} /> <span>{t('contracts.editButtonTitle')}</span>
                         </button>
-                        <button className="lf-menu-item" onClick={() => { onShare(contract); setActiveMenu(null); }} disabled={!isAnalyzed}>
+                        <button className="lf-menu-item lf-mobile-share-only" onClick={() => { onShare(contract); setActiveMenu(null); }} disabled={!isAnalyzed}>
                             <Share2 size={16} /> <span>{t('contracts.menuShareTrigger')}</span>
                         </button>
                         <div className="lf-menu-divider"></div>
@@ -236,7 +236,7 @@ const ContractCard = ({ contract, onDelete, onEdit, onExport, onShare, formatDat
 
                     <button
                         type="button"
-                        className="lf-btn-edit"
+                        className="lf-btn-edit lf-btn-share-mobile"
                         onClick={() => { onShare(contract); setActiveMenu(null); }}
                         disabled={!isAnalyzed}
                         title={t('contracts.menuShareTrigger')}

@@ -23,9 +23,8 @@
 import { useState, useCallback, useEffect } from 'react';
 import { getContracts, deleteContract } from '@/features/contracts/services/contractsApi';
 import { getAnalysis } from '@/features/analysis/services/analysisApi';
-import { exportReportToWord, exportReportToWordBlob } from '@/features/analysis/services/ReportExportService';
+import { exportReportToWord } from '@/features/analysis/services/ReportExportService';
 import { showAppToast } from '@/utils/toast';
-import useShareFile from '@/features/analysis/hooks/useShareFile';
 import { useContractMetadataEditor } from '@/features/contracts/hooks/useContractMetadataEditor';
 
 const DEFAULT_ANALYSIS_TIMEOUT_MS = 3 * 60 * 1000;
@@ -57,7 +56,6 @@ export const useContracts = (userId, t, isRTL) => {
     const [deleteConfirm, setDeleteConfirm] = useState(null);
     const [isDeleting, setIsDeleting] = useState(false);
     const [actionNotice, setActionNotice] = useState(null);
-    const { shareFile } = useShareFile();
 
     const {
         editModal,
@@ -191,15 +189,23 @@ export const useContracts = (userId, t, isRTL) => {
 
     const handleShare = async (contract) => {
         try {
-            const analysis = await getAnalysis(contract.contractId);
-            const baseFileName = `${(contract.fileName || t('export.defaultFilename')).replace(/\.(pdf|docx)$/i, '')}`;
-            showAppToast({ type: 'info', message: t('export.started') });
-            const blob = await exportReportToWordBlob(analysis, baseFileName);
-            await shareFile(blob, `${baseFileName}.docx`, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-            showAppToast({ type: 'success', message: t('export.success') });
+            if (!window.isSecureContext || !navigator?.share) {
+                showAppToast({ type: 'warning', message: t('contracts.shareRequiresHttps') });
+                return;
+            }
+
+            const shareUrl = `${window.location.origin}/#/analysis/${encodeURIComponent(contract.contractId)}`;
+
+            await navigator.share({
+                title: contract.fileName || t('contracts.menuShareTitle'),
+                text: t('contracts.menuShareTrigger'),
+                url: shareUrl,
+            });
+
+            showAppToast({ type: 'info', message: t('contracts.shareSheetOpened') });
         } catch (err) {
-            console.error('Share failed:', err);
-            showAppToast({ type: 'error', message: t('export.error') });
+            if (err?.name === 'AbortError') return;
+            showAppToast({ type: 'error', message: t('contracts.shareFailed') });
         }
     };
 

@@ -14,6 +14,8 @@
     box-shadow: var(--shadow-sm);
     transition: all 0.3s ease;
     position: relative;
+    width: 100%;
+    min-width: 0;
 }
 
 [data-theme="dark"] .lf-contract-card {
@@ -120,6 +122,7 @@
     line-height: 1.2;
     cursor: pointer;
     transition: color 0.2s ease;
+    overflow-wrap: anywhere;
 }
 
 .lf-card-date {
@@ -197,6 +200,10 @@
     font-weight: 600;
     cursor: pointer;
     text-align: start;
+}
+
+.lf-mobile-share-only {
+    display: none;
 }
 
 .lf-menu-item:disabled {
@@ -395,6 +402,7 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    min-width: 0;
 }
 
 
@@ -480,6 +488,20 @@
     cursor: pointer;
     transition: all 0.2s;
     flex-shrink: 0;
+}
+
+.lf-btn-share-mobile {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .lf-mobile-share-only {
+        display: flex;
+    }
+
+    .lf-btn-share-mobile {
+        display: inline-flex;
+    }
 }
 
 

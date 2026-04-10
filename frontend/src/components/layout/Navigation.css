@@ -309,6 +309,7 @@
 .profile-avatar {
     width: 32px;
     height: 32px;
+    aspect-ratio: 1 / 1;
     border-radius: 50%;
     background: linear-gradient(135deg, #008A6D, #0d6a58);
     color: white;
@@ -317,6 +318,8 @@
     justify-content: center;
     font-weight: var(--font-weight-bold);
     font-size: var(--font-size-sm);
+    line-height: 1;
+    flex: 0 0 32px;
 }
 
 .profile-chevron {
@@ -365,6 +368,7 @@
     width: 48px;
     flex-shrink: 0;
     height: 48px;
+    aspect-ratio: 1 / 1;
     border-radius: 50%;
     background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
     color: white;
@@ -671,7 +675,7 @@
 
 @media (max-width: 480px) {
     .nav-container {
-        border-radius: 0 0 1.2rem 1.2rem;
+        border-radius: 1.2rem;
         padding: 0.42rem 0.45rem 0.5rem;
     }
 
@@ -855,7 +859,130 @@
         --mobile-menu-shift: -50%;
         transform: translateX(var(--mobile-menu-shift));
         width: calc(100% - 32px);
-        max-width: 380px;
+        max-width: 320px;
+    }
+
+    .nav-container.mobile-nav-compact {
+        border-radius: 999px;
+        padding: 0.28rem 0.45rem;
+    }
+
+    .mobile-nav-compact .nav-inner {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.45rem;
+        min-height: 48px;
+        padding: 0 0.2rem;
+    }
+
+    .mobile-nav-compact .nav-logo {
+        order: 1 !important;
+    }
+
+    .mobile-nav-compact .logo-text {
+        font-size: 1.02rem;
+    }
+
+    .mobile-nav-compact .logo-icon {
+        width: 21px;
+        height: 21px;
+    }
+
+    .mobile-nav-compact .nav-right {
+        order: 3;
+        display: inline-flex;
+        width: auto;
+        max-width: none;
+        gap: 0.4rem;
+        margin-top: 0;
+        padding: 0;
+        background: transparent;
+        border: none;
+        border-radius: 0;
+        position: static;
+    }
+
+    .mobile-nav-compact .nav-right::after,
+    .mobile-nav-compact.is-authenticated .nav-right::after {
+        display: none;
+    }
+
+    .mobile-nav-compact .nav-right .language-toggle,
+    .mobile-nav-compact .nav-right .toggle-wrapper,
+    .mobile-nav-compact .nav-right .auth-btn,
+    .mobile-nav-compact .nav-right .public-cta-btn {
+        display: none !important;
+    }
+
+    .mobile-nav-compact .scan-badge {
+        display: inline-flex !important;
+        width: 36px;
+        min-width: 36px;
+        height: 36px;
+        padding: 0;
+        border-radius: 999px;
+        justify-content: center;
+    }
+
+    .mobile-nav-compact .scan-badge .scan-badge-label,
+    .mobile-nav-compact .scan-badge svg {
+        display: none;
+    }
+
+    .mobile-nav-compact .scan-badge-unlimited {
+        gap: 0;
+    }
+
+    .mobile-nav-compact .scan-badge-infinity {
+        font-size: 1.08rem;
+        transform: translateY(-0.5px);
+    }
+
+    .mobile-nav-compact .profile-container {
+        display: flex !important;
+        position: static;
+        margin: 0;
+        grid-column: auto;
+        grid-row: auto;
+    }
+
+    .mobile-nav-compact .profile-dropdown {
+        top: calc(100% + 8px);
+        left: 50% !important;
+        right: auto !important;
+        transform: translateX(-50%) !important;
+        --mobile-menu-shift: -50%;
+        animation: mobileMenuDrop 0.2s ease-out;
+        width: calc(100% - 32px);
+        max-width: 320px;
+    }
+
+    .mobile-nav-compact .profile-button {
+        width: 60px;
+        min-width: 60px;
+        height: 38px;
+        min-height: 38px;
+        padding: 0 0.45rem;
+        justify-content: center;
+        gap: 0.35rem;
+    }
+
+    .mobile-nav-compact .mobile-menu-button,
+    .mobile-nav-compact.is-authenticated .mobile-menu-button,
+    .mobile-nav-compact.is-public .mobile-menu-button {
+        grid-column: auto;
+        grid-row: auto;
+        width: 60px;
+        min-width: 60px;
+        height: 38px;
+        min-height: 38px;
+        margin: 0;
+        padding: 0;
+        font-size: 1.08rem;
+        border-radius: 999px;
+        align-self: center;
+        justify-self: center;
     }
 }
 

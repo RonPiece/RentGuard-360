@@ -34,17 +34,18 @@
    ============================================ */
 
 .admin-layout {
+    --admin-sidebar-width: 260px;
     display: flex;
     min-height: 100vh;
     overflow-x: hidden;
     /* Prevent sidebar from peeking */
-    padding-left: 260px;
+    padding-left: var(--admin-sidebar-width);
     box-sizing: border-box;
 }
 
 [dir="rtl"] .admin-layout {
     padding-left: 0;
-    padding-right: 260px;
+    padding-right: var(--admin-sidebar-width);
 }
 
 .admin-layout.dark {
@@ -74,12 +75,17 @@
     position: fixed;
     top: 0;
     left: 0;
-    width: 260px;
+    width: var(--admin-sidebar-width);
     /* Match sidebar width for transform to work */
     height: 100vh;
     height: 100dvh;
     z-index: 200;
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
+    overflow: hidden;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
 }
 
 [dir="rtl"] .sidebar-container {
@@ -177,6 +183,7 @@
 @media (max-width: 1024px) {
 
     .admin-layout {
+        --admin-sidebar-width: min(82vw, 320px);
         padding-left: 0;
         padding-right: 0;
     }
@@ -203,21 +210,21 @@
 
     /* Sidebar hidden by default - slides off screen + hidden */
     .sidebar-container {
-        transform: translateX(-100%);
-        visibility: hidden;
-        /* Completely hide when closed */
-        transition: transform 0.3s ease, visibility 0.3s ease;
+        transform: translateX(-105%);
+        opacity: 0;
+        transition: transform 0.28s ease, opacity 0.2s ease;
+        pointer-events: none;
     }
 
     [dir="rtl"] .sidebar-container {
-        transform: translateX(100%);
+        transform: translateX(105%);
     }
 
     /* Sidebar visible when menu is open */
     .sidebar-container.open {
-        transform: translateX(0);
-        visibility: visible;
-        /* Show when open */
+        transform: translateX(0) !important;
+        opacity: 1;
+        pointer-events: auto;
     }
 
     /* Sidebar shadow when open */

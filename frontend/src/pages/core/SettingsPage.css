@@ -60,8 +60,17 @@ main:has(.settings-container) {
 /* --- Bento Grid System --- */
 .bento-grid {
     display: grid;
+    direction: ltr;
     grid-template-columns: 1fr;
     gap: 1.5rem;
+}
+
+.settings-container[dir="rtl"] .bento-card {
+    direction: rtl;
+}
+
+.settings-container[dir="ltr"] .bento-card {
+    direction: ltr;
 }
 
 @media (min-width: 1024px) {
@@ -259,6 +268,12 @@ main:has(.settings-container) {
     font-size: 0.9rem;
     font-weight: 700;
     color: var(--text-primary);
+}
+
+.language-cube-action {
+    display: flex;
+    justify-content: center;
+    margin-top: 0.25rem;
 }
 
 /* --- 3. Billing Placeholder --- */

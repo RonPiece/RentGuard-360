@@ -532,19 +532,18 @@ const containerRef = useRef(null);
 
     return (
         <div className="lf-cv-container" dir={isRTL ? 'rtl' : 'ltr'}>
+            <div className="lf-cv-actions no-print">
+                <button 
+                    className="lf-cv-minimize-btn" 
+                    onClick={() => setIsMinimized(!isMinimized)}
+                    title={isMinimized ? t('contractView.expand') : t('contractView.collapse')}
+                >
+                    {isMinimized ? <Maximize2 size={18} /> : <Minimize2 size={18} />}
+                    <span>{isMinimized ? t('contractView.expand') : t('contractView.collapse')}</span>
+                </button>
+            </div>
+
             <div className={`lf-cv-paper ${isMinimized ? 'minimized' : ''}`} ref={containerRef}>
-                
-                {/* ===== MINIMIZE / MAXIMIZE CONTROLS ===== */}
-                <div className="lf-cv-actions no-print">
-                    <button 
-                        className="lf-cv-minimize-btn" 
-                        onClick={() => setIsMinimized(!isMinimized)}
-                        title={isMinimized ? t('contractView.expand') : t('contractView.collapse')}
-                    >
-                        {isMinimized ? <Maximize2 size={18} /> : <Minimize2 size={18} />}
-                        <span>{isMinimized ? t('contractView.expand') : t('contractView.collapse')}</span>
-                    </button>
-                </div>
 
                 {/* ===== HEADER ===== */}
                 <header className="lf-cv-header">

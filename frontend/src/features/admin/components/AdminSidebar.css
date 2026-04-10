@@ -28,22 +28,22 @@
  * 2. Base Sidebar Styles
  * ========================================================================== */
 .admin-sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
+    position: relative;
     height: 100vh;
     height: 100dvh;
-    width: var(--sidebar-width);
+    width: 100%;
     display: flex;
     flex-direction: column;
-    z-index: 200;
+    z-index: 1;
     transition: var(--sidebar-transition);
     overflow: hidden;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
 }
 
 [dir="rtl"] .admin-sidebar {
-    left: auto;
-    right: 0;
+    border-right: none;
 }
 
 /* ==========================================================================
@@ -315,7 +315,7 @@
 
     .admin-sidebar {
         position: static;
-        width: var(--sidebar-width);
+        width: 100%;
         box-shadow: var(--shadow-xl);
         padding-top: 56px;
     }
@@ -352,7 +352,7 @@
 
 @media (max-width: 600px) {
     .admin-sidebar {
-        width: 280px;
+        width: 100%;
     }
 
     .sidebar-nav-item {
@@ -368,7 +368,7 @@
 @media (max-width: 480px) {
     .admin-sidebar {
         width: 100%;
-        max-width: 300px;
+        max-width: none;
     }
 
     .sidebar-header {

@@ -142,32 +142,44 @@ export function useContractChat() {
 
     useEffect(() => {
         const updateFooterOffset = () => {
-            const baseOffset = window.innerWidth <= 768 ? 12 : 24;
-            const shouldPinToViewportBottom = open && window.innerWidth <= 768;
-
-            if (shouldPinToViewportBottom) {
-                setFooterOffset(baseOffset);
-                return;
-            }
-
+            const isMobile = window.innerWidth <= 768;
+            const baseOffset = isMobile ? 12 : 24;
             const footer = document.querySelector('.app-footer');
-            if (!footer) {
-                setFooterOffset(baseOffset);
-                return;
+            const footerRect = footer?.getBoundingClientRect();
+            const footerOverlap = footerRect ? Math.max(0, window.innerHeight - footerRect.top) : 0;
+
+            let nextOffset = baseOffset + footerOverlap;
+
+            if (isMobile) {
+                const nav = document.querySelector('.nav-container');
+                const panelNode = widgetRef.current?.querySelector('.chat-widget-panel');
+                const launcherNode = widgetRef.current?.querySelector('.chat-widget-launcher');
+                const activeNode = (open && panelNode) ? panelNode : launcherNode;
+                const widgetHeight = activeNode?.getBoundingClientRect().height || (open ? 560 : 56);
+
+                const riseCap = Math.round(window.innerHeight * 0.26);
+                nextOffset = Math.min(nextOffset, baseOffset + riseCap);
+
+                if (nav && widgetHeight > 0) {
+                    const navBottom = nav.getBoundingClientRect().bottom;
+                    const minTopGap = open ? 20 : 48;
+                    const maxOffsetBeforeNav = Math.max(baseOffset, window.innerHeight - navBottom - widgetHeight - minTopGap);
+                    nextOffset = Math.min(nextOffset, maxOffsetBeforeNav);
+                }
             }
 
-            const footerRect = footer.getBoundingClientRect();
-            const overlap = Math.max(0, window.innerHeight - footerRect.top);
-            setFooterOffset(baseOffset + overlap);
+            setFooterOffset(Math.max(baseOffset, Math.round(nextOffset)));
         };
 
         updateFooterOffset();
         window.addEventListener('scroll', updateFooterOffset, { passive: true });
         window.addEventListener('resize', updateFooterOffset);
+        window.visualViewport?.addEventListener('resize', updateFooterOffset);
 
         return () => {
             window.removeEventListener('scroll', updateFooterOffset);
             window.removeEventListener('resize', updateFooterOffset);
+            window.visualViewport?.removeEventListener('resize', updateFooterOffset);
         };
     }, [open]);
 
@@ -182,6 +194,13 @@ export function useContractChat() {
 
     useEffect(() => {
         const updatePaletteBySection = () => {
+            const isMobile = window.innerWidth <= 768;
+            if (isMobile) {
+                // Keep a stable palette on mobile to avoid visible flicker while scrolling.
+                setUseWhyPalette(false);
+                return;
+            }
+
             const isDashboardRoute = location.pathname === '/dashboard';
             if (!isDashboardRoute) {
                 setUseWhyPalette(false);

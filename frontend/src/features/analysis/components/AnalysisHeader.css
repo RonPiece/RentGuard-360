@@ -5,8 +5,7 @@
     width: 100%;
     max-width: 1440px;
     margin: 0 auto;
-    padding: 6rem 2rem 2rem 2rem;
-    /* Pushes content below fixed nav */
+    padding: 2rem 2rem 2rem 2rem;
     display: flex;
     flex-direction: column;
     gap: 2rem;

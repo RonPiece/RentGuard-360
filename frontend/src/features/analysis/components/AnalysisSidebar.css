@@ -109,6 +109,13 @@
     transition: all 0.2s ease;
 }
 
+.lf-contract-export-btn svg,
+.lf-contract-reset-btn svg {
+    width: 19px;
+    height: 19px;
+    flex-shrink: 0;
+}
+
 .lf-contract-export-btn {
     background: var(--accent-primary);
     border-color: var(--accent-primary);
@@ -124,6 +131,33 @@
 .lf-contract-reset-btn:disabled {
     opacity: 0.55;
     cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+    .lf-contract-export-row {
+        flex-direction: column;
+        gap: 0.6rem;
+    }
+
+    .lf-contract-export-btn,
+    .lf-contract-reset-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .lf-contract-export-btn span,
+    .lf-contract-reset-btn span {
+        white-space: normal;
+        text-align: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .lf-contract-export-btn svg,
+    .lf-contract-reset-btn svg {
+        width: 22px;
+        height: 22px;
+    }
 }
 
 .lf-contract-reset-counter {

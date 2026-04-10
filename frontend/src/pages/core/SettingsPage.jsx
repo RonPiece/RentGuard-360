@@ -16,15 +16,16 @@
  * - api (deleteAllUserContracts)
  * ============================================
  */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import {
     UserRound,
     Palette,
+    Languages,
+    Smartphone,
     BellRing,
     MessageCircle,
-    Info,
     ShieldAlert,
     Lightbulb,
     AlertTriangle,
@@ -38,10 +39,12 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
 import { deleteAllUserContracts } from '@/features/admin/services/adminApi';
 import Toggle from '@/components/ui/Toggle';
+import LanguageToggle from '@/components/ui/LanguageToggle';
 import './SettingsPage.css';
 
 const SettingsPage = () => {
     const CHAT_AUTO_OPEN_PREF_KEY = 'rentguard_chat_auto_open_contract';
+    const MOBILE_NAV_COMPACT_PREF_KEY = 'rentguard_mobile_nav_compact';
     const { userAttributes, logout, deleteAccount, user } = useAuth();
     const { isDark, toggleTheme } = useTheme();
     const { t, isRTL } = useLanguage();
@@ -60,12 +63,54 @@ const SettingsPage = () => {
             return true;
         }
     });
+    const [mobileNavCompactEnabled, setMobileNavCompactEnabled] = useState(() => {
+        try {
+            return localStorage.getItem(MOBILE_NAV_COMPACT_PREF_KEY) === 'true';
+        } catch {
+            return false;
+        }
+    });
+    const [isMobileViewport, setIsMobileViewport] = useState(() => {
+        if (typeof window === 'undefined' || !window.matchMedia) return false;
+        return window.matchMedia('(max-width: 768px)').matches;
+    });
+
+    useEffect(() => {
+        if (typeof window === 'undefined' || !window.matchMedia) return undefined;
+
+        const mediaQuery = window.matchMedia('(max-width: 768px)');
+        const updateIsMobile = () => setIsMobileViewport(mediaQuery.matches);
+        updateIsMobile();
+
+        if (mediaQuery.addEventListener) {
+            mediaQuery.addEventListener('change', updateIsMobile);
+            return () => mediaQuery.removeEventListener('change', updateIsMobile);
+        }
+
+        mediaQuery.addListener(updateIsMobile);
+        return () => mediaQuery.removeListener(updateIsMobile);
+    }, []);
 
     const handleChatAutoOpenToggle = () => {
         setChatAutoOpenEnabled((prev) => {
             const next = !prev;
             try {
                 localStorage.setItem(CHAT_AUTO_OPEN_PREF_KEY, String(next));
+            } catch {
+                // Ignore storage failures and keep in-memory value.
+            }
+            return next;
+        });
+    };
+
+    const handleMobileNavCompactToggle = () => {
+        setMobileNavCompactEnabled((prev) => {
+            const next = !prev;
+            try {
+                localStorage.setItem(MOBILE_NAV_COMPACT_PREF_KEY, String(next));
+                window.dispatchEvent(new CustomEvent('rg:mobile-nav-compact-changed', {
+                    detail: { enabled: next }
+                }));
             } catch {
                 // Ignore storage failures and keep in-memory value.
             }
@@ -141,23 +186,8 @@ const SettingsPage = () => {
     </div>
 </div>
 
-                {/* 2. Appearance Cube */}
-                <div className="bento-card bento-col-2 flex-between">
-                    <div>
-                        <div className="cube-icon-wrapper icon-primary">
-                            <Palette size={24} />
-                        </div>
-                        <h3>{t('settings.appearanceTitle')}</h3>
-                        <p className="cube-desc">{t('settings.appearanceDesc')}</p>
-                    </div>
-                    <div className="cube-action-row">
-                        <span className="status-text">{isDark ? t('settings.darkMode') : t('settings.lightMode')}</span>
-                        <Toggle checked={isDark} onChange={toggleTheme} />
-                    </div>
-                </div>
-
-                {/* 3. Billing Placeholder Cube */}
-                <div className="bento-card bento-col-2 flex-between">
+                {/* 2. Billing Placeholder Cube */}
+                <div className="bento-card bento-col-2 flex-between billing-cube">
                     <div>
                         <div className="cube-icon-wrapper icon-secondary">
                             <CreditCard size={24} />
@@ -176,6 +206,35 @@ const SettingsPage = () => {
                     <button className="cube-link-btn text-secondary" onClick={() => navigate('/billing')}>
                         {t('settings.manageBilling')} &rarr;
                     </button>
+                </div>
+
+                {/* 3. Appearance Cube */}
+                <div className="bento-card bento-col-2 flex-between appearance-cube">
+                    <div>
+                        <div className="cube-icon-wrapper icon-primary">
+                            <Palette size={24} />
+                        </div>
+                        <h3>{t('settings.appearanceTitle')}</h3>
+                        <p className="cube-desc">{t('settings.appearanceDesc')}</p>
+                    </div>
+                    <div className="cube-action-row">
+                        <span className="status-text">{isDark ? t('settings.darkMode') : t('settings.lightMode')}</span>
+                        <Toggle checked={isDark} onChange={toggleTheme} />
+                    </div>
+                </div>
+
+                {/* 3.1 Language Cube */}
+                <div className="bento-card bento-col-2 flex-between language-cube">
+                    <div>
+                        <div className="cube-icon-wrapper icon-primary">
+                            <Languages size={24} />
+                        </div>
+                        <h3>{t('settings.languageTitle')}</h3>
+                        <p className="cube-desc">{t('settings.languageDesc')}</p>
+                    </div>
+                    <div className="language-cube-action">
+                        <LanguageToggle />
+                    </div>
                 </div>
 
                 {/* 4. Contract Chat Behavior */}
@@ -197,6 +256,27 @@ const SettingsPage = () => {
                     </div>
                 </div>
 
+                {/* 4.1 Mobile Navigation Density */}
+                {isMobileViewport && (
+                    <div className="bento-card bento-col-2 flex-between">
+                        <div>
+                            <div className="cube-icon-wrapper icon-secondary">
+                                <Smartphone size={24} />
+                            </div>
+                            <h3>{t('settings.mobileNavTitle')}</h3>
+                            <p className="cube-desc">{t('settings.mobileNavDesc')}</p>
+                        </div>
+                        <div className="cube-action-row">
+                            <span className="status-text">
+                                {mobileNavCompactEnabled
+                                    ? t('settings.mobileNavCompactOn')
+                                    : t('settings.mobileNavCompactOff')}
+                            </span>
+                            <Toggle checked={mobileNavCompactEnabled} onChange={handleMobileNavCompactToggle} />
+                        </div>
+                    </div>
+                )}
+
                 {/* 5. Notifications Cube */}
                 <div className="bento-card bento-col-2 flex-between">
                     <div>
@@ -214,26 +294,6 @@ const SettingsPage = () => {
                     <div className="cube-tags">
                         <span className="tag">EMAIL</span>
                         <span className="tag active">SYSTEM</span>
-                    </div>
-                </div>
-
-                {/* 6. About Cube */}
-                <div className="bento-card bento-col-2 flex-between">
-                    <div>
-                        <div className="cube-icon-wrapper icon-primary">
-                            <Info size={24} />
-                        </div>
-                        <h3>{t('settings.systemInfoTitle')}</h3>
-                        <div className="about-list">
-                            <div className="about-item">
-                                <span className="about-label">{t('settings.versionLabel')}</span>
-                                <strong className="about-value">1.0.0</strong>
-                            </div>
-                            <div className="about-item">
-                                <span className="about-label">{t('settings.builtByLabel')}</span>
-                                <strong className="about-value">{t('settings.devTeam')}</strong>
-                            </div>
-                        </div>
                     </div>
                 </div>
 

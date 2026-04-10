@@ -183,7 +183,7 @@
    ============================================ */
 .lf-content-section {
     background: var(--bg-page);
-    padding: 1.5rem 2rem 10rem;
+    padding: 1.5rem 2rem calc(10rem + env(safe-area-inset-bottom, 0px));
     min-height: 50vh;
     flex-grow: 1;
 }
@@ -779,7 +779,7 @@
     }
 
     .lf-content-section {
-        padding: 1.5rem 1.5rem 10rem;
+        padding: 1.5rem 1.5rem calc(10rem + env(safe-area-inset-bottom, 0px));
     }
 
     .lf-filter-bar {
@@ -822,7 +822,7 @@
 
 @media (max-width: 560px) {
     .lf-content-section {
-        padding: 1rem 1rem 10rem;
+        padding: 1rem 1rem calc(10rem + env(safe-area-inset-bottom, 0px));
     }
 
     .lf-filter-chips {

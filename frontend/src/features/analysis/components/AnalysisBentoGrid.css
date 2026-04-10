@@ -418,6 +418,12 @@
     transition: all 0.2s ease;
 }
 
+.lf-action-btn svg {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+}
+
 .lf-action-btn:disabled {
     opacity: 0.6;
     cursor: not-allowed;
@@ -547,6 +553,11 @@
         min-height: 44px;
         gap: 0.4rem;
         flex-direction: row;
+    }
+
+    .lf-action-btn svg {
+        width: 20px;
+        height: 20px;
     }
 
     .lf-export-menu {

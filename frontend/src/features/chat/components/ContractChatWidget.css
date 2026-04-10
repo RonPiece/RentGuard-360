@@ -58,10 +58,9 @@
   --chat-shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.15);
   position: fixed;
   inset-inline-end: 24px;
-  bottom: var(--chat-offset-bottom, 24px);
-  z-index: 1150;
-/* THE MAGIC: Apple-style spring transition for when the footer pushes it up */
-  transition: bottom 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  bottom: calc(var(--chat-offset-bottom, 24px) + env(safe-area-inset-bottom, 0px));
+  z-index: 130;
+  transition: bottom 220ms ease-out;
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', 'Segoe UI', 'Roboto', sans-serif;
 }
 
@@ -73,6 +72,10 @@
   --chat-select-arrow: #047857;
   --chat-liquid-a: rgba(255, 255, 255, 0.28);
   --chat-liquid-b: rgba(220, 252, 231, 0.08);
+}
+
+.chat-widget.panel-visible {
+  z-index: 1450;
 }
 
 /* =========================================
@@ -936,6 +939,7 @@
 @media (max-width: 768px) {
   .chat-widget {
     inset-inline-end: 2.5vw;
+    bottom: calc(var(--chat-offset-bottom, 12px) + env(safe-area-inset-bottom, 0px));
   }
 
   .chat-widget-panel {
