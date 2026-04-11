@@ -24,6 +24,10 @@ import { resolveShareFileName, canShareFiles, downloadFallback } from '../utils/
  * Custom hook for sharing files via the Web Share API.
  */
 const useShareFile = () => {
+    // ------------------------------------------------------------------------
+    // MAIN SHARE: Detects capabilities -> Fires native sheet / falls back to generic download
+    // Blocks multiple parallel share triggers via global locks
+    // ------------------------------------------------------------------------
     const shareFile = useCallback(async (
         blob,
         fileName,
@@ -93,7 +97,37 @@ const useShareFile = () => {
         return shareFile(blob, fileName, 'text/plain;charset=utf-8');
     }, [shareFile]);
 
-    return { shareFile, shareTextAsFile };
+    // ------------------------------------------------------------------------
+    // TEXT SHARE: Share raw text links to WhatsApp, Telegram, Mail
+    // ------------------------------------------------------------------------
+    const shareUrl = useCallback(async ({ url, title, text, fallbackAction }) => {
+        if (window._isFileSharingModalOpen) return { success: false, method: 'cancelled' };
+        window._isFileSharingModalOpen = true;
+
+        const resetLock = () => { setTimeout(() => { window._isFileSharingModalOpen = false; }, 1000); };
+
+        if (!navigator?.share) {
+            resetLock();
+            if (fallbackAction) await fallbackAction();
+            return { success: false, method: 'fallback' };
+        }
+
+        try {
+            await navigator.share({ title, url, text });
+            resetLock();
+            return { success: true, method: 'share' };
+        } catch (err) {
+            resetLock();
+            if (err.name === 'AbortError') {
+                return { success: false, method: 'cancelled' };
+            }
+            console.error('Failed to share via apps', err);
+            if (fallbackAction) await fallbackAction();
+            return { success: false, method: 'error', error: err };
+        }
+    }, []);
+
+    return { shareFile, shareTextAsFile, shareUrl };
 };
 
 export default useShareFile;

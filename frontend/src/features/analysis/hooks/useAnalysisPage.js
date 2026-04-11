@@ -17,13 +17,13 @@
  */
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { getAnalysis, createShareLink, getShareLink, revokeShareLink, saveEditedContract } from '@/features/analysis/services/analysisApi';
+import { getAnalysis, saveEditedContract } from '@/features/analysis/services/analysisApi';
 import { exportReportToWord } from '@/features/analysis/services/ReportExportService';
 import { showAppToast as emitAppToast } from '@/utils/toast';
-import { copyTextToClipboard } from '@/features/analysis/utils/clipboardUtils';
-import { readMetadataCache, persistMetadataCache, persistShareLink, clearShareLinkCache, getShareCacheKey } from '@/features/analysis/services/cacheService';
+import { readMetadataCache, persistMetadataCache } from '@/features/analysis/services/cacheService';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { useContractShare } from '@/features/analysis/hooks/useContractShare';
 
 export const useAnalysisPage = () => {
     const { contractId } = useParams();
@@ -39,13 +39,8 @@ export const useAnalysisPage = () => {
     const [isLoading, setIsLoading] = useState(!state?.contract);
     const [error, setError] = useState(null);
 
-    // Export & Share Logic State
+    // Export State
     const [isExporting, setIsExporting] = useState(false);
-    const [isGeneratingShareLink, setIsGeneratingShareLink] = useState(false);
-    const [isRevokingShareLink, setIsRevokingShareLink] = useState(false);
-    const [shareLink, setShareLink] = useState('');
-    const [shareLinkExpiresAt, setShareLinkExpiresAt] = useState(null);
-    const [isSharePanelVisible, setIsSharePanelVisible] = useState(true);
 
     // Contract Editor (Manual overrides by user)
     const [contractEditState, setContractEditState] = useState({ editedCount: 0, saveStatus: null });
@@ -59,10 +54,41 @@ export const useAnalysisPage = () => {
 
     // DOM & State Refs
     const contractViewRef = useRef(null);
-    const sharePanelRef = useRef(null);
     const prevSaveStatusRef = useRef(null);
     const lastSavingToastAtRef = useRef(0);
     const hydratedEditsContractRef = useRef(null);
+
+    // Saves user's manual contract edits to AWS
+    const handleSaveToCloud = useCallback(async (clauses, fullEditedText) => {
+        const userId = userAttributes?.sub || 'unknown-user';
+        const contractIdClean = analysis?.contractId || contractId;
+        await saveEditedContract(contractIdClean, userId, clauses, fullEditedText);
+    }, [analysis?.contractId, contractId, userAttributes?.sub]);
+
+    // Sharing Hook Logic
+    const {
+        isGeneratingShareLink,
+        isRevokingShareLink,
+        shareLink,
+        shareLinkExpiresAt,
+        isSharePanelVisible,
+        sharePanelRef,
+        handleCopyShareLink,
+        handleManualCopyShareLink,
+        handleShareLinkViaApps,
+        handleRevokeShareLink
+    } = useContractShare({
+        contractId: analysis?.contractId || contractId,
+        onSaveBeforeShare: async () => {
+            const currentPayload = contractViewRef.current?.getCurrentEditedPayload?.();
+            if (currentPayload) {
+                await handleSaveToCloud(
+                    currentPayload.editedClauses || {},
+                    currentPayload.fullEditedText || ''
+                );
+            }
+        }
+    });
 
     // Core Fetch & Poll logic for the AI Contract Analysis
     const fetchAnalysis = useCallback(async () => {
@@ -70,7 +96,7 @@ export const useAnalysisPage = () => {
             if (pollCount === 0) setIsLoading(true);
             const decodedId = decodeURIComponent(contractId);
             const data = await getAnalysis(decodedId);
-            
+
             // Merge response data with cached metadata to avoid UI flickering
             const cachedMetadata = readMetadataCache(decodedId);
 
@@ -170,50 +196,6 @@ export const useAnalysisPage = () => {
 
     useEffect(() => { if (analysis) setPollCount(0); }, [analysis]);
 
-    // Local Storage Hydration: Preload Share Link if valid one exists
-    useEffect(() => {
-        const contractForShare = analysis?.contractId || contractId;
-        if (!contractForShare) {
-            setShareLink(''); setShareLinkExpiresAt(null); setIsSharePanelVisible(false); return;
-        }
-        let hadCachedLink = false;
-        try {
-            const cachedRaw = localStorage.getItem(getShareCacheKey(contractForShare));
-            if (cachedRaw) {
-                const cached = JSON.parse(cachedRaw);
-                const cachedExpiry = Number(cached?.expiresAt || 0);
-                if (cached?.url && (!cachedExpiry || cachedExpiry > (Date.now() / 1000))) {
-                    hadCachedLink = true;
-                    setShareLink(cached.url);
-                    setShareLinkExpiresAt(cached?.expiresAt || null);
-                    setIsSharePanelVisible(true);
-                } else {
-                    clearShareLinkCache(contractForShare);
-                }
-            }
-        } catch (error) { console.warn('Failed to read cache', error); }
-
-        let cancelled = false;
-        const loadExistingShareLink = async () => {
-            try {
-                const shareData = await getShareLink(contractForShare);
-                if (cancelled) return;
-                if (shareData?.active && shareData?.shareToken) {
-                    const url = `${window.location.origin}/#/shared/${encodeURIComponent(shareData.shareToken)}`;
-                    setShareLink(url); setShareLinkExpiresAt(shareData?.expiresAt || null); setIsSharePanelVisible(true);
-                    persistShareLink(contractForShare, url, shareData?.expiresAt || null);
-                } else {
-                    setShareLink(''); setShareLinkExpiresAt(null); setIsSharePanelVisible(false); clearShareLinkCache(contractForShare);
-                }
-            } catch {
-                if (cancelled) return;
-                if (!hadCachedLink) { setShareLink(''); setShareLinkExpiresAt(null); setIsSharePanelVisible(false); }
-            }
-        };
-        loadExistingShareLink();
-        return () => { cancelled = true; };
-    }, [analysis?.contractId, contractId]);
-
     // Saving toast
     useEffect(() => {
         const status = contractEditState.saveStatus || null;
@@ -249,124 +231,6 @@ export const useAnalysisPage = () => {
             setIsExporting(false);
         }
     }, [analysis, t]);
-
-    // UI helper: Smoothly scroll to the Share Component on click
-    const focusSharePanel = useCallback(() => {
-        setIsSharePanelVisible(true);
-        requestAnimationFrame(() => {
-            sharePanelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        });
-    }, []);
-
-    // Toggle Share Link section visibility or request a new URL if none exists yet
-    const handleCopyShareLink = useCallback(async () => {
-        const shareContractId = analysis?.contractId || contractId;
-        if (!shareContractId) {
-            emitAppToast({ type: 'warning', title: t('analysis.missingShareContractId'), message: '' });
-            return;
-        }
-
-        if (shareLink) {
-            if (isSharePanelVisible) {
-                setIsSharePanelVisible(false);
-                emitAppToast({ type: 'info', title: t('analysis.sharePanelHidden'), message: '' });
-            } else {
-                focusSharePanel();
-                emitAppToast({ type: 'info', title: t('analysis.sharePanelShown'), message: '' });
-            }
-            return;
-        }
-
-        setIsGeneratingShareLink(true);
-        try {
-            const currentPayload = contractViewRef.current?.getCurrentEditedPayload?.();
-            if (currentPayload && userAttributes?.sub) {
-                await saveEditedContract(shareContractId, userAttributes.sub, currentPayload.editedClauses || {}, currentPayload.fullEditedText || '');
-            }
-            const shareResult = await createShareLink(shareContractId, 7);
-            const token = shareResult?.shareToken;
-            if (!token) throw new Error('Missing share token in response');
-
-            const url = `${window.location.origin}/#/shared/${encodeURIComponent(token)}`;
-            setShareLink(url);
-            setShareLinkExpiresAt(shareResult?.expiresAt || null);
-            setIsSharePanelVisible(true);
-            persistShareLink(shareContractId, url, shareResult?.expiresAt || null);
-            focusSharePanel();
-            emitAppToast({ type: 'success', title: t('analysis.shareCreated'), message: '' });
-        } catch (err) {
-            console.error('Failed to create share link', err);
-            emitAppToast({ type: 'error', title: t('analysis.shareCreateFailed'), message: '' });
-        } finally {
-            setIsGeneratingShareLink(false);
-        }
-    }, [analysis?.contractId, contractId, focusSharePanel, isSharePanelVisible, shareLink, t, userAttributes?.sub]);
-
-    const handleManualCopyShareLink = useCallback(async () => {
-        if (!shareLink) return;
-        try {
-            await copyTextToClipboard(shareLink);
-            emitAppToast({ title: t('analysis.shareCopiedTitle'), message: t('analysis.shareCopiedMessage'), type: 'success' });
-        } catch (err) {
-            console.error('Failed to copy share link', err);
-            emitAppToast({ type: 'error', title: t('analysis.shareCopyFailed'), message: '' });
-        }
-    }, [shareLink, t]);
-
-    const handleShareLinkViaApps = useCallback(async () => {
-        if (!shareLink) return;
-        if (window._isSharingModalOpen) return;
-        window._isSharingModalOpen = true;
-
-        const resetLock = () => { setTimeout(() => { window._isSharingModalOpen = false; }, 800); };
-
-        if (!navigator?.share) {
-            await handleManualCopyShareLink();
-            resetLock();
-            return;
-        }
-        try {
-            await navigator.share({
-                title: t('analysis.shareNativeTitle') || 'Contract Analysis',
-                url: shareLink
-            });
-            resetLock();
-        } catch (err) {
-            resetLock();
-            if (err?.name !== 'AbortError') {
-                console.error('Failed to share link via apps', err);
-                await handleManualCopyShareLink();
-            }
-        }
-    }, [handleManualCopyShareLink, shareLink, t]);
-
-    const handleRevokeShareLink = useCallback(async () => {
-        const shareContractId = analysis?.contractId || contractId;
-        if (!shareContractId) {
-            emitAppToast({ type: 'warning', title: t('analysis.missingShareContractId'), message: '' });
-            return;
-        }
-        setIsRevokingShareLink(true);
-        try {
-            await revokeShareLink(shareContractId);
-            setShareLink('');
-            setShareLinkExpiresAt(null);
-            setIsSharePanelVisible(false);
-            clearShareLinkCache(shareContractId);
-            emitAppToast({ title: t('analysis.shareRevokedTitle'), message: t('analysis.shareRevokedMessage'), type: 'success' });
-        } catch (err) {
-            console.error('Failed to revoke share link', err);
-            emitAppToast({ type: 'error', title: t('analysis.shareRevokeFailed'), message: '' });
-        } finally {
-            setIsRevokingShareLink(false);
-        }
-    }, [analysis?.contractId, contractId, t]);
-
-    const handleSaveToCloud = useCallback(async (clauses, fullEditedText) => {
-        const userId = userAttributes?.sub || 'unknown-user';
-        const contractIdClean = analysis?.contractId || contractId;
-        await saveEditedContract(contractIdClean, userId, clauses, fullEditedText);
-    }, [analysis?.contractId, contractId, userAttributes?.sub]);
 
     const applyMetadataUpdate = useCallback((updatedContract) => {
         if (!updatedContract?.contractId) return;
@@ -436,7 +300,7 @@ export const useAnalysisPage = () => {
         handleRevokeShareLink,
         handleSaveToCloud,
         applyMetadataUpdate,
-        
+
         // Translations and Context
         t,
         isRTL,
