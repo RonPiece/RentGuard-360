@@ -16,7 +16,7 @@
  * - useShareFile (Native Web Share OS integrations)
  * ============================================
  */
-﻿import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { createShareLink, getShareLink, revokeShareLink } from '@/features/analysis/services/analysisApi';
 import { persistShareLink, clearShareLinkCache, getShareCacheKey } from '@/features/analysis/services/cacheService';
 import { copyTextToClipboard } from '@/features/analysis/utils/clipboardUtils';

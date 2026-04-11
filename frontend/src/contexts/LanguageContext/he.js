@@ -47,6 +47,16 @@ export const he = {
         "defaultFilename": "דוח_ניתוח_חוזה_RentGuard",
         "defaultContractFilename": "חוזה_ערוך_RentGuard"
     },
+    "contractExport": {
+        "title": "חוזה שכירות בלתי מוגנת",
+        "datePrefix": "נערך ונחתם ביום:",
+        "signaturesTitle": "חתימות",
+        "tenant": "השוכר",
+        "landlord": "המשכיר",
+        "id": "ת.ז.: ",
+        "nameTitle": "שם: ",
+        "dateLabel": "תאריך: "
+    },
     "auth": {
         "login": "התחברות",
         "register": "הרשמה",

@@ -47,6 +47,16 @@ export const en = {
         "defaultFilename": "RentGuard_Analysis_Report",
         "defaultContractFilename": "RentGuard_Edited_Contract"
     },
+    "contractExport": {
+        "title": "Unprotected Lease Agreement",
+        "datePrefix": "Drawn and signed on:",
+        "signaturesTitle": "Signatures",
+        "tenant": "Tenant",
+        "landlord": "Landlord",
+        "id": "ID: ",
+        "nameTitle": "Name: ",
+        "dateLabel": "Date: "
+    },
     "auth": {
         "login": "Login",
         "register": "Sign Up",
