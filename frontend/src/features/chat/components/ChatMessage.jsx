@@ -18,7 +18,7 @@ import { Check, Copy, Bot } from 'lucide-react';
 import './ChatMessage.css';
 import { extractClauseReference, formatMessageTime } from '@/features/chat/utils/chatTextFormatting';
 
-const ChatMessage = ({ msg, isRTL, t, userInitial, userLabel, copyMessageText, copiedMessageKey, locale }) => {
+const ChatMessage = ({ msg, t, userInitial, userLabel, copyMessageText, copiedMessageKey, locale }) => {
     const messageKey = `${msg.ts}-${msg.role}`;
     const copied = copiedMessageKey === messageKey;
     

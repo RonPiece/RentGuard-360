@@ -1,21 +1,18 @@
 /**
  * ============================================
- *  English Translations Dictionary
- *  Language strings for RentGuard-360 frontend
+ * English Translations Dictionary
+ * Language strings for RentGuard-360 frontend
  * ============================================
- * 
- * STRUCTURE:
+ * * STRUCTURE:
  * - nav: Navigation and layout strings
  * - auth: Authentication screens and messages
  * - dashboard / landing: Application overviews
  * - contracts / upload / analysis: Core flow
  * - score / methodology: Scoring logic
  * - admin / settings: Administration tools
- * 
- * DEPENDENCIES:
+ * * DEPENDENCIES:
  * - Used exclusively by LanguageContext
- * 
- * ============================================
+ * * ============================================
  */
 export const en = {
     "nav": {
@@ -308,15 +305,11 @@ export const en = {
     },
     "contracts": {
         "generatingShareLink": "Generating secure link...",
-        "menuShareTitle": "Share Contract",
-        "menuShareTrigger": "Share Analysis",
         "linkCopied": "Link copied successfully!",
         "linkCopiedFallback": "Link copied to clipboard!",
         "shareFailedSpecific": "Share failed. Please check your network connection.",
-        "shareFailed": "Failed to share.",
         "deleteSuccessTitle": "Contract Deleted",
         "deleteSuccess": "The contract was successfully deleted from the system.",
-
         "title": "My Contracts",
         "subtitle": "Manage and view all your rental contracts",
         "activeContracts": "active contracts",
@@ -453,8 +446,6 @@ export const en = {
     },
     "analysis": {
         "shareExpiryDays": "Expires in {days} days",
-        "shareExpiryDaysOne": "Expires in 1 day",
-        "shareExpiryDaysMany": "Expires in {days} days",
         "untitledClause": "Untitled Clause",
         "noDetailedContent": "No detailed content provided",
         "title": "Contract Analysis",
@@ -906,11 +897,6 @@ export const en = {
         "allUsers": "All Users",
         "activeOnly": "Active Only",
         "disabledOnly": "Disabled Only",
-        "none": "No package",
-        "pending": "pending",
-        "expired": "expired",
-        "packageNone": "No package",
-        "packageExpired": "Expired package",
         "showingUsers": "Showing {count} users",
         "showingUsersDetailed": "Showing {visible} of {total} registered users",
         "confirmDisable": "Are you sure you want to disable this user?",
@@ -1263,7 +1249,6 @@ export const en = {
                 "content": "If you have any questions regarding this Privacy Policy or wish to review, update, or remove your personal data, please reach out to us using the contact details provided on our site."
             }
         ]
-    }
-    ,
+    },
     "checkingYourPlan": "Checking your plan..."
 };

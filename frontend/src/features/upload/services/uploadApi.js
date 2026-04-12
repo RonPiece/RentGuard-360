@@ -1,5 +1,5 @@
 import { deductScan } from '@/features/billing/services/stripeApi.js';
-import { apiCall, API_URL, getAuthToken } from '@/services/apiClient';
+import { apiCall, API_URL } from '@/services/apiClient';
 
 export const uploadFile = async (file, onProgress, metadata = {}) => {
     // Step 1: Get presigned URL from our API with original filename and metadata

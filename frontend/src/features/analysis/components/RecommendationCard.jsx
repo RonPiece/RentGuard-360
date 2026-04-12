@@ -30,7 +30,7 @@ const RecommendationCard = ({
     onRevert,
     isApplied = false
 }) => {
-    const { t, isRTL } = useLanguage();
+    const { t } = useLanguage();
     const cardTitle = title || t('recommendationCard.defaultTitle');
 
     if (!suggestion) return null;

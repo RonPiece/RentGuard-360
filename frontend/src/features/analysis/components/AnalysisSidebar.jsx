@@ -12,7 +12,7 @@
  * - components/domain/ScoreMethodology
  * ============================================
  */
-import React, { useState } from 'react';
+import React from 'react';
 import { Info, ChevronDown } from 'lucide-react';
 import Accordion from '@/components/ui/Accordion';
 import ScoreBreakdown from '@/features/analysis/components/ScoreBreakdown';
@@ -29,7 +29,6 @@ const AnalysisSidebar = ({
     ShareComponent
 }) => {
     const { t, isRTL } = useLanguage();
-    const [isOcrAccordionOpen, setIsOcrAccordionOpen] = useState(false);
     const showOcrAccordion = activeTab === 'contract' && isContractDocument;
 
     return (

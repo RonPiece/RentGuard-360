@@ -39,14 +39,11 @@ const ContractView = forwardRef(({
     const {
         editedClauses,
         updateEditedClauses,
-        saveStatus,
         setSaveStatus,
         selectedClause,
-        setSelectedClause,
         editingText,
         setEditingText,
         confirmRevertId,
-        setConfirmRevertId,
         showClearAllConfirm,
         setShowClearAllConfirm,
         consultingClauseId,
@@ -90,7 +87,7 @@ const ContractView = forwardRef(({
     const [showScrollUp, setShowScrollUp] = useState(false);
 
     useEffect(() => {
-        const handleScroll = (e) => {
+        const handleScroll = () => {
             if (containerRef.current) {
                 setShowScrollUp(containerRef.current.scrollTop > 200);
             } else {

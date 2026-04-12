@@ -154,7 +154,8 @@ const AnalysisPage = () => {
         analysis,
         editedClauses,
         t,
-        isRTL
+        isRTL,
+        showExportNotice
     ]);
 
     if (isLoading) {

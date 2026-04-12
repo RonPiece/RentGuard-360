@@ -1,4 +1,4 @@
-import { apiCall, API_URL, getAuthToken } from '@/services/apiClient';
+import { apiCall, API_URL } from '@/services/apiClient';
 
 export const askContractQuestion = async (contractId, question) => {
     const data = await apiCall('/contract-chat/ask', {

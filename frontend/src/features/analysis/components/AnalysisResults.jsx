@@ -28,7 +28,6 @@ const AnalysisResults = ({
     copiedIndex,
     setCopiedIndex,
     contractViewRef,
-    contractEditState,
     setContractEditState,
     editedClauses,
     setEditedClauses,
@@ -234,7 +233,7 @@ const AnalysisResults = ({
                     issues={issues}
                     contractId={analysis?.contractId || contractId}
                     initialEditedClauses={editedClauses}
-                    onClauseChange={(clauseId, text, action, metadata = {}) => {
+                    onClauseChange={() => {
                         // State updates are handled upstream via onEditedClausesChange.
                     }}
                     onEditedClausesChange={setEditedClauses}

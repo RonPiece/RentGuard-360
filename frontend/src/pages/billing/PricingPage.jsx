@@ -24,24 +24,24 @@ import Button from '@/components/ui/Button';
 import './PricingPage.css';
 import { GlobalSpinner } from '@/components/ui/GlobalSpinner';
 
+// Hardcoded fallback packages when backend (SQL Server) is unavailable.
+const FALLBACK_PACKAGES = [
+    { id: 'free', name: 'Free', price: 0, scanLimit: 1 },
+    { id: 'single', name: 'Single', price: 10, scanLimit: 1 },
+    { id: 'basic', name: 'Basic', price: 39, scanLimit: 5 },
+    { id: 'pro', name: 'Pro', price: 79, scanLimit: 15 },
+];
+
 
 const PricingPage = () => {
     const { t, isRTL } = useLanguage();
-    const { subscription, packageName: currentPlan, scansRemaining, hasSubscription } = useSubscription();
+    const { subscription, packageName: currentPlan, hasSubscription } = useSubscription();
     const navigate = useNavigate();
 
     const [packages, setPackages] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const [error] = useState(null);
     const currentPackageId = Number(subscription?.packageId ?? subscription?.PackageId ?? 0);
-
-    // Hardcoded fallback packages when backend (SQL Server) is unavailable.
-    const FALLBACK_PACKAGES = [
-        { id: 'free', name: 'Free', price: 0, scanLimit: 1 },
-        { id: 'single', name: 'Single', price: 10, scanLimit: 1 },
-        { id: 'basic', name: 'Basic', price: 39, scanLimit: 5 },
-        { id: 'pro', name: 'Pro', price: 79, scanLimit: 15 },
-    ];
 
     // Fetch packages on mount
     useEffect(() => {
@@ -284,7 +284,7 @@ const PricingPage = () => {
                                         </div>
 
                                         <ul className="pricing-features">
-                                            {getFeatures(pkg).map((feature, i) => (
+                                            {getFeatures(pkg).map((feature) => (
                                                 <li key={feature} className="pricing-feature">
                                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-success)" strokeWidth="2.5">
                                                         <polyline points="20,6 9,17 4,12" />

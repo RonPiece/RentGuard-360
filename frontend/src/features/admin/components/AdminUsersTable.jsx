@@ -20,7 +20,6 @@ const AdminUsersTable = ({
     t,
     isRTL,
     users,
-    sortConfig,
     handleSort,
     getSortIcon,
     getUserStatusPresentation,
@@ -37,13 +36,16 @@ const AdminUsersTable = ({
 }) => {
     const getInitialCount = () => (typeof window !== 'undefined' && window.innerWidth <= 768 ? 5 : 30);
     const [visibleCount, setVisibleCount] = useState(getInitialCount());
+    const [prevUsers, setPrevUsers] = useState(users);
+
+    if (users !== prevUsers) {
+        setPrevUsers(users);
+        setVisibleCount(getInitialCount());
+    }
+
     const disableLabel = t('admin.disable') || (isRTL ? 'חסום' : 'Disable');
     const enableLabel = t('admin.enable') || (isRTL ? 'הפעל' : 'Enable');
     const deleteLabel = t('admin.delete') || (isRTL ? 'מחק' : 'Delete');
-
-    useEffect(() => {
-        setVisibleCount(getInitialCount());
-    }, [users]);
 
     const displayedUsers = users.slice(0, visibleCount);
     const displayedUsersCount = displayedUsers.length;

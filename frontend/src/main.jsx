@@ -1,19 +1,8 @@
 /**
- * ============================================
- *  RentGuard 360 - main.jsx
- *  Application Entry Point
- * ============================================
- * 
- * PROVIDER HIERARCHY:
- * - StrictMode (React dev checks)
- * - GlobalErrorBoundary (error catching)
- * - BrowserRouter (routing)
- * - ThemeProvider (dark/light mode)
- * - LanguageProvider (i18n)
- * - AuthProvider (Cognito auth)
- * - App (main component)
- * 
- * ============================================
+ * File: main.jsx
+ * Purpose: The main entry point of the React application.
+ * Logic: It renders the root App component and wraps it in a hierarchy of global Context Providers (Theme, Language, Auth, Subscription) to avoid prop-drilling.
+ * Note: Uses StrictMode for development checks and GlobalErrorBoundary for catching unhandled crashes.
  */
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';

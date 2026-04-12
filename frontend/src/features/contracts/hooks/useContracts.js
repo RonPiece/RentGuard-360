@@ -61,7 +61,6 @@ export const useContracts = (userId, t, isRTL) => {
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [deleteConfirm, setDeleteConfirm] = useState(null);
     const [isDeleting, setIsDeleting] = useState(false);
-    const [actionNotice, setActionNotice] = useState(null);
 
     const {
         editModal,
@@ -97,11 +96,6 @@ export const useContracts = (userId, t, isRTL) => {
     // Pagination
     const [currentPage, setCurrentPage] = useState(1);
     const contractsPerPage = 20;
-
-    const showActionNotice = useCallback((message) => {
-        setActionNotice(message);
-        setTimeout(() => setActionNotice(null), 3000);
-    }, []);
 
     const fetchContracts = useCallback(async (showLoader = true) => {
         if (!userId) {
@@ -229,7 +223,7 @@ export const useContracts = (userId, t, isRTL) => {
                         document.execCommand('copy');
                         document.body.removeChild(textArea);
                         return true;
-                    } catch (e) {
+                    } catch {
                         return false;
                     }
                 };
@@ -240,7 +234,7 @@ export const useContracts = (userId, t, isRTL) => {
                     } else {
                         throw new Error('Clipboard API not available');
                     }
-                } catch (clipboardErr) {
+                } catch {
                     const success = fallbackCopy(shareUrl);
                     if (!success) {
                         // Ultimate fallback
@@ -322,7 +316,6 @@ export const useContracts = (userId, t, isRTL) => {
         editModal,
         setEditModal,
         isSaving,
-        actionNotice,
         searchQuery,
         setSearchQuery,
         activeFilter,

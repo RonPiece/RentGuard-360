@@ -25,7 +25,6 @@ const UploadMetadataForm = ({
     isUploading,
     metadata,
     setMetadata,
-    customFileName,
     termsAccepted,
     setTermsAccepted,
     handleUpload,

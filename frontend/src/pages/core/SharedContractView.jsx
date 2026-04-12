@@ -22,7 +22,6 @@ import ContractView from '@/features/analysis/components/ContractView';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
 import './SharedContractView.css';
 import { GlobalSpinner } from '@/components/ui/GlobalSpinner';
-import { processContractClauses } from '@/features/analysis/utils/contractTextProcessor';
 
 const SharedContractView = () => {
     const { t, isRTL } = useLanguage();

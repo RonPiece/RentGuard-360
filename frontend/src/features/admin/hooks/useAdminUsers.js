@@ -13,7 +13,7 @@
  * - API (getUsers, disableUser, enableUser, deleteUser)
  * ============================================
  */
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
 import { getUsers, disableUser, enableUser, deleteUser } from '@/features/admin/services/adminApi';
 import { emitAppToast } from '@/utils/toast';
@@ -226,7 +226,7 @@ export const useAdminUsers = () => {
                     'כתובת האימייל הועתקה ללוח.'
                 ),
             });
-        } catch (err) {
+        } catch {
             emitAppToast({
                 type: 'error',
                 title: t('common.error') || 'Error',

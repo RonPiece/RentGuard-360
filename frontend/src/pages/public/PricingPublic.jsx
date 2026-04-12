@@ -25,6 +25,13 @@ import Button from '@/components/ui/Button';
 import '../billing/PricingPage.css';
 import { GlobalSpinner } from '@/components/ui/GlobalSpinner';
 
+// Hardcoded fallback packages when backend (SQL Server) is unavailable.
+const FALLBACK_PACKAGES = [
+    { id: 'free', name: 'Free', price: 0, scanLimit: 1 },
+    { id: 'basic', name: 'Basic', price: 39, scanLimit: 5 },
+    { id: 'pro', name: 'Pro', price: 79, scanLimit: 15 },
+];
+
 
 const PricingPublic = () => {
     const { t, isRTL } = useLanguage();
@@ -32,14 +39,7 @@ const PricingPublic = () => {
 
     const [packages, setPackages] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(null);
-
-    // Hardcoded fallback packages when backend (SQL Server) is unavailable.
-    const FALLBACK_PACKAGES = [
-        { id: 'free', name: 'Free', price: 0, scanLimit: 1 },
-        { id: 'basic', name: 'Basic', price: 39, scanLimit: 5 },
-        { id: 'pro', name: 'Pro', price: 79, scanLimit: 15 },
-    ];
+    const [error] = useState(null);
 
     // Fetch packages on mount — only show Free / Basic / Pro for public page
     useEffect(() => {

@@ -60,7 +60,7 @@ export const apiCall = async (endpoint, options = {}) => {
             try {
                 const parsed = JSON.parse(errorText);
                 serverMessage = parsed?.error || parsed?.message || '';
-            } catch (e) {
+            } catch {
                 serverMessage = errorText;
             }
             const error = new Error(serverMessage || `API Error: ${response.status}`);
@@ -73,7 +73,7 @@ export const apiCall = async (endpoint, options = {}) => {
 
         try {
             return JSON.parse(text);
-        } catch (e) {
+        } catch {
             console.error('Failed to parse JSON:', text.substring(0, 100));
             throw new Error('Invalid response from server');
         }

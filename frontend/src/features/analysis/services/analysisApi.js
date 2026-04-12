@@ -1,4 +1,4 @@
-import { apiCall, API_URL, getAuthToken, publicApiCall } from '@/services/apiClient';
+import { apiCall, API_URL, publicApiCall } from '@/services/apiClient';
 
 export function normalizeAnalysis(data) {
     if (!data) return data;

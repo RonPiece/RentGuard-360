@@ -6,7 +6,7 @@ import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 
 const PaymentSuccessCard = ({ packageName, amount, currency, isFree }) => {
-    const { t, isRTL } = useLanguage();
+    const { t } = useLanguage();
     const navigate = useNavigate();
 
     return (

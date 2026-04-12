@@ -21,12 +21,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { loadStripe } from '@stripe/stripe-js';
-import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import { Elements, CardElement } from '@stripe/react-stripe-js';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
-import { useTheme } from '@/contexts/ThemeContext';
 import { getPackageById, createPaymentIntent, confirmPayment } from '@/features/billing/services/stripeApi';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
@@ -92,10 +91,10 @@ const CheckoutPage = () => {
             }
         };
 
-        if (userId && packageId) {
+        if (userId && packageId && userEmail && userName) {
             initCheckout();
         }
-    }, [userId, packageId, navigate, refreshSubscription]);
+    }, [userId, packageId, userEmail, userName, navigate, refreshSubscription]);
 
     const handlePaymentSuccess = async (paymentIntent) => {
         setIsLoading(true);

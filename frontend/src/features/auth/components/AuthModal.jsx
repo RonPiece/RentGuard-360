@@ -88,6 +88,7 @@ const AuthModal = ({ view, onChangeView, onClose, initialEmail = '' }) => {
     );
 
     useEffect(() => {
+         
         if (initialEmail) setEmail(initialEmail);
     }, [initialEmail]);
 
@@ -95,7 +96,9 @@ const AuthModal = ({ view, onChangeView, onClose, initialEmail = '' }) => {
         const isOpen = Boolean(view);
         if (isOpen && !wasOpenRef.current) {
             if (lastViewedRef.current && view !== lastViewedRef.current) {
+                 
                 clearAuthPasswordFields();
+                 
                 resetPasswordVisibilityStates();
             }
         }
@@ -108,6 +111,7 @@ const AuthModal = ({ view, onChangeView, onClose, initialEmail = '' }) => {
     }, [view]);
 
     useEffect(() => {
+         
         resetPasswordVisibilityStates();
     }, [view]);
 
@@ -132,13 +136,17 @@ const AuthModal = ({ view, onChangeView, onClose, initialEmail = '' }) => {
             const message = decodeURIComponent(
                 oauthErrorDescription || oauthError || t('auth.socialLoginCanceledOrFailed')
             );
+             
             setError(message);
+             
             switchAuthView('login');
+             
             setShowSocialConflictModal(false);
 
             const cleanUrl = `${window.location.origin}${window.location.pathname}`;
             window.history.replaceState({}, document.title, cleanUrl);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isRTL, view, onChangeView]);
 
     if (!view && !showVerificationSuccess && !showSocialConflictModal) return null;
@@ -186,7 +194,7 @@ const AuthModal = ({ view, onChangeView, onClose, initialEmail = '' }) => {
         if (!result.success) {
             setError(translateError(result.error || 'Login failed'));
         } else {
-            try { localStorage.removeItem('rentguard_pending_verification'); } catch { }
+            try { localStorage.removeItem('rentguard_pending_verification'); } catch { /* ignore */ }
         }
         setLoading(false);
     };
@@ -330,7 +338,7 @@ const AuthModal = ({ view, onChangeView, onClose, initialEmail = '' }) => {
     };
 
     const clearPendingVerification = () => {
-        try { localStorage.removeItem('rentguard_pending_verification'); } catch { }
+        try { localStorage.removeItem('rentguard_pending_verification'); } catch { /* ignore */ }
         setError('');
         setCode('');
         setTempEmail('');

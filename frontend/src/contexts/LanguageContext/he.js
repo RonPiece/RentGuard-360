@@ -1,21 +1,18 @@
 /**
  * ============================================
- *  Hebrew Translations Dictionary
- *  Language strings for RentGuard-360 frontend (RTL)
+ * Hebrew Translations Dictionary
+ * Language strings for RentGuard-360 frontend (RTL)
  * ============================================
- * 
- * STRUCTURE:
+ * * STRUCTURE:
  * - nav: Navigation and layout strings
  * - auth: Authentication screens and messages
  * - dashboard / landing: Application overviews
  * - contracts / upload / analysis: Core flow
  * - score / methodology: Scoring logic
  * - admin / settings: Administration tools
- * 
- * DEPENDENCIES:
+ * * DEPENDENCIES:
  * - Used exclusively by LanguageContext
- * 
- * ============================================
+ * * ============================================
  */
 export const he = {
     "nav": {
@@ -308,15 +305,11 @@ export const he = {
     },
     "contracts": {
         "generatingShareLink": "מייצר קישור לחלוקה...",
-        "menuShareTitle": "שיתוף חוזה",
-        "menuShareTrigger": "שיתוף הניתוח",
         "linkCopied": "הקישור הועתק בהצלחה!",
         "linkCopiedFallback": "הקישור הועתק ללוח העריכה בכדי שתוכל לשתף!",
         "shareFailedSpecific": "השיתוף נכשל (אולי בגלל בעיית רשת).",
-        "shareFailed": "נכשל השיתוף.",
         "deleteSuccessTitle": "מחיקת חוזה הושלמה",
         "deleteSuccess": "החוזה נמחק מהמערכת בהצלחה.",
-
         "title": "החוזים שלי",
         "subtitle": "ניהול וצפייה בכל חוזי השכירות שלך",
         "activeContracts": "חוזים פעילים",
@@ -452,7 +445,6 @@ export const he = {
         "focus_guidance": "אנא ישרו את המסמך בתוך המסגרת וצלמו ישירות מלמעלה לקבלת התוצאות הטובות ביותר"
     },
     "analysis": {
-        "shareExpiryDays": "פג תוקף בעוד {days} ימים",
         "shareExpiryDaysOne": "פג תוקף בעוד יום",
         "shareExpiryDaysMany": "פג תוקף בעוד {days} ימים",
         "untitledClause": "סעיף ללא כותרת",
@@ -848,8 +840,6 @@ export const he = {
         "packageBasic": "בסיס",
         "packagePro": "פרו",
         "packageAdmin": "אדמין",
-        "packageNone": "ללא",
-        "packageExpired": "פג תוקף",
         "title": "לוח בקרה למנהל",
         "accessDenied": "גישה נדחתה",
         "noPermission": "אין לך הרשאות מנהל",
@@ -860,7 +850,6 @@ export const he = {
         "contractsSection": "חוזים",
         "totalContracts": "סה״כ חוזים",
         "analyzed": "נותחו",
-        "pending": "ממתינים",
         "failed": "נכשלו",
         "analysisSection": "ניתוח",
         "avgRiskScore": "ציון סיכון ממוצע",
@@ -1262,7 +1251,6 @@ export const he = {
                 "content": "בכל שאלה בנושא פרטיות או במקרה של בקשה לעיון, תיקון או מחיקה של המידע האישי שברשותנו, ניתן לפנות אלינו לפי פרטי הקשר שמופיעים באתר."
             }
         ]
-    }
-    ,
+    },
     "checkingYourPlan": "בודק את פרטי החבילה שלך..."
 };

@@ -116,8 +116,10 @@ const LandingPage = () => {
         const params = new URLSearchParams(location.search);
         const auth = params.get('auth');
         if (auth === 'login' || auth === 'register' || auth === 'confirm') {
-            setAuthModal(auth);
-            navigate(location.pathname, { replace: true });
+            setTimeout(() => {
+                setAuthModal(auth);
+                navigate(location.pathname, { replace: true });
+            }, 0);
         }
     }, [location.search, location.pathname, navigate]);
 

@@ -21,8 +21,7 @@ const AnalysisHeader = ({
     activeTab,
     setActiveTab,
     issuesCount,
-    t,
-    isRTL
+    t
 }) => {
     return (
         <header className="lf-header no-print">

@@ -23,7 +23,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { FileText } from 'lucide-react';
 
 export const AdminAnalyticsCharts = ({ commonIssues, loading }) => {
-    const { t, isRTL } = useLanguage();
+    const { t } = useLanguage();
     const { isDark } = useTheme();
     const isMobile = useMediaQuery('(max-width:480px)');
     

@@ -80,6 +80,7 @@ const MainLayout = () => {
                 }
             }
         } catch {
+            // Ignore parse errors from sessionStorage
         }
     }, []);
 

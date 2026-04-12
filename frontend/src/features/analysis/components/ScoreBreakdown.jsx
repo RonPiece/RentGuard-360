@@ -33,7 +33,7 @@ import Accordion from '@/components/ui/Accordion';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
 import './SidebarAccordions.css';
 
-const ScoreBreakdown = ({ overallScore = 0, breakdown = {} }) => {
+const ScoreBreakdown = ({ breakdown = {} }) => {
     const { t, isRTL } = useLanguage();
 
     // Default category structure
@@ -71,14 +71,6 @@ const ScoreBreakdown = ({ overallScore = 0, breakdown = {} }) => {
         if (percentage >= 71) return 'good';       // 71-85: Low-Medium Risk
         if (percentage >= 51) return 'warning';    // 51-70: Medium Risk
         return 'danger';                           // 0-50: High Risk
-    };
-
-    // Get risk level label - bilingual (matches legend: 4 levels)
-    const getRiskLevel = (score) => {
-        if (score >= 86) return t('score.lowRisk');           // 86-100
-        if (score >= 71) return t('score.lowMediumRisk');     // 71-85
-        if (score >= 51) return t('score.mediumRisk');        // 51-70
-        return t('score.highRisk');                           // 0-50
     };
 
 // ... הלוגיקה שלך למעלה נשארת אותו דבר בדיוק ...

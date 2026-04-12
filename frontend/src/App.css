@@ -1,32 +1,16 @@
 @import './styles/utilities.css';
-/*
- * ============================================
- * App.css - Sub-stylesheet
- * ============================================
+
+/**
+ * File: App.css
+ * Purpose: Main Application Shell Styles.
+ * Logic: Defines the core layout containers, global loading indicators, and shared keyframe animations used across the app.
  *
  * TABLE OF CONTENTS
  * ============================================
  * 1. App Container & Main
- * 2. Global Toast
- * 3. React Hot Toast (Custom)
- * 4. Loading States
- * 5. Animations
+ * 2. Loading States
+ * 3. Animations
  * ============================================
- */
-
-/* 
- * App.css - Main Application Shell Styles
- * Navigation, Settings, Loading States
- * 
- * STRUCTURE:
- * 1. App Container & Main
- * 2. Navigation (Desktop)
- * 3. Profile Dropdown
- * 4. Mobile Navigation
- * 5. Settings Page
- * 6. Loading States
- * 7. Animations
- * 8. Media Queries
  */
 
 /* ============================================
@@ -43,7 +27,7 @@
 }
 
 /* ============================================
-   6. LOADING STATES
+   2. LOADING STATES
    ============================================ */
 
 .app-loading {
@@ -63,7 +47,7 @@
 }
 
 /* ============================================
-   7. ANIMATIONS
+   3. ANIMATIONS
    ============================================ */
 
 @keyframes slideDown {
@@ -83,5 +67,3 @@
     transform: rotate(360deg);
   }
 }
-
-

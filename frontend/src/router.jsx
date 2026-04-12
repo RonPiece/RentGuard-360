@@ -1,17 +1,9 @@
+/* eslint-disable react-refresh/only-export-components */
 /**
- * ============================================
- *  App Router Configuration
- *  Central application routing and lazy loading
- * ============================================
- * 
- * STRUCTURE:
- * - Public routes (Landing, Auth, Contact, Legal)
- * - Protected routes (Dashboard, Upload, Contracts, Settings, Admin)
- * 
- * DEPENDENCIES:
- * - react-router-dom
- * - Suspense for lazy loading
- * ============================================
+ * File: router.jsx
+ * Purpose: Central routing configuration for the entire application.
+ * Logic: Maps URLs to their respective React components using nested routes and route guards for access control. Utilizes React.lazy for code splitting to improve initial load performance.
+ * Important: Uses createHashRouter instead of createBrowserRouter to prevent 404 errors on page refresh, as the app is hosted on a static environment (AWS S3) without native server routing.
  */
 import React, { lazy } from 'react';
 import { createHashRouter, Navigate } from 'react-router-dom';
@@ -19,7 +11,6 @@ import MainLayout from '@/components/layout/MainLayout';
 import { ProtectedRoute, RequireActivePlanRoute } from '@/components/layout/RouteGuards';
 import RouterErrorElement from '@/components/ui/RouterErrorElement';
 import { useAuth } from '@/contexts/AuthContext';
-import { useSubscription } from '@/contexts/SubscriptionContext';
 
 // Lazy loaded pages
 const LandingPage = lazy(() => import('@/pages/public/LandingPage'));
@@ -59,17 +50,6 @@ const ConditionalContactRoute = () => {
     return <ProtectedRoute><RequireActivePlanRoute><ContactPage /></RequireActivePlanRoute></ProtectedRoute>;
 };
 
-const FallbackRoute = () => {
-    const { isAuthenticated, isAdmin } = useAuth();
-    const { hasSubscription, isEntitlementKnown } = useSubscription();
-
-    const authenticatedFallbackRoute = isAdmin
-    ? '/dashboard'
-    : (!isEntitlementKnown ? '/dashboard' : (hasSubscription ? '/dashboard' : '/pricing'));
-
-    return <Navigate to={isAuthenticated ? authenticatedFallbackRoute : "/"} replace />;
-};
-
 export const router = createHashRouter([
   {
     path: "/",
@@ -101,7 +81,7 @@ export const router = createHashRouter([
           { path: "stripe", element: <AdminStripeInsights /> }
         ]
       },
-      { path: "*", element: <NotFoundPage /> } // Changed from FallbackRoute to standard 404 page!
+      { path: "*", element: <NotFoundPage /> } // Changed from FallbackRoute(Old deleted func) to standard 404 page!
     ]
   }
 ]);

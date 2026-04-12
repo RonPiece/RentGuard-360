@@ -51,8 +51,6 @@ const UploadPage = () => {
         setCustomFileName,
         termsAccepted,
         setTermsAccepted,
-        showTermsModal,
-        setShowTermsModal,
         showScannerModal,
         setShowScannerModal,
         uploadVisualStatus,
