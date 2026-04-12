@@ -17,13 +17,7 @@
 import { useCallback, useState } from 'react';
 import { updateContract } from '@/features/contracts/services/contractsApi';
 import { showAppToast } from '@/utils/toast';
-
-const normalizeDraftFileName = (fileName) => String(fileName || '').replace(/\.pdf$/i, '');
-
-const normalizeFinalFileName = (rawFileName, t) => {
-    const baseFileName = String(rawFileName || '').trim() || t('contracts.defaultFileName');
-    return baseFileName.endsWith('.pdf') ? baseFileName : `${baseFileName}.pdf`;
-};
+import { normalizeDraftFileName, normalizeFinalFileName } from '@/features/contracts/utils/fileUtils';
 
 /**
  * Shared metadata editing flow for contract surfaces (Contracts page + Analysis page).

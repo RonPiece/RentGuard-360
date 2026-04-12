@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
+import { translateError } from '@/features/auth/utils/errorMapper';
 
 export const useAuthFlow = ({ view, onChangeView, onClose, initialEmail = '' }) => {
     const { login, socialLogin, register, confirmRegistration, isAuthenticated, resendCode, forgotPassword, resetUserPassword, checkUserStatus } = useAuth();
@@ -110,32 +111,6 @@ export const useAuthFlow = ({ view, onChangeView, onClose, initialEmail = '' }) 
         }
     }, [isRTL, view, onChangeView]);
 
-    const translateError = (errorMessage) => {
-        if (!isRTL) return errorMessage;
-
-        const errorTranslationKeys = {
-            'Attempt limit exceeded, please try after some time': 'auth.errors.attemptLimitExceeded',
-            'Invalid verification code provided': 'auth.errors.invalidVerificationCodeProvided',
-            'User does not exist': 'auth.errors.userDoesNotExist',
-            'Incorrect username or password': 'auth.errors.incorrectUsernameOrPassword',
-            'Password did not conform with policy': 'auth.errors.passwordDidNotConformWithPolicy',
-            'An account with the given email already exists': 'auth.errors.accountWithEmailAlreadyExists',
-            'Invalid password format': 'auth.errors.invalidPasswordFormat',
-            'Cannot reset password for the user as there is no registered/verified email': 'auth.errors.cannotResetPasswordNoVerifiedEmail',
-            'User is disabled': 'auth.errors.userIsDisabled',
-            'Failed to send reset code': 'auth.errors.failedToSendResetCode',
-            'Failed to reset password': 'auth.errors.failedToResetPassword',
-            'Code mismatch': 'auth.errors.codeMismatch',
-            'Expired code': 'auth.errors.expiredCode'
-        };
-
-        if (errorTranslationKeys[errorMessage]) return t(errorTranslationKeys[errorMessage]);
-        for (const [english, key] of Object.entries(errorTranslationKeys)) {
-            if (errorMessage.includes(english)) return t(key);
-        }
-        return errorMessage;
-    };
-
     const handleLogin = async (e) => {
         e.preventDefault();
         setError('');
@@ -151,7 +126,7 @@ export const useAuthFlow = ({ view, onChangeView, onClose, initialEmail = '' }) 
         setLoading(true);
         const result = await login(trimmedEmail, password);
         if (!result.success) {
-            setError(translateError(result.error || 'Login failed'));
+            setError(translateError(result.error || 'Login failed', t, isRTL));
         } else {
             try { localStorage.removeItem('rentguard_pending_verification'); } catch { }
         }
@@ -164,7 +139,7 @@ export const useAuthFlow = ({ view, onChangeView, onClose, initialEmail = '' }) 
 
         const result = await socialLogin(provider);
         if (!result?.success) {
-            setError(translateError(result?.error || t('auth.socialLoginFailed')));
+            setError(translateError(result?.error || t('auth.socialLoginFailed'), t, isRTL));
             setLoading(false);
         }
     };
@@ -320,7 +295,7 @@ export const useAuthFlow = ({ view, onChangeView, onClose, initialEmail = '' }) 
             setTempEmail(trimmedEmail);
             switchAuthView('resetPassword');
         } else {
-            setError(translateError(result.error || 'Failed to send reset code'));
+            setError(translateError(result.error || 'Failed to send reset code', t, isRTL));
         }
         setLoading(false);
     };
@@ -343,7 +318,7 @@ export const useAuthFlow = ({ view, onChangeView, onClose, initialEmail = '' }) 
             setNewPassword('');
             setError('');
         } else {
-            setError(translateError(result.error || 'Failed to reset password'));
+            setError(translateError(result.error || 'Failed to reset password', t, isRTL));
         }
         setLoading(false);
     };
