@@ -421,7 +421,6 @@ export const enhanceDocumentPreview = async (imageSrc) => {
         throw new Error('Unable to process enhancement in browser canvas context.');
     }
 
-    // Lightweight "scan" look: grayscale + boosted contrast and brightness.
     ctx.filter = 'grayscale(1) contrast(1.55) brightness(1.1)';
     ctx.drawImage(image, 0, 0, width, height);
     ctx.filter = 'none';
