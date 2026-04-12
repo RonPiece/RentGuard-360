@@ -17,7 +17,6 @@
  * - API Service (getContracts, deleteContract, getAnalysis, updateContract)
  * - ReportExportService (exportReportToWord)
  * - useShareFile
- * 
  * ============================================
  */
 import { useState, useCallback, useEffect } from 'react';
@@ -25,6 +24,7 @@ import { getContracts, deleteContract } from '@/features/contracts/services/cont
 import { getAnalysis, createShareLink } from '@/features/analysis/services/analysisApi';
 import { exportReportToWord } from '@/features/analysis/services/ReportExportService';
 import { showAppToast } from '@/utils/toast';
+import { copyToClipboard } from '@/features/contracts/utils/browserUtils';
 import { useContractMetadataEditor } from '@/features/contracts/hooks/useContractMetadataEditor';
 
 const DEFAULT_ANALYSIS_TIMEOUT_MS = 3 * 60 * 1000;
@@ -52,10 +52,7 @@ export const isContractTimedOut = (contract) => {
 export const useContracts = (userId, t, isRTL) => {
     // ------------------------------------------------------------------------
     // GLOBAL INVENTORY STATE: Array of all loaded documents
-    // ------------------------------------------------------------------------
-    // ------------------------------------------------------------------------
-    // GLOBAL INVENTORY STATE: Array of all loaded documents
-    // ------------------------------------------------------------------------
+    // --------------------------------------------------------------------------
     const [contracts, setContracts] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isRefreshing, setIsRefreshing] = useState(false);
@@ -157,7 +154,7 @@ export const useContracts = (userId, t, isRTL) => {
             await deleteContract(deleteConfirm, userId);
             setContracts(contracts.filter(c => c.contractId !== deleteConfirm));
             setDeleteConfirm(null);
-            
+
             // Show a visual popup confirming deletion
             import('@/utils/toast').then(({ emitAppToast }) => {
                 emitAppToast({
@@ -168,7 +165,7 @@ export const useContracts = (userId, t, isRTL) => {
             }).catch(() => {
                 alert(t('contracts.deleteSuccess'));
             });
-            
+
         } catch {
             alert(t('contracts.deleteFailed'));
         } finally {
@@ -190,7 +187,7 @@ export const useContracts = (userId, t, isRTL) => {
     const handleShare = async (contract) => {
         try {
             showAppToast({ type: 'info', message: t('contracts.generatingShareLink') || 'Generating link...' });
-            
+
             const result = await createShareLink(contract.contractId);
             const shareUrl = `${window.location.origin}/#/shared/${result.shareToken}`;
 
@@ -209,39 +206,12 @@ export const useContracts = (userId, t, isRTL) => {
                     console.warn('Native share blocked due to timeout, falling back to clipboard...');
                 }
             }
-            
-            if (!sharedNatively) {
-                const fallbackCopy = (text) => {
-                    try {
-                        const textArea = document.createElement('textarea');
-                        textArea.value = text;
-                        textArea.style.position = 'fixed';
-                        textArea.style.opacity = '0';
-                        document.body.appendChild(textArea);
-                        textArea.focus();
-                        textArea.select();
-                        document.execCommand('copy');
-                        document.body.removeChild(textArea);
-                        return true;
-                    } catch {
-                        return false;
-                    }
-                };
 
-                try {
-                    if (navigator.clipboard && navigator.clipboard.writeText) {
-                        await navigator.clipboard.writeText(shareUrl);
-                    } else {
-                        throw new Error('Clipboard API not available');
-                    }
-                } catch {
-                    const success = fallbackCopy(shareUrl);
-                    if (!success) {
-                        // Ultimate fallback
-                        window.prompt(t('contracts.linkCopiedFallback') || 'Copy link:', shareUrl);
-                    }
+            if (!sharedNatively) {
+                const success = await copyToClipboard(shareUrl);
+                if (!success) {
+                    window.prompt(t('contracts.linkCopiedFallback') || 'Copy link:', shareUrl);
                 }
-                
                 showAppToast({ type: 'success', message: t('contracts.linkCopiedFallback') });
             }
         } catch (err) {

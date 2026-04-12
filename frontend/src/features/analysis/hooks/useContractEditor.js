@@ -5,6 +5,7 @@ import { exportEditedContractToWord, exportEditedContractToWordBlob } from '@/fe
 import { showAppToast } from '@/utils/toast';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
 import { extractFixText } from '@/features/analysis/utils/analysisUtils';
+import { extractClauseNumber } from '@/features/analysis/utils/stringUtils';
 
 const FUZZY_MATCH_STRIP_PATTERN = /[\s\t\r\n.,\-:;"']+/g;
 const MIN_FUZZY_MATCH_LENGTH = 15;
@@ -303,11 +304,6 @@ export const useContractEditor = ({
     const closeEditor = () => {
         setSelectedClause(null);
         setEditingText('');
-    };
-
-    const extractClauseNumber = (text) => {
-        const match = text?.match(/^(\d+\.)\s*/);
-        return match ? match[1] : null;
     };
 
     const requestRevert = (clauseId, e) => {

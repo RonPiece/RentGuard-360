@@ -25,7 +25,7 @@ import EditContractModal from '@/features/contracts/components/EditContractModal
 import {
     Plus, RefreshCw, FileText, X, Check,
     AlertTriangle,
-    Search, Filter, CheckCircle2, Pencil,
+    Search, Filter, Pencil,
     ChevronLeft, ChevronRight
 } from 'lucide-react';
 import './ContractsPage.css';
@@ -50,7 +50,6 @@ const ContractsPage = () => {
         editModal,
         setEditModal,
         isSaving,
-        actionNotice,
         searchQuery,
         setSearchQuery,
         activeFilter,
@@ -90,12 +89,6 @@ const ContractsPage = () => {
                 <div className="lf-floating-notice">
                     <GlobalSpinner size={40} />
                     <span>{t('contracts.refreshing')}</span>
-                </div>
-            )}
-            {actionNotice && (
-                <div className="lf-floating-notice success">
-                    <CheckCircle2 size={16} />
-                    <span>{actionNotice}</span>
                 </div>
             )}
 
