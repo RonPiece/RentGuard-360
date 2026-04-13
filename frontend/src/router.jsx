@@ -7,7 +7,7 @@
  */
 import React, { lazy } from 'react';
 import { createHashRouter, Navigate } from 'react-router-dom';
-import MainLayout from '@/components/layout/MainLayout';
+import MainLayout from '@/components/layout/MainLayout/MainLayout';
 import { ProtectedRoute, RequireActivePlanRoute } from '@/components/layout/RouteGuards';
 import RouterErrorElement from '@/components/ui/RouterErrorElement';
 import { useAuth } from '@/contexts/AuthContext';
@@ -38,14 +38,16 @@ const NotFoundPage = lazy(() => import('@/pages/public/NotFoundPage'));
 
 // Helper components for conditional public/protected routes
 const ConditionalPricingRoute = () => {
-    const { isAuthenticated, isAdmin } = useAuth();
+    const { isAuthenticated, isAdmin, isLoading: isAuthLoading } = useAuth();
+    if (isAuthLoading) return null; // Avoid blink by waiting for auth to resolve
     if (!isAuthenticated) return <PricingPublic />;
     if (isAdmin) return <Navigate to="/dashboard" replace />;
     return <ProtectedRoute><PricingPage /></ProtectedRoute>;
 };
 
 const ConditionalContactRoute = () => {
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
+    if (isAuthLoading) return null; // Avoid blink by waiting for auth to resolve
     if (!isAuthenticated) return <ContactPublic />;
     return <ProtectedRoute><RequireActivePlanRoute><ContactPage /></RequireActivePlanRoute></ProtectedRoute>;
 };
