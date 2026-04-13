@@ -6,6 +6,33 @@
  */
 import React from 'react';
 
+export const normalizePlanName = (value) => String(value || '').trim().toLowerCase();
+
+export const getLastPurchaseDateTime = (subscription, t, isRTL) => {
+    const updatedAt = subscription?.updatedAt || subscription?.UpdatedAt;
+    if (!updatedAt) {
+        return t('pricing.notAvailable');
+    }
+
+    const date = new Date(updatedAt);
+    if (Number.isNaN(date.getTime())) {
+        return t('pricing.notAvailable');
+    }
+
+    const locale = isRTL ? 'he-IL' : 'en-US';
+    const datePart = date.toLocaleDateString(locale, {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+    });
+    const timePart = date.toLocaleTimeString(locale, {
+        hour: '2-digit',
+        minute: '2-digit',
+    });
+
+    return t('pricing.atTime', { date: datePart, time: timePart });
+};
+
 export const getPackageIcon = (name) => {
     switch (name) {
         case 'Free':

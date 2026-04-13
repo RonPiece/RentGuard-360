@@ -22,26 +22,8 @@ const ChatMessage = ({ msg, t, userInitial, userLabel, copyMessageText, copiedMe
     const messageKey = `${msg.ts}-${msg.role}`;
     const copied = copiedMessageKey === messageKey;
     
-    // Process evidence to extract and format items properly
-    const evidenceItems = msg.role === 'assistant' && Array.isArray(msg.meta?.evidence)
-        ? msg.meta.evidence
-            .map((item) => String(item || '').trim())
-            .filter(Boolean)
-            .slice(0, 3)
-            .map((snippet) => ({
-                snippet,
-                clauseRef: extractClauseReference(snippet),
-            }))
-        : [];
-
-    const foundInContractMeta =
-        typeof msg.meta?.foundInContract === 'boolean'
-            ? msg.meta.foundInContract
-            : (typeof msg.meta?.found_in_contract === 'boolean' ? msg.meta.found_in_contract : null);
-
-    const sourceType = foundInContractMeta === true
-        ? 'contract'
-        : (foundInContractMeta === false ? 'general' : (evidenceItems.length > 0 ? 'contract' : ''));
+    const evidenceItems = msg.parsedMeta?.evidenceItems || [];
+    const sourceType = msg.parsedMeta?.sourceType || '';
 
     return (
         <div key={messageKey} className={`chat-msg-row ${msg.role}`}>

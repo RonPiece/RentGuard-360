@@ -18,10 +18,10 @@
  * 
  * ============================================
  */
-import React, { useState, useEffect, useRef } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import React from 'react';
+import { useParams, Link } from 'react-router-dom';
 import { loadStripe } from '@stripe/stripe-js';
-import { Elements, CardElement } from '@stripe/react-stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
 import { useCheckout } from '@/features/billing/hooks/useCheckout';

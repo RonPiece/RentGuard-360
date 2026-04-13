@@ -24,6 +24,8 @@ import ChatContractSelector from './ChatContractSelector';
 import ChatPendingMessage from './ChatPendingMessage';
 import ChatQuickPrompts from './ChatQuickPrompts';
 import ChatClearConfirmDialog from './ChatClearConfirmDialog';
+import ChatHintBanner from './ChatHintBanner';
+import ChatErrorBanner from './ChatErrorBanner';
 import { useChatWidget } from '@/features/chat/hooks/useChatWidget';
 import './ContractChatWidget.css';
 
@@ -78,8 +80,26 @@ const ContractChatWidget = () => {
         confirmClearHistory,
 
         copiedMessageKey,
-        copyMessageText
+        copyMessageText,
+        scrollMessagesToBottom
     } = useChatWidget();
+
+    React.useEffect(() => {
+        if (!open) return;
+        const rafId = window.requestAnimationFrame(() => {
+            scrollMessagesToBottom('auto');
+        });
+        return () => window.cancelAnimationFrame(rafId);
+    }, [open, selectedContractId, isHistoryLoading, scrollMessagesToBottom]);
+
+    React.useEffect(() => {
+        if (!open) return;
+        const rafId = window.requestAnimationFrame(() => {
+            scrollMessagesToBottom('smooth');
+        });
+        return () => window.cancelAnimationFrame(rafId);
+    }, [open, messages.length, isAsking, scrollMessagesToBottom]);
+
     if (!isAuthenticated) return null;
 
     return (
@@ -147,29 +167,17 @@ const ContractChatWidget = () => {
                         {isAsking && <ChatPendingMessage t={t} />}
                     </div>
 
-                    {responseHintKey && (
-                        <div className="chat-widget-hint" role="status" aria-live="polite">
-                            <div className="chat-widget-hint-head">
-                                <p>
-                                    {t(`chat.hints.${responseHintKey}`)}
-                                    {responseHintKey === 'rateLimit' && rateLimitSecondsLeft > 0
-                                        ? ` ${t('chat.rateLimitRetryIn').replace('{seconds}', String(rateLimitSecondsLeft))}`
-                                        : ''}
-                                </p>
-                                <button
-                                    type="button"
-                                    className="chat-widget-hint-close"
-                                    onClick={() => setResponseHintKey('')}
-                                    aria-label={t('chat.dismissHint')}
-                                    title={t('chat.dismissHint')}
-                                >
-                                    <X size={14} />
-                                </button>
-                            </div>
-                        </div>
-                    )}
+                    <ChatHintBanner 
+                        t={t}
+                        responseHintKey={responseHintKey}
+                        rateLimitSecondsLeft={rateLimitSecondsLeft}
+                        setResponseHintKey={setResponseHintKey}
+                    />
 
-                    {errorKey && <p className="chat-widget-error">{t(`chat.errors.${errorKey}`)}</p>}
+                    <ChatErrorBanner 
+                        t={t}
+                        errorKey={errorKey}
+                    />
 
                     <ChatInputForm 
                         t={t}
@@ -179,8 +187,7 @@ const ContractChatWidget = () => {
                         onInputKeyDown={onInputKeyDown}
                         inputRef={inputRef}
                         isAsking={isAsking}
-                        hasBlockingError={Boolean(errorKey)}
-                        rateLimitSecondsLeft={rateLimitSecondsLeft}
+                        isDisabled={isAsking || Boolean(errorKey) || rateLimitSecondsLeft > 0}
                     />
 
                     {isClearConfirmOpen && (

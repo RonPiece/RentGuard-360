@@ -146,3 +146,28 @@ export const formatMessageTime = (rawTime, locale) => {
     }).format(date);
 };
 
+export const parseMessageMetadata = (meta) => {
+    if (!meta) return { evidenceItems: [], sourceType: '' };
+
+    const evidenceItems = Array.isArray(meta.evidence)
+        ? meta.evidence
+            .map((item) => String(item || '').trim())
+            .filter(Boolean)
+            .slice(0, 3)
+            .map((snippet) => ({
+                snippet,
+                clauseRef: extractClauseReference(snippet),
+            }))
+        : [];
+
+    const foundInContractMeta =
+        typeof meta.foundInContract === 'boolean'
+            ? meta.foundInContract
+            : (typeof meta.found_in_contract === 'boolean' ? meta.found_in_contract : null);
+
+    const sourceType = foundInContractMeta === true
+        ? 'contract'
+        : (foundInContractMeta === false ? 'general' : (evidenceItems.length > 0 ? 'contract' : ''));
+
+    return { evidenceItems, sourceType };
+};

@@ -14,14 +14,14 @@ import { useMemo, useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
-import { isContractChatAutoOpenEnabled, getAnalysisContractIdFromPath, looksLikeMachineId } from '../utils/chatHelpers';
+import { isContractChatAutoOpenEnabled, getAnalysisContractIdFromPath, getUserDisplayLabel, getUserInitial } from '../utils/chatHelpers';
 import { useChatUI } from './useChatUI';
 import { useChatContracts } from './useChatContracts';
 import { useChatMessages } from './useChatMessages';
 
 export function useChatWidget() {
     const { isAuthenticated, user, userAttributes } = useAuth();
-    const { t, isRTL } = useLanguage();
+    const { t, isRTL, language } = useLanguage();
     const location = useLocation();
 
     // Shared state between sub-hooks
@@ -58,7 +58,6 @@ export function useChatWidget() {
     const messagesState = useChatMessages(
         contractsState.selectedContractId,
         ui.open,
-        contractsState.historyReloadSeq,
         t,
         errorKey,
         setErrorKey,
@@ -67,25 +66,9 @@ export function useChatWidget() {
     );
 
     // Prepare User Info
-    const userLabel = useMemo(() => {
-        if (userAttributes?.name) return userAttributes.name;
-        if (typeof userAttributes?.email === 'string' && userAttributes.email.includes('@')) {
-            return userAttributes.email.split('@')[0];
-        }
-        if (user?.name) return user.name;
-        if (user?.fullName) return user.fullName;
-        if (user?.given_name) return user.given_name;
-        if (typeof user?.email === 'string' && user.email.includes('@')) {
-            return user.email.split('@')[0];
-        }
-        if (user?.username && !looksLikeMachineId(user.username)) {
-            return user.username;
-        }
-        return t('common.user');
-    }, [userAttributes, user, t]);
-
-    const userInitial = String(userLabel).trim().charAt(0).toUpperCase() || 'U';
-    const locale = isRTL ? 'he-IL' : 'en-US';
+    const userLabel = useMemo(() => getUserDisplayLabel(userAttributes, user, t), [userAttributes, user, t]);
+    const userInitial = getUserInitial(userLabel);
+    const locale = language === 'he' ? 'he-IL' : 'en-US';
 
     return {
         isAuthenticated,

@@ -34,7 +34,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
 import Navigation from '@/components/layout/Navigation/Navigation';
-import { Upload, Brain, FileText, ChevronDown, ChevronUp, AlertTriangle, CheckCircle, Shield, Download, Edit2, Trash2, X, Cloud, Bot, Lock, Zap, Pause, Wallet, House } from 'lucide-react';
+import { CheckCircle, Shield, Lock, Zap, Pause } from 'lucide-react';
 import './LandingPage.css';
 
 // Some eslint setups don't count JSX member expressions (e.g. <motion.div>) as a variable usage.

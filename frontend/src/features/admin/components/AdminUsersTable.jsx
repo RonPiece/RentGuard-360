@@ -32,7 +32,6 @@ const AdminUsersTable = ({
     handleCopyEmail,
     getPackageDisplay,
     getProviderMeta,
-    getProviderDisplay,
     handleDisableUser,
     handleEnableUser,
     handleDeleteUser,

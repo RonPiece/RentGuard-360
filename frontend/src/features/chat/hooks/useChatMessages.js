@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { askContractQuestion, clearContractChatHistory, getContractChatHistory } from '@/features/chat/services/chatApi';
-import { trackChatEvent } from '../utils/chatHelpers';
-import { normalizeAssistantText } from '../utils/chatTextFormatting';
+import { trackChatEvent, isRateLimitError } from '../utils/chatHelpers';
+import { normalizeAssistantText, parseMessageMetadata } from '../utils/chatTextFormatting';
 
-export function useChatMessages(selectedContractId, open, historyReloadSeq, t, errorKey, setErrorKey, responseHintKey, setResponseHintKey) {
+export function useChatMessages(selectedContractId, open, t, errorKey, setErrorKey, responseHintKey, setResponseHintKey) {
     const [messages, setMessages] = useState([]);
     const [isHistoryLoading, setIsHistoryLoading] = useState(false);
     const [question, setQuestion] = useState('');
@@ -12,7 +12,6 @@ export function useChatMessages(selectedContractId, open, historyReloadSeq, t, e
     const [rateLimitSecondsLeft, setRateLimitSecondsLeft] = useState(0);
     const [isClearConfirmOpen, setIsClearConfirmOpen] = useState(false);
 
-    const messagesContainerRef = useRef(null);
     const inputRef = useRef(null);
 
     const quickPrompts = useMemo(() => ([
@@ -21,16 +20,7 @@ export function useChatMessages(selectedContractId, open, historyReloadSeq, t, e
         t('chat.promptTermination'),
     ]), [t]);
 
-    const isRateLimitError = (error) => {
-        const text = String(error?.message || error || '').toLowerCase();
-        return (
-            text.includes('429') ||
-            text.includes('too many requests') ||
-            text.includes('rate limit') ||
-            text.includes('rate-limit') ||
-            text.includes('קצב')
-        );
-    };
+
 
     useEffect(() => {
         if (!selectedContractId || !open) {
@@ -60,7 +50,7 @@ export function useChatMessages(selectedContractId, open, historyReloadSeq, t, e
                             text: normalizeAssistantText(item.answer, item.question || ''),
                             ts: `${item.messageId || ''}-a`,
                             createdAt: item.createdAt || '',
-                            meta: item.meta || null,
+                            parsedMeta: parseMessageMetadata(item.meta),
                         });
                     }
                 }
@@ -76,38 +66,13 @@ export function useChatMessages(selectedContractId, open, historyReloadSeq, t, e
         };
 
         loadHistory();
-    }, [selectedContractId, open, historyReloadSeq, setErrorKey, setResponseHintKey]);
+    }, [selectedContractId, open, setErrorKey, setResponseHintKey]);
 
     useEffect(() => {
         setQuestion('');
     }, [selectedContractId]);
 
-    const scrollMessagesToBottom = (behavior = 'smooth') => {
-        const container = messagesContainerRef.current;
-        if (!container) return;
 
-        const maxScrollTop = container.scrollHeight - container.clientHeight;
-        container.scrollTo({
-            top: Math.max(0, maxScrollTop),
-            behavior,
-        });
-    };
-
-    useEffect(() => {
-        if (!open) return;
-        const rafId = window.requestAnimationFrame(() => {
-            scrollMessagesToBottom('auto');
-        });
-        return () => window.cancelAnimationFrame(rafId);
-    }, [open, selectedContractId, isHistoryLoading]);
-
-    useEffect(() => {
-        if (!open) return;
-        const rafId = window.requestAnimationFrame(() => {
-            scrollMessagesToBottom('smooth');
-        });
-        return () => window.cancelAnimationFrame(rafId);
-    }, [open, messages.length, isAsking]);
 
     useEffect(() => {
         const el = inputRef.current;
@@ -188,7 +153,7 @@ export function useChatMessages(selectedContractId, open, historyReloadSeq, t, e
                 text: answer,
                 ts: Date.now(),
                 createdAt: result?.createdAt || new Date().toISOString(),
-                meta: result?.meta || null,
+                parsedMeta: parseMessageMetadata(result?.meta),
             };
             setMessages((prev) => [...prev, botMsg]);
             trackChatEvent('chat_answer_received', {
@@ -276,7 +241,6 @@ export function useChatMessages(selectedContractId, open, historyReloadSeq, t, e
     return {
         messages,
         isHistoryLoading,
-        messagesContainerRef,
         question,
         setQuestion,
         isAsking,

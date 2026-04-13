@@ -20,7 +20,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
 import { usePricing } from '@/features/billing/hooks/usePricing';
-import { getPackageIcon, getPackageFeatures } from '@/features/billing/utils/pricingUtils';
+import { getPackageIcon, getPackageFeatures, normalizePlanName } from '@/features/billing/utils/pricingUtils';
 import { calculateDisplayPrice } from '@/utils/formatUtils';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
@@ -36,8 +36,6 @@ const PricingPublic = () => {
     const handleSelectPackage = () => {
         navigate('/?auth=register');
     };
-
-    const normalizePlanName = (value) => String(value || '').trim().toLowerCase();
 
     if (isLoading) {
         return (
@@ -76,14 +74,13 @@ const PricingPublic = () => {
                         {packages
                             .filter(pkg => ['free', 'basic', 'pro'].includes(normalizePlanName(pkg.name)))
                             .sort((a, b) => isRTL ? b.price - a.price : a.price - b.price)
-                            .map((pkg, index) => {
+                            .map(pkg => {
                                 const isPopular = pkg.name === 'Basic';
 
                                 return (
                                     <div
                                         key={pkg.id}
-                                        className={`pricing-card-wrapper animate-slideUp ${isPopular ? 'popular' : ''}`}
-                                        style={{ animationDelay: `${index * 150}ms` }}
+                                        className={`pricing-card-wrapper ${isPopular ? 'popular' : ''}`}
                                     >
                                         {isPopular && (
                                             <div className="popular-badge">
