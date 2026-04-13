@@ -20,7 +20,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
 import { usePricing } from '@/features/billing/hooks/usePricing';
-import { getPackageIcon, getPackageFeatures } from '@/features/billing/utils/pricingUtils';
+import { getPackageIcon, getPackageFeatures, normalizePlanName } from '@/features/billing/utils/pricingUtils';
 import { calculateDisplayPrice } from '@/utils/formatUtils';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
@@ -36,8 +36,6 @@ const PricingPublic = () => {
     const handleSelectPackage = () => {
         navigate('/?auth=register');
     };
-
-    const normalizePlanName = (value) => String(value || '').trim().toLowerCase();
 
     if (isLoading) {
         return (

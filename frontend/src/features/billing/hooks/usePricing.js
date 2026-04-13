@@ -26,7 +26,7 @@ export const usePricing = () => {
 
     const [packages, setPackages] = useState(cachedPackagesData || []);
     const [isLoadingPackages, setIsLoadingPackages] = useState(!cachedPackagesData);
-    const [packagesError, setPackagesError] = useState(null);
+    const [packagesError] = useState(null);
     
     const currentPackageId = Number(subscription?.packageId ?? subscription?.PackageId ?? 0);
 

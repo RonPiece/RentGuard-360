@@ -23,9 +23,9 @@ import { useContracts } from '@/features/contracts/hooks/useContracts';
 import ContractCard from '@/features/contracts/components/ContractCard';
 import EditContractModal from '@/features/contracts/components/EditContractModal';
 import {
-    Plus, RefreshCw, FileText, X, Check,
+    Plus, FileText,
     AlertTriangle,
-    Search, Filter, Pencil,
+    Search, Filter,
     ChevronLeft, ChevronRight
 } from 'lucide-react';
 import './ContractsPage.css';

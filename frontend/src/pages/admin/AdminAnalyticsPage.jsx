@@ -28,7 +28,7 @@ import { GlobalSpinner } from '@/components/ui/GlobalSpinner';
 import { useMemo } from 'react';
 
 const AdminAnalytics = () => {
-    const { t, isRTL } = useLanguage();
+    const { t } = useLanguage();
     const { isDark } = useTheme();
     
     const {

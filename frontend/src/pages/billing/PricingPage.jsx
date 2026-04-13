@@ -17,7 +17,7 @@
 import React from 'react';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
 import { usePricing } from '@/features/billing/hooks/usePricing';
-import { getPackageIcon, getPackageFeatures } from '@/features/billing/utils/pricingUtils';
+import { getPackageIcon, getPackageFeatures, normalizePlanName, getLastPurchaseDateTime } from '@/features/billing/utils/pricingUtils';
 import { calculateDisplayPrice } from '@/utils/formatUtils';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
@@ -37,33 +37,6 @@ const PricingPage = () => {
         handleSelectPackage,
         subscription
     } = usePricing();
-
-    const normalizePlanName = (value) => String(value || '').trim().toLowerCase();
-
-    const getLastPurchaseDateTime = () => {
-        const updatedAt = subscription?.updatedAt || subscription?.UpdatedAt;
-        if (!updatedAt) {
-            return t('pricing.notAvailable');
-        }
-
-        const date = new Date(updatedAt);
-        if (Number.isNaN(date.getTime())) {
-            return t('pricing.notAvailable');
-        }
-
-        const locale = isRTL ? 'he-IL' : 'en-US';
-        const datePart = date.toLocaleDateString(locale, {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-        });
-        const timePart = date.toLocaleTimeString(locale, {
-            hour: '2-digit',
-            minute: '2-digit',
-        });
-
-        return t('pricing.atTime', { date: datePart, time: timePart });
-    };
 
     if (isLoading) {
         return (
@@ -98,7 +71,7 @@ const PricingPage = () => {
                             <span className="current-plan-label">{t('pricing.lastBundle')}</span>
                             <span className="current-plan-name">{currentPlan}</span>
                             <span className="current-plan-scans">
-                                {getLastPurchaseDateTime()}
+                                {getLastPurchaseDateTime(subscription, t, isRTL)}
                             </span>
                         </div>
                     )}

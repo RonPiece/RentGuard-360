@@ -57,3 +57,33 @@ export const trackChatEvent = (eventName, payload = {}) => {
         console.debug('chat-analytics', detail);
     }
 };
+
+export const isRateLimitError = (error) => {
+    const text = String(error?.message || error || '').toLowerCase();
+    return (
+        text.includes('429') ||
+        text.includes('too many requests') ||
+        text.includes('rate limit') ||
+        text.includes('rate-limit') ||
+        text.includes('קצב')
+    );
+};
+
+export const getUserDisplayLabel = (userAttributes, user, t) => {
+    if (userAttributes?.name) return userAttributes.name;
+    if (typeof userAttributes?.email === 'string' && userAttributes.email.includes('@')) {
+        return userAttributes.email.split('@')[0];
+    }
+    if (user?.name) return user.name;
+    if (user?.fullName) return user.fullName;
+    if (user?.given_name) return user.given_name;
+    if (typeof user?.email === 'string' && user.email.includes('@')) {
+        return user.email.split('@')[0];
+    }
+    if (user?.username && !looksLikeMachineId(user.username)) {
+        return user.username;
+    }
+    return t('common.user');
+};
+
+export const getUserInitial = (label) => String(label).trim().charAt(0).toUpperCase() || 'U';

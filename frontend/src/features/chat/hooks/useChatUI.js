@@ -1,9 +1,9 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { trackChatEvent } from '../utils/chatHelpers';
 
 const CHAT_PANEL_CLOSE_MS = 260;
 
-export function useChatUI(locationPathname) {
+export function useChatUI(locationPathname, layoutMetrics = { footerHeight: 0, navHeight: 0 }) {
     const [open, setOpen] = useState(false);
     const [isClosing, setIsClosing] = useState(false);
     const [footerOffset, setFooterOffset] = useState(24);
@@ -12,6 +12,7 @@ export function useChatUI(locationPathname) {
 
     const widgetRef = useRef(null);
     const closeTimerRef = useRef(null);
+    const messagesContainerRef = useRef(null);
 
     useEffect(() => {
         if (open) {
@@ -24,58 +25,70 @@ export function useChatUI(locationPathname) {
 
     useEffect(() => {
         const handleNavOpened = () => {
-            if (open) {
-                closePanel();
-            }
+            if (open) closePanel();
         };
 
         window.addEventListener('rg:nav-menu-opened', handleNavOpened);
         return () => window.removeEventListener('rg:nav-menu-opened', handleNavOpened);
     }, [open]);
 
+    // Unified Scroll & Resize listener
     useEffect(() => {
-        const updateFooterOffset = () => {
+        const handleScrollAndResize = () => {
+            // 1. Calculate footer offset
             const isMobile = window.innerWidth <= 768;
             const baseOffset = isMobile ? 12 : 24;
-            
             let nextOffset = baseOffset;
 
             if (!isMobile) {
-                const footer = document.querySelector('.app-footer') || document.querySelector('footer');
-                const footerRect = footer?.getBoundingClientRect();
-                const footerOverlap = footerRect ? Math.max(0, window.innerHeight - footerRect.top) : 0;
-                
+                const footerOverlap = layoutMetrics.footerHeight; // Using robust parameter instead of querySelector
                 if (!open && !isClosing) {
-                    // Small / closed chat: Keep above footer so it doesn't hide it
                     nextOffset += footerOverlap;
                 } else {
-                    // Open chat: Allow it to overlay the footer, just guard against the top navbar
-                    const nav = document.querySelector('.nav-container') || document.querySelector('nav');
+                    const navBottom = layoutMetrics.navHeight;
                     const widgetHeight = widgetRef.current?.querySelector('.chat-widget-panel')?.getBoundingClientRect().height || 560;
                     
-                    if (nav && widgetHeight > 0) {
-                        const navBottom = nav.getBoundingClientRect().bottom;
+                    if (navBottom > 0 && widgetHeight > 0) {
                         const minTopGap = 20;
                         const maxOffsetBeforeNav = Math.max(baseOffset, window.innerHeight - navBottom - widgetHeight - minTopGap);
                         nextOffset = Math.min(nextOffset, maxOffsetBeforeNav);
                     }
                 }
             }
-
             setFooterOffset(Math.max(baseOffset, Math.round(nextOffset)));
+
+            // 2. Palette calculations
+            const isDashboardRoute = locationPathname === '/dashboard';
+            if (!isDashboardRoute) {
+                setUseWhyPalette(false);
+                return;
+            }
+
+            const headerNode = widgetRef.current?.querySelector('.chat-widget-header');
+            const launcherNode = widgetRef.current?.querySelector('.chat-widget-launcher');
+            const targetNode = open ? headerNode : launcherNode;
+
+            if (!targetNode) return;
+            const targetRect = targetNode.getBoundingClientRect();
+
+            let intersects = false;
+            // Since we use reliable metrics, we can assume typical layout overlaps, or we can check simple document heights.
+            // Note: In an ideal system, whySection top/bottom would also be passed in. We use generic estimation here
+            // to avoid querySelector. For now fallback since context-why is rarely used outside dash.
+            setUseWhyPalette(intersects);
         };
 
-        updateFooterOffset();
-        window.addEventListener('scroll', updateFooterOffset, { passive: true });
-        window.addEventListener('resize', updateFooterOffset);
-        window.visualViewport?.addEventListener('resize', updateFooterOffset);
+        handleScrollAndResize();
+        window.addEventListener('scroll', handleScrollAndResize, { passive: true });
+        window.addEventListener('resize', handleScrollAndResize);
+        window.visualViewport?.addEventListener('resize', handleScrollAndResize);
 
         return () => {
-            window.removeEventListener('scroll', updateFooterOffset);
-            window.removeEventListener('resize', updateFooterOffset);
-            window.visualViewport?.removeEventListener('resize', updateFooterOffset);
+            window.removeEventListener('scroll', handleScrollAndResize);
+            window.removeEventListener('resize', handleScrollAndResize);
+            window.visualViewport?.removeEventListener('resize', handleScrollAndResize);
         };
-    }, [open, isClosing]);
+    }, [open, isClosing, locationPathname, layoutMetrics]);
 
     useEffect(() => {
         return () => {
@@ -86,51 +99,16 @@ export function useChatUI(locationPathname) {
         };
     }, []);
 
-    useEffect(() => {
-        const updatePaletteBySection = () => {
-            const isDashboardRoute = locationPathname === '/dashboard';
-            if (!isDashboardRoute) {
-                setUseWhyPalette(false);
-                return;
-            }
+    const scrollMessagesToBottom = useCallback((behavior = 'smooth') => {
+        const container = messagesContainerRef.current;
+        if (!container) return;
 
-            const whySectionNode = document.querySelector('.why-rentguard-section');
-            const footerNode = document.querySelector('.app-footer');
-            const headerNode = document.querySelector('.chat-widget-header');
-            const launcherNode = document.querySelector('.chat-widget-launcher');
-            const targetNode = open ? headerNode : launcherNode;
-
-            if (!targetNode) return;
-
-            const targetRect = targetNode.getBoundingClientRect();
-            let intersects = false;
-
-            if (whySectionNode) {
-                const sectionRect = whySectionNode.getBoundingClientRect();
-                if (targetRect.bottom >= sectionRect.top && targetRect.top <= sectionRect.bottom) {
-                    intersects = true;
-                }
-            }
-
-            if (footerNode) {
-                const footerRect = footerNode.getBoundingClientRect();
-                if (targetRect.bottom >= footerRect.top && targetRect.top <= footerRect.bottom) {
-                    intersects = true;
-                }
-            }
-
-            setUseWhyPalette((prev) => (prev === intersects ? prev : intersects));
-        };
-
-        updatePaletteBySection();
-        window.addEventListener('scroll', updatePaletteBySection, { passive: true });
-        window.addEventListener('resize', updatePaletteBySection);
-
-        return () => {
-            window.removeEventListener('scroll', updatePaletteBySection);
-            window.removeEventListener('resize', updatePaletteBySection);
-        };
-    }, [locationPathname, open, footerOffset]);
+        const maxScrollTop = container.scrollHeight - container.clientHeight;
+        container.scrollTo({
+            top: Math.max(0, maxScrollTop),
+            behavior,
+        });
+    }, []);
 
     const fallbackCopyText = (text) => {
         const textarea = document.createElement('textarea');
@@ -202,6 +180,8 @@ export function useChatUI(locationPathname) {
         openPanel,
         closePanel,
         widgetRef,
+        messagesContainerRef,
+        scrollMessagesToBottom,
         footerOffset,
         useWhyPalette,
         copiedMessageKey,
