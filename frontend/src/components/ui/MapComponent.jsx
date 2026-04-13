@@ -95,7 +95,7 @@ const MapComponent = ({
   }, [address, safeLat, safeLng, popupText, notFoundText]);
 
   return (
-    <div style={{ height: height || '300px', width: '100%', borderRadius: '12px', overflow: 'hidden', zIndex: 0, position: 'relative' }}>
+    <div style={{ height: height || '300px', flex: height === '100%' ? 1 : 'none', width: '100%', borderRadius: '12px', overflow: 'hidden', zIndex: 0, position: 'relative' }}>
       {isLoading && (
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(255,255,255,0.7)', zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <span>טוען מפה...</span>
