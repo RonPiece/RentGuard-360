@@ -40,7 +40,7 @@
 }
 
 .app-container>.app-main.with-nav {
-    padding-top: calc(var(--rg-nav-main-offset, 6rem) + var(--rg-page-nav-offset, 0rem));
+    padding-top: calc(var(--nav-height, 6rem) + var(--rg-page-nav-offset, 0rem));
     background-color: var(--bg-page);
 }
 

@@ -41,6 +41,7 @@ export function useNavigationUI(isAuthenticated, isRTL) {
         const calculateOffset = () => {
             if (navRef.current) {
                 const navHeight = navRef.current.offsetHeight;
+                document.documentElement.style.setProperty('--scroll-padding', `${navHeight + 24}px`);
                 document.documentElement.style.setProperty('--nav-height', `${navHeight}px`);
             }
         };
@@ -54,6 +55,8 @@ export function useNavigationUI(isAuthenticated, isRTL) {
 
         return () => {
             observer.disconnect();
+            document.documentElement.style.removeProperty('--scroll-padding');
+            document.documentElement.style.removeProperty('--nav-height');
         };
     }, [isAuthenticated, isRTL]);
 

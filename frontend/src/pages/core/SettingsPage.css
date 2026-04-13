@@ -33,7 +33,7 @@ main:has(.settings-container) {
     font-family: 'Calibri', var(--font-sans); /* Added Calibri */
     max-width: 1280px;
     margin: 0 auto;
-    padding: 2rem 1.5rem 6rem;
+    padding: 0rem 1.5rem 6rem;
 }
 
 /* --- Header --- */
