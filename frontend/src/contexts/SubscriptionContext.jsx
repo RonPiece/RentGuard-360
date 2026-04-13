@@ -15,7 +15,6 @@
  * 
  * ============================================
  */
-/* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { fetchAuthSession } from 'aws-amplify/auth';
 import { useAuth } from './AuthContext';
@@ -29,7 +28,7 @@ const defaultSubscriptionContext = {
     hasSubscription: false,
     isLoading: false,
     error: null,
-    refreshSubscription: async () => {},
+    refreshSubscription: async () => { },
     deductScan: async () => ({ success: false, error: 'Subscription context unavailable' }),
 };
 
@@ -139,7 +138,6 @@ export const SubscriptionProvider = ({ children }) => {
                     setSubscription(null);
                     setError(err.message || 'Failed to fetch subscription');
                     hasDefinitiveEntitlement = true;
-                    console.error('Failed to fetch subscription:', err);
                 }
             }
         } finally {

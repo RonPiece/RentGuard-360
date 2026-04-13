@@ -109,10 +109,7 @@ export const getPackageById = async (id) => {
  * Create a Stripe PaymentIntent for a package purchase.
  * POST /api/payments/create-intent
  */
-/**
- * Create a Stripe PaymentIntent.
- * POST /api/payments/create-intent
- */
+
 export const createPaymentIntent = async (userId, packageId, userEmail, userName) => {
     return stripeApiCall('/api/payments/create-intent', {
         method: 'POST',
