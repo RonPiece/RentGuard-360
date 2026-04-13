@@ -14,7 +14,7 @@
  * - SubscriptionContext
  * ============================================
  */
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     CreditCard,
@@ -23,183 +23,39 @@ import {
     History,
     Shield,
     Lock,
-    ArrowLeft,
-    ArrowRight,
     Loader2,
     Filter,
     ChevronDown
 } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
-import { useSubscription } from '@/contexts/SubscriptionContext';
-import { createCustomerPortalSession, getTransactions } from '@/features/billing/services/stripeApi';
-import { emitAppToast } from '@/utils/toast';
+import { useBilling } from '@/features/billing/hooks/useBilling';
+import { formatStripeAmount, formatDateLocalized } from '@/utils/formatUtils';
 import BackButton from '@/components/ui/BackButton';
 import './BillingPage.css';
 
 const BillingPage = () => {
     const navigate = useNavigate();
-    const { userAttributes, user, isAdmin } = useAuth();
     const { t, isRTL } = useLanguage();
-    const { subscription, isLoading: subLoading } = useSubscription();
-
-    const [portalLoading, setPortalLoading] = useState(false);
-    const [portalError, setPortalError] = useState('');
-    const [transactions, setTransactions] = useState([]);
-    const [transactionsLoading, setTransactionsLoading] = useState(false);
-    const [transactionsError, setTransactionsError] = useState('');
-    const [transactionsFilterOpen, setTransactionsFilterOpen] = useState(false);
-    const [transactionsFilter, setTransactionsFilter] = useState('last5');
-    const filterMenuRef = useRef(null);
-
-    const userId = userAttributes?.sub || user?.userId || user?.sub || user?.username;
-    const userEmail = userAttributes?.email;
-    const userName = userAttributes?.name || '';
-
-    // Subscription info
-    const planName = subscription?.packageName || t('billing.noPlan');
-    const scansRemaining = subscription?.scansRemaining ?? 0;
-    const isUnlimited = subscription?.isUnlimited || scansRemaining === -1;
-
-    useEffect(() => {
-        let isCancelled = false;
-
-        const fetchTransactions = async () => {
-            if (!userId) return;
-
-            setTransactionsLoading(true);
-            setTransactionsError('');
-
-            try {
-                const response = await getTransactions(userId);
-                const rawTransactions = Array.isArray(response?.transactions) ? response.transactions : [];
-                if (!isCancelled) {
-                    setTransactions(rawTransactions);
-                }
-            } catch (err) {
-                if (!isCancelled) {
-                    setTransactions([]);
-                    setTransactionsError(err?.message || t('common.error'));
-                }
-            } finally {
-                if (!isCancelled) {
-                    setTransactionsLoading(false);
-                }
-            }
-        };
-
-        fetchTransactions();
-
-        return () => {
-            isCancelled = true;
-        };
-    }, [userId, t]);
-
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (filterMenuRef.current && !filterMenuRef.current.contains(event.target)) {
-                setTransactionsFilterOpen(false);
-            }
-        };
-
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
-
-    const transactionFilterOptions = useMemo(() => ([
-        { key: 'last5', label: t('billing.filterLast5') },
-        { key: 'all', label: t('billing.filterAllTransactions') },
-        { key: 'paid', label: t('billing.filterPaid') },
-        { key: 'failed', label: t('billing.filterFailed') },
-    ]), [t]);
-
-    const filteredTransactions = useMemo(() => {
-        const sorted = [...transactions].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-        if (transactionsFilter === 'last5') {
-            return sorted.slice(0, 5);
-        }
-
-        if (transactionsFilter === 'all') {
-            return sorted;
-        }
-
-        return sorted.filter((tx) => {
-            const status = String(tx?.status || '').toLowerCase();
-            if (transactionsFilter === 'paid') {
-                return status === 'succeeded' || status === 'paid';
-            }
-            if (transactionsFilter === 'failed') {
-                return status === 'failed';
-            }
-            return true;
-        });
-    }, [transactions, transactionsFilter]);
-
-    const formatAmount = (amount, currency) => {
-        let numericAmount = Number(amount || 0);
-        const safeCurrency = (currency || 'ILS').toUpperCase();
-
-        // Stripe sends amounts in the smallest currency unit (cents / agorot).
-        // Convert to major units only when the value looks like minor units
-        // (i.e., an integer >= 100, which would be at least 1.00 in major units).
-        if (numericAmount !== 0 && Number.isInteger(numericAmount) && Math.abs(numericAmount) >= 100) {
-            numericAmount = numericAmount / 100;
-        }
-
-        try {
-            return new Intl.NumberFormat(isRTL ? 'he-IL' : 'en-US', {
-                style: 'currency',
-                currency: safeCurrency,
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-            }).format(numericAmount);
-        } catch {
-            const symbol = safeCurrency === 'ILS' ? '₪' : '$';
-            return `${symbol}${numericAmount.toFixed(2)}`;
-        }
-    };
-
-    const formatDate = (value) => {
-        if (!value) return t('billing.notAvailable');
-
-        const date = new Date(value);
-        if (Number.isNaN(date.getTime())) return t('billing.notAvailable');
-
-        return date.toLocaleDateString(isRTL ? 'he-IL' : 'en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: '2-digit',
-        });
-    };
-
-    const handleOpenPortal = async () => {
-        setPortalLoading(true);
-        setPortalError('');
-
-        try {
-            const returnUrl = `${window.location.origin}/#/billing`;
-            const response = await createCustomerPortalSession(userId, userEmail, userName, returnUrl);
-
-            if (response?.url) {
-                // Redirect to Stripe Customer Portal
-                window.location.href = response.url;
-            } else {
-                throw new Error('No portal URL returned');
-            }
-        } catch (err) {
-            console.error('Customer Portal error:', err);
-            const errorMsg = err.message || t('billing.portalError');
-            setPortalError(errorMsg);
-            emitAppToast({
-                type: 'error',
-                title: t('common.error'),
-                message: errorMsg,
-            });
-        } finally {
-            setPortalLoading(false);
-        }
-    };
+    
+    const {
+        isAdmin,
+        subLoading,
+        planName,
+        scansRemaining,
+        isUnlimited,
+        portalLoading,
+        portalError,
+        transactionsLoading,
+        transactionsError,
+        transactionsFilterOpen,
+        transactionsFilter,
+        setTransactionsFilterOpen,
+        setTransactionsFilter,
+        filterMenuRef,
+        transactionFilterOptions,
+        filteredTransactions,
+        handleOpenPortal
+    } = useBilling();
 
     return (
         <div className="billing-container" dir={isRTL ? 'rtl' : 'ltr'}>
@@ -346,9 +202,9 @@ const BillingPage = () => {
                                 const status = String(tx.status || '').toLowerCase();
 
                                 return (
-                                    <div className={`transaction-row ${isRTL ? 'rtl' : 'ltr'}`} key={key} role="listitem">
-                                        <div className="transaction-date">{formatDate(tx.createdAt)}</div>
-                                        <div className="transaction-amount">{formatAmount(tx.amount, tx.currency)}</div>
+                                <div className={`transaction-row ${isRTL ? 'rtl' : 'ltr'}`} key={key} role="listitem">
+                                        <div className="transaction-date">{formatDateLocalized(tx.createdAt, isRTL ? 'he-IL' : 'en-US') || t('billing.notAvailable')}</div>
+                                        <div className="transaction-amount">{formatStripeAmount(tx.amount, tx.currency, isRTL ? 'he-IL' : 'en-US')}</div>
                                         <div className={`transaction-status ${status}`}>
                                             {status === 'succeeded'
                                                 ? t('billing.statusPaid')
@@ -388,7 +244,7 @@ const BillingPage = () => {
                     </div>
                 </div>
 
-                
+
 
                 {/* Security Bar */}
                 <div className="billing-security-bar">

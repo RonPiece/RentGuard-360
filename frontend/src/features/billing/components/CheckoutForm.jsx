@@ -5,6 +5,8 @@ import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { useLanguage } from "@/contexts/LanguageContext/LanguageContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import Button from "@/components/ui/Button";
+import { calculateDisplayPrice } from "@/utils/formatUtils";
+import { getStripeElementOptions } from "@/features/billing/utils/stripeUtils";
 
 const CheckoutForm = ({ pkg, clientSecret, onSuccess }) => {
     const stripe = useStripe();
@@ -14,6 +16,11 @@ const CheckoutForm = ({ pkg, clientSecret, onSuccess }) => {
     const [isProcessing, setIsProcessing] = useState(false);
     const [error, setError] = useState(null);
     const [termsAccepted, setTermsAccepted] = useState(false);
+
+    const { displayPrice, displayCurrency } = calculateDisplayPrice(pkg?.price, isRTL);
+    const submitButtonText = isProcessing 
+        ? t('checkout.processing') 
+        : `${t('checkout.pay')} ${displayCurrency}${displayPrice}`;
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -45,24 +52,7 @@ const CheckoutForm = ({ pkg, clientSecret, onSuccess }) => {
         }
     };
 
-    const cardElementOptions = {
-        style: {
-            base: {
-                fontSize: '16px',
-                fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-                color: isDark ? '#FFFFFF' : '#0F172A',
-                '::placeholder': {
-                    color: isDark ? '#94A3B8' : '#94A3B8',
-                },
-                iconColor: '#059669',
-            },
-            invalid: {
-                color: '#EF4444',
-                iconColor: '#EF4444',
-            },
-        },
-        hidePostalCode: true,
-    };
+    const cardElementOptions = getStripeElementOptions(isDark);
 
     return (
         <form onSubmit={handleSubmit} className="checkout-form">
@@ -122,11 +112,7 @@ const CheckoutForm = ({ pkg, clientSecret, onSuccess }) => {
                 fullWidth
                 disabled={!stripe || isProcessing || !termsAccepted}
             >
-                {isProcessing ? t('checkout.processing') : (() => {
-                    const price = !isRTL ? Math.round(pkg.price / 3.7) : pkg.price;
-                    const currency = !isRTL ? '$' : '₪';
-                    return `${t('checkout.pay')} ${currency}${price}`;
-                })()}
+                {submitButtonText}
             </Button>
 
             <p className="checkout-secure">

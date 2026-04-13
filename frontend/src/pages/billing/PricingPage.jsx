@@ -14,139 +14,29 @@
  * - SubscriptionContext
  * ============================================
  */
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
-import { useSubscription } from '@/contexts/SubscriptionContext';
-import { getPackages } from '@/features/billing/services/stripeApi';
+import { usePricing } from '@/features/billing/hooks/usePricing';
+import { getPackageIcon, getPackageFeatures } from '@/features/billing/utils/pricingUtils';
+import { calculateDisplayPrice } from '@/utils/formatUtils';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import './PricingPage.css';
 import { GlobalSpinner } from '@/components/ui/GlobalSpinner';
 
-// Hardcoded fallback packages when backend (SQL Server) is unavailable.
-const FALLBACK_PACKAGES = [
-    { id: 'free', name: 'Free', price: 0, scanLimit: 1 },
-    { id: 'single', name: 'Single', price: 10, scanLimit: 1 },
-    { id: 'basic', name: 'Basic', price: 39, scanLimit: 5 },
-    { id: 'pro', name: 'Pro', price: 79, scanLimit: 15 },
-];
-
-
 const PricingPage = () => {
     const { t, isRTL } = useLanguage();
-    const { subscription, packageName: currentPlan, hasSubscription } = useSubscription();
-    const navigate = useNavigate();
-
-    const [packages, setPackages] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error] = useState(null);
-    const currentPackageId = Number(subscription?.packageId ?? subscription?.PackageId ?? 0);
-
-    // Fetch packages on mount
-    useEffect(() => {
-        let isMounted = true;
-
-        const fetchPackages = async () => {
-            try {
-                if (isMounted) {
-                    setIsLoading(true);
-                }
-
-                const timeoutPromise = new Promise((_, reject) => {
-                    window.setTimeout(() => reject(new Error('Packages request timeout')), 12000);
-                });
-
-                const data = await Promise.race([getPackages(), timeoutPromise]);
-                if (isMounted) {
-                    setPackages(data);
-                }
-            } catch (err) {
-                // If SQL Server is down or any backend error, use fallback packages
-                // so the pricing page still renders.
-                console.warn('Using fallback packages (backend unavailable):', err.message);
-                if (isMounted) {
-                    setPackages(FALLBACK_PACKAGES);
-                }
-                // Don't set error — show the page with fallback data instead.
-            } finally {
-                if (isMounted) {
-                    setIsLoading(false);
-                }
-            }
-        };
-
-        fetchPackages();
-
-        return () => {
-            isMounted = false;
-        };
-    }, []);
-
-    const handleSelectPackage = (pkg) => {
-        if (pkg.price <= 0) {
-            // Free package — navigate to checkout which handles it
-            navigate(`/checkout/${pkg.id}`);
-        } else {
-            navigate(`/checkout/${pkg.id}`);
-        }
-    };
-
-    const getPackageIcon = (name) => {
-        switch (name) {
-            case 'Free':
-                return (
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                        <path d="M12 2L2 7l10 5 10-5-10-5z" />
-                        <path d="M2 17l10 5 10-5" />
-                        <path d="M2 12l10 5 10-5" />
-                    </svg>
-                );
-            case 'Single':
-                return (
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                        <polyline points="14 2 14 8 20 8"></polyline>
-                        <line x1="16" y1="13" x2="8" y2="13"></line>
-                        <line x1="16" y1="17" x2="8" y2="17"></line>
-                        <polyline points="10 9 9 9 8 9"></polyline>
-                    </svg>
-                );
-            case 'Basic':
-                return (
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-                    </svg>
-                );
-            case 'Pro':
-                return (
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                        <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" />
-                    </svg>
-                );
-            default:
-                return null;
-        }
-    };
-
-    const getFeatures = (pkg) => {
-        const features = {
-            Free: t('pricing.featuresFree', { returnObjects: true }),
-            Single: t('pricing.featuresSingle', { returnObjects: true }),
-            Basic: t('pricing.featuresBasic', { returnObjects: true }),
-            Pro: t('pricing.featuresPro', { returnObjects: true }),
-        };
-        return features[pkg.name] || [];
-    };
-
-    const getDisplayPriceAndCurrency = (basePrice) => {
-        if (basePrice <= 0) return { price: 0, currency: '' };
-        if (isRTL) {
-            return { price: basePrice, currency: '₪' };
-        }
-        // Conversion rate roughly 3.7
-        return { price: Math.round(basePrice / 3.7), currency: '$' };
-    };
+    
+    const {
+        packages,
+        isLoading,
+        error,
+        currentPlan,
+        hasSubscription,
+        currentPackageId,
+        handleSelectPackage,
+        subscription
+    } = usePricing();
 
     const normalizePlanName = (value) => String(value || '').trim().toLowerCase();
 
@@ -265,11 +155,11 @@ const PricingPage = () => {
                                             {pkg.price <= 0 ? (
                                                 <span className="price-amount free">{t('pricing.free')}</span>
                                             ) : (() => {
-                                                const displayInfo = getDisplayPriceAndCurrency(pkg.price);
+                                                const { displayPrice, displayCurrency } = calculateDisplayPrice(pkg.price, isRTL);
                                                 return (
                                                     <>
-                                                        <span className="price-currency">{displayInfo.currency}</span>
-                                                        <span className="price-amount">{displayInfo.price}</span>
+                                                        <span className="price-currency">{displayCurrency}</span>
+                                                        <span className="price-amount">{displayPrice}</span>
                                                     </>
                                                 );
                                             })()}
@@ -284,7 +174,7 @@ const PricingPage = () => {
                                         </div>
 
                                         <ul className="pricing-features">
-                                            {getFeatures(pkg).map((feature) => (
+                                            {getPackageFeatures(pkg.name, t).map((feature) => (
                                                 <li key={feature} className="pricing-feature">
                                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-success)" strokeWidth="2.5">
                                                         <polyline points="20,6 9,17 4,12" />
