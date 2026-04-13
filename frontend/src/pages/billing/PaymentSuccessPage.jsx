@@ -16,23 +16,29 @@
  * ============================================
  */
 import React from 'react';
-import { useLocation, useNavigate, Navigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
+import { usePaymentSuccess } from '@/features/billing/hooks/usePaymentSuccess';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import './PaymentSuccessPage.css';
 
 const PaymentSuccessPage = () => {
     const { t, isRTL } = useLanguage();
-    const navigate = useNavigate();
-    const location = useLocation();
+    
+    const {
+        redirectIfNoState,
+        packageName,
+        amount,
+        currency,
+        isFree,
+        handleGoToDashboard,
+        handleUploadContract
+    } = usePaymentSuccess();
 
-    // Route Guard: If directly accessed without state, redirect
-    if (!location.state) {
+    if (redirectIfNoState) {
         return <Navigate to="/dashboard" replace />;
     }
-
-    const { packageName, amount, currency, isFree } = location.state;
 
     return (
         <div className="payment-success-page page-container" dir={isRTL ? 'rtl' : 'ltr'}>
@@ -74,10 +80,10 @@ const PaymentSuccessPage = () => {
                         </p>
 
                         <div className="success-actions">
-                            <Button variant="primary" onClick={() => navigate('/dashboard')} className="success-action-btn">
+                            <Button variant="primary" onClick={handleGoToDashboard} className="success-action-btn">
                                 {t('paymentSuccess.goToDashboard') || 'Go to Dashboard'}
                             </Button>
-                            <Button variant="ghost" onClick={() => navigate('/upload')} className="success-action-btn">
+                            <Button variant="ghost" onClick={handleUploadContract} className="success-action-btn">
                                 {t('paymentSuccess.uploadContract') || 'Upload Contract'}
                             </Button>
                         </div>
