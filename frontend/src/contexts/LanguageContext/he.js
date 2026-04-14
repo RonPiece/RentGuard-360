@@ -442,7 +442,15 @@ export const he = {
         "serverTemporaryError": "השרת עמוס כרגע. המערכת ניסתה שוב אוטומטית ולא הצליחה. נסו שוב בעוד כמה שניות."
     },
     "scanner": {
-        "focus_guidance": "אנא ישרו את המסמך בתוך המסגרת וצלמו ישירות מלמעלה לקבלת התוצאות הטובות ביותר"
+        "focus_guidance": "אנא ישרו את המסמך בתוך המסגרת וצלמו ישירות מלמעלה לקבלת התוצאות הטובות ביותר",
+        "retake": "צילום מחדש",
+        "adjustCropArea": "התאימו את אזור החיתוך לפני האישור.",
+        "applyingCrop": "מחיל חיתוך...",
+        "applyCrop": "אישור חיתוך",
+        "buildingPdf": "יוצר PDF...",
+        "done": "סיום",
+        "deletePage": "מחיקת עמוד",
+        "scannedPagesGallery": "גלריית עמודים שנסרקו"
     },
     "analysis": {
         "shareExpiryDaysOne": "פג תוקף בעוד יום",
@@ -769,6 +777,8 @@ export const he = {
         "contactFailedTitle": "שליחת ההודעה נכשלה",
         "contactFailedMessage": "לא הצלחנו לשלוח את ההודעה כרגע. נסו שוב.",
         "uploadFailedTitle": "העלאת החוזה נכשלה",
+        "analysisDelayedTitle": "ניתוח בזמן אמת",
+        "analysisDelayedMessage": "למסמך גדול לוקח קצת יותר זמן. תוכלו לחזור לכאן עוד רגע או למסך הבית.",
         "analysisReadyTitle": "הניתוח הושלם",
         "analysisReadyMessage": "החוזה נותח בהצלחה ואפשר לצפות בתוצאות.",
         "adminUserEnabledTitle": "המשתמש הופעל",

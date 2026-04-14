@@ -53,9 +53,8 @@ const UploadSuccessCard = ({ uploadSuccess, setUploadSuccess }) => {
                 </div>
             </div>
             <div className="success-actions">
-                <Button variant="primary" onClick={() => navigate('/contracts')}>
+                <Button variant="primary" onClick={() => navigate('/contracts')} rightIcon={isRTL ? <ArrowLeft size={16} strokeWidth={2.2} /> : <ArrowRight size={16} strokeWidth={2.2} />}>
                     <span>{t('upload.viewMyContracts')}</span>
-                    {isRTL ? <ArrowLeft size={16} strokeWidth={2.2} /> : <ArrowRight size={16} strokeWidth={2.2} />}
                 </Button>
                 <Button variant="secondary" className="success-upload-another-btn" onClick={() => setUploadSuccess(false)}>
                     {t('upload.uploadAnother')}

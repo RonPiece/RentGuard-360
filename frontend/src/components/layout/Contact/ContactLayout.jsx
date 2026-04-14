@@ -10,7 +10,7 @@ const ContactLayout = ({ children }) => {
     return (
         <div className="contact-page page-container" dir={isRTL ? 'rtl' : 'ltr'}>
             {/* Header Section */}
-            <div className="contact-header animate-fadeIn">
+            <div className="contact-header ">
                 <div className="page-header-content">
                     <h1 className="headline-font">
                         {t('contact.title')}
@@ -25,12 +25,12 @@ const ContactLayout = ({ children }) => {
             <div className="contact-grid">
 
                 {/* Left/Right Column: Contact Form */}
-                <div className="contact-form-column animate-slideUp">
+                <div className="contact-form-column ">
                     {children}
                 </div>
 
                 {/* Left/Right Column: Info & Branding */}
-                <div className="contact-info-column animate-slideUp" style={{ animationDelay: '100ms' }}>
+                <div className="contact-info-column ">
 
                     {/* Contact Details Card */}
                     <div className="info-details-card">
