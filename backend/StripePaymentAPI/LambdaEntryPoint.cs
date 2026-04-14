@@ -40,6 +40,12 @@ namespace StripePaymentAPI
         {
             // DI - same as Program.cs
             services.AddScoped<Repositories.IPaymentRepository, Repositories.SQLPaymentRepository>();
+            services.AddScoped<Repositories.IAdminStatsRepository>(provider =>
+                new Repositories.SQLAdminStatsRepository(Configuration.GetConnectionString("PaymentsDB")));
+
+            services.AddScoped<Services.ISubscriptionService, Services.SubscriptionService>();
+            services.AddScoped<Services.IStripeService, Services.StripeService>();
+            services.AddScoped<Services.IPaymentProcessingService, Services.PaymentProcessingService>();
 
             // Cognito JWT auth - same security model as Program.cs
             var cognitoUserPoolId = Configuration["Cognito:UserPoolId"];
