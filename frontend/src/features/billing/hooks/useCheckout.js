@@ -81,6 +81,7 @@ export const useCheckout = (packageId) => {
 
     const handlePaymentSuccess = async (paymentIntent) => {
         setIsLoading(true);
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
         try {
             // Tell our backend to verify the Stripe intent and grant the purchased scans
             await confirmPayment(paymentIntent.id);

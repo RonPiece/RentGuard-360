@@ -7,6 +7,14 @@ export const useScrollRestoration = () => {
 
     // Scroll restoration: Ensure new page loads start at the top
     useEffect(() => {
-        window.scrollTo(0, 0);
+        // Use requestAnimationFrame to ensure the scroll happens exactly
+        // after the new DOM layout is computed, which is the most reliable way for React SPAs
+        const scrollId = requestAnimationFrame(() => {
+            window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+            document.documentElement.scrollTop = 0;
+            document.body.scrollTop = 0;
+        });
+
+        return () => cancelAnimationFrame(scrollId);
     }, [location.pathname]);
 };

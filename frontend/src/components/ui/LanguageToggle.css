@@ -41,9 +41,11 @@
     transition: all 0.15s ease;
 }
 
-.language-toggle:hover {
-    background: var(--bg-inset);
-    border-color: var(--accent-primary);
+@media (hover: hover) and (pointer: fine) {
+    .language-toggle:hover {
+        background: var(--bg-inset);
+        border-color: var(--accent-primary);
+    }
 }
 
 .lang-option {
@@ -67,6 +69,8 @@
     border-color: rgba(255, 255, 255, 0.1);
 }
 
-[data-theme="dark"] .language-toggle:hover {
-    background: rgba(255, 255, 255, 0.1);
+@media (hover: hover) and (pointer: fine) {
+    [data-theme="dark"] .language-toggle:hover {
+        background: rgba(255, 255, 255, 0.1);
+    }
 }

@@ -206,7 +206,7 @@ export const en = {
         "step1Title": "Upload Contract",
         "step1Desc": "Drag and drop your rental contract in PDF format",
         "step2Title": "AI Analysis",
-        "step2Desc": "Simple contracts? Under 60 seconds. Complex ones? Just a few minutes. Our advanced AI scans every clause for your protection.",
+        "step2Desc": "Contract analysis takes up to two minutes. Our advanced AI scans every clause in-depth to ensure maximum protection for you.",
         "step3Title": "Get Insights",
         "step3Desc": "View risks and negotiation suggestions",
         "whyUs": "Why RentGuard 360?",
