@@ -7,7 +7,7 @@ import { useSubscription } from '@/contexts/SubscriptionContext';
 import { useNavigationUI } from './hooks/useNavigationUI';
 import { useCompactNavPrefs } from './hooks/useCompactNavPrefs';
 import { useBundleGatedNavigation } from './hooks/useBundleGatedNavigation';
-import { ThemeToggle } from '../../ui/Toggle';
+import ThemeToggle from '../../ui/ThemeToggle';
 import LanguageToggle from '../../ui/LanguageToggle';
 import ScanBadge from '../../ui/ScanBadge';
 import { Shield, Settings } from 'lucide-react';

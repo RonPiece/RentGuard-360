@@ -29,7 +29,7 @@
  */
 import React from 'react';
 import { BadgeDollarSign, House, FileText, Wrench, Scale } from 'lucide-react';
-import Accordion from '@/components/ui/Accordion';
+import Accordion from '@/components/ui/Accordion/Accordion';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
 import './SidebarAccordions.css';
 

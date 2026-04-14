@@ -19,7 +19,7 @@ import { NavLink, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
 import { useTheme } from '@/contexts/ThemeContext';
-import { ThemeToggle } from '@/components/ui/Toggle';
+import ThemeToggle from '@/components/ui/ThemeToggle';
 import LanguageToggle from '@/components/ui/LanguageToggle';
 import {
     LayoutDashboard,

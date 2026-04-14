@@ -6,7 +6,7 @@
  */
 import React from 'react';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';       
-import Accordion from '@/components/ui/Accordion';
+import Accordion from '@/components/ui/Accordion/Accordion';
 import { Info, BadgeDollarSign, House, FileText, Wrench, Scale, ScrollText } from 'lucide-react';
 import './SidebarAccordions.css';
 

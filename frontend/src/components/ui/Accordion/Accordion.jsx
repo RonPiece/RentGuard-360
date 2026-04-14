@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { ChevronDown } from 'lucide-react';
+import { useAccordion } from './hooks/useAccordion';
 import './Accordion.css';
 
 const Accordion = ({ 
@@ -13,18 +14,11 @@ const Accordion = ({
     contentClassName = '',
     dir = 'ltr' 
 }) => {
-    const [localExpanded, setLocalExpanded] = useState(defaultExpanded);
-
-    const isExpanded = controlledExpanded !== undefined ? controlledExpanded : localExpanded;
-
-    const toggleAccordion = () => {
-        if (controlledExpanded === undefined) {
-            setLocalExpanded(!isExpanded);
-        }
-        if (onToggle) {
-            onToggle(!isExpanded);
-        }
-    };
+    const { isExpanded, toggleAccordion } = useAccordion({
+        defaultExpanded,
+        controlledExpanded,
+        onToggle
+    });
 
     return (
         <div className={`lf-accordion ${isExpanded ? 'expanded' : ''} ${className}`} dir={dir}>

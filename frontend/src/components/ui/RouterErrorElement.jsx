@@ -17,7 +17,7 @@ import { useRouteError, isRouteErrorResponse } from 'react-router-dom';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
 import Button from './Button';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
-import './GlobalErrorBoundary.css';
+import './GlobalErrorBoundary/GlobalErrorBoundary.css';
 
 const getRouteErrorText = (error) => {
     if (!error) return '';

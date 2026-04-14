@@ -30,7 +30,7 @@ import {
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
 import { useBilling } from '@/features/billing/hooks/useBilling';
 import { formatStripeAmount, formatDateLocalized } from '@/utils/formatUtils';
-import BackButton from '@/components/ui/BackButton';
+import BackButton from '@/components/ui/BackButton/BackButton';
 import './BillingPage.css';
 
 const BillingPage = () => {

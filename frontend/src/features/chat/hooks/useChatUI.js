@@ -25,7 +25,9 @@ export function useChatUI(locationPathname, layoutMetrics = { footerHeight: 0, n
 
     useEffect(() => {
         const handleNavOpened = () => {
-            if (open) closePanel();
+            if (open && window.innerWidth <= 768) {
+                closePanel();
+            }
         };
 
         window.addEventListener('rg:nav-menu-opened', handleNavOpened);

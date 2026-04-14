@@ -13,7 +13,7 @@
  * ============================================
  */
 import React from 'react';
-import ActionMenu from '@/components/ui/ActionMenu';
+import ActionMenu from '@/components/ui/ActionMenu/ActionMenu';
 import { Search, Filter, ChevronDown, Mail } from 'lucide-react';
 import './AdminUsersFilters.css';
 

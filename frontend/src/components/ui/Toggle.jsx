@@ -1,12 +1,11 @@
 /**
  * ============================================
- *  Toggle & ThemeToggle Setup
+ *  Toggle
  *  iOS-Style Switch Components
  * ============================================
  * 
  * STRUCTURE:
  * - Toggle: Base switch component with keyboard support
- * - ThemeToggle: Uses ThemeContext to flip isDark
  * 
  * DEPENDENCIES:
  * - ThemeContext, LanguageContext
@@ -16,9 +15,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import './Toggle.css';
-import { useTheme } from '@/contexts/ThemeContext';
-import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
-import { Sun, Moon } from 'lucide-react';
+
 
 const Toggle = ({
     checked = false,
@@ -72,32 +69,4 @@ const Toggle = ({
     );
 };
 
-/**
- * ThemeToggle Component - Uses ThemeContext for synced state
- */
-export const ThemeToggle = ({ showLabel = true }) => {
-    const { isDark, toggleTheme } = useTheme();
-    const { t } = useLanguage();
-
-    return (
-        <Toggle
-            checked={isDark}
-            onChange={toggleTheme}
-            icon={isDark ? <Moon size={16} /> : <Sun size={16} />}
-            label={showLabel ? (isDark ? t('nav.dark') : t('nav.light')) : undefined}
-        />
-    );
-};
-
 export default Toggle;
-
-
-Toggle.propTypes = {
-  checked: PropTypes.bool,
-  onChange: PropTypes.func.isRequired,
-  label: PropTypes.string,
-  icon: PropTypes.node,
-  disabled: PropTypes.bool,
-  className: PropTypes.string
-};
-

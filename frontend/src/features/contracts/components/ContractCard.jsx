@@ -15,7 +15,7 @@
 import React, { useState, useEffect } from 'react';
 import './ContractCard.css';
 import { Link } from 'react-router-dom';
-import ActionMenu from '@/components/ui/ActionMenu';
+import ActionMenu from '@/components/ui/ActionMenu/ActionMenu';
 import {
     Trash2, Pencil, Download, RefreshCw, FileText,
     MoreVertical, MapPin, Users, Calendar, AlertTriangle, Share2

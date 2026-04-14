@@ -14,7 +14,7 @@
  */
 import React from 'react';
 import { Info, ChevronDown } from 'lucide-react';
-import Accordion from '@/components/ui/Accordion';
+import Accordion from '@/components/ui/Accordion/Accordion';
 import ScoreBreakdown from '@/features/analysis/components/ScoreBreakdown';
 import ScoreMethodology from '@/features/analysis/components/ScoreMethodology';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';

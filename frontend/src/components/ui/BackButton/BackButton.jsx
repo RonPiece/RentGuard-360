@@ -18,16 +18,17 @@
  * ========================================================================== */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { useSmartNavigation } from './hooks/useSmartNavigation';
 import './BackButton.css';
 
 /* ==========================================================================
  * 2. Component Definition
  * ========================================================================== */
 const BackButton = ({ to, onClick, label, fallback = '/', className = '' }) => {
-    const navigate = useNavigate();
+    const { navigateBack } = useSmartNavigation();
     const { t, isRTL } = useLanguage();
 
     /* ======================================================================
@@ -35,11 +36,7 @@ const BackButton = ({ to, onClick, label, fallback = '/', className = '' }) => {
      * ====================================================================== */
     const handleDefaultBack = (e) => {
         e.preventDefault();
-        if (window.history.length > 2 || (window.history.state && window.history.state.idx > 0)) {
-            navigate(-1);
-        } else {
-            navigate(fallback);
-        }
+        navigateBack(fallback);
     };
 
     const handleClick = onClick || (to ? undefined : handleDefaultBack);

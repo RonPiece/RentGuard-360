@@ -10,7 +10,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { LanguageProvider } from './contexts/LanguageContext/LanguageContext';
 import { SubscriptionProvider } from './contexts/SubscriptionContext';
-import GlobalErrorBoundary from './components/ui/GlobalErrorBoundary';
+import GlobalErrorBoundary from './components/ui/GlobalErrorBoundary/GlobalErrorBoundary';
 import './styles/design-system.css';
 import App from './App.jsx';
 

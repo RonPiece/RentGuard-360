@@ -13,7 +13,7 @@ import { emitAppToast } from '@/components/ui/toast/toast';
 import Card from '@/components/ui/Card';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
-import MapComponent from '@/components/ui/MapComponent';
+import MapComponent from '@/components/ui/MapComponent/MapComponent';
 import './ContactPage.css';
 
 const ContactPage = () => {

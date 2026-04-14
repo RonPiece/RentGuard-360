@@ -36,6 +36,27 @@ export function useNavigationUI(isAuthenticated, isRTL) {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
+    // Broadcast when menus open so other widgets (Chat) can close if needed
+    useEffect(() => {
+        if (showProfileMenu || showMobileMenu) {
+            if (window.innerWidth <= 768) {
+                window.dispatchEvent(new CustomEvent('rg:nav-menu-opened'));
+            }
+        }
+    }, [showProfileMenu, showMobileMenu]);
+
+    // Listen for Chat opening to close menus on mobile
+    useEffect(() => {
+        const handleChatOpened = () => {
+            if (window.innerWidth <= 768) {
+                setShowProfileMenu(false);
+                setShowMobileMenu(false);
+            }
+        };
+        window.addEventListener('rg:chat-panel-opened', handleChatOpened);
+        return () => window.removeEventListener('rg:chat-panel-opened', handleChatOpened);
+    }, []);
+
     // Calculate dynamic offset based on nav height.
     useEffect(() => {
         const calculateOffset = () => {

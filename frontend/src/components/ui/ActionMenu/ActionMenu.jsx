@@ -12,8 +12,10 @@
  * - React useRef, useEffect
  * ============================================
  */
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
+import { useCloseMenu } from './hooks/useCloseMenu';
+
 const ActionMenu = ({
     isOpen,
     onToggle,
@@ -33,29 +35,7 @@ const ActionMenu = ({
 }) => {
     const menuRef = useRef(null);
 
-    useEffect(() => {
-        if (!isOpen) return undefined;
-
-        const handleOutsideClick = (event) => {
-            if (!menuRef.current?.contains(event.target)) {
-                onClose?.();
-            }
-        };
-
-        const handleEscape = (event) => {
-            if (event.key === 'Escape') {
-                onClose?.();
-            }
-        };
-
-        document.addEventListener('mousedown', handleOutsideClick);
-        document.addEventListener('keydown', handleEscape);
-
-        return () => {
-            document.removeEventListener('mousedown', handleOutsideClick);
-            document.removeEventListener('keydown', handleEscape);
-        };
-    }, [isOpen, onClose]);
+    useCloseMenu(menuRef, isOpen, onClose);
 
     return (
         <div className={containerClassName} style={containerStyle} ref={menuRef}>

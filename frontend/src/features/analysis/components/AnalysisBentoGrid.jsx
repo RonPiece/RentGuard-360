@@ -26,8 +26,8 @@ import {
     FileText,
     Pencil
 } from 'lucide-react';
-import ActionMenu from '@/components/ui/ActionMenu';
-import MapComponent from '@/components/ui/MapComponent';
+import ActionMenu from '@/components/ui/ActionMenu/ActionMenu';
+import MapComponent from '@/components/ui/MapComponent/MapComponent';
 import './AnalysisBentoGrid.css';
 
 const AnalysisBentoGrid = ({

@@ -15,46 +15,9 @@
  */
 import React from 'react';
 import toast from 'react-hot-toast';
+import { getStaggerDelayMs } from './services/toast.service';
+import { normalizeType, getIcon, getDocumentDirection, getCloseLabel } from './utils/toast.utils';
 import './toast.css';
-
-const TOAST_TYPES = new Set(['success', 'error', 'warning', 'info']);
-const TOAST_BURST_WINDOW_MS = 480;
-const TOAST_STAGGER_STEP_MS = 80;
-const TOAST_MAX_STAGGER_STEPS = 3;
-
-let toastBurstIndex = 0;
-let lastToastAt = 0;
-
-function getStaggerDelayMs() {
-    const now = Date.now();
-    if (now - lastToastAt > TOAST_BURST_WINDOW_MS) {
-        toastBurstIndex = 0;
-    } else {
-        toastBurstIndex += 1;
-    }
-    lastToastAt = now;
-    return Math.min(toastBurstIndex, TOAST_MAX_STAGGER_STEPS) * TOAST_STAGGER_STEP_MS;
-}
-
-function normalizeType(input) {
-    return TOAST_TYPES.has(input) ? input : 'success';
-}
-
-function getIcon(type) {
-    if (type === 'error') return '✕';
-    if (type === 'warning') return '!';
-    if (type === 'info') return 'i';
-    return '✓';
-}
-
-function getDocumentDirection() {
-    if (typeof document === 'undefined') return 'ltr';
-    return document.documentElement?.dir === 'rtl' ? 'rtl' : 'ltr';
-}
-
-function getCloseLabel() {
-    return getDocumentDirection() === 'rtl' ? 'סגור' : 'Dismiss';
-}
 
 export function showAppToast(payload) {
     const detail = payload || {};
@@ -114,7 +77,4 @@ export function showAppToast(payload) {
     );
 }
 
-export function emitAppToast(payload) {
-    if (typeof window === 'undefined') return;
-    window.dispatchEvent(new CustomEvent('rg:toast', { detail: payload }));
-}
+export { emitAppToast } from './services/toast.service';

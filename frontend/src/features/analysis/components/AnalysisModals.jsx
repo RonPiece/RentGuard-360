@@ -13,7 +13,7 @@
  * ============================================
  */
 import React from 'react';
-import Accordion from '@/components/ui/Accordion';
+import Accordion from '@/components/ui/Accordion/Accordion';
 import { Copy, Share2, ExternalLink, Trash2, ChevronDown } from 'lucide-react';
 
 export const SharePanel = ({

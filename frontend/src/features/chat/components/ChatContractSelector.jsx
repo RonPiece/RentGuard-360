@@ -1,5 +1,5 @@
 import React from 'react';
-import ActionMenu from '@/components/ui/ActionMenu';
+import ActionMenu from '@/components/ui/ActionMenu/ActionMenu';
 import { ChevronDown } from 'lucide-react';
 import './ChatContractSelector.css';
 

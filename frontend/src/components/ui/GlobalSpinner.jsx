@@ -15,19 +15,19 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { RefreshCw } from 'lucide-react';
+import './GlobalSpinner.css';
 
 export const GlobalSpinner = ({ text, fullPage = false, size = 40 }) => {
-  const inlineStyle = { color: 'var(--accent-primary)', animation: 'spin 1s linear infinite' };
   const content = (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-      <RefreshCw size={size} style={inlineStyle} />
-      {text && <p style={{ marginTop: '1rem', color: 'var(--text-secondary)' }}>{text}</p>}
+    <div className="global-spinner-container">
+      <RefreshCw size={size} className="global-spinner-icon" />
+      {text && <p className="global-spinner-text">{text}</p>}
     </div>
   );
 
   if (fullPage) {
     return (
-      <div className="app-loading" style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div className="app-loading global-spinner-fullpage">
         {content}
       </div>
     );
