@@ -3,10 +3,13 @@ import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import { AlertTriangle, X } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
+import { useBodyScrollLock } from '@/utils/useBodyScrollLock';
 
 const DeleteAccountModal = ({ isOpen, onClose, onConfirm, isDeleting, deleteError, setDeleteError }) => {
     const { t, isRTL } = useLanguage();
     const [deleteConfirmText, setDeleteConfirmText] = useState('');
+
+    useBodyScrollLock(isOpen);
 
     if (!isOpen) return null;
 

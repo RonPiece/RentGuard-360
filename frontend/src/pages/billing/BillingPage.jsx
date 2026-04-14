@@ -131,7 +131,7 @@ const BillingPage = () => {
                             ) : (
                                 <>
                                     {t('billing.portalButton')}
-                                    <ExternalLink size={18} />
+                                    <ExternalLink size={24} className="portal-btn-icon" />
                                 </>
                             )}
                         </button>

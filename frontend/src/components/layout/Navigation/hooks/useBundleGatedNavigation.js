@@ -7,11 +7,11 @@ export const useBundleGatedNavigation = (isAuthenticated, isAdmin, hasSubscripti
 
     /**
      * Bundle Gating Logic:
-     * Intercepts navigation attempts to premium routes. If an authenticated, non-admin user
+     * Intercepts navigation attempts to feature routes. If an authenticated, non-admin user
      * lacks a subscription, the navigation event is cancelled and a warning toast is shown.
      */
     const handleBundleGatedNavigation = (event, path) => {
-        const blockedPaths = ['/dashboard', '/upload', '/contracts', '/settings'];
+        const blockedPaths = ['/dashboard', '/upload', '/contracts', '/settings', '/'];
         if (isAuthenticated && !isAdmin && !hasSubscription && blockedPaths.includes(path)) {
             event.preventDefault();
             

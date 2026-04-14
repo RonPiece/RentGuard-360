@@ -57,9 +57,11 @@
 /* ==========================================================================
  * 4. States
  * ========================================================================== */
-.card-hoverable:hover {
-    box-shadow: var(--shadow-lg);
-    transform: translateY(-4px);
+@media (hover: hover) and (pointer: fine) {
+    .card-hoverable:hover {
+        box-shadow: var(--shadow-lg);
+        transform: translateY(-4px);
+    }
 }
 
 .card-clickable {
@@ -86,9 +88,11 @@
     border-color: var(--glass-border);
 }
 
-[data-theme="dark"] .card-elevated:hover {
-    border-color: var(--accent-primary);
-    box-shadow: var(--glow-primary), var(--shadow-lg);
+@media (hover: hover) and (pointer: fine) {
+    [data-theme="dark"] .card-elevated:hover {
+        border-color: var(--accent-primary);
+        box-shadow: var(--glow-primary), var(--shadow-lg);
+    }
 }
 
 [data-theme="dark"] .card-outlined {
