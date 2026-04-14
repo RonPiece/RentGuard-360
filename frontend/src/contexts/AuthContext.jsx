@@ -83,6 +83,8 @@ export const useAuth = () => {
     return context;
 };
 
+ 
+ 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [userAttributes, setUserAttributes] = useState(null);
@@ -291,3 +293,9 @@ export const AuthProvider = ({ children }) => {
         </AuthContext.Provider>
     );
 };
+
+
+
+
+
+

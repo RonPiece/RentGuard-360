@@ -16,12 +16,14 @@ import React from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import PropTypes from 'prop-types';
-
 import { setupLeafletIcons } from './utils/leaflet-fix';
 import { useGeocoding } from './hooks/useGeocoding';
 
+/** Fix Leaflet's default icon paths for Vite bundling issues. */
 setupLeafletIcons();
-
+/**
+ *  Component to update the map view based on the provided position
+ */
 const MapUpdater = ({ position }) => {
   const map = useMap();
   React.useEffect(() => {
@@ -30,6 +32,10 @@ const MapUpdater = ({ position }) => {
   return null;
 };
 
+/** 
+ * MapComponent
+ * Leaflet map wrapper
+ */
 const MapComponent = ({
   address = '',
   latitude = 32.0853,

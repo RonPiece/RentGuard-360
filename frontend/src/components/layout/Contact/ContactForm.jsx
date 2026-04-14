@@ -1,4 +1,4 @@
-/** Contact form component - handles form state, validation, submission via API, and success/error feedback. */
+/**ContactForm component - a reusable contact/support form with enhanced UX features.*/
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CheckCircle2, Send, Shield, Clock, ArrowRight } from 'lucide-react';

@@ -17,7 +17,6 @@
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
-import { useTheme } from '@/contexts/ThemeContext';
 import { useAdminStripeInsights } from '@/features/admin/hooks/useAdminStripeInsights';
 import { AlertTriangle, CreditCard } from 'lucide-react';
 import { AdminStripeCards } from '@/features/admin/components/AdminStripeCards';
@@ -30,7 +29,6 @@ import { GlobalSpinner } from '@/components/ui/GlobalSpinner';
 const AdminStripeInsights = () => {
     const { isAdmin } = useAuth();
     const { t, isRTL } = useLanguage();
-    const { isDark } = useTheme();
 
     const {
         data,
@@ -123,3 +121,5 @@ const AdminStripeInsights = () => {
 };
 
 export default AdminStripeInsights;
+
+

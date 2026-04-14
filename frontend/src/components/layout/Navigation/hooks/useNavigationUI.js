@@ -17,12 +17,10 @@ export function useNavigationUI(isAuthenticated, isRTL) {
     useEffect(() => {
         // Set state inside an effect might trigger cascading renders.
         // Using it safely here to reset the navigation UI on route complete.
-        let isMounted = true;
-        if (isMounted) {
-            setShowMobileMenu(false);
-            setShowProfileMenu(false);
-        }
-        return () => { isMounted = false; };
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setShowMobileMenu(false);
+         
+        setShowProfileMenu(false);
     }, [location.pathname]);
 
     // Close profile menu when clicking outside
@@ -91,3 +89,6 @@ export function useNavigationUI(isAuthenticated, isRTL) {
         profileRef
     };
 }
+
+
+

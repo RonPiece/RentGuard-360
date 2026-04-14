@@ -19,6 +19,10 @@ import Button from './Button';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
 import './GlobalErrorBoundary/GlobalErrorBoundary.css';
 
+/** 
+ * getRouteErrorText
+ * Extracts error text from route errors
+ */
 const getRouteErrorText = (error) => {
     if (!error) return '';
     if (isRouteErrorResponse(error)) {
@@ -29,7 +33,10 @@ const getRouteErrorText = (error) => {
     }
     return String(error);
 };
-
+/** 
+ * RouterErrorElement
+ * React Router v6 Error Boundary Component
+ */
 const RouterErrorElement = () => {
     const { t, isRTL } = useLanguage();
     const error = useRouteError();

@@ -15,6 +15,26 @@ export function useChatUI(locationPathname, layoutMetrics = { footerHeight: 0, n
     const closeTimerRef = useRef(null);
     const messagesContainerRef = useRef(null);
 
+    const openPanel = useCallback(() => {
+        if (closeTimerRef.current) {
+            clearTimeout(closeTimerRef.current);
+            closeTimerRef.current = null;
+        }
+        setIsClosing(false);
+        setOpen(true);
+    }, []);
+
+    const closePanel = useCallback(() => {
+        if (!open || isClosing) return;
+
+        setIsClosing(true);
+        closeTimerRef.current = setTimeout(() => {
+            setOpen(false);
+            setIsClosing(false);
+            closeTimerRef.current = null;
+        }, CHAT_PANEL_CLOSE_MS);
+    }, [open, isClosing]);
+
     useEffect(() => {
         if (open) {
             trackChatEvent('chat_opened', { route: locationPathname });
@@ -33,7 +53,7 @@ export function useChatUI(locationPathname, layoutMetrics = { footerHeight: 0, n
 
         window.addEventListener('rg:nav-menu-opened', handleNavOpened);
         return () => window.removeEventListener('rg:nav-menu-opened', handleNavOpened);
-    }, [open]);
+    }, [open, closePanel]);
 
     // Unified Scroll & Resize listener
     useEffect(() => {
@@ -171,26 +191,6 @@ export function useChatUI(locationPathname, layoutMetrics = { footerHeight: 0, n
         }
     };
 
-    const openPanel = () => {
-        if (closeTimerRef.current) {
-            clearTimeout(closeTimerRef.current);
-            closeTimerRef.current = null;
-        }
-        setIsClosing(false);
-        setOpen(true);
-    };
-
-    const closePanel = () => {
-        if (!open || isClosing) return;
-
-        setIsClosing(true);
-        closeTimerRef.current = setTimeout(() => {
-            setOpen(false);
-            setIsClosing(false);
-            closeTimerRef.current = null;
-        }, CHAT_PANEL_CLOSE_MS);
-    };
-
     const showPanel = open || isClosing;
 
     return {
@@ -209,3 +209,4 @@ export function useChatUI(locationPathname, layoutMetrics = { footerHeight: 0, n
         copyMessageText
     };
 }
+

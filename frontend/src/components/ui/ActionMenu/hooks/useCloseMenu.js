@@ -11,6 +11,13 @@
  * 
  * ============================================
  */
+/**
+ *  A combined hook that triggers onClose when clicking outside a referenced element or pressing Escape.
+ *  @param {Object} ref - React ref object pointing to the menu element.
+ *  @param {boolean} isOpen - Whether the menu is currently open.
+ *  @param {Function} onClose - Callback function to call when closing the menu.
+ */
+
 import { useEffect } from 'react';
 
 /**

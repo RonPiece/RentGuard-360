@@ -18,6 +18,8 @@ import './AdminStripePanels.css';
 import { CheckCircle2, XCircle, Activity, ShieldAlert, Percent, Landmark } from 'lucide-react';
 import { formatMoney, localizeBundleName } from '@/utils/formatUtils';
 
+const EMPTY_ARRAY = [];
+
 export const AdminStripePanels = ({
     sql,
     stripe,
@@ -29,7 +31,7 @@ export const AdminStripePanels = ({
     locale,
     t
 }) => {
-    const bundleBreakdown = sql?.bundleBreakdown || [];
+    const bundleBreakdown = sql?.bundleBreakdown || EMPTY_ARRAY;
     const maxBundleCount = useMemo(
         () => Math.max(...bundleBreakdown.map((x) => Number(x.count || 0)), 1),
         [bundleBreakdown]

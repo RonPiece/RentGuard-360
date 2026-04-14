@@ -26,6 +26,8 @@ function normalizeAnalysis(data) {
 
 export const getSharedAnalysis = async (shareToken) => {
     // Adding a cache buster timestamp query parameter so the browser doesn't serve a stale shared view
+    const url = `/api/shared/analysis/${shareToken}?_cb=${Date.now()}`;
+    return publicApiCall(url);
 };
 
 /**
@@ -144,3 +146,6 @@ export const saveEditedContract = async (contractId, userId, editedClauses, full
     console.log('DEBUG saveEditedContract response:', data);
     return data;
 };
+
+
+

@@ -20,6 +20,10 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';       
 import { Sun, Moon } from 'lucide-react';
 
+/** 
+ * ThemeToggle Component
+ * Switches between dark and light mode
+ */
 export const ThemeToggle = ({ showLabel = true }) => {
     const { isDark, toggleTheme } = useTheme();
     const { t } = useLanguage();

@@ -42,7 +42,7 @@ export function useChatWidget() {
 
         ui.setOpen(true);
         lastAutoOpenedPathRef.current = currentPath;
-    }, [isAuthenticated, routeContractId, location.pathname, ui.setOpen]);
+    }, [isAuthenticated, routeContractId, location.pathname, ui]);
 
     // 2. Contracts Logic
     const contractsState = useChatContracts(
@@ -86,3 +86,6 @@ export function useChatWidget() {
         ...messagesState
     };
 }
+
+
+

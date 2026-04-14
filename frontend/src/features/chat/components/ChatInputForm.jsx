@@ -23,7 +23,6 @@ const ChatInputForm = ({
     onSubmit,
     onInputKeyDown,
     inputRef,
-    isAsking,
     isDisabled
 }) => {
 
@@ -48,3 +47,7 @@ const ChatInputForm = ({
 };
 
 export default ChatInputForm;
+
+
+
+

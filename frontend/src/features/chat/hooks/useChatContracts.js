@@ -33,14 +33,17 @@ export function useChatContracts(isAuthenticated, open, user, t, routeContractId
 
     useEffect(() => {
         if (!open && isContractMenuOpen) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setIsContractMenuOpen(false);
         }
     }, [open, isContractMenuOpen]);
 
     useEffect(() => {
         if (!open || !routeContractId) return;
-        // Automatically match and select the contract if the user navigated directly from its URL        const exists = contracts.some((c) => c.contractId === routeContractId);
+        // Automatically match and select the contract if the user navigated directly from its URL
+        const exists = contracts.some((c) => c.contractId === routeContractId);
         if (exists) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setSelectedContractId(routeContractId);
             trackChatEvent('chat_contract_auto_selected', { contractId: routeContractId });
         }
@@ -63,3 +66,4 @@ export function useChatContracts(isAuthenticated, open, user, t, routeContractId
         setIsContractMenuOpen
     };
 }
+
