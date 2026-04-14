@@ -1,3 +1,4 @@
+/** Stripe utility helpers - formats amounts, resolves currency symbols, and normalizes plan data. */
 export const getStripeElementOptions = (isDark) => ({
     style: {
         base: {

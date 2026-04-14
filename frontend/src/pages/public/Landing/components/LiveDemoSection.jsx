@@ -1,3 +1,4 @@
+/** Live demo section on the landing page - interactive preview of contract analysis capabilities. */
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';

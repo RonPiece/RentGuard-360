@@ -1,3 +1,4 @@
+/** usePaymentSuccess - runs after Stripe redirect, polls for subscription activation, and refreshes state. */
 import { useLocation, useNavigate } from 'react-router-dom';
 
 export const usePaymentSuccess = () => {

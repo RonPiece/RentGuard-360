@@ -1,3 +1,8 @@
+/**
+ * localStorage cache helpers for contract metadata and share links.
+ * Caches metadata (fileName, address, landlord) to avoid redundant API calls,
+ * and persists share-link URLs so the UI can display them instantly on revisit.
+ */
 const getMetadataCacheKey = (id) => `rentguard_contract_meta_${id}`;
 
 export const readMetadataCache = (id) => {

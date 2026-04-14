@@ -1,3 +1,4 @@
+/** Smart back navigation - uses browser history if available, otherwise navigates to a fallback route. */
 import { useNavigate } from 'react-router-dom';
 
 /**

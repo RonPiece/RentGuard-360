@@ -1,3 +1,4 @@
+/** Determines which layout elements (nav, footer, chat widget) are visible based on current route. */
 import { useLocation } from 'react-router-dom';
 
 export const useRouteLayout = (isAuthenticated) => {

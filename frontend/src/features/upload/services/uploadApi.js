@@ -1,3 +1,4 @@
+/** Upload API - gets a pre-signed S3 URL, uploads the file directly to S3, and triggers backend analysis. */
 import { deductScan } from '@/features/billing/services/stripeApi.js';
 import { apiCall, API_URL } from '@/services/apiClient';
 

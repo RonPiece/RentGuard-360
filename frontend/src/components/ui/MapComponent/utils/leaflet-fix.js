@@ -1,3 +1,4 @@
+/** Fixes Leaflet default marker icon paths which break when bundled with Vite. */
 import L from 'leaflet';
 
 export function setupLeafletIcons() {

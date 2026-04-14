@@ -1,3 +1,4 @@
+/** Hero banner for the public shared contract page — shows title and a Word export button. */
 import React from 'react';
 import { Download } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';

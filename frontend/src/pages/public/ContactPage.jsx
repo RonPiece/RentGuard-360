@@ -1,3 +1,4 @@
+/** Authenticated contact page - pre-fills the ContactForm with the logged-in user's name and email. */
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import ContactLayout from '@/components/layout/Contact/ContactLayout';

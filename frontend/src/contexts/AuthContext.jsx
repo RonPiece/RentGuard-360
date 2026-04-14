@@ -98,6 +98,7 @@ export const AuthProvider = ({ children }) => {
 
     const checkAuthState = async () => {
         try {
+            // Tells the UI (like RouteGuards and nav bar) to hold until user auth is resolved 
             setIsLoading(true);
             const currentUser = await getCurrentUser();
             const attributes = await fetchUserAttributes();
@@ -105,7 +106,7 @@ export const AuthProvider = ({ children }) => {
             setUserAttributes(attributes);
             setIsAuthenticated(true);
 
-            // Check if user is in Admins group
+            // Decode the ID token payload directly to verify if this user is in the 'Admins' group
             try {
                 const session = await fetchAuthSession();
                 const idToken = session.tokens?.idToken;
@@ -118,21 +119,25 @@ export const AuthProvider = ({ children }) => {
                 setIsAdmin(false);
             }
         } catch {
+            // Silently revert to logged-out state if no token exists or if it's expired
             setUser(null);
             setUserAttributes(null);
             setIsAuthenticated(false);
             setIsAdmin(false);
         } finally {
+            // Let the UI finish rendering everything (un-mounts the global spinner)
             setIsLoading(false);
         }
     };
 
     const login = async (email, password) => {
         try {
+            // First, purge any ghost/remnant sessions from localStorage before initiating a new one
             await signOut().catch(() => { });
 
             const normalizedEmail = normalizeEmail(email);
 
+            // Initiate AWS Cognito login, nextStep is used if MFA or forced password change is required
             const { isSignedIn, nextStep } = await signIn({
                 username: normalizedEmail,
                 password,
@@ -140,6 +145,7 @@ export const AuthProvider = ({ children }) => {
             });
 
             if (isSignedIn) {
+                // Instantly re-fetch the user details now that the local token is valid inside Amplify 
                 await checkAuthState();
                 return { success: true };
             }

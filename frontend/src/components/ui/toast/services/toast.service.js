@@ -1,3 +1,4 @@
+/** Toast rate-limiting service - staggers rapid toast bursts and provides an event-based toast emitter. */
 const TOAST_BURST_WINDOW_MS = 480;
 const TOAST_STAGGER_STEP_MS = 80;
 const TOAST_MAX_STAGGER_STEPS = 3;

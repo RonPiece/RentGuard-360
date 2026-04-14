@@ -1,3 +1,4 @@
+/** User preferences grid - theme toggle, language selector, compact nav toggle, and notification prefs. */
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import {

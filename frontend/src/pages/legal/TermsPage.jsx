@@ -1,3 +1,4 @@
+/** Terms of Service page - wraps LegalDocumentLayout with Hebrew/English terms content. */
 import React from 'react';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
 import LegalDocumentLayout from '@/components/layout/LegalDocument/LegalDocumentLayout';

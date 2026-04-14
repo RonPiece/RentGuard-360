@@ -1,3 +1,4 @@
+/** Marketing section on the dashboard - feature highlights and promotional content for engagement. */
 import React from 'react';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
 

@@ -1,3 +1,8 @@
+/**
+ * useSharedAnalysis — fetches a publicly shared contract analysis via its share token.
+ * Computes a diff between original and current clauses to show edited highlights.
+ * Used by SharedContractPage (no auth required).
+ */
 import { useState, useCallback, useMemo, useEffect } from 'react';
 import { getSharedAnalysis } from '@/features/analysis/services/analysisApi';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';

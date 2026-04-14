@@ -1,3 +1,4 @@
+/** Chat API service - sends user messages to the AI backend and receives legal explanations about contracts. */
 import { apiCall, API_URL } from '@/services/apiClient';
 
 export const askContractQuestion = async (contractId, question) => {

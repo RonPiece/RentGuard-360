@@ -101,12 +101,14 @@ export const useContracts = (userId, t, isRTL) => {
         }
 
         try {
+            // Differentiate between full-page load spinner and background refresh spinner
             if (showLoader) setIsLoading(true);
             else setIsRefreshing(true);
 
             const startTime = Date.now();
             const data = await getContracts(userId);
 
+            // Artificial delay to ensure the refresh animation doesn't flash too quickly
             const elapsed = Date.now() - startTime;
             if (!showLoader && elapsed < 1500) {
                 await new Promise(resolve => setTimeout(resolve, 1500 - elapsed));
@@ -123,10 +125,11 @@ export const useContracts = (userId, t, isRTL) => {
 
     useEffect(() => { fetchContracts(); }, [fetchContracts]);
 
-    // Auto-refresh logic
+    // Auto-refresh logic: Polls the backend every 30s only if there are contracts still being analyzed
     useEffect(() => {
         const pendingContracts = contracts.filter(c => {
             const status = (c.status || '').toLowerCase();
+            // Ignore contracts that are completely done or definitively failed
             if (status === 'analyzed' || status === 'failed' || status === 'error') return false;
             if (isContractTimedOut(c)) return false;
             return true;
@@ -134,6 +137,7 @@ export const useContracts = (userId, t, isRTL) => {
 
         if (pendingContracts.length === 0) return;
 
+        // Fetch silently without blocking the UI
         const interval = setInterval(() => {
             fetchContracts(false);
         }, 30000);

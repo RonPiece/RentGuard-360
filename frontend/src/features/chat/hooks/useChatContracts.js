@@ -1,3 +1,4 @@
+/** Hook that manages the selected contract state for the chat widget and syncs with URL params. */
 import { useState, useEffect, useMemo } from 'react';
 import { trackChatEvent } from '../utils/chatHelpers';
 import { useFetchContracts } from './useFetchContracts';
@@ -25,8 +26,7 @@ export function useChatContracts(isAuthenticated, open, user, t, routeContractId
 
     useEffect(() => {
         if (!open || !routeContractId) return;
-
-        const exists = contracts.some((c) => c.contractId === routeContractId);
+        // Automatically match and select the contract if the user navigated directly from its URL        const exists = contracts.some((c) => c.contractId === routeContractId);
         if (exists) {
             setSelectedContractId(routeContractId);
             trackChatEvent('chat_contract_auto_selected', { contractId: routeContractId });

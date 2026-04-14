@@ -1,3 +1,4 @@
+/** Landing page - assembles Hero, Features, Benefits, LiveDemo, and Pricing sections for public visitors. */
 import React, { useState, useEffect, useRef } from 'react';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useInView } from 'framer-motion';

@@ -1,3 +1,9 @@
+/**
+ * AuthForms — presentational components for the authentication modal.
+ * Contains: LoginForm, RegisterForm, ConfirmForm (email verification code),
+ * ForgotPasswordForm, ResetPasswordForm, SocialConflictModal, VerificationSuccessModal.
+ * All logic lives in useAuthFlow hook — these components are pure UI.
+ */
 import React from 'react';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';

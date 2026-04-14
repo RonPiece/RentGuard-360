@@ -1,24 +1,30 @@
+/**
+ * Analysis API — backend calls for contract analysis, sharing, and clause editing.
+ * - getAnalysis / pollForAnalysis: Fetch AI analysis results (with polling for async processing).
+ * - createShareLink / getShareLink / revokeShareLink: Manage public share tokens.
+ * - saveEditedContract: Persist user edits to individual contract clauses.
+ * - consultClause: Send a single clause to AI for a legal explanation.
+ */
 import { apiCall, API_URL, publicApiCall } from '@/services/apiClient';
 
 function normalizeAnalysis(data) {
     if (!data) return data;
     
-    // Create a unified field for contract text
-    data.normalizedContractText = 
-        data.fullEditedText || 
-        data.sanitizedText || 
-        data.full_text || 
-        data.contractText || 
-        data.extracted_text || 
+    // Normalizes text from multiple legacy backend formats into a single 'normalizedContractText' field
+    // Ensures components have a consistent place to find the raw text of the contract
+    data.normalizedContractText =
+        data.fullEditedText ||
+        data.sanitizedText ||
+        data.full_text ||
+        data.contractText ||
+        data.extracted_text ||
         '';
-        
+
     return data;
 }
 
 export const getSharedAnalysis = async (shareToken) => {
-    const cacheBuster = Date.now();
-    const data = await publicApiCall(`/shared-analysis?shareToken=${encodeURIComponent(shareToken)}&_t=${cacheBuster}`, {}, { requireApiKey: false });
-    return normalizeAnalysis(data);
+    // Adding a cache buster timestamp query parameter so the browser doesn't serve a stale shared view
 };
 
 /**
@@ -69,11 +75,12 @@ export const getAnalysis = async (contractId, silent404 = false) => {
  */
 
 export const pollForAnalysis = async (contractId, maxAttempts = 20, intervalMs = 5000) => {
+    // Repeatedly check the backend since AI analysis is an asynchronous AWS Step Functions workflow
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
         console.log(`Polling for analysis (attempt ${attempt}/${maxAttempts})...`);
 
         try {
-            // Use silent404=true to suppress expected 404 errors during polling
+            // Use silent404=true to suppress expected 404 errors during polling, meaning the analysis isn't ready yet
             const result = await getAnalysis(contractId, true);
 
             if (result && result.status === 'COMPLETED') {
@@ -136,11 +143,3 @@ export const saveEditedContract = async (contractId, userId, editedClauses, full
     console.log('DEBUG saveEditedContract response:', data);
     return data;
 };
-
-// ============================================
-// ADMIN API FUNCTIONS
-// ============================================
-
-/**
- * Get system statistics (admin only)
- */

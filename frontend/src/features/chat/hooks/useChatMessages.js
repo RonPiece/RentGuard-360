@@ -1,3 +1,4 @@
+/** Hook that manages chat message history, sends messages to AI API, and handles streaming responses. */
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { askContractQuestion, clearContractChatHistory, getContractChatHistory } from '@/features/chat/services/chatApi';
 import { trackChatEvent, isRateLimitError } from '../utils/chatHelpers';
@@ -33,8 +34,11 @@ export function useChatMessages(selectedContractId, open, t, errorKey, setErrorK
             setErrorKey('');
             setIsHistoryLoading(true);
             try {
+                // Fetch recent chat history for the currently selected contract
                 const items = await getContractChatHistory(selectedContractId, 30);
                 const mapped = [];
+                
+                // Map dynamoDB flat rows to distinct 'user' and 'assistant' messages for the UI
                 for (const item of items) {
                     if (item.question) {
                         mapped.push({
@@ -90,11 +94,12 @@ export function useChatMessages(selectedContractId, open, t, errorKey, setErrorK
             return;
         }
 
+        // Interval effect to countdown and clear rate-limit UI locks over time
         const update = () => {
             const seconds = Math.max(0, Math.ceil((rateLimitRetryAt - Date.now()) / 1000));
             setRateLimitSecondsLeft(seconds);
             if (seconds <= 0) {
-                setRateLimitRetryAt(0);
+                setRateLimitRetryAt(0); // Clear rate block when timer expires
             }
         };
 
@@ -105,6 +110,7 @@ export function useChatMessages(selectedContractId, open, t, errorKey, setErrorK
 
     const sendQuestion = async () => {
         const trimmed = question.trim();
+        // Prevent concurrent API calls
         if (!trimmed || isAsking) return;
 
         if (errorKey) return;
@@ -146,13 +152,16 @@ export function useChatMessages(selectedContractId, open, t, errorKey, setErrorK
         });
 
         try {
+            // Await AI analysis answer
             const result = await askContractQuestion(selectedContractId, trimmed);
             const answer = normalizeAssistantText(result?.answer || t('chat.noAnswer'), trimmed);
+            
+            // Format AI response back to the chat UI timeline
             const botMsg = {
                 role: 'assistant',
                 text: answer,
                 ts: Date.now(),
-                createdAt: result?.createdAt || new Date().toISOString(),
+                createdAt: result?.createdAt || new Date().toISOString(),       
                 parsedMeta: parseMessageMetadata(result?.meta),
             };
             setMessages((prev) => [...prev, botMsg]);
@@ -161,6 +170,7 @@ export function useChatMessages(selectedContractId, open, t, errorKey, setErrorK
                 usedFullTextFallback: Boolean(result?.meta?.usedFullTextFallback),
             });
         } catch (error) {
+            // Handle HTTP 429 block
             if (isRateLimitError(error)) {
                 setResponseHintKey('rateLimit');
                 setRateLimitRetryAt(Date.now() + 60000);

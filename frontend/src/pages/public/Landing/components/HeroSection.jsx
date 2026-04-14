@@ -1,3 +1,4 @@
+/** Hero section of the landing page - main headline, subtitle, CTA buttons, and auth modal trigger. */
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';

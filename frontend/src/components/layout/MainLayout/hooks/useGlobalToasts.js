@@ -1,3 +1,4 @@
+/** Listens for custom 'rg:toast' window events and persisted sessionStorage toasts, then displays them. */
 import { useEffect } from 'react';
 import { showAppToast } from '@/components/ui/toast/toast';
 

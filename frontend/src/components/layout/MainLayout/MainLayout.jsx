@@ -1,3 +1,4 @@
+/** Root layout wrapper - renders Navigation, page content via Outlet, Footer, and Chat widget conditionally. */
 import React, { Suspense } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';

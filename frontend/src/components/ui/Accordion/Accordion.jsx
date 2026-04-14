@@ -1,3 +1,4 @@
+/** Collapsible accordion component - supports controlled and uncontrolled modes with chevron animation. */
 import React from 'react';
 import { ChevronDown } from 'lucide-react';
 import { useAccordion } from './hooks/useAccordion';

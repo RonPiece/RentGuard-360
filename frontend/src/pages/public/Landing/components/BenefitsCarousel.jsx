@@ -1,3 +1,4 @@
+/** Benefits carousel section on the landing page - auto-rotating cards highlighting platform advantages. */
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Shield, Lock, Zap, Pause } from 'lucide-react';

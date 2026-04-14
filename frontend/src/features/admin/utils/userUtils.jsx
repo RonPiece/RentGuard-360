@@ -1,3 +1,4 @@
+/** Admin user table utilities - column definitions, status badges, and action button renderers. */
 import React from 'react';
 import { Mail } from 'lucide-react';
 

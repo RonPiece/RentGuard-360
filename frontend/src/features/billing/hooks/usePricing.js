@@ -1,3 +1,4 @@
+/** usePricing - manages pricing page state: plan selection, scan count display, and upgrade prompts. */
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getPackages } from '@/features/billing/services/stripeApi';

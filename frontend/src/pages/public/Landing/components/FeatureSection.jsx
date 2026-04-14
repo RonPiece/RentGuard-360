@@ -1,3 +1,4 @@
+/** Feature showcase section on the landing page - grid of feature cards with icons and descriptions. */
 import React from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle } from 'lucide-react';

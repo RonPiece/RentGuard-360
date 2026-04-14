@@ -1,3 +1,4 @@
+/** Manages nav UI state: mobile/profile menu toggles, click-outside closing, and dynamic nav height CSS var. */
 import { useState, useRef, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 

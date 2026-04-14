@@ -1,3 +1,4 @@
+/** Modal for editing contract metadata (file name, address, landlord name) with inline save. */
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Pencil, X, Check } from 'lucide-react';

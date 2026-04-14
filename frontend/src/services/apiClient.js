@@ -1,14 +1,25 @@
+/**
+ * Central API Client — all backend HTTP calls go through this file.
+ * - apiCall(): For authenticated requests (attaches Cognito JWT token).
+ * - publicApiCall(): For unauthenticated requests (uses API key if needed).
+ * - sendContactMessage(): Shared contact form handler (works for both guest and logged-in users).
+ * In local dev, requests are proxied via Vite to avoid CORS issues.
+ */
 import { fetchAuthSession } from 'aws-amplify/auth';
 
+// Base API URL from environment (set via CloudFormation stack output)
 export const API_URL = import.meta.env.VITE_API_ENDPOINT;
+// API key used exclusively for public endpoints (e.g. check-user)
 const CHECK_USER_API_KEY = import.meta.env.VITE_CHECK_USER_API_KEY;
 const IS_LOCAL_DEV = Boolean(import.meta.env.DEV);
+// In local dev, Vite proxies requests through /__rg_api__ to bypass CORS
 const EFFECTIVE_API_BASE_URL = IS_LOCAL_DEV ? '/__rg_api__' : API_URL;
 
 if (!API_URL) {
     throw new Error('Missing VITE_API_ENDPOINT. Set it from the CloudFormation stack Output ApiUrl.');
 }
 
+// Fetches the current Cognito ID token from the active session
 const getAuthToken = async () => {
     try {
         const session = await fetchAuthSession();
@@ -21,6 +32,7 @@ const getAuthToken = async () => {
     }
 };
 
+// Authenticated API call — automatically attaches JWT and handles timeouts / error parsing
 export const apiCall = async (endpoint, options = {}) => {
     const token = await getAuthToken();
     const url = `${EFFECTIVE_API_BASE_URL}${endpoint}`;
@@ -28,15 +40,18 @@ export const apiCall = async (endpoint, options = {}) => {
 
     const method = String(options.method || 'GET').toUpperCase();
     const defaultHeaders = { 'Authorization': token };
+    // Apply default content-type for mutations (POST, PUT, DELETE, PATCH, etc.)
     if (method !== 'GET' && method !== 'HEAD') {
         defaultHeaders['Content-Type'] = 'application/json';
     }
 
+    // AbortController enforces a maximum request lifetime (default 2 minutes to accommodate long analysis processing)
     const controller = new AbortController();
     const timeoutValue = options.timeout || 120000;
     const timeoutId = setTimeout(() => controller.abort(), timeoutValue);
 
     try {
+        // Spread syntax (...) overrides default options/headers with any custom ones provided
         const response = await fetch(url, {
             ...options,
             signal: controller.signal,
@@ -45,6 +60,7 @@ export const apiCall = async (endpoint, options = {}) => {
 
         clearTimeout(timeoutId);
 
+        // Guard: if API Gateway returns HTML it usually means a misconfigured endpoint
         const contentType = response.headers.get('content-type');
         if (contentType && contentType.includes('text/html')) {
             console.error('Received HTML instead of JSON');
@@ -86,6 +102,7 @@ export const apiCall = async (endpoint, options = {}) => {
     }
 };
 
+// Public API call — no auth token required, uses API key for rate-limited public endpoints
 export const publicApiCall = async (endpoint, options = {}, config = {}) => {
     const { requireApiKey = true } = config;
     const url = `${EFFECTIVE_API_BASE_URL}${endpoint}`;
@@ -126,6 +143,7 @@ export const publicApiCall = async (endpoint, options = {}, config = {}) => {
     }
 };
 
+// Sends a contact/support message — routes to public or authenticated endpoint based on user state
 export const sendContactMessage = async (formData, options = {}) => {
     const { isPublic = false } = options;
     const ticketData = {

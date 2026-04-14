@@ -1,3 +1,4 @@
+/** Animated typing indicator shown while waiting for the AI response in the chat. */
 import React from 'react';
 import { Bot } from 'lucide-react';
 import './ChatPendingMessage.css';

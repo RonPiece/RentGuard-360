@@ -38,16 +38,22 @@ const NotFoundPage = lazy(() => import('@/pages/public/NotFoundPage'));
 
 // Helper components for conditional public/protected routes
 const ConditionalPricingRoute = () => {
+    // Pulls from AuthContext to check if user is logged in, an admin, or still loading session
     const { isAuthenticated, isAdmin, isLoading: isAuthLoading } = useAuth();
     if (isAuthLoading) return null; // Avoid blink by waiting for auth to resolve
+    
+    // Guests see public pricing, admins get pushed away, normal users see full pricing with upgrade flows
     if (!isAuthenticated) return <PricingPublic />;
     if (isAdmin) return <Navigate to="/dashboard" replace />;
     return <ProtectedRoute><PricingPage /></ProtectedRoute>;
 };
 
 const ConditionalContactRoute = () => {
+    // Same pattern: route behavior changes based on session state
     const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
     if (isAuthLoading) return null; // Avoid blink by waiting for auth to resolve
+    
+    // Guests see public contact, premium users get full support access (Requires Active Plan)
     if (!isAuthenticated) return <ContactPublic />;
     return <ProtectedRoute><RequireActivePlanRoute><ContactPage /></RequireActivePlanRoute></ProtectedRoute>;
 };
@@ -55,10 +61,10 @@ const ConditionalContactRoute = () => {
 export const router = createHashRouter([
   {
     path: "/",
-    element: <MainLayout />,
-    errorElement: <RouterErrorElement />,
+    element: <MainLayout />, // The root wrapper providing the header/footer and main container
+    errorElement: <RouterErrorElement />, // Graceful fallback boundary if any nested route crashes
     children: [
-      { index: true, element: <LandingPage /> },
+      { index: true, element: <LandingPage /> }, // Renders LandingPage when path is exactly "/"
       { path: "index.html", element: <LandingPage /> },
       { path: "dashboard", element: <ProtectedRoute><RequireActivePlanRoute><DashboardPage /></RequireActivePlanRoute></ProtectedRoute> },
       { path: "upload", element: <ProtectedRoute><RequireActivePlanRoute><UploadPage /></RequireActivePlanRoute></ProtectedRoute> },

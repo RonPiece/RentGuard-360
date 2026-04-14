@@ -1,3 +1,4 @@
+/** Dashboard helper functions - date formatting, stat calculations, and greeting message logic. */
 export const getGreeting = (t) => {
     const hour = new Date().getHours();
     if (hour >= 21 || hour < 5) return t('dashboard.greeting.night', 'Good night');

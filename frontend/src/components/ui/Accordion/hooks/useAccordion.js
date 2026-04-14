@@ -1,3 +1,4 @@
+/** Accordion state hook - handles controlled (external) vs uncontrolled (internal) expand/collapse. */
 import { useState } from 'react';
 
 export function useAccordion({ defaultExpanded = false, controlledExpanded, onToggle }) {

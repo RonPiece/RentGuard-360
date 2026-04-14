@@ -1,3 +1,4 @@
+/** Informational hint banner shown in the chat to guide first-time users on how to use the feature. */
 import React from 'react';
 import { X } from 'lucide-react';
 

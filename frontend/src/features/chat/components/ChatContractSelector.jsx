@@ -1,3 +1,4 @@
+/** Dropdown selector that lets the user pick which contract to ask questions about in the chat. */
 import React from 'react';
 import ActionMenu from '@/components/ui/ActionMenu/ActionMenu';
 import { ChevronDown } from 'lucide-react';

@@ -1,3 +1,4 @@
+/** Pre-defined quick prompt buttons (e.g. Summarize, Find risks) shown at the start of a chat session. */
 import React from 'react';
 import './ChatQuickPrompts.css';
 

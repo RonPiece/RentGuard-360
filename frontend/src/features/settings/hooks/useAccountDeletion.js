@@ -1,3 +1,4 @@
+/** Hook that handles the account deletion flow - shows modal, validates input, calls Cognito deleteUser. */
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
@@ -21,6 +22,7 @@ export const useAccountDeletion = () => {
         try {
             const userId = user?.username || user?.userId;
             if (userId) {
+                // Cleanup orphaned backend assets before destroying the user in Cognito pool
                 await deleteAllUserContracts(userId);
             }
 

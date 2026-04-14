@@ -1,3 +1,4 @@
+/** Main navigation bar - renders dynamic links based on auth/subscription state, with mobile menu support. */
 import React from 'react';
 import PropTypes from 'prop-types';
 import { NavLink, Link, useNavigate } from 'react-router-dom';

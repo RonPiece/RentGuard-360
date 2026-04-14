@@ -1,3 +1,4 @@
+/** Hook that fetches the user's contract list for the chat contract selector dropdown. */
 import { useState, useEffect } from 'react';
 import { getContracts } from '@/features/contracts/services/contractsApi';
 import { trackChatEvent } from '../utils/chatHelpers';

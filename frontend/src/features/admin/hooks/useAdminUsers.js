@@ -91,12 +91,14 @@ export const useAdminUsers = () => {
 
     const toggleAdvancedFilter = (filterKey) => {
         setAdvancedFilters((current) => {
+            // Status filters (e.g. Active vs Disabled) are mutually exclusive, so we must replace the existing one
             if (STATUS_FILTER_KEYS.includes(filterKey)) {
                 if (current.includes(filterKey)) {
                     return current.filter(key => key !== filterKey);
                 }
                 return [...current.filter(key => !STATUS_FILTER_KEYS.includes(key)), filterKey];
             }
+            // For other filters (like subscription tier), they can safely stack together in the array
             return current.includes(filterKey)
                 ? current.filter(key => key !== filterKey)
                 : [...current, filterKey];

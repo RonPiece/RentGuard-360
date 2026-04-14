@@ -1,3 +1,4 @@
+/** Hook that manages user preferences: theme, language, compact nav mode. Persists to localStorage. */
 import { useState, useEffect } from 'react';
 
 const CHAT_AUTO_OPEN_PREF_KEY = 'rentguard_chat_auto_open_contract';
@@ -34,6 +35,7 @@ export const useSettingsPreferences = () => {
         const updateIsMobile = () => setIsMobileViewport(mediaQuery.matches);
         updateIsMobile();
 
+        // Graceful fallback for older iOS/Safari matching media queries (Listener vs EventListener)
         if (mediaQuery.addEventListener) {
             mediaQuery.addEventListener('change', updateIsMobile);
             return () => mediaQuery.removeEventListener('change', updateIsMobile);

@@ -1,3 +1,4 @@
+/** useBilling - fetches billing history (invoices and transactions) and provides Stripe portal access. */
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';

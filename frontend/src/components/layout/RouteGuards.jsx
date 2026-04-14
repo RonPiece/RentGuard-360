@@ -1,3 +1,4 @@
+/** Route guard HOCs - ProtectedRoute requires login, RequireActivePlanRoute requires paid subscription. */
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Navigate, useLocation } from 'react-router-dom';
@@ -18,11 +19,14 @@ import { GlobalSpinner } from '../ui/GlobalSpinner';
  * Prevents flashing of protected content by waiting for auth initialization (isLoading).
  */
 export const ProtectedRoute = ({ children }) => {
+  // Extracting login state and initialization state from the global Auth Context
   const { isAuthenticated, isLoading } = useAuth();
-  
+
+  // Show a full-page spinner while Cognito validates the session token so the screen won't flicker
   if (isLoading) return <GlobalSpinner fullPage />;
-  
+
   // Redirect unauthenticated users to the public landing/login page
+  // 'replace' prop ensures the redirected route replaces the current entry in the history stack, preventing infinite back-loops
   return isAuthenticated ? children : <Navigate to="/" replace />;
 };
 

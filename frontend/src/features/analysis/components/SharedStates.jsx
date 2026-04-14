@@ -1,3 +1,7 @@
+/**
+ * Shared contract state components — loading spinner, error with retry,
+ * and warning for non-rental documents. Used by SharedContractPage.
+ */
 import React from 'react';
 import { AlertTriangle, ShieldCheck } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';

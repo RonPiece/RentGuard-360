@@ -1,3 +1,4 @@
+/** Reusable layout for legal pages - sidebar TOC + accordion sections + contact card. */
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';

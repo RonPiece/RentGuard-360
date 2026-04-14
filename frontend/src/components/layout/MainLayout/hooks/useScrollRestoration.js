@@ -1,3 +1,4 @@
+/** Scrolls to top on every route change to prevent stale scroll positions. */
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 

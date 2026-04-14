@@ -1,3 +1,7 @@
+/**
+ * Clipboard utility — copies text with async Clipboard API, falls back to
+ * legacy execCommand('copy') for older browsers or restricted contexts.
+ */
 export const copyTextToClipboard = async (text) => {
     if (!text) return false;
     if (navigator?.clipboard?.writeText) {

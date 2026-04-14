@@ -1,3 +1,4 @@
+/** Hook that manages chat UI state: panel open/close, auto-scroll, input focus, and mobile responsiveness. */
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { trackChatEvent } from '../utils/chatHelpers';
 

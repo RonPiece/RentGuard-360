@@ -1,3 +1,4 @@
+/** Danger zone settings card - contains the Delete Account button with confirmation flow. */
 import React from 'react';
 import { ShieldAlert, Trash2 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';

@@ -1,3 +1,4 @@
+/** Confirmation dialog shown before clearing all chat messages for a contract. */
 import React from 'react';
 import './ChatClearConfirmDialog.css';
 

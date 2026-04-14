@@ -1,3 +1,4 @@
+/** Admin API - fetches platform-wide stats, user lists, analytics, and Stripe insights for the admin dashboard. */
 import { apiCall, API_URL } from '@/services/apiClient';
 import { getContracts, deleteContract } from '@/features/contracts/services/contractsApi';
 

@@ -1,3 +1,9 @@
+/**
+ * useAuthFlow — central state machine for the authentication modal.
+ * Manages the entire auth lifecycle: login, register, email verification (OTP),
+ * forgot/reset password, Google OAuth, and social-provider conflict handling.
+ * Stores pending verification emails in localStorage so users can resume after refresh.
+ */
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
@@ -98,6 +104,7 @@ export const useAuthFlow = ({ view, onChangeView, onClose, initialEmail = '' }) 
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [onClose]);
 
+// Effect to intercept OAuth parameters returned natively by Cognito after social login fails (e.g. from Google cancel)
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
         const oauthError = params.get('error');
@@ -109,11 +116,12 @@ export const useAuthFlow = ({ view, onChangeView, onClose, initialEmail = '' }) 
             );
             // eslint-disable-next-line react-hooks/set-state-in-effect
             setError(message);
-             
+
             switchAuthView('login');
-             
+
             setShowSocialConflictModal(false);
 
+            // Clean the messy OAuth query params from the browser URL without refreshing the page
             const cleanUrl = `${window.location.origin}${window.location.pathname}`;
             window.history.replaceState({}, document.title, cleanUrl);
         }
@@ -187,8 +195,9 @@ export const useAuthFlow = ({ view, onChangeView, onClose, initialEmail = '' }) 
         setLoading(true);
         setUserExistsStatus(null);
 
+        // Pre-validate uniqueness with Lambda before passing to Cognito to prevent masked generic errors
         const check = await checkUserStatus(trimmedEmail);
-        
+
         if (check.status === 'EXISTS') {
             setError(t('auth.accountAlreadyExistsHint'));
             setUserExistsStatus('EXISTS');
@@ -199,6 +208,7 @@ export const useAuthFlow = ({ view, onChangeView, onClose, initialEmail = '' }) 
         if (check.status === 'NEEDS_VERIFICATION') {
             setError(t('auth.accountNeedsVerification'));
             setUserExistsStatus('NEEDS_VERIFICATION');
+            // Proactively dispatch a new code if they are already registered but unconfirmed
             try { await resendCode(trimmedEmail); } catch (e) { console.error(e); }
             setTempEmail(trimmedEmail);
             localStorage.setItem('rentguard_pending_verification', trimmedEmail);

@@ -1,3 +1,4 @@
+/** Privacy Policy page - wraps LegalDocumentLayout with Hebrew/English privacy policy content. */
 import React from 'react';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
 import LegalDocumentLayout from '@/components/layout/LegalDocument/LegalDocumentLayout';

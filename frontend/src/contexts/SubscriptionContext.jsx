@@ -86,6 +86,7 @@ export const SubscriptionProvider = ({ children }) => {
     }, []);
 
     const refreshSubscription = useCallback(async (silent = false) => {
+        // Guests cannot possibly have a subscription or scans left, bail out instantly
         if (!isAuthenticated) {
             setSubscription(null);
             if (!silent) setIsLoadingState(false);
@@ -94,6 +95,7 @@ export const SubscriptionProvider = ({ children }) => {
         }
 
         // Critical: set these BEFORE the first await to avoid a one-render redirect race.
+        // It freezes protected routes (RequireActivePlanRoute) behind a spinner.
         if (!silent) setIsLoadingState(true);
         if (!silent) setIsEntitlementKnownState(false);
         setError(null);
@@ -102,6 +104,7 @@ export const SubscriptionProvider = ({ children }) => {
 
         try {
             // Admin users always have unlimited access and do not require a bundle.
+            // -1 explicitly flags unlimited status in our UI components.
             if (isAdmin) {
                 const adminUserId = await getUserId();
                 const adminSubscription = {

@@ -1,3 +1,9 @@
+/**
+ * useContractEditor — the core hook for the contract clause editing workflow.
+ * Manages: clause parsing, issue-to-clause matching (fuzzy bigram), inline editing,
+ * auto-save to cloud with debounce, revert/clear, AI clause consultation,
+ * and Word document export. Persists edits in localStorage as a backup.
+ */
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { processContractClauses } from '@/features/analysis/utils/contractTextProcessor';
 import { consultClause } from '@/features/analysis/services/analysisApi';

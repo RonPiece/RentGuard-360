@@ -1,3 +1,4 @@
+/** Blocks navigation to premium routes if user has no subscription - shows a warning toast instead. */
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
 import { showAppToast } from '@/components/ui/toast/toast';
 

@@ -1,3 +1,8 @@
+/**
+ * Contract/Report export helpers — language detection, text normalization,
+ * and locale-aware dictionaries used when exporting to .docx files.
+ * Detects Hebrew vs English content to set correct RTL/LTR direction in Word.
+ */
 import { he } from '@/contexts/LanguageContext/he';
 import { en } from '@/contexts/LanguageContext/en';
 

@@ -1,3 +1,4 @@
+/** Checkout form UI - displays selected plan details, Terms acceptance checkbox, and Stripe payment trigger. */
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import './CheckoutForm.css';

@@ -1,3 +1,4 @@
+/** Contracts API - list, delete, update metadata, and download operations for user contracts. */
 import { apiCall, API_URL } from '@/services/apiClient';
 
 export const getContracts = async (userId) => {

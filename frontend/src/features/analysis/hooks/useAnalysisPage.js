@@ -46,13 +46,14 @@ export const useAnalysisPage = () => {
     const [contractEditState, setContractEditState] = useState({ editedCount: 0, saveStatus: null });
     const [_editedClauses, setEditedClauses] = useState({});
 
-    // Backend Polling (For async AWS process)
+    // Backend Polling Variables (Because AWS Step Functions processing takes time)
+    // We retry up to 12 times (2 minutes max) before admitting timeout.
     const [pollCount, setPollCount] = useState(0);
     const MAX_POLL_ATTEMPTS = 12;
     const INITIAL_DELAY = 15000;
     const POLL_INTERVAL = 10000;
 
-    // DOM & State Refs
+    // DOM refs and tracking vars used to prevent spamming the user with save toasts
     const contractViewRef = useRef(null);
     const prevSaveStatusRef = useRef(null);
     const lastSavingToastAtRef = useRef(0);
@@ -111,7 +112,8 @@ export const useAnalysisPage = () => {
             setError(null);
         } catch (err) {
             const errorMsg = err.message || '';
-            // If backend throws 404, analysis isn't ready yet -> trigger next polling cycle
+            // If the user's contract document isn't completely parsed yet, the API legitimately returns 404
+            // so we trigger the next polling cycle instead of showing a hard failure.
             if (errorMsg.includes('404')) {
                 setError({ title: t('analysis.errors.notReadyTitle'), message: `${t('analysis.errors.notReadyMessage')} (${pollCount + 1}/${MAX_POLL_ATTEMPTS})`, type: 'processing' });
             } else if (errorMsg.includes('FAILED') || errorMsg.includes('ValidationException')) {

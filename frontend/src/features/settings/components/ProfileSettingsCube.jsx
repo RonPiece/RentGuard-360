@@ -1,3 +1,4 @@
+/** Profile settings card - displays user name, email, and plan info (read-only from Cognito). */
 import React from 'react';
 import { LogOut } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';

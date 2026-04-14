@@ -1,3 +1,4 @@
+/** Upload validation utilities - file type checking, size limits, and file name sanitization. */
 export const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const isRetryableError = (err) => {

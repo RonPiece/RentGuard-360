@@ -1,3 +1,4 @@
+/** Fetches and computes dashboard statistics: total contracts, recent uploads, scan usage, etc. */
 import { useState, useCallback, useEffect } from 'react';
 import { getContracts } from '@/features/contracts/services/contractsApi';
 
@@ -22,6 +23,7 @@ export const useDashboardStats = (user) => {
             const contractsList = Array.isArray(contracts) ? contracts : [];
 
             const analyzedContracts = contractsList.filter(c => c.status === 'analyzed');
+            // High risk means specifically low score (0-50). Handles both DB camelCase and snake_case schema variations.
             const highRiskContracts = analyzedContracts.filter(c => {
                 const score = c.riskScore ?? c.risk_score ?? 100;
                 return score <= 50;
@@ -30,6 +32,7 @@ export const useDashboardStats = (user) => {
             setStats({
                 total: contractsList.length,
                 analyzed: analyzedContracts.length,
+                // Count any contract that hasn't finished analysis nor permanently failed
                 pending: contractsList.filter(c => c.status !== 'analyzed' && c.status !== 'failed' && c.status !== 'error').length,
                 highRisk: highRiskContracts.length,
             });

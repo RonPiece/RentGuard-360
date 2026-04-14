@@ -60,6 +60,7 @@ export const useScanPages = () => {
         setActivePageId(null);
     }, []);
 
+    // Auto-cleanup on unmount: Revokes all Object URLs to avoid memory leaks from raw images
     useEffect(() => () => {
         pagesRef.current.forEach((page) => revokeImageUrl(page));
     }, []);

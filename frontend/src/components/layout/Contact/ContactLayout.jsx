@@ -1,3 +1,4 @@
+/** Contact page layout - two-column grid with a form slot, contact details card, and embedded map. */
 import React from 'react';
 import { MapPin, Mail } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';

@@ -1,3 +1,4 @@
+/** Manages which legal section accordion is open, with smooth scroll-into-view on toggle. */
 import { useState } from 'react';
 
 export const useLegalAccordion = (initialSectionId) => {

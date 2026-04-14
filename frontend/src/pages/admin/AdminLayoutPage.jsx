@@ -1,3 +1,4 @@
+/** Admin layout shell - sidebar navigation + content area (Outlet) for all admin sub-pages. */
 import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import AdminSidebar from '@/features/admin/components/AdminSidebar';

@@ -81,6 +81,7 @@ export const useUpload = () => {
                         title: t('notifications.analysisReadyTitle') || 'Analysis Ready',
                         message: t('notifications.analysisReadyMessage') || 'Your contract has been successfully analyzed.',
                     });
+                    // Redirects seamlessly to the analysis results so users don't break flow with the back button
                     navigate(`/analysis/${encodeURIComponent(uploadedContractId)}`, { replace: true });
                 } else {
                     // Polling timed out (took > 3 mins)
@@ -211,6 +212,7 @@ export const useUpload = () => {
     const handleUpload = async () => {
         if (!file) return;
 
+        // Clean user input. E.g "my lease.pdf  " -> "my lease" to prevent double extensions in storage
         const normalizedCustomFileName = String(customFileName || '')
             .replace(/\.pdf$/i, '')
             .trim();
@@ -220,6 +222,7 @@ export const useUpload = () => {
         if (!normalizedCustomFileName) validationErrors.push(t('upload.fileNameRequired'));
 
         if (validationErrors.length > 0) {
+            // Surface multiple validation errors as a single toast message to avoid UI spam
             const message = validationErrors.join(' ');
             setError(message);
             emitAppToast({
@@ -230,6 +233,7 @@ export const useUpload = () => {
             return;
         }
 
+        // Before initiating network request and consuming bandwidth, client-side block on zero-balance subscriptions
         if (!isAdmin && !hasSubscription) {
             setError(t('subscription.noActivePlanMessage'));
             return;

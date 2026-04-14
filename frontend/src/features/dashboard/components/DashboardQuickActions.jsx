@@ -1,3 +1,4 @@
+/** Quick action cards on the dashboard - shortcuts to upload, view contracts, and access settings. */
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';

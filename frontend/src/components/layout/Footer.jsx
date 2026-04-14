@@ -1,3 +1,4 @@
+/** Global footer - dynamically shows different nav links based on auth status (guest vs logged-in). */
 import React from 'react';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
 import { useTheme } from '@/contexts/ThemeContext';

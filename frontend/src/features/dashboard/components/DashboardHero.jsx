@@ -1,3 +1,4 @@
+/** Dashboard hero section - greeting banner with user name, scan stats card, and quick-start CTA. */
 import React from 'react';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
 

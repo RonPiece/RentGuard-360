@@ -1,3 +1,4 @@
+/** Reads and syncs the compact mobile nav preference from localStorage across tabs. */
 import { useState, useEffect } from 'react';
 
 export const useCompactNavPrefs = () => {

@@ -1,3 +1,4 @@
+/** Confirmation modal for permanent account deletion - requires user to type DELETE to confirm. */
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import { AlertTriangle, X } from 'lucide-react';
