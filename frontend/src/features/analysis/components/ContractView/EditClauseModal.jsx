@@ -17,6 +17,7 @@
 import React from 'react';
 import { Edit3, X, Sparkles, Check, Undo2 } from 'lucide-react';
 import { extractFixText } from '../../utils/analysisUtils';
+import { useBodyScrollLock } from '@/utils/useBodyScrollLock';
 import './EditClauseModal.css';
 
 const EditClauseModal = ({
@@ -30,6 +31,8 @@ const EditClauseModal = ({
     closeEditor,
     applySuggestedFix
 }) => {
+    useBodyScrollLock(!!selectedClause);
+
     if (!selectedClause) return null;
 
     return (

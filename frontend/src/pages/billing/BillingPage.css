@@ -289,6 +289,10 @@
     min-width: 280px;
 }
 
+.portal-btn-icon {
+    flex-shrink: 0;
+}
+
 .portal-btn:disabled {
     opacity: 0.7;
     cursor: not-allowed;
@@ -657,7 +661,25 @@
 
     .billing-security-bar {
         flex-direction: column;
-        gap: 1rem;
+        align-items: flex-start;
+        gap: 1.25rem;
+    }
+
+    .security-item {
+        justify-content: flex-start;
+        text-align: start;
+        align-items: flex-start;
+    }
+
+    .security-item svg {
+        flex-shrink: 0;
+        margin-top: 3px;
+    }
+
+    .portal-btn svg {
+        width: 24px;
+        height: 24px;
+        flex-shrink: 0;
     }
 }
 

@@ -7,6 +7,7 @@
 import React from 'react';
 import { X } from 'lucide-react';
 import { useAuthFlow } from '../hooks/useAuthFlow';
+import { useBodyScrollLock } from '../../../utils/useBodyScrollLock';
 import {
     LoginForm,
     RegisterForm,
@@ -26,6 +27,8 @@ const AuthModal = (props) => {
         showSocialConflictModal,
         dropdownRef,
     } = authState;
+
+    useBodyScrollLock(view || showVerificationSuccess || showSocialConflictModal);
 
     if (!view && !showVerificationSuccess && !showSocialConflictModal) return null;
 
