@@ -21,7 +21,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 48px 16px;
+    padding: 24px 16px;
 }
 
 .success-band {
@@ -36,7 +36,7 @@
 .success-content {
     display: flex;
     justify-content: center;
-    padding: 16px 0;
+    padding: 8px 0;
 }
 
 .success-content-shell {
