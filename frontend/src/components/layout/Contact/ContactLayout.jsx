@@ -1,7 +1,7 @@
 import React from 'react';
 import { MapPin, Mail } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
-import MapComponent from '@/components/ui/MapComponent';
+import MapComponent from '@/components/ui/MapComponent/MapComponent';
 
 const ContactLayout = ({ children }) => {
     const { t, isRTL } = useLanguage();

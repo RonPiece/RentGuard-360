@@ -14,7 +14,12 @@ export const useRouteLayout = (isAuthenticated) => {
         location.pathname.startsWith('/analysis/');
     
     // Public pages where the footer is always visible
-    const showPublicFooter = location.pathname === '/pricing' || location.pathname === '/contact' || location.pathname === '/';
+    const showPublicFooter = 
+        location.pathname === '/pricing' || 
+        location.pathname === '/contact' || 
+        location.pathname === '/' ||
+        location.pathname === '/terms' ||
+        location.pathname === '/privacy';
     
     // Navigation is hidden on the admin dashboard and on the public home page for guests
     const navVisible = !isAdminRoute && (isAuthenticated || location.pathname !== '/');

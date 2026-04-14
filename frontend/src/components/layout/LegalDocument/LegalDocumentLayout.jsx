@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
-import BackButton from '@/components/ui/BackButton';
+import BackButton from '@/components/ui/BackButton/BackButton';
 import { Calendar, ChevronDown, Mail } from 'lucide-react';
 import { useLegalAccordion } from './hooks/useLegalAccordion';
 import '@/pages/legal/LegalPages.css';
