@@ -11,6 +11,8 @@ import './styles/design-system.css';
 import './App.css';
 
 function App() {
+  // RouterProvider injects our customized 'router' containing all nested paths,
+  // error elements, and suspense boundaries into the virtual DOM.
   return <RouterProvider router={router} />;
 }
 

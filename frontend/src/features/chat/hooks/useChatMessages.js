@@ -1,4 +1,18 @@
-/** Hook that manages chat message history, sends messages to AI API, and handles streaming responses. */
+/**
+ * Engine hook controlling the live conversational AI agent interface (Floating Chat).
+ * Governs the synchronized message states between the client and AWS, applying automatic 
+ * text normalizations for AI Markdown, UI height calculations for input areas, and 
+ * strict algorithmic rate-limiting to prevent excessive LLM API abuse.
+ * 
+ * @param {string} selectedContractId Focus ID of the contract context.
+ * @param {boolean} open Visibility boolean to trigger lazy loads.
+ * @param {Function} t Internationalization function.
+ * @param {string} errorKey UI binding key for error displays.
+ * @param {Function} setErrorKey UI callback.
+ * @param {string} responseHintKey UI binding key for typing hints.
+ * @param {Function} setResponseHintKey UI callback.
+ * @returns {Object} Comprehensive chat array and dispatch actions.
+ */
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { askContractQuestion, clearContractChatHistory, getContractChatHistory } from '@/features/chat/services/chatApi';
 import { trackChatEvent, isRateLimitError } from '../utils/chatHelpers';
@@ -78,6 +92,8 @@ export function useChatMessages(selectedContractId, open, t, errorKey, setErrorK
 
 
 
+    // Auto-resize the chat input textarea based on its scrollHeight
+    // up to a maximum height of 130px, then enable scrolling.
     useEffect(() => {
         const el = inputRef.current;
         if (!el) return;
@@ -209,6 +225,9 @@ export function useChatMessages(selectedContractId, open, t, errorKey, setErrorK
         try {
             const visibleMessagesCount = messages.length;
             const result = await clearContractChatHistory(selectedContractId);
+            
+            // Reconcile the cleared count: use backend's reported count if valid, 
+            // otherwise fallback to the number of messages currently visible in the UI.
             const apiClearedCount = Number(result?.clearedCount || 0);
             const resolvedClearedCount = Number.isFinite(apiClearedCount) && apiClearedCount > 0
                 ? apiClearedCount

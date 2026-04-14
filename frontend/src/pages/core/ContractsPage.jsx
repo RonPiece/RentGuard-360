@@ -92,7 +92,7 @@ const ContractsPage = () => {
                 </div>
             )}
 
-            {/* Modals - Same logic, wrapped in standard portal */}
+            {/* Modals - Rendered via React Portal to ensure they overlay the entire application regardless of z-index bounds */}
             {deleteConfirm && ReactDOM.createPortal(
                 <div className="lf-modal-overlay" onClick={() => setDeleteConfirm(null)}>
                     <div className="lf-modal-content" onClick={e => e.stopPropagation()} dir={isRTL ? 'rtl' : 'ltr'}>

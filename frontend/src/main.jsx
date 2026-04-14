@@ -16,6 +16,8 @@ import App from './App.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
+    {/* GlobalErrorBoundary prevents the entire React tree from crashing white-screen on fatal errors. */}
+    {/* The Contexts are layered so that Language/Theme are available inside Auth/Subscription hooks. */}
     <GlobalErrorBoundary>
       <ThemeProvider>
         <LanguageProvider>

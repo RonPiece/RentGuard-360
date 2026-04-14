@@ -25,6 +25,7 @@ import './SharedContractPage.css';
 
 const SharedContractPage = () => {
     const { isRTL } = useLanguage();
+    // Extracts the share token parameter from the URL to fetch the contract publicly
     const { id } = useParams();
     const contractViewRef = useRef(null);
 

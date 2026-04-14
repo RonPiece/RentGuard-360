@@ -1,9 +1,10 @@
 /**
- * Analysis API — backend calls for contract analysis, sharing, and clause editing.
- * - getAnalysis / pollForAnalysis: Fetch AI analysis results (with polling for async processing).
- * - createShareLink / getShareLink / revokeShareLink: Manage public share tokens.
- * - saveEditedContract: Persist user edits to individual contract clauses.
- * - consultClause: Send a single clause to AI for a legal explanation.
+ * Core API service module for Contract Analysis, Sharing, and Clause Consultation.
+ * Encapsulates network operations toward AWS API Gateway, including robust polling 
+ * for asynchronous AWS Step Functions executions (like deep contract parsing) 
+ * and handles data normalization of diverse legacy backend schema formats.
+ * 
+ * @module AnalysisAPI
  */
 import { apiCall, API_URL, publicApiCall } from '@/services/apiClient';
 

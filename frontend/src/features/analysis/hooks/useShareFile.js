@@ -21,7 +21,11 @@ import { useCallback } from 'react';
 import { resolveShareFileName, canShareFiles, downloadFallback } from '../utils/fileShareUtils';
 
 /**
- * Custom hook for sharing files via the Web Share API.
+ * Custom React Hook that integrates with the native Web Share API capabilities of the OS.
+ * Manages fallback modes (like triggering a standard browser download instead of native share 
+ * for non-compliant desktop environments) and prevents rapid multiple trigger events via a global UI lock.
+ * 
+ * @returns {Object} Callbacks specifically designed to dispatch blobs or URLs to the host device system.
  */
 const useShareFile = () => {
     // ------------------------------------------------------------------------

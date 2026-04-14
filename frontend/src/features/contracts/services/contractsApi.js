@@ -1,4 +1,10 @@
-/** Contracts API - list, delete, update metadata, and download operations for user contracts. */
+/**
+ * Primary API binding module governing CRUD functions and metadata mutations for the Contracts entity.
+ * Abstracts out REST payloads toward the backend and uniquely features deep schema normalizers
+ * to handle unpredictable document object shapes arriving from DynamoDB migrations.
+ * 
+ * @module ContractsAPI
+ */
 import { apiCall, API_URL } from '@/services/apiClient';
 
 export const getContracts = async (userId) => {
@@ -18,6 +24,8 @@ export const getContracts = async (userId) => {
             return s;
         };
 
+        // Database field normalization: Standardize various date formats
+        // returned by DynamoDB or PostgreSQL into a single camelCase property.
         const normalizeContract = (contract) => {
             if (!contract || typeof contract !== 'object') return contract;
 

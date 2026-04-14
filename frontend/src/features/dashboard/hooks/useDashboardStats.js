@@ -1,4 +1,11 @@
-/** Fetches and computes dashboard statistics: total contracts, recent uploads, scan usage, etc. */
+/**
+ * Lightweight data-aggregation hook for the user landing dashboard.
+ * Iterates through the raw contracts matrix to compute live counters (total uploads, 
+ * pending processing queues, and high-risk threshold matches).
+ * 
+ * @param {Object} user Cognito authenticated user profile.
+ * @returns {Object} Numeric aggregates mapping directly to Dashboard Scorecards.
+ */
 import { useState, useCallback, useEffect } from 'react';
 import { getContracts } from '@/features/contracts/services/contractsApi';
 

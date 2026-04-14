@@ -24,6 +24,14 @@ import { showAppToast as emitAppToast } from '@/components/ui/toast/toast';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
 import useShareFile from '@/features/analysis/hooks/useShareFile';
 
+/**
+ * Encapsulates the complete business logic for sharing AWS-stored analysis results.
+ * Manages signed-URL generation, local storage hydration to prevent duplicate token creation,
+ * UI panel visibility offsets, and revocation APIs from the backend.
+ * 
+ * @param {Object} props configuration containing target contract ID and pre-save callback.
+ * @returns {Object} State bindings and handlers for the Share Panel UI.
+ */
 export const useContractShare = ({ contractId, onSaveBeforeShare }) => {
     const { t } = useLanguage();
     const { shareUrl } = useShareFile();

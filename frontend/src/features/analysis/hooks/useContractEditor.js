@@ -1,8 +1,11 @@
 /**
- * useContractEditor — the core hook for the contract clause editing workflow.
- * Manages: clause parsing, issue-to-clause matching (fuzzy bigram), inline editing,
- * auto-save to cloud with debounce, revert/clear, AI clause consultation,
- * and Word document export. Persists edits in localStorage as a backup.
+ * Core engine hook for the intelligent contract editing workflow.
+ * Manages clause parsing, issue-to-clause fuzzy bigram matching, inline edits, 
+ * auto-saving to the cloud with debouncing strategies, local storage fallback, 
+ * and AI consultation (document context passing).
+ * 
+ * @param {Object} props Data payload containing contract texts, issues, and sync callbacks.
+ * @returns {Object} The complete editor state, context variables, and mutator methods.
  */
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { processContractClauses } from '@/features/analysis/utils/contractTextProcessor';
@@ -84,6 +87,8 @@ export const useContractEditor = ({
             let bestClause = null;
             let bestScore = -1;
 
+            // Fuzzy matching: Creates bigrams (2-character pairs) to match an AI issue 
+            // back to the original text clause even if the text changed slightly.
             const getBigrams = (str) => {
                 const s = str.replace(/\s+/g, ' ');
                 const bigrams = new Set();
@@ -219,6 +224,7 @@ export const useContractEditor = ({
 
         if (isFirstRender.current) {
             isFirstRender.current = false;
+            // Record initial state so we don't trigger a cloud save immediately upon mounting
             if (!lastCloudSaveSignatureRef.current) {
                 lastCloudSaveSignatureRef.current = currentEditsSignature;
             }
@@ -229,6 +235,7 @@ export const useContractEditor = ({
 
         const fullEditedText = clauses.map(c => getClauseText(c)).join('\n\n');
 
+        // Debounce cloud saving: Wait 2 seconds after the user stops typing
         if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
         setSaveStatus('saving');
 
@@ -318,6 +325,7 @@ export const useContractEditor = ({
         if (readOnly) return;
         e.stopPropagation();
 
+        // If explanation already exists, just toggle accordion expansion
         if (clauseExplanations[clause.id]) {
             setExpandedExplanations(prev => ({
                 ...prev,

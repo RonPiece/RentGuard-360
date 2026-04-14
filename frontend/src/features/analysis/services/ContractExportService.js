@@ -1,8 +1,10 @@
 /**
- * ============================================
- * ContractExportService.js
- * Handles DOCX generation for the Final Edited Contract (RentGuard-360)
- * ============================================
+ * Service module responsible for rendering robust `.docx` (Microsoft Word) documents from JSON contract state.
+ * Implements the `docx` library packer, parses bi-directional (RTL/LTR) dictionaries organically,
+ * and dynamically injects metadata variables (Landlord, Tenant, Dates, highlighted edited changes)
+ * into structured paragraphs and tables to recreate valid legal document formats.
+ * 
+ * @module ContractExportService
  */
 
 import { Document, Packer, Paragraph, TextRun, HeadingLevel, Table, TableRow, TableCell, WidthType, AlignmentType } from 'docx';

@@ -1,4 +1,11 @@
-/** useBilling - fetches billing history (invoices and transactions) and provides Stripe portal access. */
+/**
+ * Orchestrator hook for the Billing Dashboard.
+ * Interacts with the Stripe API integration backend to fetch both line-item transactions 
+ * and active subscription entitlements, providing mapped derived states (like active plan filters).
+ * Also delegates Stripe Customer Portal session generation for users managing their payment methods.
+ * 
+ * @returns {Object} Live subscription data, loading flags, transaction arrays, and portal redirection handlers.
+ */
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
@@ -24,6 +31,7 @@ export const useBilling = () => {
     const userEmail = userAttributes?.email;
     const userName = userAttributes?.name || '';
 
+    // Derive display-friendly names and parse the unlimited specific value (-1 DB flag)
     const planName = currentPlan || t('billing.noPlan');
     const scansRemaining = subscription?.scansRemaining ?? 0;
     const isUnlimited = subscription?.isUnlimited || scansRemaining === -1;

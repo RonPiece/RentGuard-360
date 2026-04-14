@@ -1,7 +1,10 @@
 /**
- * localStorage cache helpers for contract metadata and share links.
- * Caches metadata (fileName, address, landlord) to avoid redundant API calls,
- * and persists share-link URLs so the UI can display them instantly on revisit.
+ * Local Storage caching singleton specifically designed for Contract Metadata and Share Tokens.
+ * Implements eager hydration (returning cached properties before network calls complete) 
+ * to significantly reduce UI flickering and prevent redundant bandwidth usage when visiting 
+ * analysis results iteratively.
+ * 
+ * @module CacheService
  */
 const getMetadataCacheKey = (id) => `rentguard_contract_meta_${id}`;
 

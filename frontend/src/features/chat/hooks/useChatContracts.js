@@ -1,4 +1,17 @@
-/** Hook that manages the selected contract state for the chat widget and syncs with URL params. */
+/**
+ * Domain hook managing the contract context picker within the Floating Chat Widget.
+ * Orchestrates fetching the user's available contracts, mapping their active selection, 
+ * and auto-selecting the relevant context if a user initiates chat while actively 
+ * viewing a specific Analysis Page route.
+ * 
+ * @param {boolean} isAuthenticated Is the user active?
+ * @param {boolean} open Is the chat widget visually open?
+ * @param {Object} user Cognito user details.
+ * @param {Function} t Translation handler.
+ * @param {string|null} routeContractId Passed URL param of the active page.
+ * @param {Function} setErrorKey Mutation callback.
+ * @returns {Object} State bindings for the chat contract selection menu.
+ */
 import { useState, useEffect, useMemo } from 'react';
 import { trackChatEvent } from '../utils/chatHelpers';
 import { useFetchContracts } from './useFetchContracts';

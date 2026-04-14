@@ -56,6 +56,13 @@ const normalizeAdminStatsError = (err, t) => {
     return err?.message || t('admin.stripeErrorDefault');
 };
 
+/**
+ * React hook to retrieve and calculate insights from live Stripe transaction data.
+ * Internally limits API latency using custom timeout handlers, and exposes calculated derivatives 
+ * like currency mix, success conversion metrics, and dispute rates.
+ * 
+ * @returns {Object} Structured metrics for Stripe administrative dashboards.
+ */
 export const useAdminStripeInsights = () => {
     const { t } = useLanguage();
     const [data, setData] = useState(() => getCachedStats());

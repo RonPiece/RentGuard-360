@@ -1,4 +1,12 @@
-/** useCheckout - handles the Stripe checkout flow: validates plan, creates checkout session, redirects to Stripe. */
+/**
+ * Hook managing the logic for the Stripe Checkout pipeline.
+ * Fetches the user's selected package, handles logic bypasses for entirely free packages, 
+ * requests PaymentIntent `clientSecret` payloads from the backend to mount the Stripe Elements UI, 
+ * and forces post-success entitlement syncing before redirecting to success views.
+ * 
+ * @param {string|number} packageId The ID of the subscription package being purchased.
+ * @returns {Object} Pre-fetched package data, Stripe intent credentials, and completion callbacks.
+ */
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -35,10 +43,12 @@ export const useCheckout = (packageId) => {
                 if (isCancelled) return;
                 setPkg(packageData);
 
+                // Handle entirely free packages without creating standard Stripe intents
                 if (packageData.price <= 0) {
                     const result = await createPaymentIntent(userId, parseInt(packageId), userEmail, userName);
                     if (isCancelled) return;
                     if (result.isFree) {
+                        // Immediately update local entitlements context and send user to success dashboard
                         await refreshSubscription();
                         navigate('/payment-success', {
                             state: { packageName: packageData.name, isFree: true }
@@ -47,6 +57,7 @@ export const useCheckout = (packageId) => {
                     }
                 }
 
+                // If not free, request a real Stripe Intent Client Secret to load the Elements UI
                 const intentData = await createPaymentIntent(userId, parseInt(packageId), userEmail, userName);
                 if (isCancelled) return;
                 setClientSecret(intentData.clientSecret);
@@ -71,11 +82,13 @@ export const useCheckout = (packageId) => {
     const handlePaymentSuccess = async (paymentIntent) => {
         setIsLoading(true);
         try {
+            // Tell our backend to verify the Stripe intent and grant the purchased scans
             await confirmPayment(paymentIntent.id);
         } catch (err) {
             console.error('Confirmation fallback error:', err);
         }
 
+        // Force a refresh of the user's scan balance/entitlements from the server
         await refreshSubscription();
 
         setIsLoading(false);

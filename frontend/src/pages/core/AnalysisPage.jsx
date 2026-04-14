@@ -135,6 +135,7 @@ const AnalysisPage = () => {
 
         const baseFileName = `${(analysis?.fileName || t('export.defaultContractFilename')).replace(/\.(pdf|docx)$/i, '')}`;
 
+        // Re-constructs the final contract text locally by merging user edits into the base OCR text
         emitAppToast({
             type: 'warning',
             title: t('contractView.ocrDisclaimerTitle'),

@@ -1,4 +1,11 @@
-/** usePricing - manages pricing page state: plan selection, scan count display, and upgrade prompts. */
+/**
+ * Presentation hook for the public/private Pricing screens.
+ * Fetches available Stripe packages (from the backend integration) and applies fallback 
+ * defaults gracefully if the backend timeouts. Automatically reads the user's active subscription 
+ * limits from context to highlight their current plan.
+ * 
+ * @returns {Object} List of pricing tiers, current active tier IDs, and selection callbacks.
+ */
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getPackages } from '@/features/billing/services/stripeApi';

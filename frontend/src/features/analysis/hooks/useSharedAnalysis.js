@@ -1,7 +1,10 @@
 /**
- * useSharedAnalysis — fetches a publicly shared contract analysis via its share token.
- * Computes a diff between original and current clauses to show edited highlights.
- * Used by SharedContractPage (no auth required).
+ * Controller hook for the public (unauthenticated) shared contract viewing page.
+ * Loads the shared snapshot using a signed token, computes client-side diffs between 
+ * the original document and the edited snapshot to render highlighted changes for guests.
+ * 
+ * @param {string} id The encoded sharing token from the URL params.
+ * @returns {Object} Read-only parsed contract payload with computed difference maps.
  */
 import { useState, useCallback, useMemo, useEffect } from 'react';
 import { getSharedAnalysis } from '@/features/analysis/services/analysisApi';

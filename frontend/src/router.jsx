@@ -42,7 +42,8 @@ const ConditionalPricingRoute = () => {
     const { isAuthenticated, isAdmin, isLoading: isAuthLoading } = useAuth();
     if (isAuthLoading) return null; // Avoid blink by waiting for auth to resolve
     
-    // Guests see public pricing, admins get pushed away, normal users see full pricing with upgrade flows
+    // Guests see public pricing, admins get pushed to dashboard (they don't buy scans),
+    // normal users see full pricing with upgrade/restock flows.
     if (!isAuthenticated) return <PricingPublic />;
     if (isAdmin) return <Navigate to="/dashboard" replace />;
     return <ProtectedRoute><PricingPage /></ProtectedRoute>;

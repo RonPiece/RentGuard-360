@@ -25,6 +25,13 @@ import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useContractShare } from '@/features/analysis/hooks/useContractShare';
 
+/**
+ * Core orchestration hook for the Analysis Page. 
+ * Manages the lifecycle of checking and polling for AWS Step Function results, 
+ * hydrates missing metadata from cache, and bridges interactions with sharing and exporting modules.
+ * 
+ * @returns {Object} Comprehensive state and action controllers for the AI analysis view.
+ */
 export const useAnalysisPage = () => {
     const { contractId } = useParams();
     const location = useLocation();

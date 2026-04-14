@@ -38,6 +38,7 @@ const scaleSourceForProcessing = (image) => {
     const sourceWidth = image.naturalWidth || image.width;
     const sourceHeight = image.naturalHeight || image.height;
     // Cap processing resolution to keep pixel algorithms fast on mobile devices.
+    // Extremely large images (e.g. 4k from modern phones) cause memory crashes.
     const longest = Math.max(sourceWidth, sourceHeight);
     const scale = longest > MAX_PROCESSING_SIDE ? (MAX_PROCESSING_SIDE / longest) : 1;
 
@@ -130,6 +131,7 @@ export const getCroppedImg = async (imageSrc, pixelCrop) => {
     const sourceFrame = sourceCtx.getImageData(0, 0, srcWidth, srcHeight);
 
     // Convert viewport crop (display pixels) into source-canvas pixel coordinates.
+    // This maps the user's selection on the small UI to the real full-size image.
     const scaledCrop = {
         x: pixelCrop.x * scale,
         y: pixelCrop.y * scale,
@@ -138,6 +140,7 @@ export const getCroppedImg = async (imageSrc, pixelCrop) => {
     };
 
     // Pipeline: rectify perspective -> enhance scan quality -> encode to JPEG data URL.
+    // getRectCorners gets the 4 points of the crop for the perspective warp algorithm.
     const srcQuad = getRectCorners(scaledCrop);
     const warped = perspectiveWarp(sourceFrame.data, srcWidth, srcHeight, srcQuad);
     const enhanced = applyAdaptiveSmartScan(warped.data, warped.width, warped.height);

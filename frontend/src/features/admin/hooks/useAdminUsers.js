@@ -40,6 +40,13 @@ const executeUserAction = async (actionFn, t, { titleKey, messageText, failTitle
     }
 };
 
+/**
+ * Comprehensive hook managing the User Administration sub-panel lifecycle.
+ * Manages complex state like advanced stacked filtering (combining mutually exclusive statuses
+ * with stackable roles), fuzzy text searching, attribute sorting, and mutating user states (disable/delete).
+ * 
+ * @returns {Object} Full controller API and dataset for the Admin Users dashboard.
+ */
 export const useAdminUsers = () => {
     const { t } = useLanguage();
     const [allUsers, setAllUsers] = useState([]);

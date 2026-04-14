@@ -19,6 +19,13 @@ import { getSystemStats } from '@/features/admin/services/adminApi';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
 import { calculateDateRange, parseLocalDate, getCachedSystemStats, setCachedSystemStats } from '@/features/admin/utils/statsUtils';
 
+/**
+ * Custom hook designed to aggregate system-wide date-filtered statistics.
+ * It caches previous reads to avoid unnecessary API loads and dynamically slices 
+ * contract and registration arrays strictly to the user's selected date range.
+ * 
+ * @returns {Object} System stats along with unified datasets for time-series charts.
+ */
 export const useAdminStats = () => {
     const { t } = useLanguage();
     // ------------------------------------------------------------------------

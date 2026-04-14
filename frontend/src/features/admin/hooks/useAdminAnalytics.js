@@ -18,6 +18,13 @@ import { getSystemStats } from '@/features/admin/services/adminApi';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
 import { getCachedSystemStats, setCachedSystemStats } from '@/features/admin/utils/statsUtils';
 
+/**
+ * Custom hook to fetch and manage the administrative analytics metrics.
+ * It manages the lifecycle of the data via an API call and formats the raw 
+ * statistics into structured payload constants for UI components like pie charts.
+ * 
+ * @returns {Object} Admin analytics state including chart datasets, top issues, and average risk score.
+ */
 export const useAdminAnalytics = () => {
     const { t } = useLanguage();
     // ------------------------------------------------------------------------
