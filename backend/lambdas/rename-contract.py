@@ -137,6 +137,19 @@ def lambda_handler(event, context):
             ExpressionAttributeValues=expression_values
         )
         
+        # Also update the analysis table so the specific contract page reflects the changes
+        try:
+            analysis_table.update_item(
+                Key={
+                    'contractId': contract_id
+                },
+                UpdateExpression=update_expression,
+                ExpressionAttributeValues=expression_values
+            )
+            print(f"Updated analysis table for contract {contract_id}")
+        except Exception as analysis_err:
+            print(f"Warning: Could not update analysis table: {str(analysis_err)}")
+        
         print(f"Updated contract {contract_id} for user {user_id}: {update_parts}")
         
         # 6. Return success response

@@ -769,6 +769,8 @@ export const he = {
         "contactFailedTitle": "שליחת ההודעה נכשלה",
         "contactFailedMessage": "לא הצלחנו לשלוח את ההודעה כרגע. נסו שוב.",
         "uploadFailedTitle": "העלאת החוזה נכשלה",
+        "analysisDelayedTitle": "ניתוח בזמן אמת",
+        "analysisDelayedMessage": "למסמך גדול לוקח קצת יותר זמן. תוכלו לחזור לכאן עוד רגע או למסך הבית.",
         "analysisReadyTitle": "הניתוח הושלם",
         "analysisReadyMessage": "החוזה נותח בהצלחה ואפשר לצפות בתוצאות.",
         "adminUserEnabledTitle": "המשתמש הופעל",

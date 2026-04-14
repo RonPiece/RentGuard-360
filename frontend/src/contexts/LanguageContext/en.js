@@ -776,6 +776,8 @@ export const en = {
         "contactFailedTitle": "Message failed to send",
         "contactFailedMessage": "We could not send your message right now. Please try again.",
         "uploadFailedTitle": "Upload failed",
+        "analysisDelayedTitle": "Analysis taking longer than usual",
+        "analysisDelayedMessage": "Large documents take a bit longer. You can check back in a few moments.",
         "analysisReadyTitle": "Analysis is ready",
         "analysisReadyMessage": "Your contract has been analyzed and results are available.",
         "adminUserEnabledTitle": "User enabled",

@@ -47,17 +47,16 @@
 
 .upload-page {
     padding: var(--space-xl) var(--space-md);
-    
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    min-height: calc(100vh - 250px); 
+    justify-content: flex-start;
+    min-height: calc(100vh - var(--nav-height, 64px) - 100px);
 }
 
 .upload-container {
     width: 100%;
     max-width: 600px;
-    margin: 0 auto;
+    margin: 0 auto; /* Standard top alignment. Removes flex-auto overlap bug */
 }
 
 /* ============================================
@@ -184,7 +183,8 @@
 
 @media (max-width: 600px) {
     .upload-page {
-        padding: var(--space-md) var(--space-sm);
+        /* Mobile spacing adjustments: Added extra top padding to clear the 2-row mobile nav */
+        padding: calc(var(--space-xl) + 1.5rem) var(--space-sm) var(--space-xl);
     }
 
     .upload-container {

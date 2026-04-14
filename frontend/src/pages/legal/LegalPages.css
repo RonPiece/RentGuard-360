@@ -351,7 +351,7 @@
 
 .chevron {
     color: var(--text-tertiary);
-    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.2s;
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), color 0.2s;
     flex-shrink: 0;
 }
 
@@ -364,7 +364,7 @@
 .accordion-body {
     display: grid;
     grid-template-rows: 0fr;
-    transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: grid-template-rows 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .accordion-card.active .accordion-body {
