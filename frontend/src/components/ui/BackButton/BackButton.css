@@ -39,11 +39,13 @@
 /* ==========================================================================
  * 2. Hover & Active States
  * ========================================================================== */
-.global-back-btn:hover {
-    background: var(--bg-inset, #f9fafb);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1));
-    color: var(--text-primary);
+@media (hover: hover) and (pointer: fine) {
+    .global-back-btn:hover {
+        background: var(--bg-inset, #f9fafb);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1));
+        color: var(--text-primary);
+    }
 }
 
 .global-back-btn:active {
@@ -60,7 +62,9 @@
     color: #f1f5f9;
 }
 
-[data-theme="dark"] .global-back-btn:hover {
-    background: rgba(30, 41, 59, 0.8);
-    border-color: rgba(255, 255, 255, 0.15);
+@media (hover: hover) and (pointer: fine) {
+    [data-theme="dark"] .global-back-btn:hover {
+        background: rgba(30, 41, 59, 0.8);
+        border-color: rgba(255, 255, 255, 0.15);
+    }
 }

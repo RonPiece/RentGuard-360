@@ -15,7 +15,7 @@
  * 
  * ============================================
  */
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
 import { usePaymentSuccess } from '@/features/billing/hooks/usePaymentSuccess';
@@ -25,7 +25,11 @@ import './PaymentSuccessPage.css';
 
 const PaymentSuccessPage = () => {
     const { t, isRTL } = useLanguage();
-    
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
+
     const {
         redirectIfNoState,
         packageName,

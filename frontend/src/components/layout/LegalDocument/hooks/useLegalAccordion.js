@@ -1,4 +1,4 @@
-/** Manages which legal section accordion is open, with smooth scroll-into-view on toggle. */
+﻿/** Manages which legal section accordion is open. */
 import { useState } from 'react';
 
 export const useLegalAccordion = (initialSectionId) => {
@@ -6,15 +6,6 @@ export const useLegalAccordion = (initialSectionId) => {
 
     const handleToggle = (id) => {
         setActiveSection(prev => prev === id ? null : id);
-
-        if (activeSection !== id) {
-            setTimeout(() => {
-                const el = document.getElementById(id);
-                if (el) {
-                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-            }, 150);
-        }
     };
 
     return { activeSection, handleToggle };

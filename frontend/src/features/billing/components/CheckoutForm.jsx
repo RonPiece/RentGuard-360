@@ -43,12 +43,14 @@ const CheckoutForm = ({ pkg, clientSecret, onSuccess }) => {
 
             if (stripeError) {
                 setError(stripeError.message);
+                setIsProcessing(false);
             } else if (paymentIntent.status === 'succeeded') {
-                onSuccess(paymentIntent);
+                await onSuccess(paymentIntent);
+                // We do NOT call setIsProcessing(false) here because onSuccess routes us entirely away.
+                // Keeping it true stops the user from double-clicking and maintains the loading state.
             }
         } catch (err) {
             setError(err.message);
-        } finally {
             setIsProcessing(false);
         }
     };

@@ -1,6 +1,7 @@
 /** Hook that manages chat UI state: panel open/close, auto-scroll, input focus, and mobile responsiveness. */
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { trackChatEvent } from '../utils/chatHelpers';
+import { useBodyScrollLock } from '@/utils/useBodyScrollLock';
 
 const CHAT_PANEL_CLOSE_MS = 260;
 
@@ -14,6 +15,17 @@ export function useChatUI(locationPathname, layoutMetrics = { footerHeight: 0, n
     const widgetRef = useRef(null);
     const closeTimerRef = useRef(null);
     const messagesContainerRef = useRef(null);
+
+    // Apply scroll lock when mobile chat panel is fully open
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+    
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth <= 768);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    useBodyScrollLock(open && !isClosing && isMobile);
 
     const openPanel = useCallback(() => {
         if (closeTimerRef.current) {

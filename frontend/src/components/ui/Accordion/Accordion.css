@@ -27,8 +27,10 @@
     font-family: inherit;
 }
 
-.lf-accordion-toggle:hover {
-    background: var(--glass-bg-hover);
+@media (hover: hover) and (pointer: fine) {
+    .lf-accordion-toggle:hover {
+        background: var(--glass-bg-hover);
+    }
 }
 
 .lf-accordion-title {

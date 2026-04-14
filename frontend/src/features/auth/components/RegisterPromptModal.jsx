@@ -15,9 +15,11 @@
 import React from 'react';
 import { X, Shield } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
+import { useBodyScrollLock } from '@/utils/useBodyScrollLock';
 import './RegisterPromptModal.css';
 
 const RegisterPromptModal = ({ isOpen, onClose, onRegister }) => {
+    useBodyScrollLock(isOpen);
     const { t } = useLanguage();
 
     if (!isOpen) return null;

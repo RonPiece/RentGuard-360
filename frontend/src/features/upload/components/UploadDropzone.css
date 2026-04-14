@@ -407,8 +407,7 @@
 
 .upload-header {
     text-align: center;
-    margin-bottom: 2rem;
-    margin-top: -2rem;
+    margin-bottom: 1rem;
 }
 
 .upload-header h1 {
@@ -424,6 +423,8 @@
 }
 
 .no-scans-banner {
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
     border: 1px solid var(--glass-border) !important;
     background:
         radial-gradient(circle at 10% 30%, rgba(56, 189, 248, 0.14), transparent 40%),

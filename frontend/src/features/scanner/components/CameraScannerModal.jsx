@@ -25,6 +25,7 @@ import { useScannerUIState } from '@/features/scanner/hooks/useScannerUIState';
 import { compressCaptureDataUrl, getCroppedImg } from '@/features/scanner/services/imageProcessing';
 import { buildPdfFileFromPages } from '@/features/scanner/services/pdfBuilder';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
+import { useBodyScrollLock } from '@/utils/useBodyScrollLock';
 import ScannerThumbnailGallery from './ScannerThumbnailGallery';
 import './CameraScannerModal.css';
 
@@ -45,6 +46,7 @@ const CameraScannerModal = ({
     onComplete,
     initialFileName = 'scanned-contract',
 }) => {
+    useBodyScrollLock(open);
     const { t, isRTL } = useLanguage();
     const webcamRef = useRef(null);
     const pendingImageRef = useRef(null);

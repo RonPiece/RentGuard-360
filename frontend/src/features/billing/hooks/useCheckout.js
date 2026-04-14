@@ -80,7 +80,9 @@ export const useCheckout = (packageId) => {
     }, [userId, packageId, userEmail, userName, navigate, refreshSubscription]);
 
     const handlePaymentSuccess = async (paymentIntent) => {
-        setIsLoading(true);
+        // Removed setIsLoading(true) here because unmounting the CheckoutForm
+        // causes the UI to collapse and flash another page on mobile.
+        // The CheckoutForm manages its own processing UI state.
         try {
             // Tell our backend to verify the Stripe intent and grant the purchased scans
             await confirmPayment(paymentIntent.id);
@@ -91,7 +93,6 @@ export const useCheckout = (packageId) => {
         // Force a refresh of the user's scan balance/entitlements from the server
         await refreshSubscription();
 
-        setIsLoading(false);
         navigate('/payment-success', {
             state: {
                 packageName: pkg?.name,

@@ -2,8 +2,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Pencil, X, Check } from 'lucide-react';
+import { useBodyScrollLock } from '@/utils/useBodyScrollLock';
 
 const EditContractModal = ({ editModal, setEditModal, saveEdit, isSaving, t, isRTL }) => {
+    useBodyScrollLock(!!editModal);
+
     if (!editModal) return null;
 
     return ReactDOM.createPortal(

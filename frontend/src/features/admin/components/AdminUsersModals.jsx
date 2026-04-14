@@ -14,6 +14,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Button from '@/components/ui/Button';
+import { useBodyScrollLock } from '@/utils/useBodyScrollLock';
 import './AdminUsersModals.css';
 
 const DESTRUCTIVE_TYPES = ['delete', 'deleteConfirm'];
@@ -25,7 +26,10 @@ const AdminUsersModals = ({
     isDark,
     t
 }) => {
-    if (!modal?.isOpen || !['disable', 'delete', 'deleteConfirm'].includes(modal.type)) return null;
+    const isOpen = modal?.isOpen && ['disable', 'delete', 'deleteConfirm'].includes(modal.type);
+    useBodyScrollLock(isOpen);
+
+    if (!isOpen) return null;
 
     const isDestructive = DESTRUCTIVE_TYPES.includes(modal.type);
 

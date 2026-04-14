@@ -187,9 +187,11 @@
   flex: 0 0 auto;
 }
 
-.rg-hot-toast__dismiss:hover {
-  background: var(--bg-tertiary);
-  color: var(--text-primary);
+@media (hover: hover) and (pointer: fine) {
+  .rg-hot-toast__dismiss:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+  }
 }
 
 [dir="rtl"] .rg-hot-toast {
@@ -244,6 +246,8 @@
   border-color: rgba(148, 163, 184, 0.3);
 }
 
-[data-theme="dark"] .rg-hot-toast__dismiss:hover {
-  background: rgba(148, 163, 184, 0.15);
+@media (hover: hover) and (pointer: fine) {
+  [data-theme="dark"] .rg-hot-toast__dismiss:hover {
+    background: rgba(148, 163, 184, 0.15);
+  }
 }

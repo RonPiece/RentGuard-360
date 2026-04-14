@@ -3,6 +3,8 @@ import React from 'react';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSubscription } from '@/contexts/SubscriptionContext';
+import { useBundleGatedNavigation } from './Navigation/hooks/useBundleGatedNavigation';
 import { Link } from 'react-router-dom';
 import { Github } from 'lucide-react';
 import './Footer.css';
@@ -16,6 +18,13 @@ const Footer = () => {
     const { t, isRTL } = useLanguage();
     const { theme } = useTheme();
     const { isAuthenticated, isAdmin } = useAuth();
+    const { hasSubscription } = useSubscription();
+
+    const handleBundleGatedNavigation = useBundleGatedNavigation(
+        isAuthenticated, 
+        isAdmin, 
+        hasSubscription
+    );
     
     const currentYear = new Date().getFullYear();
 
@@ -41,24 +50,24 @@ const Footer = () => {
                             <>
                                 <div className="footer-col">
                                     <h4 className="footer-col-title">{t('footer.quickLinksTitle')}</h4>
-                                    <Link to="/" className="footer-link">{t('nav.home')}</Link>
+                                    <Link to="/" className="footer-link" onClick={(e) => handleBundleGatedNavigation(e, '/')}>{t('nav.home')}</Link>
                                     {/* Hide pricing link from Admins as they don't need subscriptions */}
                                     {!isAdmin && <Link to="/pricing" className="footer-link">{t('nav.pricing')}</Link>}
-                                    <Link to="/contact" className="footer-link">{t('nav.contact')}</Link>
+                                    <Link to="/contact" className="footer-link" onClick={(e) => handleBundleGatedNavigation(e, '/contact')}>{t('nav.contact')}</Link>
                                 </div>
                                 <div className="footer-col">
                                     <h4 className="footer-col-title">{t('footer.personalAreaTitle')}</h4>
-                                    <Link to="/dashboard" className="footer-link">{t('nav.dashboard')}</Link>
-                                    <Link to="/contracts" className="footer-link">{t('nav.contracts')}</Link>
-                                    <Link to="/upload" className="footer-link">{t('nav.upload')}</Link>
-                                    <Link to="/settings" className="footer-link">{t('nav.settings')}</Link>
+                                    <Link to="/dashboard" className="footer-link" onClick={(e) => handleBundleGatedNavigation(e, '/dashboard')}>{t('nav.dashboard')}</Link>
+                                    <Link to="/contracts" className="footer-link" onClick={(e) => handleBundleGatedNavigation(e, '/contracts')}>{t('nav.contracts')}</Link>
+                                    <Link to="/upload" className="footer-link" onClick={(e) => handleBundleGatedNavigation(e, '/upload')}>{t('nav.upload')}</Link>
+                                    <Link to="/settings" className="footer-link" onClick={(e) => handleBundleGatedNavigation(e, '/settings')}>{t('nav.settings')}</Link>
                                 </div>
                             </>
                         )}
                         <div className="footer-col">
                             <h4 className="footer-col-title">{t('footer.legalSectionTitle')}</h4>
-                            <Link to="/terms" className="footer-link">{t('footer.termsLink')}</Link>
-                            <Link to="/privacy" className="footer-link">{t('footer.privacyLink')}</Link>
+                            <Link to="/terms" className="footer-link" onClick={(e) => handleBundleGatedNavigation(e, '/terms')}>{t('footer.termsLink')}</Link>
+                            <Link to="/privacy" className="footer-link" onClick={(e) => handleBundleGatedNavigation(e, '/privacy')}>{t('footer.privacyLink')}</Link>
                         </div>
                     </div>
                 </div>

@@ -17,6 +17,7 @@
 import { useCallback, useState } from 'react';
 import { updateContract } from '@/features/contracts/services/contractsApi';
 import { showAppToast } from '@/components/ui/toast/toast';
+import { persistMetadataCache } from '@/features/analysis/services/cacheService';
 import { normalizeDraftFileName, normalizeFinalFileName } from '@/features/contracts/utils/fileUtils';
 
 /**
@@ -67,6 +68,9 @@ export const useContractMetadataEditor = ({ userId, t, onApplyLocalUpdate, onAft
                 propertyAddress: updates.propertyAddress,
                 landlordName: updates.landlordName,
             };
+
+            // Instantly sync the UI cache so clicking the contract loads fresh metadata
+            persistMetadataCache(updatedContract);
 
             onApplyLocalUpdate?.(updatedContract);
             setEditModal(null);

@@ -73,7 +73,9 @@ export const useUpload = () => {
         let cancelled = false;
         (async () => {
             try {
-                const result = await pollForAnalysis(uploadedContractId, 60, 3000);
+                // Poll every 2.5s for up to 120 attempts (5 minutes max).
+                // Usually an analysis takes between 15 and 90 seconds. 
+                const result = await pollForAnalysis(uploadedContractId, 120, 2500);
                 if (cancelled) return;
                 if (result) {
                     emitAppToast({

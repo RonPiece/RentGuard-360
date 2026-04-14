@@ -192,9 +192,11 @@
     transition: color var(--transition-fast), background-color var(--transition-fast);
 }
 
-.input-password-toggle:hover {
-    color: var(--text-primary);
-    background: rgba(0, 0, 0, 0.06);
+@media (hover: hover) and (pointer: fine) {
+    .input-password-toggle:hover {
+        color: var(--text-primary);
+        background: rgba(0, 0, 0, 0.06);
+    }
 }
 
 .input-password-toggle:focus-visible {
