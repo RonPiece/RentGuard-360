@@ -43,11 +43,15 @@ export function useChatUI(locationPathname, layoutMetrics = { footerHeight: 0, n
             let nextOffset = baseOffset;
 
             if (!isMobile) {
-                const footerOverlap = layoutMetrics.footerHeight; // Using robust parameter instead of querySelector
+                const footerNode = document.querySelector('.app-footer') || document.querySelector('footer');
+                const footerRect = footerNode?.getBoundingClientRect();
+                const footerOverlap = footerRect ? Math.max(0, window.innerHeight - footerRect.top) : 0;
+
                 if (!open && !isClosing) {
                     nextOffset += footerOverlap;
                 } else {
-                    const navBottom = layoutMetrics.navHeight;
+                    const navNode = document.querySelector('.nav-container') || document.querySelector('nav');
+                    const navBottom = navNode ? navNode.getBoundingClientRect().bottom : layoutMetrics.navHeight;
                     const widgetHeight = widgetRef.current?.querySelector('.chat-widget-panel')?.getBoundingClientRect().height || 560;
                     
                     if (navBottom > 0 && widgetHeight > 0) {
@@ -74,10 +78,24 @@ export function useChatUI(locationPathname, layoutMetrics = { footerHeight: 0, n
             const targetRect = targetNode.getBoundingClientRect();
 
             let intersects = false;
-            // Since we use reliable metrics, we can assume typical layout overlaps, or we can check simple document heights.
-            // Note: In an ideal system, whySection top/bottom would also be passed in. We use generic estimation here
-            // to avoid querySelector. For now fallback since context-why is rarely used outside dash.
-            setUseWhyPalette(intersects);
+
+            const whySectionNode = document.querySelector('.why-rentguard-section');
+            if (whySectionNode) {
+                const sectionRect = whySectionNode.getBoundingClientRect();
+                if (targetRect.bottom >= sectionRect.top && targetRect.top <= sectionRect.bottom) {
+                    intersects = true;
+                }
+            }
+
+            const footerNodeForPalette = document.querySelector('.app-footer');
+            if (footerNodeForPalette) {
+                const footerBounds = footerNodeForPalette.getBoundingClientRect();
+                if (targetRect.bottom >= footerBounds.top && targetRect.top <= footerBounds.bottom) {
+                    intersects = true;
+                }
+            }
+
+            setUseWhyPalette((prev) => (prev === intersects ? prev : intersects));
         };
 
         handleScrollAndResize();
