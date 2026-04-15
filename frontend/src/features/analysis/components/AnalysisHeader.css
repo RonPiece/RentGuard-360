@@ -1,11 +1,26 @@
-/* ============================================
-   1. GLOBAL HEADER & TABS
-   ============================================ */
+/**
+ * ============================================
+ * AnalysisHeader.css
+ * Styling for the main analysis page header and navigation tabs.
+ * ============================================
+ *
+ * TABLE OF CONTENTS
+ * ============================================
+ * 1. Main Header Layout
+ * 2. Typography (Titles & Subtitles)
+ * 3. Navigation Tabs (Pills)
+ * ============================================
+ */
+
+/* =========================================
+   1. Main Header Layout
+   ========================================= */
+
 .lf-header {
     width: 100%;
     max-width: 1440px;
     margin: 0 auto;
-    padding: 2rem 2rem 2rem 2rem;
+    padding: 2rem;
     display: flex;
     flex-direction: column;
     gap: 2rem;
@@ -28,6 +43,15 @@
     width: 100%;
 }
 
+.lf-header-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+/* =========================================
+   2. Typography (Titles & Subtitles)
+   ========================================= */
+
 .lf-pre-title {
     color: var(--accent-primary);
     font-size: 1.25rem;
@@ -44,8 +68,8 @@
     line-height: 1.1;
     letter-spacing: -0.02em;
     width: 100%;
-    margin-inline: auto; /* centered if container is limited */
-    text-align: start; /* ensure dir="auto" dictates alignment */
+    margin-inline: auto;
+    text-align: start;
 }
 
 .lf-subtitle {
@@ -54,14 +78,13 @@
     margin: 0;
     line-height: 1.6;
     width: 100%;
-    max-width: 100%; /* Allow to grow to container */
-    text-align: start; /* ensure dir="auto" dictates alignment */
+    max-width: 100%;
+    text-align: start;
 }
 
-.lf-header-actions {
-    display: flex;
-    gap: 1rem;
-}
+/* =========================================
+   3. Navigation Tabs (Pills)
+   ========================================= */
 
 .lf-tabs-container {
     display: flex;
@@ -99,4 +122,3 @@
     color: var(--accent-primary);
     border-bottom-color: var(--accent-primary);
 }
-

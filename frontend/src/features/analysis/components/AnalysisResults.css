@@ -1,6 +1,25 @@
-/* ============================================
-   6. CLAUSE CARDS
-   ============================================ */
+/**
+ * ============================================
+ * AnalysisResults.css
+ * Styling for individual contract issue/clause cards.
+ * ============================================
+ *
+ * TABLE OF CONTENTS
+ * ============================================
+ * 1. Card Container & Risk Indicators
+ * 2. Header & Badges
+ * 3. Clause Preview & Expand Action
+ * 4. Expanded Content (Quote Box, Analysis Grid)
+ * 5. Action Buttons & Tooltips
+ * 6. Empty/Status States (No Issues, Warnings)
+ * 7. Mobile Responsiveness
+ * ============================================
+ */
+
+/* =========================================
+   1. Card Container & Risk Indicators
+   ========================================= */
+
 .lf-issues-list {
     display: flex;
     flex-direction: column;
@@ -62,6 +81,10 @@
     color: var(--accent-info);
 }
 
+/* =========================================
+   2. Header & Badges
+   ========================================= */
+
 .lf-clause-header {
     display: flex;
     justify-content: space-between;
@@ -69,7 +92,6 @@
     gap: 1rem;
     padding: 2rem;
     padding-inline-start: 2.5rem;
-    /* Space for the risk line */
     cursor: pointer;
 }
 
@@ -77,9 +99,6 @@
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
-}
-
-.lf-clause-title-area {
     flex: 1;
     min-width: 0;
 }
@@ -117,6 +136,10 @@
     opacity: 1;
     overflow-wrap: anywhere;
 }
+
+/* =========================================
+   3. Clause Preview & Expand Action
+   ========================================= */
 
 .lf-clause-preview {
     margin: 0;
@@ -159,6 +182,10 @@
     transform: rotate(180deg);
 }
 
+/* =========================================
+   4. Expanded Content (Quote Box, Analysis Grid)
+   ========================================= */
+
 .lf-clause-body {
     padding: 0 2rem 2rem 2.5rem;
     animation: fadeIn 0.3s ease;
@@ -168,11 +195,10 @@
     cursor: text;
 }
 
-/* Quote Box */
 .lf-quote-box {
     background: var(--glass-border);
     border-radius: var(--radius-md);
-    padding: 1.5rem 2.5rem; /* adjusted padding for centering horizontally */
+    padding: 1.5rem 2.5rem;
     position: relative;
     margin-bottom: 2rem;
     border-inline-start: 3px solid var(--glass-border);
@@ -198,7 +224,6 @@
     inset-inline-end: 1rem;
 }
 
-/* LTR transforms */
 .lf-quote-box:dir(ltr) .start-quote {
     transform: scaleX(-1);
 }
@@ -206,7 +231,6 @@
     transform: none;
 }
 
-/* RTL transforms */
 .lf-quote-box:dir(rtl) .start-quote {
     transform: none;
 }
@@ -228,7 +252,6 @@
     text-align: center;
 }
 
-/* Analysis Grid */
 .lf-analysis-grid {
     display: grid;
     grid-template-columns: 1fr;
@@ -288,7 +311,10 @@
     cursor: text;
 }
 
-/* Actions */
+/* =========================================
+   5. Action Buttons & Tooltips
+   ========================================= */
+
 .lf-clause-actions {
     display: flex;
     flex-wrap: wrap;
@@ -334,7 +360,10 @@
     overflow-wrap: anywhere;
 }
 
-/* Empty states (No issues / Not rental) */
+/* =========================================
+   6. Empty/Status States (No Issues, Warnings)
+   ========================================= */
+
 .lf-no-issues {
     background: var(--bg-card);
     border: 1px solid var(--glass-border);
@@ -410,6 +439,10 @@
     background: linear-gradient(180deg, rgba(239, 68, 68, 0.08) 0%, var(--bg-card) 72%);
 }
 
+/* =========================================
+   7. Mobile Responsiveness
+   ========================================= */
+
 @media (max-width: 768px) {
     .lf-no-issues {
         min-height: 220px;
@@ -428,4 +461,3 @@
         font-size: 0.97rem;
     }
 }
-

@@ -1,13 +1,36 @@
-/* ============================================
-   4. BENTO GRID (Summary Dashboard)
-   ============================================ */
+/**
+ * ============================================
+ * AnalysisBentoGrid.css
+ * Styling for the main summary dashboard utilizing a responsive Bento Box layout.
+ * Includes the main score card, secondary tiles, map integration, and quick actions.
+ * ============================================
+ *
+ * TABLE OF CONTENTS
+ * ============================================
+ * 1. Base Grid Layout
+ * 2. Main Score Card (Health Statuses)
+ * 3. Secondary Meta Tiles
+ * 4. Quick Actions Grid & Dropdowns
+ * 5. Specific Content Tiles (Center/Map)
+ * 6. Hover States (Desktop Only)
+ * 7. Mobile Responsiveness
+ * ============================================
+ */
+
+/* =========================================
+   1. Base Grid Layout
+   ========================================= */
+
 .lf-bento-grid {
     display: grid;
     grid-template-columns: repeat(12, 1fr);
     gap: 1.5rem;
 }
 
-/* Score Card (Left) */
+/* =========================================
+   2. Main Score Card (Health Statuses)
+   ========================================= */
+
 .lf-bento-score {
     grid-column: span 4;
     background: var(--accent-primary);
@@ -56,21 +79,10 @@
     border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-[data-theme="dark"] .lf-bento-score.health-excellent {
-    background: #065f46;
-}
-
-[data-theme="dark"] .lf-bento-score.health-good {
-    background: #166534;
-}
-
-[data-theme="dark"] .lf-bento-score.health-warning {
-    background: #92400e;
-}
-
-[data-theme="dark"] .lf-bento-score.health-danger {
-    background: #991b1b;
-}
+[data-theme="dark"] .lf-bento-score.health-excellent { background: #065f46; }
+[data-theme="dark"] .lf-bento-score.health-good { background: #166534; }
+[data-theme="dark"] .lf-bento-score.health-warning { background: #92400e; }
+[data-theme="dark"] .lf-bento-score.health-danger { background: #991b1b; }
 
 .lf-score-bg-glow {
     position: absolute;
@@ -121,7 +133,6 @@
     width: 14rem;
     height: 14rem;
     border-radius: 50%;
-    /* Enforce LTR structure visually */
     direction: ltr;
 }
 
@@ -188,7 +199,10 @@
     margin: 0;
 }
 
-/* Secondary Tiles (Right) */
+/* =========================================
+   3. Secondary Meta Tiles
+   ========================================= */
+
 .lf-bento-tiles {
     grid-column: span 8;
     display: grid;
@@ -228,13 +242,8 @@
     opacity: 0.9;
 }
 
-.lf-tile-icon.error {
-    color: var(--accent-danger);
-}
-
-.lf-tile-icon.success {
-    color: var(--accent-success);
-}
+.lf-tile-icon.error { color: var(--accent-danger); }
+.lf-tile-icon.success { color: var(--accent-success); }
 
 .lf-tile-badge {
     font-size: 0.7rem;
@@ -363,17 +372,9 @@
     cursor: not-allowed;
 }
 
-.lf-contract-meta-rows {
-    margin: 0;
-}
-
-.lf-contract-meta-row {
-    margin-bottom: 10px;
-}
-
-.lf-contract-meta-row:last-child {
-    margin-bottom: 0;
-}
+.lf-contract-meta-rows { margin: 0; }
+.lf-contract-meta-row { margin-bottom: 10px; }
+.lf-contract-meta-row:last-child { margin-bottom: 0; }
 
 .lf-contract-meta-side {
     text-align: start;
@@ -385,10 +386,10 @@
     margin: 0;
 }
 
+/* =========================================
+   4. Quick Actions Grid & Dropdowns
+   ========================================= */
 
-/* ============================================
-   QUICK ACTIONS GRID (Top Bento Tile)
-   ============================================ */
 .lf-quick-actions-tile {
     display: flex;
     flex-direction: column;
@@ -416,7 +417,6 @@
     z-index: 20;
 }
 
-/* עיצוב כפתורי הפעולה (SaaS Style) */
 .lf-action-btn {
     display: flex;
     flex-direction: row;
@@ -447,7 +447,6 @@
     cursor: not-allowed;
 }
 
-/* עיצוב התפריט הנפתח של הייצוא שיתאים למראה המודרני */
 .lf-export-menu {
     position: absolute;
     top: 100%;
@@ -500,94 +499,94 @@
     word-break: break-word;
 }
 
-@media (hover: hover) and (pointer: fine) { /* Desktop only hover */
-    .lf-tab-btn:hover {
-        color: var(--text-primary);
-    }
+/* =========================================
+   5. Specific Content Tiles (Center/Map)
+   ========================================= */
 
+.lf-bento-center-tile {
+    text-align: center;
+    justify-content: center;
+}
+
+.lf-bento-center-header {
+    justify-content: center;
+    gap: 8px;
+}
+
+.lf-bento-issues-title {
+    margin-bottom: 1rem;
+}
+
+.lf-bento-map-tile {
+    padding: 0 !important;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    min-height: 280px;
+}
+
+@media (max-width: 1024px) {
+    .lf-bento-map-tile {
+        height: 280px;
+        flex: none;
+    }
+}
+
+/* =========================================
+   6. Hover States (Desktop Only)
+   ========================================= */
+
+@media (hover: hover) and (pointer: fine) { 
+    .lf-tab-btn:hover { color: var(--text-primary); }
     .lf-clause-card:hover {
         box-shadow: var(--shadow-md);
         border-color: rgba(5, 150, 105, 0.3);
     }
-
     .lf-expand-btn:hover {
         background: var(--bg-inset);
         color: var(--text-primary);
     }
-
     .lf-btn-primary:hover {
         background: var(--accent-primary-hover);
         transform: translateY(-1px);
     }
-
     .lf-action-btn:hover {
         background: var(--bg-tertiary);
         border-color: var(--accent-primary);
     }
-
     .lf-contract-meta-edit-btn:hover:not(:disabled) {
         background: var(--bg-inset);
         color: var(--text-primary);
     }
-
     .lf-contract-export-btn:hover {
         background: var(--accent-primary-hover);
     }
-
     .lf-share-btn-icon:hover {
         background: var(--accent-primary);
         color: white;
     }
-
     .lf-share-btn-icon.danger:hover {
         background: var(--accent-danger);
         color: white;
     }
-
     .lf-action-btn:hover:not(:disabled) {
         background: var(--bg-tertiary);
         border-color: var(--accent-primary);
         transform: translateY(-1px);
     }
-
     .lf-share-accordion .lf-action-btn:hover:not(:disabled) {
         transform: none;
     }
-
     .lf-export-menu button:hover:not(:disabled) {
         background: var(--bg-tertiary);
         color: var(--accent-primary);
     }
 }
 
-@media (max-width: 600px) {
-    .lf-quick-actions-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .lf-action-btn {
-        padding: 0.5rem 0.5rem;
-        font-size: 0.85rem;
-        min-height: 44px;
-        gap: 0.4rem;
-        flex-direction: row;
-    }
-
-    .lf-action-btn svg {
-        width: 20px;
-        height: 20px;
-    }
-
-    .lf-export-menu {
-        min-width: min(300px, calc(100vw - 24px));
-        max-width: calc(100vw - 24px);
-    }
-
-    .lf-export-menu button {
-        font-size: 0.8rem;
-        padding: 0.5rem 0.6rem;
-    }
-}
+/* =========================================
+   7. Mobile Responsiveness
+   ========================================= */
 
 @media (max-width: 1024px) {
     .lf-bento-grid {
@@ -619,34 +618,31 @@
     }
 }
 
+@media (max-width: 600px) {
+    .lf-quick-actions-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 
+    .lf-action-btn {
+        padding: 0.5rem 0.5rem;
+        font-size: 0.85rem;
+        min-height: 44px;
+        gap: 0.4rem;
+        flex-direction: row;
+    }
 
-/* Bento Center Tile (Issues) */
-.lf-bento-center-tile {
-    text-align: center;
-    justify-content: center;
-}
-.lf-bento-center-header {
-    justify-content: center;
-    gap: 8px;
-}
-.lf-bento-issues-title {
-    margin-bottom: 1rem;
-}
+    .lf-action-btn svg {
+        width: 20px;
+        height: 20px;
+    }
 
-/* Bento Map Tile */
-.lf-bento-map-tile {
-    padding: 0 !important;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    min-height: 280px;
-}
+    .lf-export-menu {
+        min-width: min(300px, calc(100vw - 24px));
+        max-width: calc(100vw - 24px);
+    }
 
-@media (max-width: 1024px) {
-    .lf-bento-map-tile {
-        height: 280px;
-        flex: none;
+    .lf-export-menu button {
+        font-size: 0.8rem;
+        padding: 0.5rem 0.6rem;
     }
 }
