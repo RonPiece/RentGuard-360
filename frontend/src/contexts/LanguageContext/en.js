@@ -15,6 +15,18 @@
  * * ============================================
  */
 export const en = {
+    "map": {
+        "addressNotFound": "Address not found",
+        "searchError": "Error searching for address",
+        "loading": "Loading map...",
+        "defaultLocation": "RentGuard-360 HQ"
+    },
+    "notFound": {
+        "title": "404",
+        "subtitle": "Oops! Page Not Found",
+        "text": "The page you are looking for does not exist or has been moved.",
+        "button": "Return Home"
+    },
     "nav": {
         "home": "Home",
         "brand": "RentGuard 360",

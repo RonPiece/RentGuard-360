@@ -1,5 +1,5 @@
 /** Reusable layout for legal pages - sidebar TOC + accordion sections + contact card. */
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext/LanguageContext';
 import BackButton from '@/components/ui/BackButton/BackButton';
@@ -12,10 +12,6 @@ const LegalDocumentLayout = ({ data, icons }) => {
     const { title, updated, tocTitle, sections, contactPrefix, contactLinkText, contactMiddle } = data;
 
     const { activeSection, handleToggle } = useLegalAccordion(sections[0]?.id);
-
-    useEffect(() => {
-        window.scrollTo(0, 0);
-    }, []);
 
     const getIconForIndex = (index) => {
         const IconComponent = icons[index % icons.length];
@@ -55,7 +51,12 @@ const LegalDocumentLayout = ({ data, icons }) => {
                                     <button
                                         key={`toc-${section.id}`}
                                         className={`toc-btn ${isActive ? 'active' : ''}`}
-                                        onClick={() => handleToggle(section.id)}
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            if (!isActive) {
+                                                handleToggle(section.id);
+                                            }
+                                        }}
                                     >
                                         <span className="toc-icon">{getIconForIndex(idx)}</span>
                                         <span className="toc-text">
