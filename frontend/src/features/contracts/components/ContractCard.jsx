@@ -14,7 +14,7 @@
  */
 import React, { useState, useEffect } from 'react';
 import './ContractCard.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import ActionMenu from '@/components/ui/ActionMenu/ActionMenu';
 import {
     Trash2, Pencil, Download, RefreshCw, FileText,
@@ -46,6 +46,7 @@ const isContractTimedOut = (contract) => {
 };
 
 const ContractCard = ({ contract, onDelete, onEdit, onExport, onShare, formatDate, t, isRTL }) => {
+    const navigate = useNavigate();
     const [activeMenu, setActiveMenu] = useState(null);
     const status = (contract.status || '').toLowerCase();
 
@@ -124,7 +125,16 @@ const ContractCard = ({ contract, onDelete, onEdit, onExport, onShare, formatDat
                         {!isAnalyzed && !isFailed && <RefreshCw size={12} className="lf-spin-icon" />}
                         {badgeLabel}
                     </span>
-                    <h3 className="lf-card-title" onClick={(e) => onEdit(contract, e)}>
+                    <h3 
+                        className="lf-card-title" 
+                        onClick={(e) => {
+                            e.preventDefault();
+                            if (isAnalyzed) {
+                                navigate(`/analysis/${encodeURIComponent(contract.contractId)}`, { state: { contract } });
+                            }
+                        }}
+                        style={{ cursor: isAnalyzed ? 'pointer' : 'default' }}
+                    >
                         {contract.fileName || t('contracts.untitledContract')}
                     </h3>
                     <p className="lf-card-date">
