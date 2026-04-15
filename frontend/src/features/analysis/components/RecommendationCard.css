@@ -29,7 +29,7 @@
     background-color: #fef3c7;
     /* amber-100 */
 
-    /* Left accent bar */
+    /* Left accent bar*/
     border-left: 4px solid #f59e0b;
 
     /* Subtle border */
@@ -182,8 +182,6 @@
     border-top: 1px solid rgba(251, 191, 36, 0.4) !important;
     border-right: 1px solid rgba(251, 191, 36, 0.4) !important;
     border-bottom: 1px solid rgba(251, 191, 36, 0.4) !important;
-
-    /* Subtle glow */
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
     backdrop-filter: blur(8px);
 }
@@ -225,37 +223,6 @@
     border-color: #059669 !important;
     color: #10b981 !important;
 }
-
-
-/* Also support prefers-color-scheme */
-@media (prefers-color-scheme: dark) {
-    .recommendation-card {
-        background-color: #1e293b;
-        border-left-color: #fbbf24;
-        border-top-color: #334155;
-        border-right-color: #334155;
-        border-bottom-color: #334155;
-    }
-
-    .recommendation-icon {
-        color: #fbbf24;
-    }
-
-    .recommendation-title {
-        color: #fbbf24;
-    }
-
-    .recommendation-card-text {
-        color: #f1f5f9;
-    }
-
-    .recommendation-apply-btn {
-        background: transparent;
-        border-color: rgba(251, 191, 36, 0.5);
-        color: #fbbf24;
-    }
-}
-
 
 /* ==========================================
    Responsive

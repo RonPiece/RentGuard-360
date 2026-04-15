@@ -41,7 +41,10 @@
 .lf-cv-clause-box { border: none !important; background: none !important; padding: 0.5rem 0; }
 
 /* Side borders for issues */
-.lf-cv-clause-box.has-issue { border-inline-start: 4px solid var(--accent-warning); background: rgba(245, 158, 11, 0.03); }
+.lf-cv-clause-box.has-issue { 
+    border-inline-start: 4px solid var(--accent-warning); 
+    background: rgba(245, 158, 11, 0.03); 
+}
 
 /* Edited clauses (applies mainly for manual edits or when user accepts AI diff) */
 .lf-cv-clause-box.is-edited { 
