@@ -5,7 +5,7 @@
 <h1 align="center">RentGuard 360</h1>
 
 <p align="center">
-  <i>Enterprise-grade AI platform for Israeli rental contract analysis — risk scoring, clause-by-clause review, and negotiation intelligence.</i>
+  <i>AI platform for Israeli rental contract analysis — risk scoring, clause-by-clause review, and negotiation intelligence.</i>
 </p>
 
 <p align="center">
@@ -38,7 +38,6 @@
   - [Serverless Lambdas (Python)](#serverless-lambdas-python)
   - [C# .NET 8 Payment API](#c-net-8-payment-api-stripepaymentapi)
 
-- [Getting Started](#getting-started)
 - [Configuration Reference](#configuration-reference)
 - [API Reference](#api-reference)
 - [Security Posture](#security-posture)
@@ -62,7 +61,7 @@ RentGuard 360 is a full-stack, serverless AI platform that transforms an opaque 
 1. **Upload** a lease PDF (or scan it with the built-in camera scanner)
 2. **Azure Document Intelligence** extracts Hebrew text via OCR
 3. **Privacy Shield** strips all personally identifiable information before AI processing
-4. **Amazon Bedrock** (Claude 3 Sonnet) evaluates each clause against Israeli rental law
+4. **Amazon Bedrock** (Claude 4.5 Haiku) evaluates each clause against Israeli rental law
 5. **Interactive dashboard** renders risk scores, flagged clauses, and negotiation suggestions
 
 > [!NOTE]
@@ -76,7 +75,7 @@ RentGuard 360 is a full-stack, serverless AI platform that transforms an opaque 
 |:---|:---|:---|
 | Contract Upload | Drag-and-drop PDF ingestion with presigned S3 URLs and server-side scan deduction | React, S3, API Gateway |
 | Camera Scanner | Mobile-native document scanning with crop, rotation, and multi-page capture | React Webcam, Canvas API, jsPDF |
-| AI Risk Analysis | Clause-by-clause scoring (0--100) grounded in Israeli rental law | Bedrock (Claude 3 Sonnet), Step Functions |
+| AI Risk Analysis | Clause-by-clause scoring (0--100) grounded in Israeli rental law | Bedrock (Claude 4.5 Haiku), Step Functions |
 | Privacy Shield | Regex and NLP-based PII redaction before any AI processing | Python Lambda |
 | Contract Chat | Conversational AI assistant scoped to a specific analyzed contract | Bedrock, DynamoDB, React |
 | Contract Editor | Inline clause editing with revert-to-original tracking and persistence | React, DynamoDB |
@@ -147,7 +146,7 @@ flowchart TD
 
     subgraph External["External Services"]
         AzureOCR["Azure Document Intelligence"]
-        Bedrock["Amazon Bedrock (Claude 3)"]
+        Bedrock["Amazon Bedrock (Claude 4.5 Haiku)"]
         Stripe["Stripe API"]
         SES["AWS SES"]
     end
@@ -233,6 +232,8 @@ This section provides an in-depth breakdown of the React architecture — the co
 | Maps | React Leaflet | 5.0 |
 | Error Handling | react-error-boundary | 6.1 |
 | Notifications | react-hot-toast | 2.6 |
+| Camera Scanner | React Webcam | 7.x |
+| PDF Generation | jsPDF | 3.x |
 
 ### Project Structure
 
@@ -278,7 +279,7 @@ src/
 │   └── apiClient.js          # Authenticated + public HTTP clients with timeout
 │
 ├── styles/                   # Global design system
-│   ├── design-system.css     # 629-line token-based design system
+│   ├── design-system.css     # token-based design system
 │   └── utilities.css         # Utility class overrides
 │
 ├── utils/                    # Shared cross-feature utilities
@@ -292,7 +293,7 @@ src/
 
 ### State Management Strategy
 
-RentGuard 360 uses the **React Context API** as its sole global state management solution. No external state libraries (Redux, Zustand, MobX, TanStack Query) are used — a deliberate architectural decision to minimize bundle size and maintain direct control over re-render boundaries.
+RentGuard 360 uses the **React Context API** as its sole global state management solution — a deliberate architectural decision to minimize bundle size and maintain direct control over re-render boundaries.
 
 **Four Context providers** are composed in `main.jsx` in strict dependency order:
 
@@ -377,7 +378,7 @@ const UploadPage = lazy(() => import('@/pages/core/UploadPage'));
 
 ### CSS Architecture and Design System
 
-RentGuard 360 uses **vanilla CSS with a centralized, token-based design system** (`design-system.css`, 629 lines). No CSS framework (Tailwind, Bootstrap, etc.) is used — a deliberate choice for maximum control over visual output and zero runtime CSS overhead.
+RentGuard 360 uses **vanilla CSS with a centralized, token-based design system** (`design-system.css`). No CSS framework (Tailwind, Bootstrap, etc.) is used — a deliberate choice for maximum control over visual output and zero runtime CSS overhead.
 
 **Design token categories** defined as CSS custom properties on `:root`:
 
@@ -425,7 +426,7 @@ All core business logic runs as Python Lambda functions triggered by API Gateway
 |:---|:---|:---|
 | `RentGuard_AzureOCR` | Step Functions | Sends uploaded PDF to Azure Document Intelligence for Hebrew OCR extraction |
 | `privacy-shield` | Step Functions | Strips PII (names, IDs, phone numbers) from extracted text via regex and NLP patterns |
-| `ai-analyzer` | Step Functions | Sends sanitized text to Amazon Bedrock (Claude 3 Sonnet) for clause-by-clause risk analysis |
+| `ai-analyzer` | Step Functions | Sends sanitized text to Amazon Bedrock (Claude 4.5 Haiku) for clause-by-clause risk analysis |
 | `save-results` | Step Functions | Persists analysis results, risk scores, and recommendations to DynamoDB |
 | `notify-user` | Step Functions | Sends email notification to the user via SES when analysis is complete |
 | `error-handler` | Step Functions | Catches and logs failures from any pipeline stage; updates contract status |
@@ -509,42 +510,6 @@ StripePaymentAPI/
 | Server-to-server auth | Internal API key (`X-Internal-Api-Key`) for trusted Lambda-to-API calls |
 | Payment provider | Stripe.net SDK (v43.16) for Checkout Sessions, webhooks, and refund handling |
 | API documentation | Swagger/OpenAPI via Swashbuckle |
-
----
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js 18+
-- AWS CLI (configured with credentials)
-- .NET 8 SDK (for the Payment API)
-- A deployed RentGuard 360 AWS stack
-
-> [!WARNING]
-> The frontend requires a deployed AWS stack to function. The application cannot run in a fully offline mode — API Gateway, Cognito, S3, and DynamoDB are runtime dependencies.
-
-### Clone and Run the Frontend
-
-```bash
-git clone https://github.com/RonPiece/RentGuard-360.git
-cd RentGuard-360/frontend
-cp .env.template .env
-# Fill in the values from your deployed stack outputs
-npm install
-npm run dev
-```
-
-The dev server starts at `http://localhost:5173` with API proxy support (`/__rg_api__` and `/__stripe_api__`).
-
-### Run the C# Payment API Locally
-
-```bash
-cd backend/StripePaymentAPI
-cp appsettings.Development.json appsettings.Development.local.json
-# Fill in Cognito, Stripe, and RDS connection values
-dotnet run
-```
 
 ---
 
@@ -692,7 +657,11 @@ All endpoints are served through API Gateway. Authentication is handled via Cogn
 
 </details>
 
+<br />
 
+<p align="center">
+  <a href="https://drvamywirfzyv.cloudfront.net/"><strong>View Live Demo</strong></a>
+</p>
 
 ---
 
@@ -702,6 +671,5 @@ All endpoints are served through API Gateway. Authentication is handled via Cogn
 
 **Course**: Advanced React / Cloud Computing, 2026
 
-**License**: Academic project. Contact for usage inquiries.
-
+**License**: This is an academic project. All rights reserved. Copying, redistribution, or reuse of this codebase, in whole or in part, is strictly prohibited without prior written consent from the authors.
 
