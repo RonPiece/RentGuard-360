@@ -11,7 +11,7 @@ const LegalDocumentLayout = ({ data, icons }) => {
     const { isRTL, t } = useLanguage();
     const { title, updated, tocTitle, sections, contactPrefix, contactLinkText, contactMiddle } = data;
 
-    const { activeSection, handleToggle } = useLegalAccordion(sections[0]?.id);
+    const { activeSection, handleToggle } = useLegalAccordion(null); // start fully collapsed
 
     const getIconForIndex = (index) => {
         const IconComponent = icons[index % icons.length];
