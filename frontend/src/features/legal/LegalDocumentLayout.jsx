@@ -51,7 +51,27 @@ const LegalDocumentLayout = ({ data, icons }) => {
                                     <button
                                         key={`toc-${section.id}`}
                                         className={`toc-btn ${isActive ? 'active' : ''}`}
-                                        onClick={() => handleToggle(section.id)}
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            if (!isActive) {
+                                                handleToggle(section.id);
+                                            }
+                                            
+                                            // Wait for accordion animation to finish (e.g. previous one closing)
+                                            // so the target element's position on mobile is correct
+                                            setTimeout(() => {
+                                                const el = document.getElementById(section.id);
+                                                if (el) {
+                                                    // Mobile usually has a taller stacked header/TOC area
+                                                    const headerOffset = window.innerWidth <= 768 ? 160 : 120;
+                                                    const elementPosition = el.getBoundingClientRect().top + window.scrollY;
+                                                    window.scrollTo({
+                                                        top: elementPosition - headerOffset,
+                                                        behavior: 'smooth'
+                                                    });
+                                                }
+                                            }, 250);
+                                        }}
                                     >
                                         <span className="toc-icon">{getIconForIndex(idx)}</span>
                                         <span className="toc-text">
