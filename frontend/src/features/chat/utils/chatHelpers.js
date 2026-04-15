@@ -10,10 +10,18 @@ const CHAT_AUTO_OPEN_PREF_KEY = 'rentguard_chat_auto_open_contract';
 export const isContractChatAutoOpenEnabled = () => {
     try {
         const saved = localStorage.getItem(CHAT_AUTO_OPEN_PREF_KEY);
-        if (saved === null) return true;
-        return saved !== 'false';
+        if (saved !== null) return saved !== 'false';
+        
+        // If no preference is saved, default to false on mobile, true on desktop
+        if (typeof window !== 'undefined' && window.innerWidth <= 768) {
+            return false;
+        }
+        return true;
     } catch {
         // Failsafe for restricted storage access
+        if (typeof window !== 'undefined' && window.innerWidth <= 768) {
+            return false;
+        }
         return true;
     }
 };

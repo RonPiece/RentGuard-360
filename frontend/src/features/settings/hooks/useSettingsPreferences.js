@@ -8,9 +8,16 @@ export const useSettingsPreferences = () => {
     const [chatAutoOpenEnabled, setChatAutoOpenEnabled] = useState(() => {
         try {
             const saved = localStorage.getItem(CHAT_AUTO_OPEN_PREF_KEY);
-            if (saved === null) return true;
-            return saved !== 'false';
+            if (saved !== null) return saved !== 'false';
+            
+            if (typeof window !== 'undefined' && window.innerWidth <= 768) {
+                return false;
+            }
+            return true;
         } catch {
+            if (typeof window !== 'undefined' && window.innerWidth <= 768) {
+                return false;
+            }
             return true;
         }
     });
