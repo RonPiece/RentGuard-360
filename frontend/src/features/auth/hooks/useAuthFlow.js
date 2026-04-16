@@ -135,10 +135,12 @@ export const useAuthFlow = ({ view, onChangeView, onClose, initialEmail = '' }) 
 
             if (isOAuthFailureEvent(event)) {
                 const fallbackError = t('auth.socialLoginCanceledOrFailed');
-                const eventError = payload?.data?.message || payload?.data?.error || payload?.message;
+                // Ensure we extract a string message from the error payload, not an object
+                const rawError = payload?.data?.message || payload?.data?.error || payload?.data || payload?.message;
+                const errStr = typeof rawError === 'string' ? rawError : (rawError?.message || fallbackError);
 
                 setLoading(false);
-                setError(translateError(eventError || fallbackError, t, isRTL));
+                setError(translateError(errStr, t, isRTL));
                 oauthInFlightRef.current = false;
                 sessionStorage.removeItem(OAUTH_IN_FLIGHT_KEY);
             }
